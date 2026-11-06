@@ -131,6 +131,8 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await p.getByRole('link', { name: 'BlueMap öffnen ↗' }).waitFor();
     const link = p.locator('.map-detail a[target=_blank]');
     assert.equal(await link.getAttribute('href'), 'https://karte.example.net/#world:13:72:2:150:0:0.9:0:0:perspective');
+    // WORLD-SHARE-01: file exports only under „Erweitert“ → „Notfall …“.
+    await p.locator('.live-panel details.live-advanced, .live-panel details.live-fallback').evaluateAll(ds => ds.forEach(d => { d.open = true; }));
     const download = p.waitForEvent('download');
     await p.getByRole('button', { name: 'Marker (JSON, Bauplaner-Format) herunterladen' }).click();
     const file = await download;

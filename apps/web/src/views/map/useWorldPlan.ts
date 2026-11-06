@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { applyWorldPlanOp, emptyWorldPlan } from '../../../../../packages/domain/src/index.js';
-import type { WorldPlan, WorldPlanOp } from '../../../../../packages/domain/src/index.js';
+import type { WorldItem, WorldPlan, WorldPlanOp } from '../../../../../packages/domain/src/index.js';
 import type { Repository } from '../../app/repository';
 import { WorldPlanConflictError } from '../../app/repository';
 import { errorText } from '../../app/ui';
@@ -20,6 +20,11 @@ export interface WorldPlanState {
   readonly epoch: number;
   /** Applies and saves one operation; returns its inverse, or null when it failed (error is set). */
   commit(op: WorldPlanOp): Promise<WorldPlanOp | null>;
+  /**
+   * WORLD-SHARE-01: stores entries merged with the team's Weltplan (no undo step: they are the others'
+   * changes; the local history starts anew). False when another tab saved meanwhile.
+   */
+  replace(items: readonly WorldItem[], expected: readonly WorldItem[]): Promise<boolean>;
 }
 
 export function useWorldPlan(repo: Repository): WorldPlanState {
@@ -58,5 +63,18 @@ export function useWorldPlan(repo: Repository): WorldPlanState {
     }
   }, [repo, load]);
 
-  return { plan, loaded, error, epoch, commit };
+  const replace = useCallback(async (items: readonly WorldItem[], expected: readonly WorldItem[]): Promise<boolean> => {
+    const base = current.current;
+    if (base.items !== expected) return false; // a local change came in meanwhile: merge again with it
+    try {
+      const saved = await repo.saveWorldPlan({ ...base, items: [...items] }, base.revision);
+      setPlan(saved); current.current = saved; setEpoch(n => n + 1);
+      return true;
+    } catch (e) {
+      if (e instanceof WorldPlanConflictError) { await load(); setEpoch(n => n + 1); } else setError(errorText(e));
+      return false;
+    }
+  }, [repo, load]);
+
+  return { plan, loaded, error, epoch, commit, replace };
 }

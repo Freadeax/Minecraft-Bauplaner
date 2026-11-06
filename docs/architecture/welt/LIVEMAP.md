@@ -50,3 +50,7 @@ Stand: 05.11.2026. Implementierung: `packages/domain/src/world/livemap.ts` (gesp
 **Markerdatei → Punkte.** `markersToPoints(json, items, type)` liest das eigene Format (`readLiveMapMarkerFile`) und legt je Marker einen Weltplan-Punkt (Art „Notiz“) an, als ein Rückgängig-Schritt. Bereits vorhandene Punkte (gleicher Name und Block in derselben Dimension) und Marker mit ungültiger Dimension werden übersprungen; Dateien über 4 MB werden vor dem Lesen abgewiesen. Der JSON-Export enthält jetzt neben den Projekten auch die Punkte des Weltplans.
 
 **Grenzen.** Keine Prüfung gegen einen laufenden BlueMap-/Dynmap-Server in den Tests (Abnahme KARTE-08); Zonen mit Löchern und Kreise werden nicht erzeugt.
+
+## WORLD-SHARE-01: Marker ohne Datei (06.11.2026)
+
+Die Exporte oben sind seit 0.22.0 nur noch der Notfall. Normalerweise geht der Weltplan mit fertigen Markern über den Team-Raum an das Paper-Plugin, und das Plugin schreibt sie selbst in BlueMap und Dynmap; die Kartenliste teilt sich über den Raum. Ablauf, Schnittstellen und Prüfung: [WORLD_SHARE](WORLD_SHARE.md).

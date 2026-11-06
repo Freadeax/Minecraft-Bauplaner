@@ -95,6 +95,20 @@ public record WorldMarks(String dimension, List<Site> sites, List<Path> paths, L
         return out;
     }
 
+    /**
+     * WORLD-SHARE-01: marks of one dimension from the team's shared Weltplan (Team-Raum document
+     * {@code weltplan}, all dimensions, up to 2000 entries): the entries of {@code dimension}, at most
+     * {@link #MAX_ITEMS}, checked like a website request.
+     */
+    public static WorldMarks shared(List<Object> items, String dimension) {
+        List<Object> mine = new ArrayList<>();
+        for (Object o : items) if (o instanceof Map<?, ?> m && dimension.equals(m.get("dimension")) && mine.size() < MAX_ITEMS) mine.add(o);
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("dimension", dimension);
+        body.put("items", mine);
+        return parse(body);
+    }
+
     public static WorldMarks parse(Map<String, Object> body) {
         String dimension = Json.str(body.get("dimension"), "Dimension", 200);
         if (!dimension.matches("[a-z0-9_.-]{1,64}:[a-z0-9_./-]{1,128}")) throw new Json.JsonException("Dimension ungültig");

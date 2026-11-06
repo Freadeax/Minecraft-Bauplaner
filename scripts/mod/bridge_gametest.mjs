@@ -210,6 +210,12 @@ async function live(file, loader, plan, logFile) {
     assert.ok(!('key' in raw.roomLive.body), 'Schlüssel nie in der Antwort');
     assert.equal(raw.roomAfter.body.waiting, 0, `Meldung vom Raum bestätigt: ${JSON.stringify(raw.roomAfter.body)}`);
     assert.equal(raw.roomAfter.body.sectionStates.find(x => x.id === 'sec_mauer')?.owner, 'mem_tom', 'im Spiel als eigener Abschnitt sichtbar');
+    // WORLD-SHARE-01: the team's Weltplan from the room (no request to this computer): 4 entries, 3 in the overworld.
+    assert.equal(raw.roomDoc.status, 200, JSON.stringify(raw.roomDoc));
+    assert.equal(raw.roomWorld.body.teamMarks, 4, `Weltplan aus dem Raum: ${JSON.stringify(raw.roomWorld.body)}`);
+    assert.equal(raw.roomWorld.body.marks, 3, 'nur die Einträge der eigenen Dimension');
+    assert.ok(existsSync(join(dir, 'team-weltplan.png')), 'Bild Weltplan aus dem Team-Raum');
+    assert.ok(existsSync(join(dir, 'weltplan-galerie.png')), 'Galeriebild Weltplan des Teams');
     const room = JSON.parse(readFileSync(join(dir, 'room.json'), 'utf8'));
     const events = await (await fetch(`${room.url}/v1/rooms/${room.room}/events?after=`, { headers: { Authorization: `Bearer ${room.adminKey}` } })).json();
     assert.ok(events.events.some(e => e.kind === 'section.claim' && e.by === 'mem_tom' && e.section === 'sec_mauer'), JSON.stringify(events.events));

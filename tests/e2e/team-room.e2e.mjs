@@ -9,7 +9,7 @@ import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { openSampleProject } from './start.mjs';
 import { RoomCore, MemoryStore, RoomError, cleanPresence, randomKey } from '../../services/team-room/src/core.js';
-import { teamEvent } from '../../dist/domain/src/index.js';
+import { teamEvent, buildWorldShareDoc, mapShapes } from '../../dist/domain/src/index.js';
 import { writeNbt } from '../../dist/formats/src/index.js';
 import { gzipSync } from 'node:zlib';
 import { startModSimulator } from './modSimulator.mjs';
@@ -38,7 +38,7 @@ after(async () => { await browser?.close(); await mod?.close(); server?.kill(); 
 /** The worker's routes (services/team-room/src/index.js) on top of RoomCore, for Playwright routing. */
 function fakeRooms() {
   const rooms = new Map(), sockets = new Set();
-  const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS' };
+  const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Authorization, Content-Type, If-Match', 'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS' };
   const broadcast = (id, msg) => { for (const s of sockets) if (s.room === id && s.authed) s.ws.send(JSON.stringify(msg)); };
   const presence = id => broadcast(id, { type: 'presence', members: [...sockets].filter(s => s.room === id && s.authed).map(s => s.presence) });
   const http = async route => {
@@ -76,6 +76,14 @@ function fakeRooms() {
         return json(meta);
       }
       if (rest.startsWith('scans/')) { await core.auth(key); return route.fulfill({ status: 200, headers: { ...cors, 'Content-Type': 'application/octet-stream' }, body: Buffer.from(core.getScan(rest.slice(6))) }); }
+      // WORLD-SHARE-01: shared documents (Weltplan, server web maps).
+      if (rest.startsWith('doc/') && req.method() === 'PUT') {
+        const role = await core.auth(key);
+        const meta = await core.putDoc(rest.slice(4), req.postData(), { by: url.searchParams.get('by'), ifMatch: req.headers()['if-match'] }, role);
+        broadcast(parts[2], { type: 'doc', name: meta.name, rev: meta.rev, by: meta.by });
+        return json(meta);
+      }
+      if (rest.startsWith('doc/')) { await core.auth(key); return route.fulfill({ status: 200, headers: { ...cors, 'Content-Type': 'application/json' }, body: core.getDoc(rest.slice(4), url.searchParams.get('known')) }); }
       if (rest === 'rotate' && req.method() === 'POST') {
         await core.auth(key, 'admin');
         const who = url.searchParams.get('wer') === 'server' ? 'server' : 'member', out = await core.rotate(who);
@@ -329,6 +337,35 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     const countB = Number((await b.locator('.team-head small').first().innerText()).match(/(\d+) Ereignisse/)[1]);
     assert.equal(countA, countB, 'both browsers hold the same log');
     assert.equal(countA, total, 'room holds the same log');
+    if (!REAL && viewport.width > 1000) {
+      // ---- WORLD-SHARE-01: the Weltplan of the team over the room – no file, both directions, locks kept.
+      await a.goto(`${BASE}#/karte`); await b.goto(`${BASE}#/karte`);
+      for (const x of [a, b]) {
+        await x.locator('.map-page[data-map-state=ready]').waitFor({ timeout: 20_000 });
+        await x.getByRole('region', { name: 'Weltplan im Team' }).getByText(/live über den Team-Raum · Stand/).waitFor({ timeout: 30_000 });
+      }
+      const OW = 'minecraft:overworld';
+      const markt = { kind: 'site', id: 'site_markt', name: 'Marktplatz', note: '', dimension: OW, minX: 0, minZ: 0, width: 16, length: 12, y: null, projectId: null, group: 'Dorf', locked: true };
+      const core = fake.rooms.get(roomId);
+      await core.putDoc('weltplan', JSON.stringify(buildWorldShareDoc([markt], { [OW]: mapShapes(null, [markt], OW) }, 'bld_lea')), { by: 'bld_lea', ifMatch: String(core.docMeta('weltplan')?.rev ?? 0) });
+      for (const x of [a, b]) await x.locator('.plan-row', { hasText: 'Marktplatz' }).locator('[aria-label=gesperrt]').waitFor({ timeout: 30_000 });
+      // Anna adds two points (here: from a marker file); they reach Philipp and the room, the locked site stays.
+      const panel = b.locator('.live-panel');
+      await panel.getByText('Server-Webkarte verknüpfen').click();
+      await panel.getByText('Erweitert: Vorlage, Kartennamen, Einbetten, Export').click();
+      await panel.getByText('Notfall ohne Team-Raum oder Plugin: Dateien').click();
+      const markers = { schemaVersion: 1, format: 'bauplaner-world-markers', coordinateSystem: 'minecraft-blocks', markers: [
+        { id: 'a', label: 'Brunnen', position: { x: 4, y: 64, z: 4, world: 'world', dimension: OW } },
+        { id: 'b', label: 'Mine', position: { x: -30, y: 12, z: 50, world: 'world', dimension: OW } }] };
+      await b.locator('.live-fallback').getByLabel('Markerdatei als Punkte laden').setInputFiles({ name: 'm.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(markers)) });
+      await a.locator('.plan-row', { hasText: 'Brunnen' }).waitFor({ timeout: 30_000 });
+      await a.locator('.plan-row', { hasText: 'Mine' }).waitFor();
+      await a.locator('.plan-row', { hasText: 'Marktplatz' }).waitFor();
+      const shared = JSON.parse(core.getDoc('weltplan')).doc;
+      assert.deepEqual(shared.items.map(i => i.name).sort(), ['Brunnen', 'Marktplatz', 'Mine']);
+      assert.ok(shared.shapes[OW].some(x => x.group === 'punkte' && x.label === 'Brunnen'), 'markers for the server plugin come along');
+      assert.equal(shared.items.find(i => i.id === 'site_markt').locked, true, 'lock kept');
+    }
     assert.deepEqual(A.errors, []); assert.deepEqual(B.errors, []);
   });
 }

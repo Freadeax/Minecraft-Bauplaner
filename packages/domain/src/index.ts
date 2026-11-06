@@ -175,3 +175,5 @@ export { mapShapes, markersToPoints, pointMarkers, blueMapMarkerConfig, dynmapMa
 export type { MapShape, MapShapeGroup, MapShapeOptions } from './world/liveMapExport.js';
 export { projectLinks, projectCycle, projectAfterProblem, projectLevels, projectStartCheck, projectSuccessors, projectRemoval } from './planning/projectOrder.js';
 export type { OrderProject, ProjectLink, PredecessorState, ProjectStartCheck, ProjectRemoval } from './planning/projectOrder.js';
+export { WORLD_SHARE_SCHEMA, WORLD_SHARE_FORMAT, MAP_LIST_FORMAT, WORLD_SHARE_MAX_BYTES, buildWorldShareDoc, readWorldShareDoc, worldItemKey, sameItems, mergeWorldItems, mergeShapes, buildMapListDoc, readMapListDoc, mergeMapLists } from './world/worldShare.js';
+export type { WorldShareDoc, WorldMerge, MapListDoc } from './world/worldShare.js';

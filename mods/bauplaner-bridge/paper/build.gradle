@@ -35,6 +35,9 @@ def teamWire = tasks.register('teamWireSources', Sync) {
         include 'io/github/freadeax/bauplaner/mod/live/Json.java'
         include 'io/github/freadeax/bauplaner/mod/team/TeamWire.java'
         include 'io/github/freadeax/bauplaner/mod/live/WsQueue.java'
+        // WORLD-SHARE-01: Weltplan entries and their areas, same rules as the mod (locks).
+        include 'io/github/freadeax/bauplaner/mod/live/WorldMarks.java'
+        include 'io/github/freadeax/bauplaner/mod/live/MarkAreas.java'
     }
     into layout.buildDirectory.dir('generated/teamwire')
 }

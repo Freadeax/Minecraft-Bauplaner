@@ -486,6 +486,44 @@ public final class BridgeGameTest implements FabricClientGameTest {
                 if (roomState.contains("\"status\":\"live\"") && roomState.contains("\"sections\":2")) break;
             }
             out.append(",\"roomLive\":").append(roomState);
+            // WORLD-SHARE-01 (0.22.0): a planner of the team shares the Weltplan in the room – the game shows it without
+            // any request to this computer: a locked building site over the plan, a path and a point.
+            var rj = com.google.gson.JsonParser.parseString(Files.readString(roomFile)).getAsJsonObject();
+            String roomUrl = rj.get("url").getAsString().replaceAll("/+$", ""), roomId = rj.get("room").getAsString(), roomKey = rj.get("key").getAsString();
+            String ow = "\"note\":\"\",\"dimension\":\"minecraft:overworld\"";
+            String worldDoc = "{\"schema\":1,\"format\":\"bauplaner-weltplan\",\"at\":\"2026-11-06T12:00:00Z\",\"by\":\"bld_phil\",\"items\":["
+                    + "{\"kind\":\"site\",\"id\":\"site_markt\",\"name\":\"Marktplatz\"," + ow + ",\"minX\":" + (anchor[0] - 3) + ",\"minZ\":" + (anchor[2] - 3) + ",\"width\":24,\"length\":24,\"y\":" + anchor[1] + ",\"projectId\":null,\"group\":\"Dorf\",\"locked\":true},"
+                    + "{\"kind\":\"path\",\"id\":\"path_haupt\",\"name\":\"Hauptweg\"," + ow + ",\"style\":\"strasse\",\"width\":3,\"points\":[[" + (anchor[0] - 3) + "," + (anchor[2] + 24) + "],[" + (anchor[0] + 30) + "," + (anchor[2] + 24) + "]]},"
+                    + "{\"kind\":\"point\",\"id\":\"pt_brunnen\",\"name\":\"Brunnen\"," + ow + ",\"type\":\"treffpunkt\",\"x\":" + (anchor[0] + 4) + ",\"y\":" + anchor[1] + ",\"z\":" + (anchor[2] + 22) + "},"
+                    + "{\"kind\":\"point\",\"id\":\"pt_nether\",\"name\":\"Netherportal\",\"note\":\"\",\"dimension\":\"minecraft:the_nether\",\"type\":\"portal\",\"x\":1,\"y\":70,\"z\":2}],\"shapes\":{}}";
+            var putDoc = java.net.http.HttpRequest.newBuilder(java.net.URI.create(roomUrl + "/v1/rooms/" + roomId + "/doc/weltplan?by=bld_phil")).timeout(java.time.Duration.ofSeconds(10))
+                    .header("Authorization", "Bearer " + roomKey).header("Content-Type", "application/json").PUT(java.net.http.HttpRequest.BodyPublishers.ofString(worldDoc)).build();
+            out.append(",\"roomDoc\":").append(send(context, http, putDoc));
+            String worldState = "";
+            for (int i = 0; i < 60; i++) {
+                context.waitTicks(10);
+                worldState = request(context, http, base + "/v1/status", "GET", null, token, "https://freadeax.github.io");
+                if (worldState.contains("\"teamMarks\":4") && worldState.contains("\"marks\":3")) break;
+            }
+            out.append(",\"roomWorld\":").append(worldState);
+            context.setScreen(() -> null);
+            context.waitTicks(20);
+            copy(context.takeScreenshot("bauplaner-team-weltplan"), io.resolve("team-weltplan.png"));
+            // Gallery picture for 0.22.0: the team's Weltplan from the room seen from above – the plan grey inside the
+            // locked site „Marktplatz“, path and point marks beside it; no HUD or chat.
+            var stand = context.computeOnClient(mc -> mc.player.position());
+            world.getServer().runCommand("setblock " + (anchor[0] + 9) + " " + (anchor[1] + 13) + " " + (anchor[2] - 10) + " minecraft:barrier");
+            world.getServer().runCommand("tp @a " + (anchor[0] + 9.5) + " " + (anchor[1] + 14) + " " + (anchor[2] - 9.5) + " 0 42");
+            world.getConnection().waitForChunksRender();
+            context.setScreen(() -> null);
+            context.runOnClient(mc -> mc.gui.hud.getChat().clearMessages(false));
+            context.runOnClient(mc -> { if (!mc.gui.hud.isHidden()) mc.gui.hud.toggle(); });
+            context.waitTicks(30);
+            copy(context.takeScreenshot("bauplaner-weltplan-galerie"), io.resolve("weltplan-galerie.png"));
+            context.runOnClient(mc -> { if (mc.gui.hud.isHidden()) mc.gui.hud.toggle(); });
+            world.getServer().runCommand("tp @a " + stand.x + " " + stand.y + " " + stand.z);
+            world.getServer().runCommand("setblock " + (anchor[0] + 9) + " " + (anchor[1] + 13) + " " + (anchor[2] - 10) + " minecraft:air");
+            world.getConnection().waitForChunksRender();
             context.setScreen(() -> null);
             context.waitTicks(2);
             chat(context, "/bauplaner team nehmen 2");

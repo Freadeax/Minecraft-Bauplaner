@@ -115,7 +115,7 @@ public final class HologramClient {
 
     /** End of every client tick. */
     public void tick(Minecraft mc) {
-        guarded("tick", () -> { keys.tick(mc); hologram.tick(mc); assist.tick(mc); marks.tick(mc); team.tick(mc); guides.tick(mc); });
+        guarded("tick", () -> { keys.tick(mc); hologram.tick(mc); assist.tick(mc); marks.tick(mc); link.tickShared(mc); team.tick(mc); guides.tick(mc); });
         guarded("gelaende", () -> terrain.tick(mc));
         if (openCommands && mc.gui.screen() == null) { openCommands = false; openCommands(mc); }
     }

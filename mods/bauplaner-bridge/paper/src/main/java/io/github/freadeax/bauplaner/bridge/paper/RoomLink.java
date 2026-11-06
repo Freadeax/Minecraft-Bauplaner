@@ -372,7 +372,13 @@ final class RoomLink implements TeamUplink {
         JsonObject m;
         try { m = JsonParser.parseString(text).getAsJsonObject(); } catch (RuntimeException e) { plugin.getLogger().warning(PREFIX + "unlesbare Nachricht"); return; }
         switch (String.valueOf(TeamLog.str(m, "type"))) {
-            case "welcome" -> { r.backoff = 5; r.status = "verbunden, gleicht ab …"; }
+            case "welcome" -> {
+                r.backoff = 5; r.status = "verbunden, gleicht ab …";
+                // WORLD-SHARE-01: the team's Weltplan (markers on BlueMap/Dynmap, optional lock protection).
+                WorldModule w = plugin instanceof BridgePlugin b ? b.worldModule() : null;
+                if (w != null) w.welcome(r.teamId, r.base, r.rid, r.key, m.has("docs") && m.get("docs").isJsonObject() ? m.getAsJsonObject("docs") : null);
+            }
+            case "doc" -> { WorldModule w = plugin instanceof BridgePlugin b ? b.worldModule() : null; if (w != null) w.announced(r.teamId, r.base, r.rid, r.key, m); }
             case "events" -> {
                 if (m.has("reset") && m.get("reset").getAsBoolean()) plugin.getLogger().info(PREFIX + "Raum kennt den Stand nicht mehr, gleiche ab Anfang ab.");
                 int taken = 0;

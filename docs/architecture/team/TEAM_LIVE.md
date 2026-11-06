@@ -37,6 +37,7 @@ Ein Raum gehört zu genau einem Team (`teamId`). Alle Antworten sind JSON. Grenz
 | `GET /v1/rooms/{room}/live` (WebSocket) | Client sendet zuerst `hello {key, member, device, where, after}`; der Raum antwortet `welcome` und schickt **von sich aus** alle Seiten `events {events, cursor, more}` ab `after`, danach jede neue Menge als Push. Weiter: `append {batch, events}` → `appended`, `presence {where, section?}`, `header`/`plan` (neu holen), `ping` → `pong` (genau `{"type":"ping"}`, beantwortet ohne Aufwecken des Raums; Mod und Plugin alle 30 s). Close 4401/4403 = Schlüssel ungültig/erneuert, nicht erneut versuchen |
 | `PUT/GET /v1/rooms/{room}/plan/{sha256}` | Planstand (gzip-Sicherung, höchstens 25 MB) zu einer Freigabe |
 | `PUT/GET /v1/rooms/{room}/header` | Abschnitte mit Weltboxen, Dimension, Bedarf (heute Inhalt der Serverdatei) für Plugin und Mod |
+| `PUT/GET /v1/rooms/{room}/doc/{weltplan\|karten}` | WORLD-SHARE-01: geteilte Dokumente (Weltplan mit Markern, Server-Webkarten), `rev`, `If-Match`, `?known=`, Serverschlüssel nur lesen, Push `{type:'doc'}`; siehe [WORLD_SHARE](../welt/WORLD_SHARE.md) |
 | `POST /v1/rooms/{room}/rotate?wer=member\|server` (admin) | neuer `memberKey` bzw. `serverKey`; alte Links werden ungültig, offene Verbindungen mit dem alten Schlüssel schließen mit 4403 |
 
 - **Cursor** ist die Ankunftsnummer im Raum, nicht die Ereigniszeit. Die Faltung sortiert weiter nach `(at, id)`, der Cursor sagt nur „was habe ich schon“. Damit gehen Ereignisse mit älterer Zeit nicht verloren, etwa von einem Gerät, das offline war.

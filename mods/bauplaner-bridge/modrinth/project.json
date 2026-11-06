@@ -86,6 +86,11 @@
       "file": "gallery/11-terrain-memory.png",
       "title": "Terrain memory for the planner",
       "description": "The mod remembers the terrain you have seen (only on your PC). The planner's Terrain and Landscape tabs take a building site's ground, water and biomes straight from the game, without uploading files."
+    },
+    {
+      "file": "gallery/12-team-world-plan.png",
+      "title": "The team's world plan from the team room",
+      "description": "Building sites, paths and points of the planner reach every player over the internet; the locked market square stays grey. The optional server plugin draws the same markers on BlueMap or Dynmap."
     }
   ],
   "firstVersion": "0.10.0",
@@ -150,6 +155,7 @@
         "While the game runs, a small service answers on 127.0.0.1 (port 47615 by default, reachable only from this PC) so the Bauplaner website in your browser can find the game. It answers only the website itself (freadeax.github.io or its mirror bauplaner.pages.dev) and local development pages. Plans, map markers and build state are exchanged only after you click “Allow planner” in the game (J menu).",
         "With a team room connected in the planner: an outgoing WebSocket or HTTPS connection to that room.",
         "Team lead only, on a server with the optional Bauplaner plugin and team building allowed there: the mod sends the team room address and the room's server key once over the plugin channel bauplaner:team, so the plugin connects itself to the room. Helpers never get this key.",
+        "The team's world plan (building sites, paths, zones, points, groups, locks) is read from that team room and kept in bauplaner/markierungen.json. The optional Paper plugin reads it with its server key, writes the markers into BlueMap or Dynmap on that server and keeps the last version in plugins/BauplanerBridge/team/.",
         "/bauplaner diagnose copies a diagnosis report to the clipboard.",
         "Plans, settings, the team room address and reports are stored in the game folder under bauplaner/.",
         "Terrain memory: the surface of chunks you have seen (heights, top blocks, biomes) is stored on this PC under bauplaner/gelaende/ so the planner can use your building site's terrain; /bauplaner gelaende aus switches it off, /bauplaner gelaende vergessen deletes it. It is never sent to the Minecraft server."

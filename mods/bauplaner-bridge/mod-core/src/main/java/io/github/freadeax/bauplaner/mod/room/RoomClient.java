@@ -132,6 +132,16 @@ public final class RoomClient {
     private BiConsumer<String, String> onReject = (id, why) -> { };
     private Runnable onChange = () -> { };
     private Consumer<Ask> onAsk = a -> { };
+    /** WORLD-SHARE-01: shared documents of the team this client follows (name → handler with the {@code doc} part). */
+    private final Map<String, Consumer<JsonObject>> docHandlers = new LinkedHashMap<>();
+    /** Revision of each followed document this client has handed on (0 = none yet). */
+    private final Map<String, Integer> docRevs = new java.util.HashMap<>();
+    private final java.util.Set<String> docLoading = new java.util.HashSet<>();
+    /** Largest shared document (room limit). */
+    static final int MAX_DOC = 4 * 1024 * 1024;
+    /** While polling, shared documents are asked for this often. */
+    static long docPollEveryMs = 15_000;
+    private long docPollAt;
     private String player;
     private int[] lastPos;
     private String lastDim;
@@ -153,6 +163,53 @@ public final class RoomClient {
 
     /** Requests for a recording from the planer („Aufnahme anfordern“), called on the room thread. */
     public void onAsk(Consumer<Ask> handler) { onAsk = handler; }
+
+    /**
+     * WORLD-SHARE-01: follow a shared document of the team ({@code weltplan}: the Weltplan with sites, groups
+     * and locks). The handler gets the document whenever a newer revision is in the room – after connecting,
+     * on the room's {@code doc} push and, while polling, with every poll. Runs on the client's own thread.
+     */
+    public synchronized void onDoc(String name, Consumer<JsonObject> handler) { docHandlers.put(name, handler); }
+
+    /** Revision of a followed document last handed on (0 = none). */
+    public synchronized int docRev(String name) { return docRevs.getOrDefault(name, 0); }
+
+    private void checkDocs(JsonObject revs) {
+        for (String name : docHandlers.keySet()) {
+            Integer rev = null;
+            if (revs != null && revs.has(name) && revs.get(name).isJsonPrimitive()) { try { rev = revs.get(name).getAsInt(); } catch (RuntimeException ignored) { } }
+            if (revs == null || (rev != null && rev != docRevs.getOrDefault(name, 0))) fetchDoc(name);
+        }
+    }
+
+    /** GET …/doc/NAME?known=REV; a newer document goes to its handler. */
+    private void fetchDoc(String name) {
+        Config c = config;
+        if (c == null || !docLoading.add(name)) return;
+        long gen = generation;
+        int known = docRevs.getOrDefault(name, 0);
+        HttpRequest req = HttpRequest.newBuilder(URI.create(c.url() + "/v1/rooms/" + c.room() + "/doc/" + name + (known > 0 ? "?known=" + known : "")))
+                .timeout(Duration.ofSeconds(30)).header("Authorization", "Bearer " + c.key()).header("Accept", "application/json").GET().build();
+        http.sendAsync(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)).whenComplete((res, ex) -> {
+            Consumer<JsonObject> handler;
+            JsonObject doc = null;
+            synchronized (this) {
+                docLoading.remove(name);
+                if (gen != generation || ex != null || res.statusCode() != 200 || res.body().length() > MAX_DOC) return;
+                try {
+                    JsonObject m = JsonParser.parseString(res.body()).getAsJsonObject();
+                    int rev = m.get("rev").getAsInt();
+                    if (m.has("unchanged") || rev == docRevs.getOrDefault(name, 0) || !m.has("doc") || !m.get("doc").isJsonObject()) return;
+                    docRevs.put(name, rev);
+                    doc = m.getAsJsonObject("doc");
+                } catch (RuntimeException e) { lastError = "Team-Raum: Dokument „" + name + "“ nicht lesbar"; return; }
+                handler = docHandlers.get(name);
+            }
+            if (handler != null) {
+                try { handler.accept(doc); } catch (RuntimeException e) { synchronized (this) { lastError = "Team-Raum: „" + name + "“ nicht übernommen: " + e.getMessage(); } }
+            }
+        });
+    }
 
     // ------------------------------------------------------------------ config
 
@@ -206,7 +263,7 @@ public final class RoomClient {
 
     private void reset() {
         header = null; events.clear(); eventIds.clear(); cursor = ""; log = null; state = null; dirty = true; presence = List.of();
-        reports.clear(); syncedAt = 0; polling = false; wsFails = 0;
+        reports.clear(); syncedAt = 0; polling = false; wsFails = 0; docRevs.clear();
         if (cacheFile != null) { try { Files.deleteIfExists(cacheFile); } catch (IOException ignored) { } }
     }
 
@@ -352,7 +409,12 @@ public final class RoomClient {
                 if (first) notify.accept(fromPoll ? "Team-Raum wieder über den WebSocket verbunden."
                         : "Team live über den Team-Raum" + (config.teamName() != null ? " „" + config.teamName() + "“" : "") + " – ohne Server-Datei.");
                 flushReports(true);
+                checkDocs(m.has("docs") && m.get("docs").isJsonObject() ? m.getAsJsonObject("docs") : null);
                 onChange.run();
+            }
+            case "doc" -> {
+                String name = TeamLog.str(m, "name");
+                if (name != null && docHandlers.containsKey(name)) fetchDoc(name);
             }
             case "events" -> { ingest(m); onChange.run(); }
             case "header" -> {
@@ -622,6 +684,8 @@ public final class RoomClient {
                     if (events.size() != before || m.has("reset")) onChange.run();
                 } catch (RuntimeException e) { failed("Antwort nicht lesbar: " + e.getMessage(), false, false); return; }
                 lastError = "WebSocket nicht möglich – Abgleich über HTTP";
+                // Shared documents every few polls (cheap: the room answers „unchanged“ for a known revision).
+                if (System.currentTimeMillis() - docPollAt >= docPollEveryMs) { docPollAt = System.currentTimeMillis(); checkDocs(null); }
                 // A lost POST answer leaves measurements unconfirmed: send them again now and then.
                 if (!reports.isEmpty() && System.currentTimeMillis() - lastAppendAt >= resendAfterMs) flushReports(false);
                 schedulePoll(more ? 0 : System.currentTimeMillis() - lastAppendAt < 10_000 ? pollSoonMs : pollEveryMs);

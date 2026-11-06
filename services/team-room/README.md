@@ -14,7 +14,9 @@ cd services/team-room && npx wrangler deploy
 node scripts/team/team_room_smoke.mjs https://bauplaner-team.team-room.workers.dev
 ```
 
-Protokolländerungen nur abwärtsverträglich (Planer und Paper-Plugin `RoomLink` sprechen v1).
+Protokolländerungen nur abwärtsverträglich (Planer und Paper-Plugin `RoomLink` sprechen v1). Seit WORLD-SHARE-01
+(06.11.2026) zusätzlich geteilte Dokumente `GET/PUT /v1/rooms/{room}/doc/{weltplan|karten}` (Weltplan mit Markern,
+Server-Webkarten; siehe `docs/architecture/welt/WORLD_SHARE.md`). Alte Clients ignorieren die neue Nachricht `{type:'doc'}`.
 
 ## Eigenen Raum einrichten (optional)
 

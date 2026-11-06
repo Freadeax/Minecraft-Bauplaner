@@ -41,7 +41,7 @@ import org.bukkit.scheduler.BukkitTask;
  */
 public final class BridgePlugin extends JavaPlugin implements TabExecutor {
     private static final String PREFIX = ChatColor.GOLD + "[Bauplaner] " + ChatColor.RESET;
-    private static final List<String> SUBCOMMANDS = List.of("hilfe", "plaene", "plan", "anker", "scan", "abbrechen", "status");
+    private static final List<String> SUBCOMMANDS = List.of("hilfe", "plaene", "plan", "anker", "scan", "abbrechen", "status", "weltplan");
 
     private Path root;
     private final Map<String, Plan> selected = new HashMap<>();
@@ -50,6 +50,7 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
     private TeamModule team;
     private TeamChannel channel;
     private ServerLink link;
+    private WorldModule world;
 
     @Override
     public void onEnable() {
@@ -61,6 +62,10 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
         } catch (IOException e) {
             getLogger().warning("Ordner nicht anlegbar: " + e.getMessage());
         }
+        // WORLD-SHARE-01: Weltplan from the Team-Raum (before the rooms connect, so their welcome finds it).
+        try { Files.createDirectories(root.resolve("team")); } catch (IOException ignored) { }
+        world = new WorldModule(this, root.resolve("team"));
+        world.enable();
         team = new TeamModule(this, root);
         team.enable();
         // Teamkanal für die Bauplaner-Mod (COOP-03): Spieler mit Mod sehen Abschnitte, Inhaber und Meldungen live.
@@ -77,6 +82,9 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
 
     /** Team channel to the Bauplaner mod, null when switched off in the config (for the storage module: broadcastStore). */
     TeamChannel teamChannel() { return channel; }
+
+    /** Weltplan from the Team-Raum (WORLD-SHARE-01). */
+    WorldModule worldModule() { return world; }
 
     /** Server link (LINK-02). */
     ServerLink serverLink() { return link; }
@@ -120,6 +128,7 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
             case "scan": return startScan(s, rest.length > 0 && rest[0].equalsIgnoreCase("geladen"));
             case "abbrechen": return cancel(s);
             case "status": return status(s);
+            case "weltplan": return world.command(s, label, rest);
             default: return help(s, label);
         }
     }
@@ -131,6 +140,8 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
         if (TeamModule.COMMANDS.contains(sub)) return startsWith(team.complete(sub, args).stream(), args[args.length - 1]);
         if (sub.equals("plan") && args.length == 2) return startsWith(planFiles(), args[1]);
         if (sub.equals("scan") && args.length == 2) return startsWith(Stream.of("geladen"), args[1]);
+        if (sub.equals("weltplan") && args.length == 2) return startsWith(Stream.of("sperren"), args[1]);
+        if (sub.equals("weltplan") && args.length == 3) return startsWith(Stream.of("aus", "hinweis", "sperren"), args[2]);
         if (sub.equals("anker")) {
             if (args.length == 2) return startsWith(Stream.of("hier", "~"), args[1]);
             if (args.length <= 4) return startsWith(Stream.of("~"), args[args.length - 1]);
@@ -150,6 +161,7 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
         say(s, "4) /" + label + " scan  (oder „scan geladen“: nur geladene Chunks). Die Aufnahme landet in plugins/BauplanerBridge/scans/ und wird im Tab „Bauen“ importiert.");
         say(s, "Weitere Befehle: plaene, status, abbrechen. Das Plugin verändert die Welt nie.");
         say(s, "Gemeinsam bauen: /" + label + " team (Abschnitte nehmen, fertig melden, Notizen) – /" + label + " team hilfe.");
+        say(s, "Weltplan des Teams (kommt über den Team-Raum, Marker auf BlueMap/Dynmap, Sperren): /" + label + " weltplan.");
         return true;
     }
 

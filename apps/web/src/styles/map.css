@@ -181,3 +181,10 @@
 /* PROJ-04: Reihenfolge zwischen Projekten */
 .map-order{border-left:3px solid var(--map-order,#c9a2ff);padding:2px 0 2px 8px;margin:6px 0;font-size:12px}
 .map-order p{margin:2px 0}
+/* WORLD-SHARE-01: Weltplan im Team */
+.world-share{display:grid;gap:6px;background:var(--panel,#101e28);border:1px solid var(--line);border-radius:12px;padding:10px 16px;font-size:13px}
+.world-share .small{font-size:11px}
+.world-share-head{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
+.world-share select{max-width:100%}
+.live-fallback{margin-top:8px}
+.live-fallback summary{font-size:12px}

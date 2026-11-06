@@ -4,11 +4,13 @@ main: io.github.freadeax.bauplaner.bridge.paper.BridgePlugin
 api-version: '${apiVersion}'
 description: Liest den Bereich eines Bauplans aus der Serverwelt und schreibt eine Aufnahme für den Minecraft-Bauplaner. Verändert die Welt nie.
 author: Freadeax
+# WORLD-SHARE-01: write markers into these web maps when present (never required).
+softdepend: [BlueMap, dynmap]
 website: https://freadeax.github.io/Minecraft-Bauplaner/#/mod
 commands:
   bauplaner:
     description: Bauplan laden, Anker setzen und den Baufortschritt aufnehmen.
-    usage: /bauplaner [plaene|plan|anker|scan|abbrechen|status|team|abschnitte|nehmen|abgeben|fertig|zeigen|notiz|notizen|geliefert|sammle|zuweisen|pruefen|rolle|lager|nachweis|beitrag|uebergeben|annehmen|ablehnen|abwesend|zurueck]
+    usage: /bauplaner [plaene|plan|anker|scan|abbrechen|status|weltplan|team|abschnitte|nehmen|abgeben|fertig|zeigen|notiz|notizen|geliefert|sammle|zuweisen|pruefen|rolle|lager|nachweis|beitrag|uebergeben|annehmen|ablehnen|abwesend|zurueck]
     aliases: [bp]
     permission: bauplaner.use
 permissions:
@@ -32,4 +34,7 @@ permissions:
     default: true
   bauplaner.lager.verwalten:
     description: Lagerkisten markieren, einstellen und siegeln ohne Teamrolle, vom Lagerschutz ausgenommen.
+    default: op
+  bauplaner.weltplan.umgehen:
+    description: Im Weltplan gesperrte Bauplätze, Zonen und Wege trotzdem verändern (wenn weltplan.sperren auf sperren steht).
     default: op

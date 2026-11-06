@@ -6,7 +6,8 @@ import type { WorldItem, WorldPoint } from '../../../../../packages/domain/src/w
 import { DIMENSIONS, dimensionLabel, liveMapPositionOf, liveMapTemplateFromLink, mapMarkers, placementsJson } from '../../../../../packages/domain/src/world/worldmap.js';
 import type { MapEntry, WorldMapView } from '../../../../../packages/domain/src/world/worldmap.js';
 import { download, errorText } from '../../app/ui';
-import { LIVE_MAP_KIND_LABEL as KIND_LABEL, LIVE_MAP_PRESETS, templateProblem, useSavedLiveMaps } from './liveMapConfig';
+import { LIVE_MAP_KIND_LABEL as KIND_LABEL, LIVE_MAP_PRESETS, templateProblem } from './liveMapConfig';
+import type { SavedLiveMap } from '../../../../../packages/domain/src/world/livemap.js';
 import type { LiveMapSettings } from './liveMapConfig';
 
 function linkFor(settings: LiveMapSettings, entry: MapEntry): string | null {
@@ -47,14 +48,17 @@ async function readJsonFile(file: File, max = 4 * 1024 * 1024): Promise<unknown>
   try { return JSON.parse(await file.text()); } catch { throw new Error('Die Datei ist kein gültiges JSON'); }
 }
 
-export function LiveMapPanel({ settings, onChange, map, dimension, items = [], onImportPoints }: {
+export function LiveMapPanel({ settings, onChange, map, dimension, items = [], onImportPoints, saved, setSaved, shared }: {
   settings: LiveMapSettings; onChange: (s: LiveMapSettings) => void; map: WorldMapView | null; dimension: string;
+  /** Saved server web maps (shared in the Team-Raum with WORLD-SHARE-01). */
+  saved: SavedLiveMap[]; setSaved: (m: SavedLiveMap[]) => void;
+  /** Whether the Weltplan goes over a Team-Raum (then the plugin draws the markers itself). */
+  shared: boolean;
   /** Weltplan entries (MAP-02 export of sites, paths, zones and points). */
   items?: readonly WorldItem[];
   /** Adds points from a marker file to the Weltplan (one undo step); resolves false when nothing was saved. */
   onImportPoints?: (points: WorldPoint[], label: string) => Promise<boolean>;
 }) {
-  const [saved, setSaved] = useSavedLiveMaps();
   const [pasted, setPasted] = useState('');
   const [target, setTarget] = useState(dimension);
   const [message, setMessage] = useState('');
@@ -139,7 +143,7 @@ export function LiveMapPanel({ settings, onChange, map, dimension, items = [], o
 
   return <details className="live-panel">
     <summary><b>Server-Webkarte verknüpfen</b> <span className="muted">{ready ? `· ${settings.name}${host ? ` (${host})` : ''} verknüpft` : '· BlueMap, Dynmap, Pl3xMap · optional'}</span></summary>
-    <p className="muted">Hat euer Server eine Karte im Browser (z. B. BlueMap)? Dann bekommt jedes Projekt einen Knopf, der eure Server-Karte genau an seiner Stelle öffnet. Das ist unabhängig von der Spielverbindung oben. Es wird nichts an den Server gesendet; die Einstellung bleibt nur in diesem Browser.</p>
+    <p className="muted">Hat euer Server eine Karte im Browser (z. B. BlueMap)? Dann bekommt jedes Projekt einen Knopf, der eure Server-Karte genau an seiner Stelle öffnet. {shared ? 'Die verknüpfte Karte und die Kartenliste gehen über den Team-Raum an alle im Team.' : 'Ohne Team-Raum bleibt die Einstellung nur in diesem Browser.'}</p>
     <ol className="live-steps">
       <li>Eure Server-Karte in einem anderen Tab öffnen und einmal irgendwo in die Karte klicken.</li>
       <li>Die Adresse aus der Adresszeile kopieren und hier einfügen. Fertig.</li>
@@ -172,18 +176,14 @@ export function LiveMapPanel({ settings, onChange, map, dimension, items = [], o
       })}</ul>}
       <div className="button-row">
         <button className="secondary" disabled={!ready} onClick={saveCurrent}>Aktuelle Karte speichern</button>
-        <button className="secondary" disabled={!saved.length} onClick={() => download('bauplaner-karten.json', JSON.stringify(createLiveMapTargetsFile(saved), null, 2), 'application/json')}>Kartenliste herunterladen</button>
-        <label className="file-button">Kartenliste laden<input type="file" accept=".json,application/json" aria-label="Kartenliste laden" onChange={e => { void importTargets(e.target.files?.[0]); e.target.value = ''; }} /></label>
       </div>
+      <p className="muted small">{shared ? 'Die Liste ist im Team geteilt: Wer eine Karte speichert oder entfernt, ändert sie für alle.' : 'Mit einem Team-Raum (oben „Weltplan im Team“) teilt sich die Liste mit allen im Team.'}</p>
     </section>
-    <section className="live-export" aria-label="Für die Server-Karte exportieren">
-      <h4>Für die Server-Karte exportieren <small className="muted">{dimensionLabel(dimension)} · {shapes.length} Marker</small></h4>
-      <p className="muted small">Projekte (als Körper mit Höhe), Bauplätze, Wege, Zonen und Punkte dieser Dimension als echte Marker eurer Karte. BlueMap: Block für die Kartenkonfiguration. Dynmap: Befehle für die Serverkonsole. squaremap und Pl3xMap haben keine Markerdatei, nur Erweiterungen über ihre Schnittstelle.</p>
-      <div className="button-row">
-        <button className="secondary" disabled={!shapes.length} onClick={exportBlueMap}>BlueMap-Marker (.conf)</button>
-        <button className="secondary" disabled={!shapes.length} onClick={exportDynmap}>Dynmap-Befehle (.txt)</button>
-        {onImportPoints && <label className="file-button">Markerdatei als Punkte laden<input type="file" accept=".json,application/json" aria-label="Markerdatei als Punkte laden" onChange={e => { void importMarkers(e.target.files?.[0]); e.target.value = ''; }} /></label>}
-      </div>
+    <section className="live-export" aria-label="Marker auf der Server-Karte">
+      <h4>Marker auf der Server-Karte <small className="muted">{dimensionLabel(dimension)} · {shapes.length} Marker</small></h4>
+      <p className="muted small">{shared
+        ? 'Projekte, Bauplätze, Wege, Zonen und Punkte gehen über den Team-Raum an das Paper-Plugin. Ist BlueMap oder Dynmap auf dem Server installiert, zeichnet das Plugin die Marker selbst und hält sie aktuell – nichts herunterladen oder einfügen.'
+        : 'Mit einem Team-Raum (oben „Weltplan im Team“) und dem Paper-Plugin auf dem Server zeichnet das Plugin die Marker auf BlueMap oder Dynmap selbst.'} squaremap und Pl3xMap haben keine Markerdatei, nur Erweiterungen über ihre Schnittstelle.</p>
     </section>
     <details className="live-advanced"><summary>Erweitert: Vorlage, Kartennamen, Einbetten, Export</summary>
       <div className="live-presets" role="group" aria-label="Vorlagen">
@@ -199,10 +199,20 @@ export function LiveMapPanel({ settings, onChange, map, dimension, items = [], o
       </div>
       <div className="button-row">
         <label className="chip-check"><input type="checkbox" checked={settings.embed} onChange={e => onChange({ ...settings, embed: e.target.checked })} /> Karte hier einbetten</label>
-        <button className="secondary" disabled={!map?.entries.length} onClick={exportMarkers}>Marker (JSON, Bauplaner-Format) herunterladen</button>
-        <button className="secondary" disabled={!map?.entries.length} onClick={() => map && download(`bauplaner-weltlage-${dimensionLabel(dimension).toLowerCase()}.json`, placementsJson(map), 'application/json')}>Lagen (JSON) herunterladen</button>
       </div>
-      <p className="muted small">Die JSON-Markerdatei ist das eigene Bauplaner-Austauschformat (Projekte und Punkte), keine Plugin-Konfiguration; fertige Marker gibt es oben unter „Für die Server-Karte exportieren“. Die Vorlagen für BlueMap, Dynmap und Pl3xMap sind aus deren Quelltext abgeleitet.</p>
+      <p className="muted small">Die Vorlagen für BlueMap, Dynmap und Pl3xMap sind aus deren Quelltext abgeleitet.</p>
+      <details className="live-fallback"><summary>Notfall ohne Team-Raum oder Plugin: Dateien</summary>
+        <p className="muted small">Nur wenn der Server kein Bauplaner-Plugin hat oder kein Team-Raum erreichbar ist. Der normale Weg läuft über das Internet (oben „Weltplan im Team“).</p>
+        <div className="button-row">
+          <button className="secondary" disabled={!shapes.length} onClick={exportBlueMap}>BlueMap-Marker (.conf)</button>
+          <button className="secondary" disabled={!shapes.length} onClick={exportDynmap}>Dynmap-Befehle (.txt)</button>
+          {onImportPoints && <label className="file-button">Markerdatei als Punkte laden<input type="file" accept=".json,application/json" aria-label="Markerdatei als Punkte laden" onChange={e => { void importMarkers(e.target.files?.[0]); e.target.value = ''; }} /></label>}
+          <button className="secondary" disabled={!map?.entries.length} onClick={exportMarkers}>Marker (JSON, Bauplaner-Format) herunterladen</button>
+          <button className="secondary" disabled={!map?.entries.length} onClick={() => map && download(`bauplaner-weltlage-${dimensionLabel(dimension).toLowerCase()}.json`, placementsJson(map), 'application/json')}>Lagen (JSON)</button>
+          <button className="secondary" disabled={!saved.length} onClick={() => download('bauplaner-karten.json', JSON.stringify(createLiveMapTargetsFile(saved), null, 2), 'application/json')}>Kartenliste herunterladen</button>
+          <label className="file-button">Kartenliste laden<input type="file" accept=".json,application/json" aria-label="Kartenliste laden" onChange={e => { void importTargets(e.target.files?.[0]); e.target.value = ''; }} /></label>
+        </div>
+      </details>
     </details>
     {settings.embed && openUrl && (mixed
       ? <p className="notice" role="note">Eure Karte läuft über <code>http://</code>. Eine <code>https</code>-Seite wie diese darf sie nicht einbetten, der Browser blockiert das. <a href={openUrl} target="_blank" rel="noreferrer noopener">{settings.name} in neuem Tab öffnen ↗</a></p>

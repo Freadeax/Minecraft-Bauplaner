@@ -5,7 +5,14 @@
 
 export const PROTOCOL = 'team-room';
 export const VERSION = 1;
-export const LIMITS = Object.freeze({ events: 20_000, eventBytes: 4096, batch: 200, page: 500, planBytes: 25 * 1024 * 1024, planChunk: 1024 * 1024, batchesKept: 2000, scanBytes: 8 * 1024 * 1024, scansKept: 12 });
+export const LIMITS = Object.freeze({ events: 20_000, eventBytes: 4096, batch: 200, page: 500, planBytes: 25 * 1024 * 1024, planChunk: 1024 * 1024, batchesKept: 2000, scanBytes: 8 * 1024 * 1024, scansKept: 12, docBytes: 4 * 1024 * 1024 });
+
+/**
+ * WORLD-SHARE-01: shared documents of the team that are no events – the Weltplan with its map markers
+ * (`weltplan`) and the list of server web maps (`karten`). The room keeps the newest version of each, counts
+ * a revision up and tells every connection; the content stays as sent (the room never interprets it).
+ */
+export const DOC_NAMES = Object.freeze(['weltplan', 'karten']);
 
 const ID = /^[A-Za-z0-9_.:-]{1,64}$/;
 const KIND = /^[a-z][a-z0-9.]{1,39}$/;
@@ -84,7 +91,9 @@ export class RoomCore {
   info() {
     const r = this.store.getMeta('room');
     if (!r) throw new RoomError(404, 'raum-fehlt', 'Diesen Team-Raum gibt es nicht (mehr).');
-    return { protocol: PROTOCOL, version: VERSION, room: r.room, teamId: r.teamId, name: r.name, createdAt: r.createdAt, events: this.store.count(), cursor: String(this.store.lastSeq()), header: !!this.store.getMeta('header') };
+    const docs = {};
+    for (const n of DOC_NAMES) { const d = this.store.getMeta(`doc:${n}`); if (d) docs[n] = d.rev; }
+    return { protocol: PROTOCOL, version: VERSION, room: r.room, teamId: r.teamId, name: r.name, createdAt: r.createdAt, events: this.store.count(), cursor: String(this.store.lastSeq()), header: !!this.store.getMeta('header'), docs };
   }
 
   /**
@@ -204,6 +213,47 @@ export class RoomCore {
     let o = 0; for (const c of chunks) { out.set(new Uint8Array(c), o); o += c.byteLength; }
     return out;
   }
+
+  /**
+   * WORLD-SHARE-01: stores a new version of a shared document. Planner keys (member, admin) write, the server
+   * key only reads. `ifMatch` (the revision the writer built on) turns a lost race into 409, so nobody
+   * overwrites a newer state unseen; without it the newest write wins.
+   */
+  async putDoc(name, text, { by, ifMatch } = {}, role = 'member') {
+    if (!DOC_NAMES.includes(name)) throw new RoomError(404, 'dokument-name', `Unbekanntes Dokument (erlaubt: ${DOC_NAMES.join(', ')}).`);
+    if (role === 'server') throw new RoomError(403, 'nur-lesen', 'Der Server liest geteilte Dokumente nur.');
+    const bytes = new TextEncoder().encode(text);
+    if (!bytes.byteLength || bytes.byteLength > LIMITS.docBytes) throw new RoomError(413, 'dokument-groesse', 'Dokument fehlt oder ist größer als 4 MB.');
+    let body;
+    try { body = JSON.parse(text); } catch { throw new RoomError(400, 'json', 'Kein gültiges JSON.'); }
+    if (!body || typeof body !== 'object' || Array.isArray(body)) throw new RoomError(400, 'dokument-form', 'Ein Dokument ist ein JSON-Objekt.');
+    const old = this.store.getMeta(`doc:${name}`);
+    const have = old?.rev ?? 0;
+    if (ifMatch !== undefined && ifMatch !== null && ifMatch !== '' && Number(ifMatch) !== have)
+      throw new RoomError(409, 'dokument-veraltet', `Inzwischen hat jemand anderes eine neuere Fassung gespeichert (Stand ${have}).`);
+    const meta = { name, rev: have + 1, at: new Date().toISOString(), by: typeof by === 'string' && ID.test(by) ? by : '?', bytes: bytes.byteLength, sha256: await sha256(bytes) };
+    const chunks = [];
+    for (let i = 0; i < bytes.byteLength; i += LIMITS.planChunk) chunks.push(bytes.slice(i, i + LIMITS.planChunk));
+    this.store.putPlan(`doc:${name}`, chunks);
+    this.store.setMeta(`doc:${name}`, meta);
+    return meta;
+  }
+  docMeta(name) {
+    if (!DOC_NAMES.includes(name)) throw new RoomError(404, 'dokument-name', `Unbekanntes Dokument (erlaubt: ${DOC_NAMES.join(', ')}).`);
+    return this.store.getMeta(`doc:${name}`) ?? null;
+  }
+  /**
+   * The document as answer text `{name, rev, at, by, bytes, sha256, doc}`; with `known` equal to the stored
+   * revision only `{name, rev, unchanged: true}` (cheap polling). 404 while nobody has shared it yet.
+   */
+  getDoc(name, known) {
+    const meta = this.docMeta(name);
+    if (!meta) throw new RoomError(404, 'dokument-fehlt', 'Dieses Dokument hat noch niemand im Team geteilt.');
+    if (known !== undefined && known !== null && known !== '' && Number(known) === meta.rev) return JSON.stringify({ name, rev: meta.rev, unchanged: true });
+    const text = new TextDecoder().decode(this.getPlanChunks(`doc:${name}`));
+    return `${JSON.stringify(meta).slice(0, -1)},"doc":${text}}`;
+  }
+  docs() { return DOC_NAMES.map(n => this.store.getMeta(`doc:${n}`)).filter(Boolean); }
 
   /** New invitation key (who = 'member') or new server key (who = 'server'); old connections with it are closed by the caller. */
   async rotate(who = 'member') {

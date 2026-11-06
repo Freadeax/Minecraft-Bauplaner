@@ -48,3 +48,10 @@ lager:
   pruefen-beim-laden: true
   # Abweichungen und fehlende Kisten im Chat an Baumeister und Bauleitung melden (online und beim Betreten).
   meldung-an-baumeister: true
+
+# Weltplan des Teams (WORLD-SHARE-01): kommt über den Team-Raum, sobald der Server mit ihm verbunden ist – keine Datei.
+# Ist BlueMap oder Dynmap installiert, schreibt das Plugin Projekte, Bauplätze, Wege, Zonen und Punkte selbst als Marker.
+weltplan:
+  # Im Planer gesperrte Bauplätze, Zonen und Wege: aus (kein Schutz), hinweis (Chatzeile, Bauen erlaubt) oder sperren
+  # (Setzen, Abbauen und Eimer verhindert; bauplaner.weltplan.umgehen ausgenommen). Ändern: /bauplaner weltplan sperren …
+  sperren: aus

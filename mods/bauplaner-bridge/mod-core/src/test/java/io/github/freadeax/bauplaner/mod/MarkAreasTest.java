@@ -84,4 +84,20 @@ class MarkAreasTest {
         assertEquals(0, check.count(both)[Verdict.OK.ordinal()]);
         assertEquals(List.of(new Materials.Line("minecraft:stone", 1, 2)), Materials.of(check, west));
     }
+
+    /** WORLD-SHARE-01 (0.22.0): the team's Weltplan from the Team-Raum holds every dimension and up to 2000 entries. */
+    @Test
+    void sharedWeltplanIsCutPerDimension() {
+        StringBuilder items = new StringBuilder();
+        for (int i = 0; i < 700; i++) items.append(i == 0 ? "" : ",").append("{\"kind\":\"point\",\"id\":\"p").append(i).append("\",\"name\":\"P").append(i)
+                .append("\",\"note\":\"\",\"dimension\":\"minecraft:overworld\",\"type\":\"ziel\",\"x\":").append(i).append(",\"y\":64,\"z\":0}");
+        items.append(",{\"kind\":\"site\",\"id\":\"n\",\"name\":\"Netherplatz\",\"note\":\"\",\"dimension\":\"minecraft:the_nether\",\"minX\":0,\"minZ\":0,\"width\":4,\"length\":4,\"y\":null,\"projectId\":null,\"locked\":true}");
+        List<Object> all = Json.arr(Json.parse("[" + items + "]"), "items");
+        WorldMarks over = WorldMarks.shared(all, "minecraft:overworld");
+        assertEquals(WorldMarks.MAX_ITEMS, over.size(), "at most one request's worth per dimension");
+        WorldMarks nether = WorldMarks.shared(all, "minecraft:the_nether");
+        assertEquals(1, nether.size());
+        assertTrue(MarkAreas.locked(nether).contains(2, 2));
+        assertEquals(0, WorldMarks.shared(all, "minecraft:the_end").size());
+    }
 }

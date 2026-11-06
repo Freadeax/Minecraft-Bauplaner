@@ -12,7 +12,7 @@ function cors(request, env) {
   const extra = (env.ALLOWED_ORIGINS ?? '').split(',').map(s => s.trim()).filter(Boolean);
   const ok = [...ALLOWED_ORIGINS, ...extra].some(o => origin === o || origin.startsWith(`${o}:`));
   return { 'Access-Control-Allow-Origin': ok ? origin : ALLOWED_ORIGINS[0], 'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
-    'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Max-Age': '86400', Vary: 'Origin' };
+    'Access-Control-Allow-Headers': 'Authorization, Content-Type, If-Match', 'Access-Control-Max-Age': '86400', Vary: 'Origin' };
 }
 const json = (data, status, headers) => new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', ...headers } });
 const bearer = request => (request.headers.get('Authorization') ?? '').replace(/^Bearer\s+/i, '');
@@ -147,6 +147,19 @@ export class TeamRoom extends DurableObject {
         }
         await this.core.auth(bearer(request));
         return new Response(this.core.getScan(id), { status: 200, headers: { 'Content-Type': 'application/octet-stream' } });
+      }
+      // WORLD-SHARE-01: shared documents (Weltplan with markers, list of server web maps).
+      if (path === 'docs' && request.method === 'GET') { await this.core.auth(bearer(request)); return json({ docs: this.core.docs() }, 200); }
+      if (path.startsWith('doc/')) {
+        const name = path.slice(4);
+        if (request.method === 'PUT') {
+          const role = await this.core.auth(bearer(request));
+          const meta = await this.core.putDoc(name, await request.text(), { by: url.searchParams.get('by'), ifMatch: request.headers.get('If-Match')?.replace(/"/g, '') }, role);
+          this.broadcast({ type: 'doc', name, rev: meta.rev, by: meta.by, at: meta.at });
+          return json(meta, 200);
+        }
+        await this.core.auth(bearer(request));
+        return new Response(this.core.getDoc(name, url.searchParams.get('known')), { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
       }
       if (path === 'rotate' && request.method === 'POST') {
         await this.core.auth(bearer(request), 'admin');

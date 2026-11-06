@@ -39,7 +39,9 @@ import { chunkImage } from './terrainLayer';
 import { areaAround, storeSurvey } from '../world/surveys';
 import { PlacementForm } from './PlacementForm';
 import { LiveMapPanel, LiveMapLink, liveMapUrlAt } from './LiveMapPanel';
-import { useLiveMapSettings } from './liveMapConfig';
+import { useLiveMapSettings, useSavedLiveMaps } from './liveMapConfig';
+import { useWorldShare } from './useWorldShare';
+import { WorldSharePanel } from './WorldSharePanel';
 import { computeMap } from './transport';
 import { projectTerrain, projectTerrainDimension } from '../world/designs';
 import '../../styles/map.css';
@@ -264,6 +266,9 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
 
   // ------------------------------------------------------------ MAP-03: Weltplan and live game
   const items = useMemo(() => itemsOf(wp.plan, dimension), [wp.plan, dimension]);
+  // WORLD-SHARE-01: Weltplan, map markers and server web maps over the Team-Raum.
+  const [savedMaps, setSavedMaps] = useSavedLiveMaps();
+  const share = useWorldShare({ projects, items: wp.plan.items, loaded: wp.loaded, map, dimension, replace: wp.replace, savedMaps, setSavedMaps, live, setLive });
   // The editor shows one entry; with several selected the selection bar takes over.
   const item = selection.length === 1 ? items.find(i => i.id === selectedItem) ?? null : null;
   const status = game.status, player = status?.player ?? null;
@@ -931,7 +936,8 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
         </section>}
         {!entry && project && <p className="muted">„{project.name}“ liegt in einer anderen Dimension oder ist nicht platziert.</p>}
 
-        <LiveMapPanel settings={live} onChange={setLive} map={map} dimension={dimension} items={wp.plan.items}
+        <WorldSharePanel share={share} />
+        <LiveMapPanel settings={live} onChange={setLive} map={map} dimension={dimension} items={wp.plan.items} saved={savedMaps} setSaved={setSavedMaps} shared={!!share.room}
           onImportPoints={(points, label) => change({ label, steps: [{ kind: 'plan', op: { kind: 'batch', label, ops: points.map(item => ({ kind: 'add' as const, item })) } }] })} />
       </section>
     </div>

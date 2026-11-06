@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T13:37:29.153Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T14:07:27.429Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-06T13:37:29.153Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 6 |
 | 🚧 In Arbeit | 7 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 92 |
+| 🧩 Implementiert · Abnahme offen | 93 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -28,7 +28,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 24 | 1 | 24 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 0 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
-| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 13 | 0 | 13 | 0 |
+| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 14 | 0 | 14 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 12 | 0 | 10 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 4 | 0 |
@@ -129,6 +129,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [COOP-11](#coop-11) | Verlauf verdichten | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Module und Systeme komplex ausarbeiten“ | TEAMBAU-28: einen echten Teamstand verdichten und mit einem Mitspieler abgleichen. |
 | [LINK-04](#link-04) | Planer | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Verbindung ohne Server-Datei neu bauen“ | Testplan-Bereich LINK durchgehen. |
 | [LINK-05](#link-05) | Zweiter Weg über den Team-Raum | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Verbindung ohne Server-Datei neu bauen“ | Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern. |
+| [WORLD-SHARE-01](#world-share-01) | Weltplan und Server-Karte nur über den Team-Raum | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Weltplan und Server-Karte über den Team-Raum“ | Mit dem Paper-Plugin und BlueMap oder Dynmap prüfen, ob die Marker des Weltplans ohne Datei auf der Server-Karte erscheinen und gesperrte Bauplätze geschützt sind (KARTE-10..12). |
 | [COOP-08](#coop-08) | Ertragskisten | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Module und Systeme komplex ausarbeiten“ | LAGER-01…09 mit echten Spielern. |
 
 <a id="bereich-groesse"></a>
@@ -301,6 +302,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **FALLBACK-01** · Abnahme LINK-09: mit Team live kurz das Internet trennen, Minecraft neu starten, Teamstand und „Baustand holen (bester Weg)“ prüfen.
 - **LINK-10** · Abnahme LINK-10: offline in mehreren Abschnitten bauen, wieder verbinden – alle Messungen genau einmal im Planer; mit Plugin bleibt die Raumverbindung stehen.
 - **LINK-11** · Abnahme LINK-12: als Bauleitung „Mein Spiel verbinden“, mit der Mod auf den Server – der Server verbindet sich selbst mit dem Team-Raum, Abschnittsschutz greift.
+- **WORLD-SHARE-01** · Mit dem Paper-Plugin und BlueMap oder Dynmap prüfen, ob die Marker des Weltplans ohne Datei auf der Server-Karte erscheinen und gesperrte Bauplätze geschützt sind (KARTE-10..12).
 
 ### Auf echten Geräten und Browsern
 
@@ -579,6 +581,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [EDIT-06](#edit-06) | Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten | 🧩 Implementiert · Abnahme offen | 4/5 | EDIT-01, EDIT-02, EDIT-03, EDIT-05, ENTITY-01 | ausstehend | ausstehend |
 | [STRUCT-01](#struct-01) | Dateistruktur sauber neu ordnen: Fachordner im Kern und in der Oberfläche, Skripte, Tests und Doku nach Bereich, Ordnerkarte docs/STRUKTUR.md | 🧩 Implementiert · Abnahme offen | 4/4 | — | ausstehend | ausstehend |
 | [CORE-04](#core-04) | Planer-Kernmodule prüfen und überarbeiten: Verbindungen zwischen Projekt, Planung, Werkstatt, Import/Export und Speicher sauber, gefundene Fehler behoben | 🧩 Implementiert · Abnahme offen | 4/5 | ARCH-02, PROJ-04, EDIT-06 | ausstehend | ausstehend |
+| [WORLD-SHARE-01](#world-share-01) | Weltplan und Server-Karte nur über den Team-Raum: Weltplan mit Bauplätzen, Gruppen und Sperren an alle Mods und das Paper-Plugin, Plugin schreibt BlueMap-/Dynmap-Marker selbst, Kartenliste geteilt, Dateiwege nur als Notfall | 🧩 Implementiert · Abnahme offen | 4/5 | MAP-02, MAP-04 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
 
@@ -3592,6 +3595,30 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/unit/core/core-links.test.mjs](../tests/unit/core/core-links.test.mjs) — Verweisgraph, Datencheck, Löschen mit Nachfolgern/Bauplätzen, Rückgängig mit Teamereignissen.; [tests/unit/building/block-content-edit.test.mjs](../tests/unit/building/block-content-edit.test.mjs) — Verschobener Gegenstand behält Komponenten, formatierte Namen/Zeilen bleiben.; [tests/unit/editor/editor-patterns.test.mjs](../tests/unit/editor/editor-patterns.test.mjs) — Schablone behält Ausstattung.
 
 **Dateiumfang:** `packages/domain/src/data/planGraph.ts`, `packages/domain/src/data/integrity.ts`, `packages/domain/src/planning/projectOrder.ts`, `packages/domain/src/core/project.ts`, `packages/domain/src/data/backup.ts`, `packages/domain/src/editor/stencils.ts`, `packages/voxel/src/blockContentEdit.ts`, `packages/formats/src/structure.ts`, `apps/web/src/app/router.ts`, `apps/web/src/views/ProjectsView.tsx`, `apps/web/src/views/project/session.ts`, `apps/web/src/views/project/BlocksTab.tsx`, `apps/web/src/editor/BlockEditor.tsx`, `apps/web/src/editor/LayerGrid.tsx`, `apps/web/src/editor/WorkshopPage.tsx`, `tests/unit/core/core-links.test.mjs`. **Abhängigkeiten:** ARCH-02, PROJ-04, EDIT-06. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### WORLD-SHARE-01
+
+**Weltplan und Server-Karte nur über den Team-Raum: Weltplan mit Bauplätzen, Gruppen und Sperren an alle Mods und das Paper-Plugin, Plugin schreibt BlueMap-/Dynmap-Marker selbst, Kartenliste geteilt, Dateiwege nur als Notfall** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Weltplan und Server-Karte über den Team-Raum“) · Zuständiger Thread: „Weltplan und Server-Karte über den Team-Raum“ · Aktualisiert: 2026-11-06T14:07:27.429Z
+
+- [x] WORLD-SHARE-01-S01: Team-Raum: geteilte Dokumente weltplan und karten (Revision, If-Match/409, ?known, Serverschlüssel nur lesen, Ankündigung per WebSocket).
+- [x] WORLD-SHARE-01-S02: Planer: „Weltplan im Team“ auf der Weltkarte, Dreiwege-Abgleich je Eintrag, Marker je Dimension mitgeschickt, Kartenliste geteilt; Datei-Knöpfe nur noch unter „Notfall ohne Team-Raum oder Plugin“.
+- [x] WORLD-SHARE-01-S03: Mod 0.22.0: Weltplan des Teams aus dem Raum im Spiel (Markierungen, Gruppen, gesperrte Flächen grau) ohne Planer-Verbindung.
+- [x] WORLD-SHARE-01-S04: Paper-Plugin 0.22.0: Marker selbst in BlueMap (API 2) und Dynmap (Marker-API), Zwischenspeicher für Neustart, Sperrschutz aus/hinweis/sperren, /bauplaner weltplan.
+- [ ] WORLD-SHARE-01-S05: Abnahme KARTE-10..12 durch Philipp (zwei Browser, Server-Karte, Sperrschutz im Spiel).
+
+**Abnahme:** Kein Herunterladen und Einfügen im normalen Ablauf: Planer, Mods und Plugin tauschen Weltplan und Kartenliste nur über den Team-Raum. Gleichzeitige Änderungen gehen nicht verloren (If-Match, Abgleich je Eintrag), Sperren bleiben erhalten. Echte Paper-Server mit BlueMap 5.29 und Dynmap 3.7 zeigen die Marker, auch nach Neustart.
+
+**Nächste Aktion:** Abnahme KARTE-10..12 im Spiel und auf der Server-Karte.
+
+**Nur Philipp:** Im Spiel an deinem PC: Mit dem Paper-Plugin und BlueMap oder Dynmap prüfen, ob die Marker des Weltplans ohne Datei auf der Server-Karte erscheinen und gesperrte Bauplätze geschützt sind (KARTE-10..12).
+
+**Prüfstand:** Einheits-, Browser-, Spiel- und Echtserver-Tests grün; Abnahme durch Philipp offen (S05).
+
+**Nachweise:** [tests/unit/team/team-room.test.mjs](../tests/unit/team/team-room.test.mjs) — Geteilte Dokumente: Revision, 409, unchanged, Serverschlüssel 403, Ankündigung.; [tests/unit/world/world-share.test.mjs](../tests/unit/world/world-share.test.mjs) — Dreiwege-Abgleich, Marker je Dimension, Kartenliste.; [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — Zwei Browser: Raum-Weltplan mit Sperre kommt an, Punkte des einen erscheinen beim anderen und im Raum.; [scripts/mod/test_bridge_paper_world.sh](../scripts/mod/test_bridge_paper_world.sh) — Echter Paper-Server 26.3 + BlueMap 5.29 und 1.21.4 + Dynmap 3.7-beta-8: Marker aus dem Raum, Push, Neustart.; [mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java](../mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java) — Spieltest: Weltplan des Teams aus dem Raum im Hologramm (teamMarks 4, Bild team-weltplan.png).
+
+**Dateiumfang:** `services/team-room/src/core.js`, `services/team-room/src/index.js`, `packages/domain/src/world/worldShare.ts`, `apps/web/src/views/map/useWorldShare.ts`, `apps/web/src/views/map/WorldSharePanel.tsx`, `apps/web/src/views/map/LiveMapPanel.tsx`, `apps/web/src/views/map/WorldMapView.tsx`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WorldMarks.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/WorldModule.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/WorldShare.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/MapMarkers.java`, `scripts/mod/bridge_paperworld.mjs`, `docs/architecture/welt/WORLD_SHARE.md`. **Abhängigkeiten:** MAP-02, MAP-04. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

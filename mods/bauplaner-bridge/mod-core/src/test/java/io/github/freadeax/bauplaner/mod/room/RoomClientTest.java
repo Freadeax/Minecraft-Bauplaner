@@ -91,9 +91,13 @@ class RoomClientTest {
         // The planner (Lea) adds Tom to the team before Tom's game connects.
         post(http, base, room, admin, "{\"batch\":\"b1\",\"events\":[" + event("tev_join", "2026-11-04T10:00:00.000Z", "mem_lea", "member.join", ",\"member\":\"mem_tom\",\"name\":\"Tom\"") + "]}");
 
+        // WORLD-SHARE-01: a planner already shared the Weltplan – the game gets it right after connecting.
+        assertEquals(200, putDoc(http, base, room, member, "{\"schema\":1,\"format\":\"bauplaner-weltplan\",\"items\":[{\"kind\":\"point\",\"id\":\"p1\",\"name\":\"Tor\"}]}").statusCode());
         List<String> said = new ArrayList<>();
         TeamSync sync = new TeamSync(Files.createTempDirectory("team"), "test", System::currentTimeMillis, said::add);
         RoomClient client = new RoomClient(null, said::add);
+        java.util.concurrent.LinkedBlockingQueue<JsonObject> docs = new java.util.concurrent.LinkedBlockingQueue<>();
+        client.onDoc("weltplan", docs::add);
         sync.room(client);
         client.use(RoomClient.parse(Map.of("url", base, "room", room, "key", member, "member", "mem_tom", "teamName", "Burg am See")));
         for (int i = 0; i < 100 && !(client.live() && sync.state() != null); i++) Thread.sleep(100);
@@ -102,6 +106,17 @@ class RoomClientTest {
         assertNotNull(s);
         assertEquals(TeamState.Source.ROOM, s.source());
         assertEquals("mem_tom", s.me());
+        JsonObject first = docs.poll(10, java.util.concurrent.TimeUnit.SECONDS);
+        assertNotNull(first, "Weltplan nach dem Verbinden geholt");
+        assertTrue(first.toString().contains("\"Tor\""), first.toString());
+        assertEquals(1, client.docRev("weltplan"));
+        // A new version arrives by push; the server key may only read.
+        assertEquals(200, putDoc(http, base, room, admin, "{\"schema\":1,\"format\":\"bauplaner-weltplan\",\"items\":[{\"kind\":\"point\",\"id\":\"p2\",\"name\":\"Brunnen\"}]}").statusCode());
+        JsonObject second = docs.poll(10, java.util.concurrent.TimeUnit.SECONDS);
+        assertNotNull(second, "neue Fassung per Push");
+        assertTrue(second.toString().contains("\"Brunnen\""), second.toString());
+        assertEquals(2, client.docRev("weltplan"));
+        assertEquals(403, putDoc(http, base, room, created.get("serverKey").getAsString(), "{\"a\":1}").statusCode());
 
         // Tom takes section 2 in the game: the event goes to the room, the room confirms, the state shows it.
         String text = sync.act("section.claim", new java.util.LinkedHashMap<>(Map.of("section", "sec_b")), "Abschnitt 2 übernommen");
@@ -161,6 +176,11 @@ class RoomClientTest {
         ws.abort();
         client.forget();
         client.close();
+    }
+
+    private static HttpResponse<String> putDoc(HttpClient http, String base, String room, String key, String body) throws Exception {
+        return http.send(HttpRequest.newBuilder(URI.create(base + "/v1/rooms/" + room + "/doc/weltplan?by=mem_lea")).header("Content-Type", "application/json").header("Authorization", "Bearer " + key)
+                .PUT(HttpRequest.BodyPublishers.ofString(body)).build(), HttpResponse.BodyHandlers.ofString());
     }
 
     private static byte[] gzip(byte[] raw) throws Exception {

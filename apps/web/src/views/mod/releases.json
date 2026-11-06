@@ -891,6 +891,53 @@
       "releasedAt": "2026-11-06",
       "sourceCommit": "ac0f970bd5f212a9280f095d06a6535dcfc3a800",
       "tested": "Paper 1.21.11: echter Server mit Team-Raum (wrangler dev) – Raum-Übergabe durch die Mod (link.room), Nicht-OP abgewiesen, Kopplung, Steuerung über den Raum (06.11.2026)"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.22.0.jar",
+      "modVersion": "0.22.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 585542,
+      "sha256": "94e0bed91a5fe75df618170e8911336a7b3137fcd796149a328c058625201202",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "8a15b479a5502fd6e6a88b3b37445826a269c8bf",
+      "tested": "Spieltest fabric 26.3: Weltplan des Teams aus dem Team-Raum (WORLD-SHARE-01)"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.22.0.jar",
+      "modVersion": "0.22.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 581353,
+      "sha256": "f270650179fe368c6e653e5e2c813e8d39283348ec6d6b283ef9c5cdc8af06fb",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "8a15b479a5502fd6e6a88b3b37445826a269c8bf",
+      "tested": "Spieltest neoforge 26.3: Weltplan des Teams aus dem Team-Raum (WORLD-SHARE-01)"
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.22.0.jar",
+      "modVersion": "0.22.0",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 307703,
+      "sha256": "fec6b3dc4ea613ff10657cc6677064b44304cac479ea3f09349da62b27e2c16c",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "8a15b479a5502fd6e6a88b3b37445826a269c8bf",
+      "tested": "Echter Paper-Server 26.3 + BlueMap 5.29 und 1.21.4 + Dynmap 3.7: Marker aus dem Team-Raum, Sperrschutz (WORLD-SHARE-01)"
     }
   ]
 }

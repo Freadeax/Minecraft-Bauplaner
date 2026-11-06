@@ -2,6 +2,21 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.22.0 – 2026-11-06
+
+**The team's world plan over the internet / Der Weltplan des Teams über das Internet**
+
+- New: the planner shares the world plan (building sites, paths, zones, points, groups and locks) through the team room. Every mod in the team shows it in the game – marks, groups and locked areas in grey – without a planner on the same computer and without any file.
+- Optional server plugin: draws the markers of the world plan itself on BlueMap (5.x, API 2) and Dynmap (3.7) and keeps them current whenever someone changes the plan. Nothing to download, copy or paste on the server any more. After a restart the markers are back at once.
+- Optional server plugin: protection for locked entries, `/bauplaner weltplan sperren aus|hinweis|sperren` (default off). "hinweis" writes a chat line, "sperren" prevents placing, breaking and buckets there; permission `bauplaner.weltplan.umgehen` is exempt.
+- `/bauplaner weltplan` on the server shows version, author, entries, markers, locks and the map plugins found.
+- The list of saved server web maps is shared through the team room as well. The old file exports stay only as an emergency fallback in the planner.
+
+- Neu: Der Planer teilt den Weltplan (Bauplätze, Wege, Zonen, Punkte, Gruppen und Sperren) über den Team-Raum. Jede Mod im Team zeigt ihn im Spiel – Markierungen, Gruppen und gesperrte Flächen grau – ohne Planer auf demselben Rechner und ohne Datei.
+- Freiwilliges Server-Plugin: zeichnet die Marker des Weltplans selbst auf BlueMap (5.x, API 2) und Dynmap (3.7) und hält sie aktuell, sobald jemand den Plan ändert. Auf dem Server muss nichts mehr heruntergeladen, kopiert oder eingefügt werden. Nach einem Neustart sind die Marker sofort wieder da.
+- Freiwilliges Server-Plugin: Schutz gesperrter Einträge, `/bauplaner weltplan sperren aus|hinweis|sperren` (Standard aus). „hinweis“ schreibt eine Chatzeile, „sperren“ verhindert dort Setzen, Abbauen und Eimer; die Berechtigung `bauplaner.weltplan.umgehen` ist ausgenommen.
+- `/bauplaner weltplan` auf dem Server zeigt Stand, Urheber, Einträge, Marker, Sperren und die gefundenen Karten-Plugins.
+- Auch die Liste der gespeicherten Server-Webkarten teilt sich über den Team-Raum. Die alten Datei-Exporte bleiben im Planer nur noch als Notfall.
 ## 0.21.0 – 2026-11-06
 
 **The server gets the team over the internet / Der Server bekommt das Team über das Internet**

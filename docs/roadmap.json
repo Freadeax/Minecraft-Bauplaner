@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T13:37:29.153Z",
+  "updatedAt": "2026-11-06T14:07:27.429Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -11004,6 +11004,109 @@
           "text": "Projekt mit Nachfolger und Bauplatz löschen; Blockeditor mit Änderungen verlassen; Truhe mit verzaubertem Schwert umsortieren (CORE-04-S05)."
         }
       ]
+    },
+    {
+      "id": "WORLD-SHARE-01",
+      "title": "Weltplan und Server-Karte nur über den Team-Raum: Weltplan mit Bauplätzen, Gruppen und Sperren an alle Mods und das Paper-Plugin, Plugin schreibt BlueMap-/Dynmap-Marker selbst, Kartenliste geteilt, Dateiwege nur als Notfall",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Weltplan und Server-Karte über den Team-Raum“)",
+      "dependencies": [
+        "MAP-02",
+        "MAP-04"
+      ],
+      "scope": [
+        "services/team-room/src/core.js",
+        "services/team-room/src/index.js",
+        "packages/domain/src/world/worldShare.ts",
+        "apps/web/src/views/map/useWorldShare.ts",
+        "apps/web/src/views/map/WorldSharePanel.tsx",
+        "apps/web/src/views/map/LiveMapPanel.tsx",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WorldMarks.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/WorldModule.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/WorldShare.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/MapMarkers.java",
+        "scripts/mod/bridge_paperworld.mjs",
+        "docs/architecture/welt/WORLD_SHARE.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "WORLD-SHARE-01-S01",
+          "title": "Team-Raum: geteilte Dokumente weltplan und karten (Revision, If-Match/409, ?known, Serverschlüssel nur lesen, Ankündigung per WebSocket).",
+          "done": true
+        },
+        {
+          "id": "WORLD-SHARE-01-S02",
+          "title": "Planer: „Weltplan im Team“ auf der Weltkarte, Dreiwege-Abgleich je Eintrag, Marker je Dimension mitgeschickt, Kartenliste geteilt; Datei-Knöpfe nur noch unter „Notfall ohne Team-Raum oder Plugin“.",
+          "done": true
+        },
+        {
+          "id": "WORLD-SHARE-01-S03",
+          "title": "Mod 0.22.0: Weltplan des Teams aus dem Raum im Spiel (Markierungen, Gruppen, gesperrte Flächen grau) ohne Planer-Verbindung.",
+          "done": true
+        },
+        {
+          "id": "WORLD-SHARE-01-S04",
+          "title": "Paper-Plugin 0.22.0: Marker selbst in BlueMap (API 2) und Dynmap (Marker-API), Zwischenspeicher für Neustart, Sperrschutz aus/hinweis/sperren, /bauplaner weltplan.",
+          "done": true
+        },
+        {
+          "id": "WORLD-SHARE-01-S05",
+          "title": "Abnahme KARTE-10..12 durch Philipp (zwei Browser, Server-Karte, Sperrschutz im Spiel).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Kein Herunterladen und Einfügen im normalen Ablauf: Planer, Mods und Plugin tauschen Weltplan und Kartenliste nur über den Team-Raum.",
+        "Gleichzeitige Änderungen gehen nicht verloren (If-Match, Abgleich je Eintrag), Sperren bleiben erhalten.",
+        "Echte Paper-Server mit BlueMap 5.29 und Dynmap 3.7 zeigen die Marker, auch nach Neustart."
+      ],
+      "next": "Abnahme KARTE-10..12 im Spiel und auf der Server-Karte.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/unit/team/team-room.test.mjs",
+          "note": "Geteilte Dokumente: Revision, 409, unchanged, Serverschlüssel 403, Ankündigung."
+        },
+        {
+          "path": "tests/unit/world/world-share.test.mjs",
+          "note": "Dreiwege-Abgleich, Marker je Dimension, Kartenliste."
+        },
+        {
+          "path": "tests/e2e/team-room.e2e.mjs",
+          "note": "Zwei Browser: Raum-Weltplan mit Sperre kommt an, Punkte des einen erscheinen beim anderen und im Raum."
+        },
+        {
+          "path": "scripts/mod/test_bridge_paper_world.sh",
+          "note": "Echter Paper-Server 26.3 + BlueMap 5.29 und 1.21.4 + Dynmap 3.7-beta-8: Marker aus dem Raum, Push, Neustart."
+        },
+        {
+          "path": "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+          "note": "Spieltest: Weltplan des Teams aus dem Raum im Hologramm (teamMarks 4, Bild team-weltplan.png)."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Einheits-, Browser-, Spiel- und Echtserver-Tests grün; Abnahme durch Philipp offen (S05)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-06T14:07:27.429Z",
+      "area": "TEAM",
+      "thread": "Weltplan und Server-Karte über den Team-Raum",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Mit dem Paper-Plugin und BlueMap oder Dynmap prüfen, ob die Marker des Weltplans ohne Datei auf der Server-Karte erscheinen und gesperrte Bauplätze geschützt sind (KARTE-10..12)."
+        }
+      ],
+      "orphans": []
     }
   ],
   "events": [
@@ -23093,6 +23196,75 @@
           "done": 4,
           "total": 5,
           "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T14:07:27.429Z",
+      "kind": "progress",
+      "items": [
+        "WORLD-SHARE-01"
+      ],
+      "summary": "Weltplan und Kartenliste über den Team-Raum: Mods im Team und Paper-Plugin (BlueMap/Dynmap-Marker, Sperrschutz), Datei-Wege nur als Notfall (Mod 0.22.0)",
+      "files": [
+        "apps/web/src/styles/map.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/map/LiveMapPanel.tsx",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "apps/web/src/views/map/WorldSharePanel.tsx",
+        "apps/web/src/views/map/useWorldPlan.ts",
+        "apps/web/src/views/map/useWorldShare.ts",
+        "apps/web/src/views/mod/releases.json",
+        "docs/TESTING.md",
+        "docs/architecture/team/TEAM_LIVE.md",
+        "docs/architecture/welt/LIVEMAP.md",
+        "docs/architecture/welt/WORLD_SHARE.md",
+        "docs/testing/TESTPLAN.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.22.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.22.0.jar",
+        "downloads/mod/bauplaner-bridge-paper-0.22.0.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WorldMarks.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/MarkAreasTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java",
+        "mods/bauplaner-bridge/modrinth/DESCRIPTION.md",
+        "mods/bauplaner-bridge/modrinth/gallery/12-team-world-plan.png",
+        "mods/bauplaner-bridge/modrinth/project.json",
+        "mods/bauplaner-bridge/paper/build.gradle",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/MapMarkers.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/WorldModule.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/WorldShare.java",
+        "mods/bauplaner-bridge/paper/src/main/resources/config.yml",
+        "mods/bauplaner-bridge/paper/src/main/resources/plugin.yml",
+        "mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/WorldShareTest.java",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/world/worldShare.ts",
+        "scripts/mod/bridge_gametest.mjs",
+        "scripts/mod/bridge_paperworld.mjs",
+        "scripts/mod/test_bridge_paper_world.sh",
+        "services/team-room/README.md",
+        "services/team-room/src/core.js",
+        "services/team-room/src/index.js",
+        "tests/e2e/livemap-export.e2e.mjs",
+        "tests/e2e/team-room.e2e.mjs",
+        "tests/e2e/worldmap.e2e.mjs",
+        "tests/unit/team/team-room.test.mjs",
+        "tests/unit/world/world-share.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "WORLD-SHARE-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme KARTE-10..12 im Spiel und auf der Server-Karte."
         }
       ]
     }

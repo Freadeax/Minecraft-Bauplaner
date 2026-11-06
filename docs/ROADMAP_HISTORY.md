@@ -7363,3 +7363,66 @@ LINK-11: Alles über das Internet – Mod 0.21.0 übergibt den Team-Raum der Bau
 |---|---|---:|---|
 | GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
 
+## 2026-11-06T14:07:27.429Z · progress
+
+**Aufgaben:** WORLD-SHARE-01
+
+Weltplan und Kartenliste über den Team-Raum: Mods im Team und Paper-Plugin (BlueMap/Dynmap-Marker, Sperrschutz), Datei-Wege nur als Notfall (Mod 0.22.0)
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| WORLD-SHARE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme KARTE-10..12 im Spiel und auf der Server-Karte. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/styles/map.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/map/LiveMapPanel.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/map/WorldSharePanel.tsx`
+- `apps/web/src/views/map/useWorldPlan.ts`
+- `apps/web/src/views/map/useWorldShare.ts`
+- `apps/web/src/views/mod/releases.json`
+- `docs/TESTING.md`
+- `docs/architecture/team/TEAM_LIVE.md`
+- `docs/architecture/welt/LIVEMAP.md`
+- `docs/architecture/welt/WORLD_SHARE.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.22.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.22.0.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.22.0.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WorldMarks.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/MarkAreasTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java`
+- `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
+- `mods/bauplaner-bridge/modrinth/gallery/12-team-world-plan.png`
+- `mods/bauplaner-bridge/modrinth/project.json`
+- `mods/bauplaner-bridge/paper/build.gradle`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/MapMarkers.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/WorldModule.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/WorldShare.java`
+- `mods/bauplaner-bridge/paper/src/main/resources/config.yml`
+- `mods/bauplaner-bridge/paper/src/main/resources/plugin.yml`
+- `mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/WorldShareTest.java`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/world/worldShare.ts`
+- `scripts/mod/bridge_gametest.mjs`
+- `scripts/mod/bridge_paperworld.mjs`
+- `scripts/mod/test_bridge_paper_world.sh`
+- `services/team-room/README.md`
+- `services/team-room/src/core.js`
+- `services/team-room/src/index.js`
+- `tests/e2e/livemap-export.e2e.mjs`
+- `tests/e2e/team-room.e2e.mjs`
+- `tests/e2e/worldmap.e2e.mjs`
+- `tests/unit/team/team-room.test.mjs`
+- `tests/unit/world/world-share.test.mjs`
+

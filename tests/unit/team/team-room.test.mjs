@@ -175,3 +175,28 @@ test('headerFingerprint ignores createdAt, members and plan, follows sections an
   assert.notEqual(headerFingerprint({ ...base, sections: [...base.sections, { id: 's2', name: 'Dach', boxes: [] }] }), same, 'new section');
   assert.notEqual(headerFingerprint({ ...base, need: [['minecraft:stone', 3]] }), same);
 });
+
+test('WORLD-SHARE-01: shared documents – revisions, If-Match, server reads only, cheap polling, size', async () => {
+  const room = new RoomCore(new MemoryStore());
+  await room.create({ room: 'r_docs01', teamId: 'team_docs', name: 'Welt' });
+  assert.deepEqual(room.info().docs, {});
+  assert.throws(() => room.getDoc('weltplan'), /noch niemand/);
+  await assert.rejects(() => room.putDoc('geheim', '{}'), /Unbekanntes Dokument/);
+  await assert.rejects(() => room.putDoc('weltplan', '[1]'), /JSON-Objekt/);
+  await assert.rejects(() => room.putDoc('weltplan', '{"a":1}', {}, 'server'), /nur/);
+  const m1 = await room.putDoc('weltplan', '{"schema":1,"items":[]}', { by: 'bld_a' });
+  assert.equal(m1.rev, 1); assert.equal(m1.by, 'bld_a');
+  const full = JSON.parse(room.getDoc('weltplan'));
+  assert.equal(full.rev, 1); assert.deepEqual(full.doc, { schema: 1, items: [] });
+  assert.deepEqual(JSON.parse(room.getDoc('weltplan', '1')), { name: 'weltplan', rev: 1, unchanged: true });
+  await assert.rejects(() => room.putDoc('weltplan', '{"schema":1}', { ifMatch: '0' }), e => e.status === 409);
+  const m2 = await room.putDoc('weltplan', '{"schema":1,"x":2}', { ifMatch: '1', by: 'bld_b' });
+  assert.equal(m2.rev, 2);
+  assert.deepEqual(room.info().docs, { weltplan: 2 });
+  await assert.rejects(() => room.putDoc('karten', `{"a":"${'x'.repeat(LIMITS.docBytes)}"}`), /4 MB/);
+  // Bigger than one chunk: stored in pieces, read back whole.
+  const big = JSON.stringify({ items: 'y'.repeat(LIMITS.planChunk + 10) });
+  await room.putDoc('karten', big);
+  assert.equal(JSON.parse(room.getDoc('karten')).doc.items.length, LIMITS.planChunk + 10);
+  assert.deepEqual(room.docs().map(d => d.name), ['weltplan', 'karten']);
+});

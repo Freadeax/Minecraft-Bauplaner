@@ -56,17 +56,23 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await saved.getByRole('listitem').filter({ hasText: 'Dynmap' }).getByRole('button', { name: 'Aktiv' }).waitFor();
     assert.equal(await saved.getByRole('listitem').count(), 2);
 
+    // WORLD-SHARE-01: the file ways are only an emergency, folded away under „Erweitert“ → „Notfall …“.
+    const ex = panel.getByRole('region', { name: 'Marker auf der Server-Karte' });
+    await ex.getByText(/zeichnet das Plugin die Marker auf BlueMap oder Dynmap selbst/).waitFor();
+    assert.equal(await panel.getByRole('button', { name: 'Dynmap-Befehle (.txt)' }).isVisible(), false, 'no file button in plain sight');
+    await panel.getByText('Erweitert: Vorlage, Kartennamen, Einbetten, Export').click();
+    await panel.getByText('Notfall ohne Team-Raum oder Plugin: Dateien').click();
+    const fb = panel.locator('.live-fallback');
     // Share the list as a file.
     let dl = p.waitForEvent('download');
-    await saved.getByRole('button', { name: 'Kartenliste herunterladen' }).click();
+    await fb.getByRole('button', { name: 'Kartenliste herunterladen' }).click();
     const list = JSON.parse(await text(await dl));
     assert.equal(list.format, 'bauplaner-live-maps');
     assert.deepEqual(list.maps.map(m => m.name), ['Dynmap', 'BlueMap']);
 
     // Dynmap commands use the Dynmap world name of the active map.
-    const ex = panel.getByRole('region', { name: 'Für die Server-Karte exportieren' });
     dl = p.waitForEvent('download');
-    await ex.getByRole('button', { name: 'Dynmap-Befehle (.txt)' }).click();
+    await fb.getByRole('button', { name: 'Dynmap-Befehle (.txt)' }).click();
     const cmds = await text(await dl);
     assert.match(cmds, /^dmarker addset id:bauplaner-projekte "Bauplaner: Projekte" hide:false$/m);
     assert.match(cmds, /^dmarker addarea id:projekt_\S+ ".+" set:bauplaner-projekte .* ybottom:-?\d+ ytop:-?\d+$/m);
@@ -76,7 +82,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await saved.getByRole('listitem').filter({ hasText: 'BlueMap' }).getByRole('button', { name: 'Verwenden' }).click();
     await saved.getByRole('listitem').filter({ hasText: 'BlueMap' }).getByRole('button', { name: 'Aktiv' }).waitFor();
     dl = p.waitForEvent('download');
-    await ex.getByRole('button', { name: 'BlueMap-Marker (.conf)' }).click();
+    await fb.getByRole('button', { name: 'BlueMap-Marker (.conf)' }).click();
     const conf = await text(await dl);
     assert.match(conf, /^marker-sets: \{$/m);
     assert.match(conf, /type: "extrude"/);
@@ -86,11 +92,11 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
       { id: 'a', label: 'Dorf am Fluss', position: { x: 40, y: 70, z: -20, world: 'world', dimension: 'minecraft:overworld' } },
       { id: 'b', label: 'Mine', position: { x: -30, y: 12, z: 50, world: 'world', dimension: 'minecraft:overworld' } }] };
     const upload = { name: 'marker.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(markerFile)) };
-    await ex.getByLabel('Markerdatei als Punkte laden').setInputFiles(upload);
+    await fb.getByLabel('Markerdatei als Punkte laden').setInputFiles(upload);
     await panel.getByText(/2 Marker als Punkte \(Notiz\) in den Weltplan übernommen/).waitFor();
     await p.getByRole('status').filter({ hasText: '2 Marker als Punkte übernommen' }).waitFor();
     await ex.getByText(/· 3 Marker$/).waitFor();
-    await ex.getByLabel('Markerdatei als Punkte laden').setInputFiles(upload);
+    await fb.getByLabel('Markerdatei als Punkte laden').setInputFiles(upload);
     await panel.getByText(/Keine neuen Marker: 2 schon vorhanden/).waitFor();
     await p.getByRole('button', { name: 'Rückgängig' }).click();
     await p.getByRole('status').filter({ hasText: 'Rückgängig gemacht' }).waitFor();
@@ -102,7 +108,9 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await p.locator('.live-panel').getByText('Server-Webkarte verknüpfen').click();
     const saved2 = p.getByRole('region', { name: 'Gespeicherte Karten' });
     await saved2.getByRole('button', { name: 'Karte „Dynmap“ entfernen' }).click();
-    await saved2.getByLabel('Kartenliste laden').setInputFiles({ name: 'karten.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(list)) });
+    await p.locator('.live-panel').getByText('Erweitert: Vorlage, Kartennamen, Einbetten, Export').click();
+    await p.locator('.live-panel').getByText('Notfall ohne Team-Raum oder Plugin: Dateien').click();
+    await p.locator('.live-fallback').getByLabel('Kartenliste laden').setInputFiles({ name: 'karten.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(list)) });
     await p.locator('.live-panel').getByText(/1 Karte\(n\) übernommen, 1 übersprungen/).waitFor();
     assert.equal(await saved2.getByRole('listitem').count(), 2);
 

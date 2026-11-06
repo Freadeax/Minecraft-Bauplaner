@@ -334,7 +334,8 @@ public final class LiveLink implements LiveLinkServer.Handler {
                 // GAME-07-S11 (0.19.0): chosen Weltplan group and planned blocks inside locked areas.
                 b.append("],\"group\":").append(hologram.group() == null ? "null" : Json.quote(hologram.group())).append(",\"locked\":").append(hologram.lockedBlocks()).append('}');
             } else b.append(",\"hologram\":null");
-            return b.append(",\"marks\":").append(marks.size()).append('}').toString();
+            // WORLD-SHARE-01 (0.22.0): entries of the team's Weltplan that came over the Team-Raum (all dimensions).
+            return b.append(",\"marks\":").append(marks.size()).append(",\"teamMarks\":").append(sharedCount).append('}').toString();
         });
     }
 
@@ -539,11 +540,67 @@ public final class LiveLink implements LiveLinkServer.Handler {
         return new LiveLinkServer.Binary(r.fileName(), r.bytes());
     }
 
+    // ------------------------------------------------------------------ WORLD-SHARE-01: Weltplan from the Team-Raum
+
+    /** All entries of the team's shared Weltplan (every dimension), null before the first one arrived. */
+    private volatile List<Object> sharedItems;
+    /** Dimension the shared marks were last cut for. */
+    private volatile String sharedDim;
+    private volatile int sharedCount;
+
+    /** Entries of the team's Weltplan in the room (0 = none yet). */
+    public int sharedCount() { return sharedCount; }
+
+    /** A new version of the team's Weltplan (room thread): cut for the player's dimension and shown. */
+    void sharedWorld(com.google.gson.JsonObject doc) {
+        if (!"bauplaner-weltplan".equals(doc.has("format") ? doc.get("format").getAsString() : null)) throw new IllegalArgumentException("kein geteilter Weltplan");
+        List<Object> items = Json.arr(Json.obj(Json.parse(doc.toString()), "Weltplan").get("items"), "Einträge");
+        if (items.size() > 2000) throw new IllegalArgumentException("mehr als 2000 Einträge");
+        sharedItems = items;
+        sharedCount = items.size();
+        Minecraft mc = Minecraft.getInstance();
+        mc.execute(() -> {
+            String dim = mc.level == null ? marks.dimension() : McCompat.dimension(mc.level);
+            if (dim == null || dim.isEmpty()) dim = "minecraft:overworld";
+            applyShared(dim, true);
+        });
+    }
+
+    /** Every tick: after a dimension change the shared marks of the new dimension are shown. */
+    void tickShared(Minecraft mc) {
+        if (sharedItems == null || mc.level == null) return;
+        String dim = McCompat.dimension(mc.level);
+        if (!dim.equals(sharedDim)) applyShared(dim, false);
+    }
+
+    private void applyShared(String dim, boolean announce) {
+        List<Object> items = sharedItems;
+        if (items == null) return;
+        WorldMarks next;
+        try { next = WorldMarks.shared(items, dim); } catch (RuntimeException e) { sharedDim = dim; return; }
+        sharedDim = dim;
+        marks = next;
+        hiddenLayers.retainAll(next.layers().keySet());
+        refreshAreas();
+        Map<String, Object> body = new java.util.LinkedHashMap<>();
+        body.put("items", items);
+        try {
+            Files.createDirectories(root);
+            Files.writeString(root.resolve("markierungen.json"), "{\"dimension\":" + Json.quote(dim) + ",\"items\":" + itemsText(body) + "}", StandardCharsets.UTF_8);
+        } catch (IOException ignored) { }
+        if (announce) {
+            Minecraft mc = Minecraft.getInstance();
+            McCompat.overlay(mc, Component.literal("Bauplaner: Weltplan des Teams – " + next.size() + " Markierungen" + (next.lockedCount() > 0 ? ", " + next.lockedCount() + " gesperrt" : "")));
+        }
+    }
+
     /** Marks of the last session, so the player sees them again without opening the website. */
     public void loadMarks() {
         try {
             String text = Files.readString(root.resolve("markierungen.json"), StandardCharsets.UTF_8);
-            marks = WorldMarks.parse(Json.obj(Json.parse(text), "Markierungen"));
+            Map<String, Object> body = Json.obj(Json.parse(text), "Markierungen");
+            // WORLD-SHARE-01: the stored team Weltplan may hold every dimension (more than one request's limit).
+            marks = WorldMarks.shared(Json.arr(body.get("items"), "Einträge"), Json.str(body.get("dimension"), "Dimension", 200));
             refreshAreas();
         } catch (IOException | RuntimeException ignored) { }
     }
@@ -588,6 +645,9 @@ public final class LiveLink implements LiveLinkServer.Handler {
         this.team = team;
         team.recorder(this::recordToRoom);
         var room = team.sync().room();
+        // WORLD-SHARE-01: the team's Weltplan comes over the Team-Raum too – every player of the team sees the
+        // sites, groups and locks, not only the one whose planner is open on this computer.
+        if (room != null) room.onDoc("weltplan", this::sharedWorld);
         // LINK-07: „Aufnahme anfordern“ in the planner – the game records its loaded chunks and puts the file into the room.
         if (room != null) room.onAsk(ask -> {
             var plan = hologram.plan();
