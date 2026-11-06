@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T16:29:23.694Z",
+  "updatedAt": "2026-11-06T16:36:09.947Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -8512,7 +8512,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T14:23:13.593Z",
+      "updatedAt": "2026-11-06T16:36:09.947Z",
       "area": "MODRINTH",
       "thread": "Mod auf Modrinth veröffentlichen",
       "philipp": [],
@@ -24149,6 +24149,24 @@
           "done": 5,
           "total": 6,
           "next": "Abnahme MOD-25 bis MOD-28 im Spiel."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T16:36:09.947Z",
+      "kind": "progress",
+      "items": [
+        "GAME-09"
+      ],
+      "summary": "0.23.0 auf Modrinth (Fabric, NeoForge, Paper) mit Galeriebildern Seitenmenü und Meldungskarten",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 4,
+          "total": 5,
+          "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
         }
       ]
     }

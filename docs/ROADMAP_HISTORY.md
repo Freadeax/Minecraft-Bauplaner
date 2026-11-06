@@ -7846,3 +7846,13 @@ Mod-Kartenstil verweist auf das Planer-Design-System UI-03 (docs/architecture/pl
 
 - `docs/architecture/mod/MOD_HOLOGRAM.md`
 
+## 2026-11-06T16:36:09.947Z · progress
+
+**Aufgaben:** GAME-09
+
+0.23.0 auf Modrinth (Fabric, NeoForge, Paper) mit Galeriebildern Seitenmenü und Meldungskarten
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
+
