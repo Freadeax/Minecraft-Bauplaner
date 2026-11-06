@@ -34,6 +34,10 @@ test('Checklisten: Fall öffnen, bewerten, Notiz; Zusammenfassung und Haken übe
   await p.getByRole('heading', { name: 'Alles einmal durchspielen' }).waitFor();
   const areas = p.locator('.tp-area');
   assert.ok(await areas.count() >= 8);
+  // Drei Teile, Bereiche zugeklappt; die Sprungleiste öffnet einen Bereich.
+  assert.deepEqual(await p.locator('.tp-part-title').evaluateAll(hs => hs.map(h => h.firstChild.textContent.trim())), ['Teil 1 · Nur im Browser', 'Teil 2 · Mit Minecraft', 'Teil 3 · Mit Paper-Server']);
+  assert.equal(await p.locator('.tp-case').count(), 0);
+  await p.locator('.tp-jump').getByRole('button', { name: /^Start, Bedienung und Sicherung/ }).click();
   const first = p.locator('.tp-case[data-case="START-01"]');
   await first.locator('.tp-case-title').click();
   await first.getByText('Erwartet:').waitFor();
@@ -46,9 +50,28 @@ test('Checklisten: Fall öffnen, bewerten, Notiz; Zusammenfassung und Haken übe
   await p.getByRole('heading', { name: 'Alles einmal durchspielen' }).waitFor();
   assert.equal(await p.locator('.tp-case[data-case="START-01"]').getAttribute('class'), 'tp-case tp-ok');
   assert.equal(await p.locator('.tp-case[data-case="START-02"] input').inputValue(), 'Name verschwand', 'Fehlerfall bleibt aufgeklappt mit Notiz');
+  await p.getByRole('button', { name: 'Alle aufklappen' }).click();
+  const all = await p.locator('.tp-case').count();
+  assert.ok(all >= 90 && all <= 110, `${all} Fälle`);
   await p.getByLabel('Nur Kernfälle zeigen').check();
   assert.equal(await p.locator('.tp-case[data-level=vertieft]').count(), 0);
-  assert.ok(await p.locator('.tp-case[data-level=kern]').count() > 20);
+  assert.ok(await p.locator('.tp-case[data-level=kern]').count() > 30);
+  await p.getByLabel('Nur Kernfälle zeigen').uncheck();
+  // Ort „Nur im Browser“ blendet den Server-Teil aus; erledigte ausblenden versteckt START-01.
+  await p.getByLabel('Ort', { exact: true }).selectOption('planer');
+  assert.equal(await p.locator('.tp-part[data-part=server]').count(), 0);
+  assert.equal(await p.locator('.tp-case[data-case="LAGER-01"]').count(), 0);
+  await p.getByLabel('Erledigte ausblenden').check();
+  assert.equal(await p.locator('.tp-case[data-case="START-01"]').count(), 0);
+  await p.getByLabel('Erledigte ausblenden').uncheck();
+  await p.getByLabel('Ort', { exact: true }).selectOption('');
+  // Suche nach einer früheren Fall-ID findet den Fall, in dem sie aufgegangen ist.
+  await p.getByRole('button', { name: 'Alle zuklappen' }).click();
+  await p.getByLabel('Suchen', { exact: true }).fill('MOD-19');
+  assert.deepEqual(await p.locator('.tp-case').evaluateAll(cs => cs.map(c => c.dataset.case)), ['MOD-18']);
+  await p.locator('.tp-case[data-case="MOD-18"] .tp-case-title').click();
+  await p.locator('.tp-case[data-case="MOD-18"]').getByText('Enthält die früheren Fälle MOD-19.').waitFor();
+  await p.getByLabel('Suchen', { exact: true }).fill('');
   await p.getByRole('button', { name: 'Protokoll kopieren' }).click();
   await p.getByText('Testprotokoll kopiert.').waitFor();
   const md = await p.evaluate(() => navigator.clipboard.readText());
@@ -65,6 +88,7 @@ test('Fehler melden: Formular aus dem Fall vorausgefüllt, Diagnose mit Umgebung
   // Ein echter Fehler und eine Warnung in dieser Sitzung.
   await p.evaluate(() => { console.warn('Testwarnung 123'); setTimeout(() => { throw new Error('Testfehler 456'); }, 0); });
   await p.waitForFunction(() => document.querySelector('.tp-summary') !== null);
+  await p.locator('.tp-jump').getByRole('button', { name: /^Projekt: Editor/ }).click();
   const bad = p.locator('.tp-case[data-case="PROJ-04"]');
   await bad.getByRole('button', { name: 'PROJ-04 Fehler gefunden' }).click();
   await bad.getByRole('button', { name: 'Fehler zu PROJ-04 melden' }).click();
@@ -72,8 +96,8 @@ test('Fehler melden: Formular aus dem Fall vorausgefüllt, Diagnose mit Umgebung
   await form.waitFor();
   assert.equal(await form.getByLabel('Titel').inputValue(), 'PROJ-04: Export .schem und .litematic');
   assert.equal(await form.getByLabel('Testfall').inputValue(), 'PROJ-04');
-  assert.equal(await form.getByLabel('Bereich').inputValue(), 'Projekt: Editor, Material, Bauen, Export');
-  assert.match(await form.getByLabel('Was ich gemacht habe').inputValue(), /^1\. Tab „Export“/);
+  assert.equal(await form.getByLabel('Bereich', { exact: true }).inputValue(), 'Projekt: Editor, Material, Planung, Export');
+  assert.match(await form.getByLabel('Was ich gemacht habe').inputValue(), /^1\. Reiter „Export“/);
   await form.getByLabel('Tatsächlich').fill('Nichts passiert');
   await form.locator('summary', { hasText: 'Diagnose ansehen' }).click();
   await form.locator('.tp-diagnosis pre').getByText('Testfehler 456').waitFor();
@@ -94,7 +118,7 @@ test('Fehler melden: Formular aus dem Fall vorausgefüllt, Diagnose mit Umgebung
   await form.getByRole('button', { name: 'Bericht kopieren' }).click();
   await form.getByText('Bericht kopiert.').waitFor();
   const text = await p.evaluate(() => navigator.clipboard.readText());
-  assert.match(text, /^## PROJ-04: Export \.schem und \.litematic\n- Bereich: Projekt: Editor, Material, Bauen, Export\n- Schwere: Funktion geht nicht\n- Testfall: PROJ-04\n/);
+  assert.match(text, /^## PROJ-04: Export \.schem und \.litematic\n- Bereich: Projekt: Editor, Material, Planung, Export\n- Schwere: Funktion geht nicht\n- Testfall: PROJ-04\n/);
   assert.ok(text.includes('## Diagnose (automatisch erfasst, ohne Projektdaten)'));
   // Keine Projektnamen im Bericht: der Beispielname aus dem Katalog darf nicht auftauchen.
   assert.ok(!/Eckturm|Fachwerkhaus/.test(text));
@@ -111,6 +135,10 @@ test('Direkteinstieg #/testphase?melden und Links aus Systemcheck', async () => 
   assert.equal(await p.locator('.tp-report').getByLabel('Titel').inputValue(), '');
   await p.locator('.tp-report').getByRole('button', { name: 'Schließen' }).click();
   assert.equal(await p.locator('.tp-report').count(), 0);
+  // Eine frühere Fall-ID im Link füllt das Formular mit dem neuen Fall.
+  await p.goto(`${BASE}#/testphase?melden=LAGER-06`);
+  await p.locator('.tp-report').getByRole('heading', { name: 'Fehler melden' }).waitFor();
+  assert.equal(await p.locator('.tp-report').getByLabel('Testfall').inputValue(), 'LAGER-02');
   assert.deepEqual(errors, []);
   await context.close();
 });

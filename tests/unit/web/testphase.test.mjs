@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { TEST_AREAS, ALL_CASES, areaOf } from '../../../apps/web/src/testing/testplan.ts';
-import { parseProtocol, setResult, summarize, protocolMarkdown, EMPTY } from '../../../apps/web/src/testing/protocol.ts';
+import { parseProtocol, setResult, summarize, protocolMarkdown, migrateEntries, EMPTY } from '../../../apps/web/src/testing/protocol.ts';
 import { bugReport, diagnosisText, issueUrl, ISSUE_URL_LIMIT, recordConsole, consoleLog, recordRoute, routeHistory } from '../../../apps/web/src/app/diagnostics.ts';
 import { parseRoute, href } from '../../../apps/web/src/app/router.ts';
 import { readFileSync } from 'node:fs';
@@ -38,9 +38,9 @@ test('Testprotokoll: Ergebnisse setzen, aufheben, zusammenfassen und als Markdow
   const md = protocolMarkdown({ ...p, tester: 'Anna' }, [['Build', 'abc1234'], ['Browser', 'Chrome'], ['Grafik', 'egal']], new Date('2026-11-02T12:00:00Z'));
   assert.match(md, /^## Testprotokoll Minecraft-Bauplaner\n- Tester: Anna\n- Stand: 2026-11-02T12:00:00.000Z\n- Build: abc1234\n- Browser: Chrome\n/);
   assert.ok(!md.includes('Grafik'));
-  assert.match(md, /### Start, Projektzentrale und Sicherung · 0 ok, 1 Fehler, 1 offen/);
+  assert.match(md, /### Start, Bedienung und Sicherung · 0 ok, 1 Fehler, 1 offen/);
   assert.match(md, /- START-02 Projekt anlegen, umbenennen, löschen: ✕ Fehler – Name weg\n/);
-  assert.match(md, /- MOD-01 Installation: \? offen\n/);
+  assert.match(md, /- MOD-01 Installation mit deinem Launcher: \? offen\n/);
   assert.ok(!md.includes('BIB-'), 'nicht bewertete Bereiche fehlen');
   assert.equal(protocolMarkdown(EMPTY, []).trim().split('\n').at(-1), 'Noch kein Testfall bewertet.');
 
@@ -111,7 +111,7 @@ test('Abnahme je Paket: jedes implementierte Roadmap-Paket hat bekannte Testfäl
     assert.ok(ACCEPTANCE[item.id]?.length, `${item.id} ohne Testfälle`);
     for (const c of ACCEPTANCE[item.id]) assert.ok(known.has(c), `${item.id}: ${c} unbekannt`);
   }
-  assert.deepEqual(packagesOf('DATEI-07'), ['NBT-01', 'ENTITY-01']);
+  assert.deepEqual(packagesOf('DATEI-08'), ['NBT-01', 'FORMAT-01', 'FORMAT-02', 'ENTITY-01']);
   assert.equal(new Set(ALL_CASES.map(c => c.id)).size, ALL_CASES.length, 'Fall-IDs eindeutig');
 });
 
@@ -124,4 +124,35 @@ test('Abnahme nach Ort: Server-Fälle, Spielfälle und reine Browserfälle', asy
   assert.equal(placeOf(byId('LINK-07')), 'spiel', 'ohne Plugin ist kein Server nötig');
   assert.equal(packagePlace('COOP-05'), 'server');
   assert.equal(packagePlace('EDIT-02'), 'planer');
+});
+
+test('Neuordnung: frühere Fälle zeigen auf genau einen aktuellen Fall, alte Haken gehen nicht verloren', async () => {
+  const { MERGED_INTO, currentCaseId, findCase, ACCEPTANCE } = await import('../../../apps/web/src/testing/testplan.ts');
+  const ids = new Set(ALL_CASES.map(c => c.id));
+  for (const [old, cur] of Object.entries(MERGED_INTO)) {
+    assert.ok(!ids.has(old), `${old} ist zusammengelegt und darf nicht mehr als Fall bestehen`);
+    assert.ok(ids.has(cur), `${old} → ${cur} unbekannt`);
+  }
+  assert.ok(ALL_CASES.length <= 110, `Testplan wieder zu lang: ${ALL_CASES.length} Fälle`);
+  assert.equal(currentCaseId('START-20'), 'START-01');
+  assert.equal(currentCaseId('MOD-19'), 'MOD-18');
+  assert.equal(currentCaseId('PROJ-04'), 'PROJ-04');
+  assert.equal(findCase('lager-06')?.id, 'LAGER-02', 'Kleinschreibung und frühere ID');
+  assert.equal(areaOf('KARTE-04')?.id, 'PROJ');
+  for (const cases of Object.values(ACCEPTANCE)) for (const c of cases) assert.ok(!MERGED_INTO[c], `ACCEPTANCE nennt den früheren Fall ${c}`);
+
+  // START-03 enthält START-04; MOD-04 enthält MOD-05 und MOD-12; TEAMBAU-06 enthält 07–09.
+  const e = (result, note = '') => ({ result, note, at: '2026-11-0' + (note.length % 9 + 1) + 'T10:00:00Z' });
+  const m = migrateEntries({ 'START-03': e('ok'), 'START-04': e('ok', 'passt'), 'MOD-05': e('ok'), 'TEAMBAU-07': e('fehler', 'zählt doppelt'), 'TEAMBAU-08': e('ok'), 'BIB-01': e('offen', 'später') });
+  assert.equal(m['START-03'].result, 'ok', 'alle Teile ✓ → ✓');
+  assert.match(m['START-03'].note, /früher START-04 ✓ passt/);
+  assert.equal(m['START-04'], undefined);
+  assert.equal(m['MOD-04'].result, 'offen', 'nur ein Teil geprüft → ?');
+  assert.match(m['MOD-04'].note, /^früher MOD-05 ✓$/);
+  assert.equal(m['TEAMBAU-06'].result, 'fehler', 'ein Teil ✕ → ✕');
+  assert.match(m['TEAMBAU-06'].note, /früher TEAMBAU-07 ✕ zählt doppelt · früher TEAMBAU-08 ✓/);
+  assert.deepEqual(m['BIB-01'], e('offen', 'später'), 'aktuelle Fälle bleiben unverändert');
+  const parsed = parseProtocol(JSON.stringify({ tester: 'Philipp', entries: { 'MOD-19': e('ok') } }));
+  assert.equal(parsed.entries['MOD-18'].result, 'offen');
+  assert.deepEqual(parseProtocol(JSON.stringify(parsed)), parsed, 'zweites Laden ändert nichts mehr');
 });

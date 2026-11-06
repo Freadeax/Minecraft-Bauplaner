@@ -7949,3 +7949,26 @@ TEAM-02: Revisionsprüfung je Gegenstand im Team-Raum (guards → stale), Stapel
 - `tests/unit/team/team-concurrency.test.mjs`
 - `tests/unit/team/team-room.test.mjs`
 
+## 2026-11-06T20:51:49.893Z · progress
+
+**Aufgaben:** QA-04
+
+Testphase gekürzt und neu geordnet: 106 statt 177 Fälle in drei Teilen (Browser, Minecraft, Server), zusammengelegte Fälle mit merged und Haken-Übertragung, Seite mit Sprungleiste, Filter Ort/Kern/Erledigte und Suche; alle Abnahmen erhalten
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/TestphaseView.tsx`
+- `apps/web/src/testing/protocol.ts`
+- `apps/web/src/testing/testphase.css`
+- `apps/web/src/testing/testplan.ts`
+- `docs/TESTING.md`
+- `docs/architecture/betrieb/TESTPHASE.md`
+- `docs/testing/TESTPLAN.md`
+- `scripts/checks/render_testplan.mjs`
+- `tests/e2e/testphase.e2e.mjs`
+- `tests/unit/web/testphase.test.mjs`
+

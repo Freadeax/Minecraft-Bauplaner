@@ -49,3 +49,31 @@
 .tp-report .button-row .button.primary { background: #1f4d3f; border-color: var(--mint); }
 @media (max-width: 600px) { .tp-case-head { flex-wrap: wrap; } .tp-page .page-head { padding-top: 16px; } }
 .tp-kind-server { background: #2b2140; color: #c9b2f2; }
+/* Neuordnung 06.11.: drei Teile, Sprungleiste, zuklappbare Bereiche. */
+.tp-jump { display: grid; gap: 8px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel, #11202b); padding: 12px 16px; margin-bottom: 14px; }
+.tp-jump-part { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.tp-jump-part .tp-kind { min-width: 54px; text-align: center; }
+.tp-jump-area { border: 1px solid var(--line); border-radius: var(--ds-r-pill, 999px); background: var(--ds-surface-2, #182b36); color: inherit; font: inherit; font-size: 12px; padding: 5px 10px; min-height: 32px; cursor: pointer; }
+.tp-jump-area small { color: var(--muted); margin-left: 4px; }
+.tp-jump-area.done { border-color: var(--ds-success, #2f6b55); }
+.tp-jump-area.has-fehler { border-color: var(--ds-danger, #8a3b3b); }
+.tp-jump-area:disabled { opacity: .45; cursor: default; }
+.tp-jump-all { display: flex; gap: 8px; justify-content: flex-end; }
+.tp-jump-all button { font-size: 12px; }
+.tp-part { margin-bottom: 8px; }
+.tp-part-title { font-size: 15px; margin: 18px 0 8px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.tp-part-title small { font-size: 12px; font-weight: 400; }
+.tp-area { padding: 12px 20px; }
+.tp-area.open { padding: 18px 20px; }
+.tp-area h2 { margin: 0; }
+.tp-area.open h2 { margin-bottom: 6px; }
+.tp-area-toggle { background: none; border: 0; color: inherit; font: inherit; padding: 4px 0; cursor: pointer; text-align: left; min-height: 32px; }
+.tp-chevron { display: inline-block; width: 1em; color: var(--muted); }
+.tp-merged, .tp-empty { font-size: 12px; }
+@media (max-width: 600px) { .tp-jump-part .tp-kind { min-width: 0; } .tp-jump-all { justify-content: flex-start; } }
+.tp-howto summary { cursor: pointer; list-style: none; }
+.tp-howto summary::-webkit-details-marker { display: none; }
+.tp-howto summary h2 { display: inline; }
+.tp-howto summary::before { content: '▸ '; color: var(--muted); }
+.tp-howto[open] summary::before { content: '▾ '; }
+.tp-howto[open] summary { margin-bottom: 10px; }

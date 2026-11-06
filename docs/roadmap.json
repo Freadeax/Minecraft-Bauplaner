@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T20:43:01.586Z",
+  "updatedAt": "2026-11-06T20:51:49.893Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -7751,7 +7751,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:51:49.893Z",
       "area": "QA",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -24425,6 +24425,35 @@
           "done": 2,
           "total": 2,
           "next": "Abnahme TEAMBAU-29 mit Mitspielern im echten Raum (zwei Geräte übernehmen gleichzeitig denselben Abschnitt)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T20:51:49.893Z",
+      "kind": "progress",
+      "items": [
+        "QA-04"
+      ],
+      "summary": "Testphase gekürzt und neu geordnet: 106 statt 177 Fälle in drei Teilen (Browser, Minecraft, Server), zusammengelegte Fälle mit merged und Haken-Übertragung, Seite mit Sprungleiste, Filter Ort/Kern/Erledigte und Suche; alle Abnahmen erhalten",
+      "files": [
+        "apps/web/src/testing/TestphaseView.tsx",
+        "apps/web/src/testing/protocol.ts",
+        "apps/web/src/testing/testphase.css",
+        "apps/web/src/testing/testplan.ts",
+        "docs/TESTING.md",
+        "docs/architecture/betrieb/TESTPHASE.md",
+        "docs/testing/TESTPLAN.md",
+        "scripts/checks/render_testplan.mjs",
+        "tests/e2e/testphase.e2e.mjs",
+        "tests/unit/web/testphase.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "QA-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
         }
       ]
     }

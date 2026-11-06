@@ -3,7 +3,7 @@
  * (localStorage, Schlüssel bauplaner.testphase.v1). Es sind Browserdaten, keine Projektdaten:
  * Sicherungen enthalten es nicht, ein Export als Markdown ersetzt das.
  */
-import { TEST_AREAS } from './testplan.ts';
+import { ALL_CASES, MERGED_INTO, TEST_AREAS } from './testplan.ts';
 import type { TestArea } from './testplan.ts';
 
 export type CaseResult = 'ok' | 'fehler' | 'offen';
@@ -27,8 +27,35 @@ export function parseProtocol(raw: string | null): Protocol {
         if (result === 'ok' || result === 'fehler' || result === 'offen') entries[id] = { result, note: typeof note === 'string' ? note : '', at: typeof at === 'string' ? at : '' };
       }
     }
-    return { tester: typeof d.tester === 'string' ? d.tester : '', entries };
+    return { tester: typeof d.tester === 'string' ? d.tester : '', entries: migrateEntries(entries) };
   } catch { return EMPTY; }
+}
+
+const MARK: Record<CaseResult, string> = { ok: '✓', fehler: '✕', offen: '?' };
+
+/**
+ * Ergebnisse zusammengelegter Fälle (`merged` im Testplan) auf den neuen Fall übertragen, damit nach der
+ * Neuordnung kein Haken und keine Notiz verloren geht. ✕ in einem Teil → ✕; ✓ nur, wenn alle früheren Teile
+ * und der Fall selbst ✓ waren; sonst ? mit Hinweis, welche Teile schon geprüft sind.
+ */
+export function migrateEntries(entries: Readonly<Record<string, CaseEntry>>): Record<string, CaseEntry> {
+  const out: Record<string, CaseEntry> = {};
+  const targets = new Set<string>();
+  for (const [id, e] of Object.entries(entries)) {
+    const target = MERGED_INTO[id];
+    if (target) targets.add(target); else out[id] = e;
+  }
+  for (const target of targets) {
+    const sources = [target, ...(ALL_CASES.find(c => c.id === target)?.merged ?? [])];
+    const found = sources.map(id => [id, entries[id]] as const).filter((x): x is readonly [string, CaseEntry] => !!x[1]);
+    const results = found.map(([, e]) => e.result);
+    const result: CaseResult = results.includes('fehler') ? 'fehler' : found.length === sources.length && results.every(r => r === 'ok') ? 'ok' : 'offen';
+    const own = entries[target];
+    const notes = [own?.note.trim() ?? '', ...found.filter(([id]) => id !== target).map(([id, e]) => `früher ${id} ${MARK[e.result]}${e.note.trim() ? ` ${e.note.trim()}` : ''}`)].filter(Boolean);
+    const at = found.map(([, e]) => e.at).sort().at(-1) ?? '';
+    out[target] = { result, note: notes.join(' · '), at };
+  }
+  return out;
 }
 
 export function loadProtocol(): Protocol {

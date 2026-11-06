@@ -1111,3 +1111,11 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `tests/unit/mod/mod-versions.test.mjs`: jede 26.3→26.4-Regel greift, eigener Schalter, keine 26.4-Datei in releases.json.
 - PERF-06-S03: Team-Raum live (`OPTIONS` mit `Origin: https://bauplaner.pages.dev` → passender CORS-Kopf, fremde Herkunft nicht), Mod-Herkunft seit 0.17.2 in `LiveLinkTest`.
 - Grenze: kein Spieltest mit Philipps Modpack unter 26.4 (Modpack gibt es nur für 26.3); NeoForge 26.4 ohne Builds.
+
+### 06.11.2026 – QA-04 Testphase gekürzt und neu geordnet
+
+- Grundlage: main 5b20f53 plus diese Änderung (testplan.ts, protocol.ts, TestphaseView.tsx, testphase.css, render_testplan.mjs, TESTPLAN.md, TESTPHASE.md, Tests).
+- Testplan von 177 auf 106 Fälle (46 Kern) in drei Teilen (Browser, Minecraft, Paper-Server); jede frühere Fall-ID steht in `merged` eines aktuellen Falls, `ACCEPTANCE` nennt nur aktuelle IDs, kein implementiertes Paket verliert seine Abnahme (Vergleich alt/neu per Skript: 0 Pakete mit fehlender Zuordnung).
+- `npm run check`: bestanden (962 Unit-Tests vor dem Rebase, darunter neu „Neuordnung: frühere Fälle …“ mit Übertragung alter Haken, `check:testplan` aktuell).
+- `npm run test:e2e` in drei Läufen (je ≤ 10 min, alle 84 Dateien): 91 + 56 + 48 Browsertests bestanden; nach dem Rebase auf 5b20f53 erneut `npm run check` und `testphase.e2e.mjs`; `testphase.e2e.mjs` prüft neu drei Teile, zugeklappte Bereiche, Sprungleiste, Filter Ort/Kern/Erledigte, Suche nach früherer ID und `?melden=<frühere ID>`.
+- Grenzen: Inhalt der Fälle nicht im Spiel nachgespielt; die Schritte sind aus den bisherigen Fällen zusammengeführt.
