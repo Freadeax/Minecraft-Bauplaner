@@ -1103,3 +1103,11 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Neu `tests/e2e/landscape-sculpt.e2e.mjs` 2/2 (Chromium 1400/390 px, Touch); zusammen mit landscape, landscape-paths, landscape-scatter, plan-landscape und terrain-game 12/12.
 - Nicht automatisch geprüft: Abnahme im Spiel und auf dem iPad (Testfall PROJ-26).
 - Voller Browserlauf auf main acd5d33 + TERRAIN-05: 197/197 grün (alle 85 Browserdateien).
+
+## GAME-11-S02 + PERF-06-S03 · Mod auf Minecraft 26.4 vorbereitet · 06.11.2026 · Claude
+
+- `./gradlew -PwithFabric264 :fabric-26.4:build` gegen 26.4-snapshot-7 (Fabric API 0.165.4+26.4, Loader 0.20.1) grün; `-PwithFabric -PwithNeoForge` für 26.3 unverändert grün.
+- `BAUPLANER_MC=26.4 scripts/mod/test_bridge_ingame.sh` (weston, Mesa): bestanden – Aufnahme 146 korrekt/1 falsch/1 fehlt, Hologramm inkl. Röntgensicht und Platzierhilfe, Gruppen und Sperren, Oberfläche DE/EN, Website-Verbindung.
+- `tests/unit/mod/mod-versions.test.mjs`: jede 26.3→26.4-Regel greift, eigener Schalter, keine 26.4-Datei in releases.json.
+- PERF-06-S03: Team-Raum live (`OPTIONS` mit `Origin: https://bauplaner.pages.dev` → passender CORS-Kopf, fremde Herkunft nicht), Mod-Herkunft seit 0.17.2 in `LiveLinkTest`.
+- Grenze: kein Spieltest mit Philipps Modpack unter 26.4 (Modpack gibt es nur für 26.3); NeoForge 26.4 ohne Builds.

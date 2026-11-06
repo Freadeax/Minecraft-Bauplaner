@@ -21,6 +21,10 @@ include 'mod-core'
 if (providers.gradleProperty('withFabric').isPresent()) {
     include 'fabric-26.3'
 }
+// Minecraft 26.4 (Snapshot, Vorbereitung GAME-11-S02): eigener Schalter, damit 26.3-Builds keine Snapshot-Daten laden.
+if (providers.gradleProperty('withFabric264').isPresent()) {
+    include 'fabric-26.4'
+}
 if (providers.gradleProperty('withNeoForge').isPresent()) {
     include 'neoforge-26.3'
 }

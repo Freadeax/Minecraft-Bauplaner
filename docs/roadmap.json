@@ -2703,7 +2703,8 @@
         "scripts/pages/publish_cloudflare.mjs",
         "scripts/pages/publish_main_pages.sh",
         "services/team-room/src/index.js",
-        "tests/unit/tooling/cloudflare-pages.test.mjs"
+        "tests/unit/tooling/cloudflare-pages.test.mjs",
+        "apps/web/src/views/map/liveClient.ts"
       ],
       "legacyIds": [],
       "steps": [
@@ -2719,11 +2720,11 @@
         },
         {
           "id": "PERF-06-S03",
-          "title": "Team-Raum und Mod-Verbindung erlauben die Cloudflare-Adresse.",
-          "done": false
+          "title": "Team-Raum und Mod-Verbindung erlauben die Cloudflare-Adresse. Mod seit 0.17.2 (LiveLinkServer, LiveLinkTest), Team-Raum live geprüft (CORS 06.11.), Planer-Hinweis nennt beide Adressen.",
+          "done": true
         }
       ],
-      "next": "PERF-06-S03: Team-Raum mit neuer Herkunft deployen (zusammen mit dem offenen LINK-10-Raum-Deploy) und Mod-Herkunft in der nächsten Mod-Version (Thread „Anbindung von Planer, Mod und Server neu denken“).",
+      "next": "Abnahme: Safari/iPad und Firefox (Offline-Speicher); Verbindung Mod ↔ Planer einmal über https://bauplaner.pages.dev/Minecraft-Bauplaner/ im echten Spiel.",
       "acceptance": [
         "Zweiter Start lädt keine Programmdatei aus dem Netz, ohne Internet startet die zuletzt geladene Fassung.",
         "Neue Veröffentlichung kommt beim nächsten Laden an; alte Programmdateien werden entfernt.",
@@ -2753,7 +2754,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T15:17:03.640Z",
+      "updatedAt": "2026-11-06T20:15:17.119Z",
       "area": "PERF",
       "thread": "Einfachsten Weg zu mehr Leistung finden",
       "philipp": [],
@@ -8694,7 +8695,7 @@
       "phase": "P4",
       "priority": "P2",
       "status": "in_progress",
-      "owner": "Claude (Thread „Teambau und Befehle in der Mod ausbauen“)",
+      "owner": "Claude (Thread „Mod auf Minecraft 26.4 vorbereiten“)",
       "dependencies": [
         "GAME-07",
         "GAME-10"
@@ -8705,18 +8706,24 @@
         "apps/web/src/views/mod/",
         "downloads/mod/",
         "docs/",
-        "apps/web/src/views/mod/installGuide.ts"
+        "apps/web/src/views/mod/installGuide.ts",
+        "mods/bauplaner-bridge/fabric-26.4/",
+        "mods/bauplaner-bridge/settings.gradle",
+        "scripts/mod/test_bridge_ingame.sh",
+        "tests/unit/mod/mod-versions.test.mjs",
+        "mods/bauplaner-bridge/README.md",
+        "docs/architecture/mod/MOD_BRIDGE.md"
       ],
       "legacyIds": [],
       "steps": [
         {
           "id": "GAME-11-S01",
-          "title": "Versionsmatrix festlegen: welche Minecraft-Versionen und Loader (Philipps Server, verbreitete Modpacks), was der Kern schon versionsneutral abdeckt.",
-          "done": false
+          "title": "Versionsmatrix festlegen: welche Minecraft-Versionen und Loader (Philipps Server, verbreitete Modpacks), was der Kern schon versionsneutral abdeckt. Entschieden (Philipp 04.11.): 26.3 zuerst, danach jeweils die neueste Version; keine ältere Matrix.",
+          "done": true
         },
         {
           "id": "GAME-11-S02",
-          "title": "Zweite Minecraft-Version (Fabric und NeoForge) als eigener Adapter über mod-core und eine Versionsfassade, ohne 26.3 zu verändern.",
+          "title": "Zweite Minecraft-Version (Fabric und NeoForge) als eigener Adapter über mod-core und eine Versionsfassade, ohne 26.3 zu verändern. Fabric 26.4 vorbereitet (fabric-26.4 gegen 26.4-snapshot-7, Regeln statt Kopien); NeoForge folgt, sobald es 26.4-Builds gibt.",
           "done": false
         },
         {
@@ -8734,23 +8741,27 @@
         "Die Mod läuft in mindestens einer weiteren Minecraft-Version mit Hologramm, Platzierhilfe, Website-Verbindung, Teambau und Befehlsseite.",
         "#/mod und Modrinth bieten je Version und Loader die passende Datei an."
       ],
-      "next": "Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen.",
+      "next": "Fabric 26.4 ist vorbereitet (Snapshot, kein Release). Erscheint 26.4: Versionen in fabric-26.4/gradle.properties auf das Release setzen, Spieltest BAUPLANER_MC=26.4, dann #/mod und Modrinth je Version (S03); NeoForge 26.4 sobald NeoForge Builds hat.",
       "blockers": [],
       "evidence": [
         {
           "path": "tests/unit/mod/install-guide.test.mjs",
           "note": "Anleitung je Launcher und Loader, Fabric API nur bei Fabric."
+        },
+        {
+          "path": "tests/unit/mod/mod-versions.test.mjs",
+          "note": "Jede 26.3→26.4-Regel greift, 26.4 eigener Schalter, keine 26.4-Datei in releases.json."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "S04 Launcher-Anleitung auf #/mod fertig; S01–S03 (weitere Versionen) offen."
+        "note": "S04 Launcher-Anleitung fertig. 26.4: Build und Spieltest gegen 26.4-snapshot-7 in der Cloud; Release erst mit 26.4."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T09:35:19.769Z",
+      "updatedAt": "2026-11-06T20:15:17.119Z",
       "area": "MOD",
       "thread": "Mod-Werkzeuge und Planer-Anbindung erweitern",
       "orphans": [],
@@ -24316,6 +24327,44 @@
           "done": 5,
           "total": 6,
           "next": "Abnahme durch Philipp im Planer und im Spiel (PROJ-26)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T20:15:17.119Z",
+      "kind": "progress",
+      "items": [
+        "GAME-11",
+        "PERF-06"
+      ],
+      "summary": "Mod auf Minecraft 26.4 vorbereitet: Adapter fabric-26.4 gegen 26.4-snapshot-7 über mod-core und geprüfte Ersetzungsregeln (26.3 unverändert), echter Spieltest unter 26.4 bestanden, kein Release bis 26.4 erscheint; PERF-06-S03: pages.dev in Mod (seit 0.17.2) und Team-Raum live bestätigt, Planer-Hinweis nennt beide Adressen",
+      "files": [
+        "apps/web/src/views/map/liveClient.ts",
+        "docs/TESTING.md",
+        "docs/architecture/mod/MOD_BRIDGE.md",
+        "mods/bauplaner-bridge/README.md",
+        "mods/bauplaner-bridge/fabric-26.4/build.gradle",
+        "mods/bauplaner-bridge/fabric-26.4/compat-26.4.gradle",
+        "mods/bauplaner-bridge/fabric-26.4/gradle.properties",
+        "mods/bauplaner-bridge/fabric-26.4/src/override/java/io/github/freadeax/bauplaner/bridge/hologram/Compat264.java",
+        "mods/bauplaner-bridge/settings.gradle",
+        "scripts/mod/test_bridge_ingame.sh",
+        "tests/unit/mod/mod-versions.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-11",
+          "status": "in_progress",
+          "done": 2,
+          "total": 4,
+          "next": "Fabric 26.4 ist vorbereitet (Snapshot, kein Release). Erscheint 26.4: Versionen in fabric-26.4/gradle.properties auf das Release setzen, Spieltest BAUPLANER_MC=26.4, dann #/mod und Modrinth je Version (S03); NeoForge 26.4 sobald NeoForge Builds hat."
+        },
+        {
+          "id": "PERF-06",
+          "status": "in_progress",
+          "done": 3,
+          "total": 3,
+          "next": "Abnahme: Safari/iPad und Firefox (Offline-Speicher); Verbindung Mod ↔ Planer einmal über https://bauplaner.pages.dev/Minecraft-Bauplaner/ im echten Spiel."
         }
       ]
     }

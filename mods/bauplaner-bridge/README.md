@@ -90,7 +90,16 @@ Alles nur auf deinem Rechner; der Server merkt nichts davon. Details: [MOD_HOLOG
 
 ## Weitere Minecraft-Versionen
 
-NeoForge/Forge: `client-26.3` nach `client-<version>` kopieren und dort `ClientHost` anpassen, dazu `neoforge-<version>`/`forge-<version>` mit neuen Versionen in `gradle.properties`, Schalter in `settings.gradle`. Fabric: den Ordner `fabric-26.3` kopieren (z. B. `fabric-26.4`), in `gradle.properties` die Versionen eintragen, `McCompat.java` anpassen und den Ordner in `settings.gradle` einbinden. Der Kern bleibt unverändert.
+**Minecraft 26.4 (vorbereitet, GAME-11-S02):** `fabric-26.4` baut gegen den neuesten Snapshot (Stand 06.11.2026: `26.4-snapshot-7`, Fabric API `0.165.4+26.4`, Loader `0.20.1`). Der Adapter kopiert nichts: Er nimmt die Quellen von `fabric-26.3` und `hologram-26.3` samt Spieltest und passt sie beim Bauen mit den Regeln aus `fabric-26.4/compat-26.4.gradle` an (Bildschirme ohne Maus-Parameter, Linien-Pipeline aus Varianten, HUD ohne DeltaTracker). Was eine Regel nicht abdeckt, liegt als eigene Datei unter `fabric-26.4/src/override/java` (heute nur `Compat264`). Greift eine Regel nicht mehr, bricht der Build ab und `tests/unit/mod/mod-versions.test.mjs` schlägt in `npm test` an. 26.3 bleibt dabei unverändert.
+
+```bash
+./gradlew -PwithFabric264 :fabric-26.4:build          # .jar für 26.4 (nur zum Testen, kein Release)
+BAUPLANER_MC=26.4 scripts/mod/test_bridge_ingame.sh    # derselbe echte Spieltest wie für 26.3
+```
+
+Solange 26.4 nur als Snapshot existiert, gibt es keine 26.4-Datei auf #/mod oder Modrinth. Erscheint 26.4: in `fabric-26.4/gradle.properties` `minecraft_version=26.4`, `minecraft_dependency=26.4` und die passende Fabric API eintragen, Spieltest laufen lassen, dann wie gewohnt veröffentlichen. NeoForge hat noch keine 26.4-Builds; `neoforge-26.4` folgt nach demselben Muster, sobald es sie gibt.
+
+Allgemein: NeoForge/Forge `client-26.3` nach `client-<version>` kopieren und dort `ClientHost` anpassen, dazu `neoforge-<version>`/`forge-<version>` mit neuen Versionen in `gradle.properties`, Schalter in `settings.gradle`. Fabric: wie `fabric-26.4` mit Regeln statt Kopien. Der Kern (`core`, `mod-core`) bleibt unverändert.
 
 ## Paper-Server
 

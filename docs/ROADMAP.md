@@ -162,7 +162,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [LINK-11](#link-11) | Alles über das Internet | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Alle Systeme online verbinden“ | Abnahme LINK-12: als Bauleitung „Mein Spiel verbinden“, mit der Mod auf den Server – der Server verbindet sich selbst mit dem Team-Raum, Abschnittsschutz greift.<br>Abnahme LINK-13: alle Dateiwege nur noch zugeklappt unter „Notfall“. |
 | [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2 | 🧩 Implementiert · Abnahme offen 5/5 | P2 | „Teambau und Befehle in der Mod ausbauen“ | Mitspieler-Pfeile auf der Live-Karte mit einem zweiten Spieler. |
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0 | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Teambau und Befehle in der Mod ausbauen“ | Befehlsseite im J-Menü zusammen mit dem Plugin auf deinem Server (MOD-16). |
-| [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher | 🚧 In Arbeit 1/4 | P2 | „Mod-Werkzeuge und Planer-Anbindung erweitern“ | — |
+| [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher | 🚧 In Arbeit 2/4 | P2 | „Mod-Werkzeuge und Planer-Anbindung erweitern“ | — |
 
 <a id="bereich-plugin"></a>
 
@@ -194,7 +194,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Olympus auf deinem Rechner, dazu Firefox/Safari (S06). |
 | [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 9/9 | P1 | „Leistung bei großen Szenen steigern“ | — |
-| [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server | 🚧 In Arbeit 2/3 | P1 | „Einfachsten Weg zu mehr Leistung finden“ | — |
+| [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server | 🚧 In Arbeit 3/3 | P1 | „Einfachsten Weg zu mehr Leistung finden“ | — |
 
 Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF-03 (geprüft).
 
@@ -415,7 +415,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **PROJ-01 · Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel.
 - **GAME-09 · Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** — 🚧 In Arbeit, 4/5 Teilschritte. Nächster Schritt: Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind.
 - **GAME-10 · Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme MOD-16 auf Philipps Server mit Paper-Plugin.
-- **GAME-11 · Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** — 🚧 In Arbeit, 1/4 Teilschritte. Nächster Schritt: Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen.
+- **GAME-11 · Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** — 🚧 In Arbeit, 2/4 Teilschritte. Nächster Schritt: Fabric 26.4 ist vorbereitet (Snapshot, kein Release). Erscheint 26.4: Versionen in fabric-26.4/gradle.properties auf das Release setzen, Spieltest BAUPLANER_MC=26.4, dann #/mod und Modrinth je Version (S03); NeoForge 26.4 sobald NeoForge Builds hat.
 - **COOP-07 · Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05).
 - **PROD-01 · Produktionsdaten: Katalog von 34 Farmarten mit Richtwerten je Einheit, Bedingungen, Reichweite, Verbrauch und Bauplan; Farmliste je Projekt (Anzahl, Zustand, Ort, Bauteil, Kartenpunkt) und Ertragsbuch, das ins Baustellen-Lager bucht und gemessene Raten liefert** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme PROJ-12; später Erträge aus geprüften Lagerkisten (COOP-05) ins Ertragsbuch.
 - **PROD-02 · Deckung und Engpässe: Restbedarf des Sammelplans gegen laufende Farmen und Handarbeit (gemeinsame Warteschlange, gieriger Ausgleich), Engpass, Materialbereitschaft je Abschnitt in Spieltagen, „Lohnt sich eine Farm?“ mit Amortisation aus Bauplan-Kosten** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme PROJ-13.
@@ -530,7 +530,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [UI-02](#ui-02) | App-Hülle, Navigation und Handyoberfläche überarbeiten | ✅ Im beschriebenen Umfang geprüft | 4/4 | UI-01, QA-01 | ausstehend | ausstehend |
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart | 🧩 Implementiert · Abnahme offen | 6/7 | PERF-01, MODEL-01, ARCH-02 | ausstehend | ausstehend |
 | [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund | 🧩 Implementiert · Abnahme offen | 9/9 | PERF-04 | ausstehend | ausstehend |
-| [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server: Offline-Speicher (Service Worker) und kostenlose zweite Adresse auf Cloudflare Pages | 🚧 In Arbeit | 2/3 | PERF-05 | ausstehend | ausstehend |
+| [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server: Offline-Speicher (Service Worker) und kostenlose zweite Adresse auf Cloudflare Pages | 🚧 In Arbeit | 3/3 | PERF-05 | ausstehend | ausstehend |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen | 5/6 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material | 🧩 Implementiert · Abnahme offen | 6/7 | VIEW-02, BUILD-01, MAT-01 | ausstehend | ausstehend |
 | [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel | 🧩 Implementiert · Abnahme offen | 5/6 | BLOCK-01, LIB-04, UPDATE-01 | ausstehend | ausstehend |
@@ -625,7 +625,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [COOP-04](#coop-04) | Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-02, LAGER-01 | ausstehend | ausstehend |
 | [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-04 | ausstehend | ausstehend |
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-03, COOP-05, GAME-07 | ausstehend | ausstehend |
-| [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher | 🚧 In Arbeit | 1/4 | GAME-07, GAME-10 | ausstehend | ausstehend |
+| [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher | 🚧 In Arbeit | 2/4 | GAME-07, GAME-10 | ausstehend | ausstehend |
 | [GAME-12](#game-12) | Mod einfacher bedienen (Mod 0.23.0): animiertes Menü als Seitenleiste, Meldungskarten oben rechts statt Chat, kompaktes Baufenster, alle Befehle und Texte auf Deutsch und Englisch | 🧩 Implementiert · Abnahme offen | 5/6 | GAME-07, GAME-10, GAME-11 | ausstehend | ausstehend |
 | [COOP-07](#coop-07) | Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel | 🧩 Implementiert · Abnahme offen | 6/7 | COOP-01, COOP-04 | ausstehend | ausstehend |
 | [COOP-08](#coop-08) | Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion) | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-05, PROD-01 | ausstehend | ausstehend |
@@ -1400,21 +1400,21 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-06
 
-**Mehr Leistung ohne eigenen Server: Offline-Speicher (Service Worker) und kostenlose zweite Adresse auf Cloudflare Pages** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude-Thread „Einfachsten Weg zu mehr Leistung finden“ · Zuständiger Thread: „Einfachsten Weg zu mehr Leistung finden“ · Aktualisiert: 2026-11-06T15:17:03.640Z
+**Mehr Leistung ohne eigenen Server: Offline-Speicher (Service Worker) und kostenlose zweite Adresse auf Cloudflare Pages** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude-Thread „Einfachsten Weg zu mehr Leistung finden“ · Zuständiger Thread: „Einfachsten Weg zu mehr Leistung finden“ · Aktualisiert: 2026-11-06T20:15:17.119Z
 
 - [x] PERF-06-S01: Offline-Speicher: sw.js aus dem Build (Programmdateien mit Inhalts-Hash, Startseite erst Netz), Start ohne Internet, nach Updates nur geänderte Dateien, Karte im Systemcheck zum Ausschalten, Notbremse.
 - [x] PERF-06-S02: Zweite Adresse auf Cloudflare Pages (Gratis-Tarif) aus demselben Build, eigene Cache-Regeln; GitHub Pages bleibt. Live: https://bauplaner.pages.dev/Minecraft-Bauplaner/ (Brotli, assets ein Jahr unveränderlich); publish_pages.sh lädt mit hoch, wenn die Zugangsdaten da sind.
-- [ ] PERF-06-S03: Team-Raum und Mod-Verbindung erlauben die Cloudflare-Adresse.
+- [x] PERF-06-S03: Team-Raum und Mod-Verbindung erlauben die Cloudflare-Adresse. Mod seit 0.17.2 (LiveLinkServer, LiveLinkTest), Team-Raum live geprüft (CORS 06.11.), Planer-Hinweis nennt beide Adressen.
 
 **Abnahme:** Zweiter Start lädt keine Programmdatei aus dem Netz, ohne Internet startet die zuletzt geladene Fassung. Neue Veröffentlichung kommt beim nächsten Laden an; alte Programmdateien werden entfernt. Ausschalten im Systemcheck entfernt Service Worker und Speicher dauerhaft; Notbremse über sw.js möglich. Automatisierte Browser bleiben ohne Testschalter unberührt; alle Tests grün.
 
-**Nächste Aktion:** PERF-06-S03: Team-Raum mit neuer Herkunft deployen (zusammen mit dem offenen LINK-10-Raum-Deploy) und Mod-Herkunft in der nächsten Mod-Version (Thread „Anbindung von Planer, Mod und Server neu denken“).
+**Nächste Aktion:** Abnahme: Safari/iPad und Firefox (Offline-Speicher); Verbindung Mod ↔ Planer einmal über https://bauplaner.pages.dev/Minecraft-Bauplaner/ im echten Spiel.
 
 **Prüfstand:** Chromium im Cloud-Container; Safari/iPad und Firefox offen.
 
 **Nachweise:** [tests/e2e/offline.e2e.mjs](../tests/e2e/offline.e2e.mjs) — Chromium: Installation, Laden aus dem Speicher, Start offline, alte Dateien weg, Ausschalten.; [tests/unit/tooling/service-worker.test.mjs](../tests/unit/tooling/service-worker.test.mjs) — Manifest ohne Katalogdatei, Version folgt dem Inhalt, Notbremse, Publisher erlaubt sw.js.; [docs/architecture/betrieb/OFFLINE.md](architecture/betrieb/OFFLINE.md) — Regeln, Grenzen, Notbremse, Cloudflare-Plan.
 
-**Dateiumfang:** `scripts/pages/service_worker.template.js`, `scripts/pages/build_service_worker.mjs`, `scripts/pages/prepare_main_pages.mjs`, `apps/web/src/app/offline.ts`, `apps/web/src/main.tsx`, `apps/web/src/views/SystemView.tsx`, `tests/e2e/offline.e2e.mjs`, `tests/unit/tooling/service-worker.test.mjs`, `docs/architecture/betrieb/HOSTING.md`, `docs/architecture/betrieb/OFFLINE.md`, `package.json`, `scripts/pages/publish_cloudflare.mjs`, `scripts/pages/publish_main_pages.sh`, `services/team-room/src/index.js`, `tests/unit/tooling/cloudflare-pages.test.mjs`. **Abhängigkeiten:** PERF-05. **Alte IDs:** —.
+**Dateiumfang:** `scripts/pages/service_worker.template.js`, `scripts/pages/build_service_worker.mjs`, `scripts/pages/prepare_main_pages.mjs`, `apps/web/src/app/offline.ts`, `apps/web/src/main.tsx`, `apps/web/src/views/SystemView.tsx`, `tests/e2e/offline.e2e.mjs`, `tests/unit/tooling/service-worker.test.mjs`, `docs/architecture/betrieb/HOSTING.md`, `docs/architecture/betrieb/OFFLINE.md`, `package.json`, `scripts/pages/publish_cloudflare.mjs`, `scripts/pages/publish_main_pages.sh`, `services/team-room/src/index.js`, `tests/unit/tooling/cloudflare-pages.test.mjs`, `apps/web/src/views/map/liveClient.ts`. **Abhängigkeiten:** PERF-05. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -3019,22 +3019,22 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-11
 
-**Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Claude (Thread „Teambau und Befehle in der Mod ausbauen“) · Zuständiger Thread: „Mod-Werkzeuge und Planer-Anbindung erweitern“ · Aktualisiert: 2026-11-06T09:35:19.769Z
+**Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Claude (Thread „Mod auf Minecraft 26.4 vorbereiten“) · Zuständiger Thread: „Mod-Werkzeuge und Planer-Anbindung erweitern“ · Aktualisiert: 2026-11-06T20:15:17.119Z
 
-- [ ] GAME-11-S01: Versionsmatrix festlegen: welche Minecraft-Versionen und Loader (Philipps Server, verbreitete Modpacks), was der Kern schon versionsneutral abdeckt.
-- [ ] GAME-11-S02: Zweite Minecraft-Version (Fabric und NeoForge) als eigener Adapter über mod-core und eine Versionsfassade, ohne 26.3 zu verändern.
+- [x] GAME-11-S01: Versionsmatrix festlegen: welche Minecraft-Versionen und Loader (Philipps Server, verbreitete Modpacks), was der Kern schon versionsneutral abdeckt. Entschieden (Philipp 04.11.): 26.3 zuerst, danach jeweils die neueste Version; keine ältere Matrix.
+- [ ] GAME-11-S02: Zweite Minecraft-Version (Fabric und NeoForge) als eigener Adapter über mod-core und eine Versionsfassade, ohne 26.3 zu verändern. Fabric 26.4 vorbereitet (fabric-26.4 gegen 26.4-snapshot-7, Regeln statt Kopien); NeoForge folgt, sobald es 26.4-Builds gibt.
 - [ ] GAME-11-S03: Echte Spieltests je Version, Release auf #/mod mit Versionswahl, Modrinth je Version.
 - [x] GAME-11-S04: Installationsanleitung für Modrinth App, Prism Launcher, CurseForge und den offiziellen Launcher auf #/mod.
 
 **Abnahme:** Die Mod läuft in mindestens einer weiteren Minecraft-Version mit Hologramm, Platzierhilfe, Website-Verbindung, Teambau und Befehlsseite. #/mod und Modrinth bieten je Version und Loader die passende Datei an.
 
-**Nächste Aktion:** Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen.
+**Nächste Aktion:** Fabric 26.4 ist vorbereitet (Snapshot, kein Release). Erscheint 26.4: Versionen in fabric-26.4/gradle.properties auf das Release setzen, Spieltest BAUPLANER_MC=26.4, dann #/mod und Modrinth je Version (S03); NeoForge 26.4 sobald NeoForge Builds hat.
 
-**Prüfstand:** S04 Launcher-Anleitung auf #/mod fertig; S01–S03 (weitere Versionen) offen.
+**Prüfstand:** S04 Launcher-Anleitung fertig. 26.4: Build und Spieltest gegen 26.4-snapshot-7 in der Cloud; Release erst mit 26.4.
 
-**Nachweise:** [tests/unit/mod/install-guide.test.mjs](../tests/unit/mod/install-guide.test.mjs) — Anleitung je Launcher und Loader, Fabric API nur bei Fabric.
+**Nachweise:** [tests/unit/mod/install-guide.test.mjs](../tests/unit/mod/install-guide.test.mjs) — Anleitung je Launcher und Loader, Fabric API nur bei Fabric.; [tests/unit/mod/mod-versions.test.mjs](../tests/unit/mod/mod-versions.test.mjs) — Jede 26.3→26.4-Regel greift, 26.4 eigener Schalter, keine 26.4-Datei in releases.json.
 
-**Dateiumfang:** `mods/bauplaner-bridge/`, `scripts/`, `apps/web/src/views/mod/`, `downloads/mod/`, `docs/`, `apps/web/src/views/mod/installGuide.ts`. **Abhängigkeiten:** GAME-07, GAME-10. **Alte IDs:** —.
+**Dateiumfang:** `mods/bauplaner-bridge/`, `scripts/`, `apps/web/src/views/mod/`, `downloads/mod/`, `docs/`, `apps/web/src/views/mod/installGuide.ts`, `mods/bauplaner-bridge/fabric-26.4/`, `mods/bauplaner-bridge/settings.gradle`, `scripts/mod/test_bridge_ingame.sh`, `tests/unit/mod/mod-versions.test.mjs`, `mods/bauplaner-bridge/README.md`, `docs/architecture/mod/MOD_BRIDGE.md`. **Abhängigkeiten:** GAME-07, GAME-10. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

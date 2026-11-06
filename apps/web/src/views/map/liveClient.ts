@@ -235,7 +235,7 @@ export function useLiveGame(): LiveGame {
   const helloRef = useRef<LiveHello | null>(null);
   const live = useRef(settings); live.current = settings;
   const originProblem = typeof location !== 'undefined' && !originAllowed(location.origin)
-    ? `Diese Seite (${location.origin}) darf die Mod nicht abfragen. Nutze https://freadeax.github.io/Minecraft-Bauplaner/ oder eine lokale Kopie auf localhost.` : '';
+    ? `Diese Seite (${location.origin}) darf die Mod nicht abfragen. Nutze https://freadeax.github.io/Minecraft-Bauplaner/, https://bauplaner.pages.dev/Minecraft-Bauplaner/ oder eine lokale Kopie auf localhost.` : '';
 
   const update = useCallback((next: LiveSettings) => { setSettings(next); live.current = next; writeSettings(next); }, []);
 

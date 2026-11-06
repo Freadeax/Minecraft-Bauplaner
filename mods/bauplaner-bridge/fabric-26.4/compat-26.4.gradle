@@ -1,0 +1,23 @@
+// Unterschiede Minecraft 26.3 → 26.4 (Stand 26.4-snapshot-7), als Ersetzungen auf die gemeinsamen 26.3-Quellen.
+// Jede Regel nennt, was sich im Spiel geändert hat. Neue Abweichung: hier eintragen; ganze Dateien nur, wenn
+// eine Regel nicht reicht, unter src/override/java ablegen.
+ext.compatRules = [
+    // Bildschirme: extractRenderState/extractBackground bekommen nur noch den Extractor; Maus und Teilschritt liefert er selbst.
+    [file: 'hologram/PlanScreen.java', find: /public void (extractRenderState|extractBackground)\(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta\) \{/,
+     to: 'public void $1(GuiGraphicsExtractor g) { int mouseX = g.mouseX(), mouseY = g.mouseY(); float delta = g.partialTicks();'],
+    [file: 'hologram/CommandScreen.java', find: /public void (extractRenderState|extractBackground)\(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta\) \{/,
+     to: 'public void $1(GuiGraphicsExtractor g) { int mouseX = g.mouseX(), mouseY = g.mouseY(); float delta = g.partialTicks();'],
+    [file: 'hologram/MaterialScreen.java', find: /public void (extractRenderState|extractBackground)\(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta\) \{/,
+     to: 'public void $1(GuiGraphicsExtractor g) { int mouseX = g.mouseX(), mouseY = g.mouseY(); float delta = g.partialTicks();'],
+    [file: 'hologram/PlanScreen.java', find: /super\.extractRenderState\(g, mouseX, mouseY, delta\)/, to: 'super.extractRenderState(g)'],
+    [file: 'hologram/CommandScreen.java', find: /super\.extractRenderState\(g, mouseX, mouseY, delta\)/, to: 'super.extractRenderState(g)'],
+    [file: 'hologram/MaterialScreen.java', find: /super\.extractRenderState\(g, mouseX, mouseY, delta\)/, to: 'super.extractRenderState(g)'],
+    // AbstractWidget.visible ist geschützt; setVisible gibt es in beiden Versionen.
+    [file: 'hologram/PlanScreen.java', find: /\bwd\.visible = (.+);/, to: 'wd.setVisible($1);'],
+    // Render-Pipeline: 26.4 baut Linien-Pipelines aus Varianten (OIT); die Röntgen-Linien liefert Compat264.
+    [file: 'hologram/McCompat.java', find: /var pipeline = com\.mojang\.renderpearl\.api\.pipeline\.RenderPipeline\.builder[\s\S]*?\.build\(\);/,
+     to: 'var pipeline = Compat264.xrayPipeline();'],
+    [file: 'hologram/McCompat.java', find: /RenderSetup\.builder\(pipeline\)/, to: 'RenderSetup.nonOitBuilder(pipeline)'],
+    // Fabric API 26.4: HudElement.extractRenderState(GuiGraphicsExtractor) ohne DeltaTracker (steckt im Extractor).
+    [file: 'fabric/BridgeClient.java', find: /client::hud\)/, to: 'g -> client.hud(g, g.deltaTracker()))'],
+]

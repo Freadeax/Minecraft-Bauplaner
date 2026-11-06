@@ -7895,3 +7895,28 @@ Prüfprotokoll TERRAIN-05 ergänzt: voller Browserlauf 197/197 grün.
 
 - `docs/TESTING.md`
 
+## 2026-11-06T20:15:17.119Z · progress
+
+**Aufgaben:** GAME-11, PERF-06
+
+Mod auf Minecraft 26.4 vorbereitet: Adapter fabric-26.4 gegen 26.4-snapshot-7 über mod-core und geprüfte Ersetzungsregeln (26.3 unverändert), echter Spieltest unter 26.4 bestanden, kein Release bis 26.4 erscheint; PERF-06-S03: pages.dev in Mod (seit 0.17.2) und Team-Raum live bestätigt, Planer-Hinweis nennt beide Adressen
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-11 | 🚧 In Arbeit | 2/4 | Fabric 26.4 ist vorbereitet (Snapshot, kein Release). Erscheint 26.4: Versionen in fabric-26.4/gradle.properties auf das Release setzen, Spieltest BAUPLANER_MC=26.4, dann #/mod und Modrinth je Version (S03); NeoForge 26.4 sobald NeoForge Builds hat. |
+| PERF-06 | 🚧 In Arbeit | 3/3 | Abnahme: Safari/iPad und Firefox (Offline-Speicher); Verbindung Mod ↔ Planer einmal über https://bauplaner.pages.dev/Minecraft-Bauplaner/ im echten Spiel. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/map/liveClient.ts`
+- `docs/TESTING.md`
+- `docs/architecture/mod/MOD_BRIDGE.md`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/fabric-26.4/build.gradle`
+- `mods/bauplaner-bridge/fabric-26.4/compat-26.4.gradle`
+- `mods/bauplaner-bridge/fabric-26.4/gradle.properties`
+- `mods/bauplaner-bridge/fabric-26.4/src/override/java/io/github/freadeax/bauplaner/bridge/hologram/Compat264.java`
+- `mods/bauplaner-bridge/settings.gradle`
+- `scripts/mod/test_bridge_ingame.sh`
+- `tests/unit/mod/mod-versions.test.mjs`
+

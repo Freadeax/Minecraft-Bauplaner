@@ -10,6 +10,7 @@
 # Optional: BAUPLANER_SHADERPACK=<shaderpack .zip> (with BAUPLANER_MODPACK_MODS containing Iris) runs the
 # modpack test with that shaderpack switched on, so the hologram is checked under shaders too.
 # Optional: BAUPLANER_KEEP=<dir> keeps the work folder (game.log, hologramm.png, menue.png, scan) there.
+# Optional: BAUPLANER_MC=26.4 runs the same test with the 26.4 adapter (fabric-26.4, snapshot preparation for GAME-11).
 # Not part of `npm run check` (several minutes, large downloads on the first run).
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
@@ -29,9 +30,15 @@ if [ -z "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]; then
   weston_pid=$!
   for _ in $(seq 50); do [ -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ] && break; sleep 0.2; done
 fi
-gradle_args=(-PwithFabric :fabric-26.3:runClientGameTest)
-[ -n "${BAUPLANER_MODPACK_MODS:-}" ] && gradle_args=(-PwithFabric "-PmodpackMods=$BAUPLANER_MODPACK_MODS" :fabric-26.3:runModpackGameTest)
-modpack_run=mods/bauplaner-bridge/fabric-26.3/build/run/modpackGameTest
+mc=${BAUPLANER_MC:-26.3}
+case "$mc" in
+  26.3) switch=-PwithFabric ;;
+  26.4) switch=-PwithFabric264 ;;
+  *) echo "Unbekannte Minecraft-Version $mc (26.3 oder 26.4)" >&2; exit 2 ;;
+esac
+gradle_args=("$switch" ":fabric-$mc:runClientGameTest")
+[ -n "${BAUPLANER_MODPACK_MODS:-}" ] && gradle_args=("$switch" "-PmodpackMods=$BAUPLANER_MODPACK_MODS" ":fabric-$mc:runModpackGameTest")
+modpack_run=mods/bauplaner-bridge/fabric-$mc/build/run/modpackGameTest
 if [ -n "${BAUPLANER_MODPACK_MODS:-}" ]; then
   mkdir -p "$modpack_run/config" "$modpack_run/shaderpacks"
   if [ -n "${BAUPLANER_SHADERPACK:-}" ]; then
