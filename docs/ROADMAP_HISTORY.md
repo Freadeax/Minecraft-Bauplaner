@@ -6991,3 +6991,66 @@ Mod 0.18.0: Bauhilfen Symmetrie und Kurven in der Mod (Java-Port gleich den Plan
 | LINK-02 | 🧩 Implementiert · Abnahme offen | 4/4 | Abnahme LINK-02 und LINK-11. |
 | GAME-11 | 🚧 In Arbeit | 1/4 | Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen. |
 
+## 2026-11-06T09:55:18.242Z · progress
+
+**Aufgaben:** EDIT-04, COOP-05, LINK-02, GAME-11
+
+Dateizuordnung zu Mod 0.18.0 nachgetragen (der vorige Eintrag entstand nach dem Rebase ohne Dateiliste); keine inhaltliche Änderung.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| EDIT-04 | 🧩 Implementiert · Abnahme offen | 7/8 | Spielprüfung gespiegelter Zustände im Planer (S07) und der Bauhilfen in der Mod (MOD-18/19); Gelände-Werkzeuge auf dem Projektgelände bleiben offen. |
+| COOP-05 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme LAGER-01…09 und LAGER-11 auf Philipps Server. |
+| LINK-02 | 🧩 Implementiert · Abnahme offen | 4/4 | Abnahme LINK-02 und LINK-11. |
+| GAME-11 | 🚧 In Arbeit | 1/4 | Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/styles/catalog.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/mod/ModView.tsx`
+- `apps/web/src/views/mod/installGuide.ts`
+- `apps/web/src/views/mod/planUpload.ts`
+- `apps/web/src/views/mod/releases.json`
+- `apps/web/src/views/project/GameCheckPanel.tsx`
+- `docs/architecture/mod/MOD_HOLOGRAM.md`
+- `docs/architecture/planer/CREATIVE_TOOLS.md`
+- `docs/architecture/team/AUTO_LINK.md`
+- `docs/architecture/team/LAGERKISTEN.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.18.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.18.0.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.18.0.jar`
+- `fixtures/edit/mod-edit-vectors.json`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/GuideClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramKeys.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramRenderer.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/MaterialScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/resources/assets/bauplaner_bridge/lang/de_de.json`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/resources/assets/bauplaner_bridge/lang/en_us.json`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/edit/BuildGuides.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/edit/Curve.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/edit/GuidePlan.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/edit/Symmetry.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomState.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/StoreStock.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamState.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/edit/EditGuidesTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomStockTest.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndex.java`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/team/serverControl.ts`
+- `scripts/fixtures/make_edit_vectors.mjs`
+- `tests/e2e/mod-download.e2e.mjs`
+- `tests/e2e/shell.e2e.mjs`
+- `tests/unit/editor/mod-edit-vectors.test.mjs`
+- `tests/unit/mod/install-guide.test.mjs`
+- `tests/unit/team/server-link.test.mjs`
+
