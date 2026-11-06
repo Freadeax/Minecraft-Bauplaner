@@ -7458,3 +7458,13 @@ Anleitung „Wie geh ich es an?“ (#/anleitung): sechs Wege nach Ziel, jeder Sc
 - `tests/e2e/shell.e2e.mjs`
 - `tests/unit/web/guide.test.mjs`
 
+## 2026-11-06T14:23:13.593Z · progress
+
+**Aufgaben:** GAME-09
+
+0.22.0 auf Modrinth (Fabric, NeoForge, Paper) mit Galeriebild Weltplan des Teams
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
+
