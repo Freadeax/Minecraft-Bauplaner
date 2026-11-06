@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T10:25:37.203Z",
+  "updatedAt": "2026-11-06T10:33:10.581Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -8277,7 +8277,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T10:18:20.598Z",
+      "updatedAt": "2026-11-06T10:33:10.581Z",
       "area": "MODRINTH",
       "thread": "Mod auf Modrinth veröffentlichen",
       "philipp": [],
@@ -22594,6 +22594,26 @@
           "done": 10,
           "total": 11,
           "next": "Philipp prüft 0.19.0 im echten Spiel: gesperrter Bauplatz grau, Hologramm nur in einer Gruppe (Testfall MOD-21); danach Stufe 7."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T10:33:10.581Z",
+      "kind": "progress",
+      "items": [
+        "GAME-09"
+      ],
+      "summary": "0.19.0 auf Modrinth (Fabric, NeoForge); Beschreibung um Gruppen und Sperren ergänzt",
+      "files": [
+        "mods/bauplaner-bridge/modrinth/DESCRIPTION.md"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 4,
+          "total": 5,
+          "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
         }
       ]
     }

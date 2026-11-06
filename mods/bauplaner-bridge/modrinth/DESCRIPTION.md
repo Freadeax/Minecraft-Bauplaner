@@ -9,6 +9,7 @@
 - **Layers, sections and x-ray.** Show all layers, one layer or everything up to a layer. Build the plan section by section as planned on the website, and see open blocks through walls.
 - **Material and packing list.** What is still open, what you carry (shulker boxes and bundles count) and what you still need to fetch, in stacks and shulker boxes. With a team, a *storage* column shows the stock of your team's storage chests and the packing list names the nearest chest that holds it.
 - **Build guides: symmetry and curves.** Set a mirror or rotation axis where you stand, and every block you place shows its mirrored and rotated copies as ghost blocks (doors, stairs, chests and logs turn correctly). Or set control points and the mod shows a smooth curve as a pipe, path or wall. Save a guide as a plan to use sections, material list and placement helper with it. Everything stays in your game.
+- **Groups and locked areas.** Building sites, zones and paths of your world plan can have a group and a lock. Locked areas appear grey in the hologram and the placement helper leaves them alone. `/bauplaner gruppe <name>` limits hologram, progress and material list to one group.
 - **Placement helper.** Optionally stops you from placing a wrong block or a wrong rotation inside the plan, or only warns you. Pick the planned block straight into your hand. `/bauplaner geruest` finds floating parts and falling blocks without support.
 - **Commands & status.** Press `J` → *Commands & status* for every command as a button, and to see how the mod is connected.
 - **Link to the planner on the same PC.** The website finds the game by itself. Nothing happens until you press `J` in the game and click *Allow planner*. Then the website can send plans and map markers to the game and read back the build state. You can also set map markers in the game (`/bauplaner markieren`).
@@ -51,6 +52,7 @@ The Paper plugin is optional. It sets itself up, an operator pairs it from the p
 - **Ebenen, Bauabschnitte und Röntgensicht.**
 - **Material- und Packliste** mit Inventar, Shulkerkisten, Bündeln, Lagerbestand des Teams und der nächsten Team-Kiste.
 - **Bauhilfen Symmetrie und Kurven:** Spiegel- oder Drehachse setzen, jeder Block zeigt seine Kopien als Geisterblöcke; Kurven als Rohr, Weg oder Mauer. Als Plan speicherbar, alles bleibt im Spiel.
+- **Gruppen und Sperren** aus dem Weltplan: gesperrte Flächen grau im Hologramm, `/bauplaner gruppe <name>` zeigt nur eine Gruppe samt Fortschritt und Material.
 - **Platzierhilfe**, die falsche Blöcke verhindert oder nur warnt; `/bauplaner geruest` findet schwebende Teile.
 - **Befehle & Status** im J-Menü: jeder Befehl als Knopf, dazu der Verbindungsstand.
 - **Planer auf demselben PC:** Die Website findet das Spiel selbst; erst nach `J` → *Planer zulassen* tauscht sie Pläne, Markierungen und Baustand aus.

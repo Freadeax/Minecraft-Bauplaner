@@ -7170,3 +7170,17 @@ Dateizuordnung zu Gruppen und Sperren (Mod 0.19.0) nachgetragen (der vorige Eint
 - `tests/unit/world/worldgroups.test.mjs`
 - `tests/unit/world/worldplan.test.mjs`
 
+## 2026-11-06T10:33:10.581Z · progress
+
+**Aufgaben:** GAME-09
+
+0.19.0 auf Modrinth (Fabric, NeoForge); Beschreibung um Gruppen und Sperren ergänzt
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
+
+**Geänderte Dateien:**
+
+- `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
+
