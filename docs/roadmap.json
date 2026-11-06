@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T16:36:09.947Z",
+  "updatedAt": "2026-11-06T20:21:49.359Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -3793,7 +3793,7 @@
         "Jede Kurve ist flächenverbunden; jedes Werkzeug ist ein Rückgängig-Schritt.",
         "Keine Farbtabellen oder Texturen im Kern."
       ],
-      "next": "Spielprüfung gespiegelter Zustände im Planer (S07) und der Bauhilfen in der Mod (MOD-18/19); Gelände-Werkzeuge auf dem Projektgelände bleiben offen.",
+      "next": "Spielprüfung gespiegelter Zustände im Planer (S07) und der Bauhilfen in der Mod (MOD-18/19); Gelände-Werkzeuge auf dem Projektgelände sind als TERRAIN-05 umgesetzt.",
       "blockers": [],
       "evidence": [
         {
@@ -3821,7 +3821,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T10:12:51.224Z",
+      "updatedAt": "2026-11-06T20:21:49.359Z",
       "area": "PLANER",
       "thread": "Mod-Werkzeuge und Planer-Anbindung erweitern",
       "philipp": [
@@ -3834,9 +3834,7 @@
           "text": "Bauhilfen Symmetrie und Kurven in der Mod (MOD-18, MOD-19)."
         }
       ],
-      "orphans": [
-        "Gelände-Werkzeuge auf dem Projektgelände (als eigener Thread angekündigt, nie gestartet)."
-      ]
+      "orphans": []
     },
     {
       "id": "EDIT-05",
@@ -4742,6 +4740,99 @@
         {
           "kind": "spiel",
           "text": "Mod 0.20.0 installieren, einmal um den Bauplatz laufen, im Reiter „Gelände“ „Gelände aus dem Spiel übernehmen“ und „Gelände aus dem Spiel prüfen“ (S05)."
+        }
+      ],
+      "orphans": []
+    },
+    {
+      "id": "TERRAIN-05",
+      "title": "Gelände-Werkzeuge auf dem Projektgelände: Verwittern, Formstempel, Fluss und Maske für alle Werkzeuge mit geschützten Bauplätzen",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Alle Bereiche in Blöcken weiterbauen“, Block 1)",
+      "dependencies": [
+        "TERRAIN-02",
+        "TERRAIN-03",
+        "EDIT-04"
+      ],
+      "scope": [
+        "packages/domain/src/world/terrainSculpt.ts",
+        "packages/domain/src/world/terrainDesign.ts",
+        "packages/domain/src/index.ts",
+        "apps/web/src/views/project/LandscapeTab.tsx",
+        "apps/web/src/views/project/landscape/landscape.css",
+        "tests/unit/world/terrain-sculpt.test.mjs",
+        "tests/e2e/landscape-sculpt.e2e.mjs",
+        "docs/architecture/welt/LANDSCAPE.md",
+        "apps/web/src/testing/testplan.ts",
+        "docs/testing/TESTPLAN.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "TERRAIN-05-S01",
+          "title": "Verwittern: thermische Erosion bis zur Hanggrenze und Regenrinnen, mengengleich, als Pinsel und für die ganze Fläche.",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-05-S02",
+          "title": "Formstempel Hügel, Berg, Krater, Mulde und Plateau mit Größe und Höhe in einem Klick.",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-05-S03",
+          "title": "Fluss graben: Wasserspiegel flussab nie steigend, Bett, Ufer abgeböscht oder aufgeschüttet, Bett aus Kies/Sand/Lehm.",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-05-S04",
+          "title": "Maske für alle Werkzeuge (Hang, Höhe, trocken) und „Bauplätze schützen“ mit Rand.",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-05-S05",
+          "title": "Unit- und Browserprüfung (1400/390 px), Doku LANDSCAPE.md, Testfall PROJ-26.",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-05-S06",
+          "title": "Abnahme im Spiel (PROJ-26): Berg, Fluss und verwitterte Hänge als Geländebauteil in Philipps Welt.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Alle neuen Werkzeuge sind deterministisch, rückgängig machbar und ändern weder unbekannte noch geschützte Spalten.",
+        "Verwittern verschiebt nur Erde (gleiche Menge), ein Fluss steigt flussab nie an und bleibt in seinem Bett.",
+        "Bestehende Landschaftstests bleiben grün."
+      ],
+      "next": "Abnahme durch Philipp im Planer und im Spiel (PROJ-26).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/unit/world/terrain-sculpt.test.mjs",
+          "note": "Erosion, Formen, Fluss, Maske mit Handwerten."
+        },
+        {
+          "path": "tests/e2e/landscape-sculpt.e2e.mjs",
+          "note": "Chromium 1400/390 px: Berg, Verwittern, Fluss, Maske, Rückgängig, Speichern."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Kern- und Browsertests bestanden; Abnahme durch Philipp offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-06T20:21:49.359Z",
+      "area": "PLANER",
+      "thread": "Alle Bereiche in Blöcken weiterbauen",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Im Reiter „Landschaft“ einen Berg stempeln, verwittern lassen, einen Fluss graben, als Bauteil übernehmen und im Spiel ansehen (PROJ-26)."
         }
       ],
       "orphans": []
@@ -24167,6 +24258,44 @@
           "done": 4,
           "total": 5,
           "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T20:21:49.359Z",
+      "kind": "progress",
+      "items": [
+        "TERRAIN-05",
+        "EDIT-04"
+      ],
+      "summary": "TERRAIN-05 Gelände-Werkzeuge auf dem Projektgelände: Verwittern (mengengleich, Regenrinnen), Formstempel Hügel/Berg/Krater/Mulde/Plateau, Fluss mit nie steigendem Spiegel, Maske für alle Pinsel und Bauplätze schützen; check 966/966, Landschafts-Browsertests 12/12; Abnahme PROJ-26 offen. EDIT-04 ohne verwaisten Punkt.",
+      "files": [
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/project/LandscapeTab.tsx",
+        "apps/web/src/views/project/landscape/landscape.css",
+        "docs/TESTING.md",
+        "docs/architecture/welt/LANDSCAPE.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/world/terrainDesign.ts",
+        "packages/domain/src/world/terrainSculpt.ts",
+        "tests/e2e/landscape-sculpt.e2e.mjs",
+        "tests/unit/world/terrain-sculpt.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "TERRAIN-05",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp im Planer und im Spiel (PROJ-26)."
+        },
+        {
+          "id": "EDIT-04",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "Spielprüfung gespiegelter Zustände im Planer (S07) und der Bauhilfen in der Mod (MOD-18/19); Gelände-Werkzeuge auf dem Projektgelände sind als TERRAIN-05 umgesetzt."
         }
       ]
     }

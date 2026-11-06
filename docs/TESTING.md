@@ -1097,3 +1097,8 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Nach Rebase auf UX-01 (vier Schrittgruppen): Schrittgruppen mitgestaltet (aktive Schrittnummer in Akzentfarbe, ohne Ausblendkante); `simple-ui.e2e.mjs` las den Kurzsatz direkt nach dem URL-Wechsel (1 von 3 Läufen rot); die Wartestelle kam zeitgleich vom UX-01-Thread und ist übernommen. Voller Browserlauf 3: 194/195, einziger Ausfall `offline.e2e.mjs` (Service-Worker-Aktivierung unter Last), allein zweimal 3/3 grün.
 - Voller Browserlauf 4 (nach Rebase auf PERF-06-Teststabilisierung): 194/195, erneut nur `offline.e2e.mjs`: nach „Offline-Speicher leeren und ausschalten“ schrieb der alte Service Worker eine laufende Antwort zurück in einen neuen Speicher. `clearOffline()` löscht jetzt, bis der Speicher wirklich weg bleibt; danach offline 3/3 und unter Last (l*, m*, offline: 31/31) grün.
 - Nicht automatisch geprüft: echtes iPad/Safari (Testfälle START-20/21).
+
+## TERRAIN-05 · Gelände-Werkzeuge auf dem Projektgelände · 06.11.2026 · Claude
+- `npm run check` grün (966 Tests bestanden); neu `tests/unit/world/terrain-sculpt.test.mjs` 5/5: Verwittern (Hanggrenze, gleiche Erdmenge, Schutzmaske, Pinselkreis, Wege/Wasser bleiben, Regenrinnen), alle fünf Formstempel, Fluss (Spiegel flussab nie steigend, Bett, Ufer halten das Wasser, Wegstufen entfernt), Maske für Anheben/Formstempel und Höhenfilter beim Absenken.
+- Neu `tests/e2e/landscape-sculpt.e2e.mjs` 2/2 (Chromium 1400/390 px, Touch); zusammen mit landscape, landscape-paths, landscape-scatter, plan-landscape und terrain-game 12/12.
+- Nicht automatisch geprüft: Abnahme im Spiel und auf dem iPad (Testfall PROJ-26).

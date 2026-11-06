@@ -301,8 +301,13 @@ export interface Brush {
   readonly step?: number;
   /** Surface style id (paint). */
   readonly style?: string;
-  /** Paint only where these hold (WorldPainter-like filter). */
+  /**
+   * Only where these hold (WorldPainter-like filter). Paint has used it from
+   * the start; TERRAIN-05 applies it to every brush as a mask.
+   */
   readonly filter?: PaintFilter;
+  /** TERRAIN-05: columns (index `x + z·width`) with a non-zero entry are never changed (e.g. graded building sites). */
+  readonly protect?: Uint8Array;
 }
 
 export interface PaintFilter { readonly minY?: number; readonly maxY?: number; readonly minSlope?: number; readonly maxSlope?: number; readonly onlyDry?: boolean }
@@ -332,7 +337,8 @@ export function slopeAt(d: TerrainDesign, x: number, z: number): number {
   return s;
 }
 
-const passes = (d: TerrainDesign, x: number, z: number, f: PaintFilter | undefined): boolean => {
+/** Whether column (x, z) (grid coordinates) passes a filter; no filter passes. */
+export const columnPasses = (d: TerrainDesign, x: number, z: number, f: PaintFilter | undefined): boolean => {
   if (!f) return true;
   const h = d.height[x + z * d.width]!;
   if (f.minY !== undefined && h < f.minY) return false;
@@ -346,7 +352,8 @@ const passes = (d: TerrainDesign, x: number, z: number, f: PaintFilter | undefin
   return true;
 };
 
-const setHeight = (d: TerrainDesign, i: number, h: number, lim: [number, number]): boolean => {
+/** Sets a column's planned height (rounded, within the world limits); drops water and path pieces that no longer fit. */
+export const setHeight = (d: TerrainDesign, i: number, h: number, lim: readonly [number, number]): boolean => {
   const v = Math.max(lim[0], Math.min(lim[1], Math.round(h)));
   if (v === d.height[i]) return false;
   d.height[i] = v;
@@ -389,7 +396,8 @@ export function applyBrush(d: TerrainDesign, cx: number, cz: number, b: Brush): 
   const each = (fn: (i: number, w: number, x: number, z: number) => boolean) => {
     for (let z = z0; z <= z1; z++) for (let x = x0; x <= x1; x++) {
       const i = x + z * d.width;
-      if (d.height[i] === SURVEY_UNKNOWN) continue;
+      if (d.height[i] === SURVEY_UNKNOWN || b.protect?.[i]) continue;
+      if (b.filter && !columnPasses(d, x, z, b.filter)) continue;
       const w = brushWeight(stableHypot(x - gx, z - gz), r, b.falloff);
       if (w <= 0) continue;
       if (fn(i, w, x, z)) changed++;
@@ -459,7 +467,7 @@ export function applyBrush(d: TerrainDesign, cx: number, cz: number, b: Brush): 
       }
       break;
     }
-    case 'paint': each((i, w, x, z) => w >= 0.5 && passes(d, x, z, b.filter) && paintColumn(d, i, style!)); break;
+    case 'paint': each((i, w) => w >= 0.5 && paintColumn(d, i, style!)); break;
     case 'drain': each((i, w) => { if (w < 0.5 || d.water[i] === NO_WATER) return false; d.water[i] = NO_WATER; if (d.path[i]! >= PATH_DECK) clearPiece(d, i); return true; }); break;
   }
   if (changed) d.updatedAt = new Date().toISOString();

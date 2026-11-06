@@ -36,8 +36,13 @@ Alle Werkzeuge sind deterministisch (gleiche Eingabe, gleiches Ergebnis; Zufall 
 | Wasser entfernen | Pinsel |
 | Weg | Wegpunkte (oder ein Weg aus der Weltkarte), 4-verbundene Mittellinie, Höhen geglättet und auf höchstens einen Block je Schritt begrenzt, Breite eingeebnet und mit Belag bemalt; Treppen oder Halbstufen an jedem Höhenwechsel; über Wasser als Damm oder Brücke (siehe unten) |
 | Pipette | übernimmt Höhe und Wasserspiegel |
+| Verwittern (V, TERRAIN-05) | Pinsel: Stufen höher als „Hang hält bis“ bröckeln zum niedrigsten Nachbarn (thermische Erosion, abwechselnde Laufrichtung), Regen (wenig/mittel/stark) schickt Tropfen den steilsten Weg hinab, die je Stufe ≥ 2 einen Block mitnehmen und am Ruhepunkt ablegen; Wege, Wasser und Unbekanntes bleiben; die Erdmenge bleibt gleich (`erodeTerrain`) |
+| Formstempel (F, TERRAIN-05) | ein Klick: Hügel (Kosinusglocke), Berg (Kegel mit Rauschgraten), Krater (Schüssel mit Wall), Mulde, Plateau (ebene Kuppe auf Mitte + Höhe mit weicher Flanke); Größe = Pinselgröße, eigene Höhe/Tiefe; addiert auf das vorhandene Gelände (`stampShape`) |
+| Fluss (L, TERRAIN-05) | Punkte in Fließrichtung, „Fluss graben“: Wasserspiegel = tiefster Boden neben der Linie, flussab nie steigend; Bett in der Mitte „Tiefe“ unter dem Wasser, am Rand einen Block; Ufer fallen einen Block je Block ins höhere Gelände ab, tieferer Boden wird bis zum Wasserspiegel aufgeschüttet; Bett aus Kies, Sand oder Lehm; kreuzende Wegstufen werden entfernt (`carveRiver`) |
 
-Für die ganze Fläche: **Automatisch bemalen** (Fels ab Hangstufe, Schnee ab Y, Strand bis n Blöcke vom Wasser, sonst ein Stil; Wege bleiben), **Bauplätze einebnen** (`gradeFootprints`: unter jedem geplanten Block liegt der Boden genau eine Schicht tiefer, Übergang läuft weich aus – danach zeigt die Erdarbeiten-Schätzung weder Unterbau noch Abtrag) und **Zurücksetzen**.
+**Maske (TERRAIN-05):** Die Filter „nur Hang ab“, „nur ab/bis Y“ und „nicht unter Wasser“ gelten jetzt für alle Form- und Malwerkzeuge, Verwittern, Formstempel und Fluss (`Brush.filter`, `SculptMask`). „Bauplätze schützen“ legt eine Schutzmaske über die Spalten der geplanten Bauten plus Rand (`footprintMask`); diese Spalten ändert kein Werkzeug.
+
+Für die ganze Fläche: **Verwittern lassen** (TERRAIN-05, Runden, Hang hält bis, Regen; Maske gilt mit), **Automatisch bemalen** (Fels ab Hangstufe, Schnee ab Y, Strand bis n Blöcke vom Wasser, sonst ein Stil; Wege bleiben), **Bauplätze einebnen** (`gradeFootprints`: unter jedem geplanten Block liegt der Boden genau eine Schicht tiefer, Übergang läuft weich aus – danach zeigt die Erdarbeiten-Schätzung weder Unterbau noch Abtrag) und **Zurücksetzen**.
 
 ## Wegstufen und Brücken (TERRAIN-03)
 
@@ -105,11 +110,14 @@ Projektreiter **„Landschaft“** (`#/projekt/<id>/landschaft`, `apps/web/src/v
 - `tests/e2e/landscape-scatter.e2e.mjs` (Chromium 1400 und 390 px): Mischwald streuen, erneut streuen ergibt dasselbe, Ebene ändern, von Hand setzen und entfernen, Rückgängig, 3D, Speichern/Neuladen, Bauteil im Projekt mit Laub und Stämmen in der Materialliste.
 - `tests/unit/world/terrain-paths.test.mjs` (8 Fälle, TERRAIN-03): Aufschütten/Abtragen nur einseitig, Rampe (gleichmäßig, Breite, Übergang, unbekannte Enden), Treppen je Höhenwechsel über die Breite und bergauf in beiden Legerichtungen, gültige Zustände im Payload, Halbstufen, Stufen nach späteren Pinselstrichen, Brücke (Belag, Geländer mit Verbindungen, Wasser bleibt, geplantes Gelände), Brücke mit hohem Ufer (Absatz und Treppen), Datei mit und ohne Wegstufen, alle Materialien sind Blöcke in 26.3.
 - `tests/e2e/landscape-paths.e2e.mjs` (Chromium 1400 und 390 px, Touch): ebener Grund → Aufschütten, Graben abtragen, Rampe, Weg mit Treppen, Wasser im Graben, Brücke aus Eiche → 3D, Speichern, Neuladen → Bauteil im Projekt mit Treppen und Zäunen in der Materialliste.
+- `tests/unit/world/terrain-sculpt.test.mjs` (5 Fälle, TERRAIN-05): Klippe verwittert bis zur Hanggrenze bei gleicher Erdmenge, geschützte und unbekannte Spalten bleiben, deterministisch; nur im Pinselkreis, Wege und Wasser bleiben, Regen wäscht Rinnen; alle fünf Formen mit Handwerten; Fluss steigt flussab nie an, Bett unter dem Wasser, Ufer halten das Wasser, Wegstufen entfernt; Maske für Anheben und Formstempel, Höhenfilter beim Absenken.
+- `tests/e2e/landscape-sculpt.e2e.mjs` (Chromium 1400 und 390 px, Touch): ebener Grund → Berg stempeln, Verwittern per Pinsel und ganze Fläche, Fluss graben (Wasser in der Bilanz), Maske „nur bis Y“ beim Anheben, Rückgängig, Speichern.
 - `tests/e2e/landscape.e2e.mjs` (Chromium 1400 und 390 px, Touch): Bauplatz aus echter Regionsdatei → Anheben per Ziehen, Rückgängig/Wiederholen, Bemalen, Mulde graben und füllen, Weg legen, Ansichten und 3D → Speichern und Neuladen → Weltkarte mit geplantem Gelände und Umschalter → Anlage mit vorausgewähltem Ziel und Geländequelle → Bauteil im Projekt, Materialliste.
 
 ## Grenzen
 
-- Höhenkarte: keine Höhlen, Überhänge oder Tunnel; Wasser ist ruhendes Wasser je Spalte, keine Strömung.
+- Höhenkarte: keine Höhlen, Überhänge oder Tunnel; Wasser ist ruhendes Wasser je Spalte, keine Strömung. Ein Fluss ist daher eine Folge ruhender Wasserflächen mit fallendem Spiegel; an Stufen im Spiegel fließt im Spiel kein Wasser nach, bis man dort Wasser setzt.
+- Verwittern ist eine einfache, schnelle Erosion auf der Höhenkarte (keine Simulation mit Strömung oder Gesteinsarten).
 - Biome im Sinne des Spiels (Biom-IDs, Farben von Gras und Laub) werden nicht geändert, nur Blöcke der Oberfläche.
 - Wegstufen gibt es nur für Höhenwechsel um genau einen Block; Brücken liegen immer einen Block über dem Wasser (keine hohen Bögen oder Pfeiler). Wege des Basisplaners (BASE-01) liegen auf ebenem Grund und bekommen ihre Stufen erst, wenn sie in der Landschaft als Weg gelegt werden.
 - Streu-Ebene: Oberflächenstile werden am obersten Block erkannt (Gras gehört zu Wiese, Waldboden und Moos). Die Weltkarte zeigt eigene Schablonen nicht als Oberfläche; Bäume werden nicht als wachsende Setzlinge, sondern fertig geplant.

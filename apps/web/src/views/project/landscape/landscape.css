@@ -25,6 +25,8 @@
 .landscape-options select{width:auto}
 .landscape-options button{border:1px solid var(--line);border-radius:6px;background:var(--panel-2);color:var(--text);padding:7px 10px;font-size:12px}
 .landscape-options .primary{background:var(--mint);color:var(--theme-on-accent,#173329);border-color:var(--mint);font-weight:650}
+.landscape-mask{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;flex-basis:100%;padding-top:6px;border-top:1px dashed var(--line)}
+.landscape-mask>b{font-weight:650;color:var(--muted,var(--text))}
 .landscape-swatches{display:inline-flex;gap:3px}.landscape-swatches i,.landscape-materials i{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-2px}
 .landscape-view{display:grid;gap:6px}
 .landscape-modes{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px}

@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T16:36:09.947Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T20:21:49.359Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-06T16:36:09.947Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 6 |
 | 🚧 In Arbeit | 8 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 96 |
+| 🧩 Implementiert · Abnahme offen | 97 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -25,7 +25,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 
 | Bereich | Offen | Verwaist | Nur Philipp | Geprüft |
 |---|---:|---:|---:|---:|
-| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 27 | 2 | 27 | 2 |
+| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 28 | 1 | 28 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 0 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 14 | 0 | 14 | 0 |
@@ -48,7 +48,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Mehrfachauswahl auf echten Geräten (QA-02). |
 | [EDIT-02](#edit-02) | Blockeditor | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Gesetzte und gedrehte Zustände im Spiel prüfen. |
 | [EDIT-03](#edit-03) | Werkstatt vertiefen | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Schablonen-Zustände (Tür, Treppe, Laterne) im Spiel prüfen. |
-| [EDIT-04](#edit-04) | Kreativwerkzeuge aus dem Planer-Vergleich | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Mod-Werkzeuge und Planer-Anbindung erweitern“ · 1 verwaist | Gespiegelte und gedrehte Zustände (Türen, Truhen, Schienen) im Spiel (S07).<br>Bauhilfen Symmetrie und Kurven in der Mod (MOD-18, MOD-19). |
+| [EDIT-04](#edit-04) | Kreativwerkzeuge aus dem Planer-Vergleich | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Mod-Werkzeuge und Planer-Anbindung erweitern“ | Gespiegelte und gedrehte Zustände (Türen, Truhen, Schienen) im Spiel (S07).<br>Bauhilfen Symmetrie und Kurven in der Mod (MOD-18, MOD-19). |
 | [EDIT-05](#edit-05) | Auswahl- und Formwerkzeuge aus Editor-Mods | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Zauberstab, Stapeln, Extrudieren und Wendel in der Werkstatt abnehmen (S07).<br>Gestapelte und gedrehte Bauteile mit Ausstattung im Spiel. |
 | [EDIT-06](#edit-06) | Direkt im 3D-Bild bauen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Direkt im 3D-Bild bauen“ | Im 3D-Bild bauen auf PC und iPad (WERK-08).<br>Truhe und Schild mit Inhalt im Spiel laden (WERK-09). |
 | [GFX-01](#gfx-01) | Grafik vertiefen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Licht und Schatten auf echten GPUs, Firefox/Safari und Handy (S06). |
@@ -65,6 +65,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [TERRAIN-02](#terrain-02) | Landschaft gestalten | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Abnahme in deiner eigenen Welt und auf Touch-Geräten (S05). |
 | [TERRAIN-03](#terrain-03) | Gelände und Wege im Projekt | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Gelände, Wege und Küste ausbauen“ | PROJ-19: Weg mit Treppen und Brücke als .litematic in deiner Welt ansehen.<br>BIB-20: Basis mit Wegenetz als Landschaftsweg auf einem echten Hang einfügen und im Spiel ansehen. |
 | [TERRAIN-04](#terrain-04) | Gelände direkt aus der Mod | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Gelände direkt aus der Mod übernehmen“ | Mod 0.20.0 installieren, einmal um den Bauplatz laufen, im Reiter „Gelände“ „Gelände aus dem Spiel übernehmen“ und „Gelände aus dem Spiel prüfen“ (S05). |
+| [TERRAIN-05](#terrain-05) | Gelände-Werkzeuge auf dem Projektgelände | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Alle Bereiche in Blöcken weiterbauen“ | Im Reiter „Landschaft“ einen Berg stempeln, verwittern lassen, einen Fluss graben, als Bauteil übernehmen und im Spiel ansehen (PROJ-26). |
 | [UI-03](#ui-03) | Design-System | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Planer-Oberfläche schön neu gestalten“ | Am iPad die neue Oberfläche ansehen und START-20/21 in #/testphase abhaken (Thema „Werkbank“, Reiter wischen, „Bewegung reduzieren“). |
 | [UX-01](#ux-01) | Bedienung des Planers vereinfachen (Struktur und Abläufe) | 🚧 In Arbeit 6/6 | P1 | **verwaist** | Testphase START-10..13: vier Hauptbereiche, Projektschritte mit Kurzsatz, eingeklappte Experten- und Datei-Wege im Browser prüfen.<br>START-12 auf dem iPad: Projektreiter waagerecht wischen, eingeklappte Bereiche per Finger öffnen. |
 | [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Ansicht auf echter GPU und mit Touch prüfen, negative Koordinaten, alle Schnittachsen (S02). |
@@ -289,6 +290,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **TERRAIN-03** · PROJ-19: Weg mit Treppen und Brücke als .litematic in deiner Welt ansehen.
 - **TERRAIN-03** · BIB-20: Basis mit Wegenetz als Landschaftsweg auf einem echten Hang einfügen und im Spiel ansehen.
 - **TERRAIN-04** · Mod 0.20.0 installieren, einmal um den Bauplatz laufen, im Reiter „Gelände“ „Gelände aus dem Spiel übernehmen“ und „Gelände aus dem Spiel prüfen“ (S05).
+- **TERRAIN-05** · Im Reiter „Landschaft“ einen Berg stempeln, verwittern lassen, einen Fluss graben, als Bauteil übernehmen und im Spiel ansehen (PROJ-26).
 - **GEN-02** · Treppenhaus, Torhaus-Wehrgang und Hafen im Spiel.
 - **MAP-02** · BlueMap-Marker (.conf) bzw. Dynmap-Befehle auf eurer Server-Karte einspielen und prüfen, ob Projekte, Wege und Punkte an der richtigen Stelle erscheinen (KARTE-08).
 - **GAME-05** · Forge-Testversion auf einem Rechner mit Bildschirm starten (S03).
@@ -372,7 +374,6 @@ Arbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thr
 | ID | Bereich | Prio | Status | Offen ohne Bearbeiter |
 |---|---|---|---|---|
 | [QA-04](#qa-04) | Testphase, Qualität und Betrieb | P0 | 🧩 Implementiert · Abnahme offen | Der Thread „Große Testphase vorbereiten und betreuen“ ist beendet; die rund 30 Pakete, bei denen nur Philipps Abnahme fehlt, haben keinen aktiven Thread für Diagnose und Fehlerbehebung. |
-| [EDIT-04](#edit-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Gelände-Werkzeuge auf dem Projektgelände (als eigener Thread angekündigt, nie gestartet). |
 | [UX-01](#ux-01) | Planer | P1 | 🚧 In Arbeit | Philipps Abnahme START-10..13 im Browser und auf dem iPad. Optik übernimmt „Planer-Oberfläche schön neu gestalten“. |
 
 ## Eingänge ohne eigenes Paket
@@ -551,6 +552,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [TERRAIN-02](#terrain-02) | Landschaft gestalten: Gelände formen, bemalen, Wasser und Wege | 🧩 Implementiert · Abnahme offen | 6/7 | TERRAIN-01, BUILD-05, MAP-01 | ausstehend | ausstehend |
 | [TERRAIN-03](#terrain-03) | Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte | 🧩 Implementiert · Abnahme offen | 7/8 | TERRAIN-02, TERRAIN-01, MAP-04, BASE-01 | ausstehend | ausstehend |
 | [TERRAIN-04](#terrain-04) | Gelände direkt aus der Mod: Geländegedächtnis, Übernahme ohne Dateien, blockgenaue Prüfung aus dem Spiel | 🧩 Implementiert · Abnahme offen | 4/5 | TERRAIN-01, TERRAIN-02, MAP-03, GAME-08 | ausstehend | ausstehend |
+| [TERRAIN-05](#terrain-05) | Gelände-Werkzeuge auf dem Projektgelände: Verwittern, Formstempel, Fluss und Maske für alle Werkzeuge mit geschützten Bauplätzen | 🧩 Implementiert · Abnahme offen | 5/6 | TERRAIN-02, TERRAIN-03, EDIT-04 | ausstehend | ausstehend |
 | [BUILD-06](#build-06) | Bauführung im Spiel: Schichtführung, Tagesziele, Packlisten, Druck-/Handyansicht, Spielfortschritt | 🧩 Implementiert · Abnahme offen | 5/5 | BUILD-01, GAME-01, MAP-01 | ausstehend | ausstehend |
 | [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | 🧩 Implementiert · Abnahme offen | 5/5 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen | 4/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
@@ -1680,7 +1682,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### EDIT-04
 
-**Kreativwerkzeuge aus dem Planer-Vergleich: Symmetrie, Kurven, Naturwerkzeuge, Oberflächenmaske, Farbpaletten, Bild → Blöcke** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Ideen aus anderen Planern übernehmen“ · Zuständiger Thread: „Mod-Werkzeuge und Planer-Anbindung erweitern“ · Aktualisiert: 2026-11-06T10:12:51.224Z
+**Kreativwerkzeuge aus dem Planer-Vergleich: Symmetrie, Kurven, Naturwerkzeuge, Oberflächenmaske, Farbpaletten, Bild → Blöcke** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Ideen aus anderen Planern übernehmen“ · Zuständiger Thread: „Mod-Werkzeuge und Planer-Anbindung erweitern“ · Aktualisiert: 2026-11-06T20:21:49.359Z
 
 - [x] EDIT-04-S01: Gap-Analyse: andere Planer und Bautools gegen unsere Module, Auswahl und Vorschläge für eigene Threads (docs/project/PLANER_VERGLEICH.md).
 - [x] EDIT-04-S02: Symmetrie (Spiegeln X/Z, 2-/4-fach drehen, Achse auf Zellmitte oder -grenze) mit Zustandsdrehung über transformBlockState für alle Pinsel-Werkzeuge.
@@ -1693,11 +1695,9 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Gleiche Eingaben ergeben dieselben Zellen und dieselbe Version (auch Dithering). Keine zweite Koordinaten- oder Drehregel; Symmetrie nutzt transformVector/transformBlockState, ungelöste Zustände werden gemeldet. Jede Kurve ist flächenverbunden; jedes Werkzeug ist ein Rückgängig-Schritt. Keine Farbtabellen oder Texturen im Kern.
 
-**Nächste Aktion:** Spielprüfung gespiegelter Zustände im Planer (S07) und der Bauhilfen in der Mod (MOD-18/19); Gelände-Werkzeuge auf dem Projektgelände bleiben offen.
+**Nächste Aktion:** Spielprüfung gespiegelter Zustände im Planer (S07) und der Bauhilfen in der Mod (MOD-18/19); Gelände-Werkzeuge auf dem Projektgelände sind als TERRAIN-05 umgesetzt.
 
 **Nur Philipp:** Im Spiel an deinem PC: Gespiegelte und gedrehte Zustände (Türen, Truhen, Schienen) im Spiel (S07). Im Spiel an deinem PC: Bauhilfen Symmetrie und Kurven in der Mod (MOD-18, MOD-19).
-
-**Verwaist (ohne Bearbeiter):** Gelände-Werkzeuge auf dem Projektgelände (als eigener Thread angekündigt, nie gestartet).
 
 **Prüfstand:** Unit- und Chromium-Prüfung bestanden; Spielprüfung, Firefox/Safari und Geräte offen.
 
@@ -1933,6 +1933,31 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/unit/world/live-terrain.test.mjs](../tests/unit/world/live-terrain.test.mjs) — Leser, Abdeckung, Aufnahme mit Biomen und Dateikopf, Box als Prüfraster, Biom-Stile.; [tests/e2e/terrain-game.e2e.mjs](../tests/e2e/terrain-game.e2e.mjs) — Chromium 1400/390 px gegen den Mod-Simulator: verbinden, Abdeckung, Übernahme, Prüfung aus dem Spiel, Landschaft nach Biomen, alte Mod.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/TerrainMemoryTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/TerrainMemoryTest.java) — Antwort live/Gedächtnis, Datei speichern/laden, Grenze, Box, Routen.
 
 **Dateiumfang:** `packages/domain/src/world/liveTerrain.ts`, `packages/domain/src/world/terrainSurvey.ts`, `packages/domain/src/team/liveLink.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/world/gameTerrain.ts`, `apps/web/src/views/world/GameLinkBar.tsx`, `apps/web/src/views/world/world.css`, `apps/web/src/views/project/TerrainSurveyPanel.tsx`, `apps/web/src/views/project/TerrainTab.tsx`, `apps/web/src/views/project/LandscapeTab.tsx`, `apps/web/src/views/map/liveClient.ts`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/TerrainMemory.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/BoxRead.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/TerrainMemoryTest.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TerrainRecorder.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java`, `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`, `scripts/mod/bridge_gametest.mjs`, `mods/bauplaner-bridge/VERSION`, `mods/bauplaner-bridge/CHANGELOG.md`, `tests/unit/world/live-terrain.test.mjs`, `tests/e2e/terrain-game.e2e.mjs`, `tests/e2e/modSimulator.mjs`, `docs/architecture/welt/TERRAIN.md`, `docs/architecture/team/LIVE_LINK.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `tests/e2e/map-depth.e2e.mjs`. **Abhängigkeiten:** TERRAIN-01, TERRAIN-02, MAP-03, GAME-08. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### TERRAIN-05
+
+**Gelände-Werkzeuge auf dem Projektgelände: Verwittern, Formstempel, Fluss und Maske für alle Werkzeuge mit geschützten Bauplätzen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Alle Bereiche in Blöcken weiterbauen“, Block 1) · Zuständiger Thread: „Alle Bereiche in Blöcken weiterbauen“ · Aktualisiert: 2026-11-06T20:21:49.359Z
+
+- [x] TERRAIN-05-S01: Verwittern: thermische Erosion bis zur Hanggrenze und Regenrinnen, mengengleich, als Pinsel und für die ganze Fläche.
+- [x] TERRAIN-05-S02: Formstempel Hügel, Berg, Krater, Mulde und Plateau mit Größe und Höhe in einem Klick.
+- [x] TERRAIN-05-S03: Fluss graben: Wasserspiegel flussab nie steigend, Bett, Ufer abgeböscht oder aufgeschüttet, Bett aus Kies/Sand/Lehm.
+- [x] TERRAIN-05-S04: Maske für alle Werkzeuge (Hang, Höhe, trocken) und „Bauplätze schützen“ mit Rand.
+- [x] TERRAIN-05-S05: Unit- und Browserprüfung (1400/390 px), Doku LANDSCAPE.md, Testfall PROJ-26.
+- [ ] TERRAIN-05-S06: Abnahme im Spiel (PROJ-26): Berg, Fluss und verwitterte Hänge als Geländebauteil in Philipps Welt.
+
+**Abnahme:** Alle neuen Werkzeuge sind deterministisch, rückgängig machbar und ändern weder unbekannte noch geschützte Spalten. Verwittern verschiebt nur Erde (gleiche Menge), ein Fluss steigt flussab nie an und bleibt in seinem Bett. Bestehende Landschaftstests bleiben grün.
+
+**Nächste Aktion:** Abnahme durch Philipp im Planer und im Spiel (PROJ-26).
+
+**Nur Philipp:** Im Spiel an deinem PC: Im Reiter „Landschaft“ einen Berg stempeln, verwittern lassen, einen Fluss graben, als Bauteil übernehmen und im Spiel ansehen (PROJ-26).
+
+**Prüfstand:** Kern- und Browsertests bestanden; Abnahme durch Philipp offen.
+
+**Nachweise:** [tests/unit/world/terrain-sculpt.test.mjs](../tests/unit/world/terrain-sculpt.test.mjs) — Erosion, Formen, Fluss, Maske mit Handwerten.; [tests/e2e/landscape-sculpt.e2e.mjs](../tests/e2e/landscape-sculpt.e2e.mjs) — Chromium 1400/390 px: Berg, Verwittern, Fluss, Maske, Rückgängig, Speichern.
+
+**Dateiumfang:** `packages/domain/src/world/terrainSculpt.ts`, `packages/domain/src/world/terrainDesign.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/LandscapeTab.tsx`, `apps/web/src/views/project/landscape/landscape.css`, `tests/unit/world/terrain-sculpt.test.mjs`, `tests/e2e/landscape-sculpt.e2e.mjs`, `docs/architecture/welt/LANDSCAPE.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`. **Abhängigkeiten:** TERRAIN-02, TERRAIN-03, EDIT-04. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

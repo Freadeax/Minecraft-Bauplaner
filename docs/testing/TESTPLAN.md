@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/checks/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 177 Fälle in 13 Bereichen, davon 78 Kernfälle.
+Umfang: 178 Fälle in 13 Bereichen, davon 78 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -87,6 +87,7 @@ Das Herzstück: Bauteile anordnen, Material planen, Bauanleitung und Export.
 | PROJ-23 | Planung: Bauleute aus dem Team und Konto je Bauleute | vertieft | 1. Reiter Team: Team gründen (oder beitreten), unter „Beiträge und Sammeln“ eine Lieferung melden und „Ich sammle“ für ein Item eintragen.<br>2. Reiter Planung: unter „Bauleute aus dem Spiel“ „Team übernehmen“, dann den Bauleuten Abschnitte zuweisen.<br>3. Bei den Bauleuten „Konto“ aufklappen und „Bauzettel kopieren“; wenn ein Mitspieler mit der Mod im Team-Raum ist, auf das Abzeichen „im Spiel“ achten. | Mitglieder, die noch nicht in der Planung sind, stehen unter „Noch nicht in der Planung“ und werden mit einem Klick Bauleute (mit „Rückgängig“); das Konto zeigt je Item „fehlt“, „zugesagt“, „ohne Zusage“, „eingebracht“, „entnommen“ und den Saldo; „Noch ohne Sammelzusage“ listet, was niemand bringt; der Bauzettel enthält Zusagen und Lagerbuchungen. (Abnahme PROJ-05) |
 | PROJ-24 | Gelände direkt aus dem Spiel übernehmen | vertieft | 1. Mod 0.20.0 installieren, die Welt oder den Server betreten und einmal um den Bauplatz des Projekts laufen oder fliegen (/bauplaner gelaende zeigt, wie viel die Mod kennt).<br>2. Projekt mit Weltlage → Reiter „Gelände“ → unter „Aus dem Spiel“ „Mit dem Spiel verbinden“ (im Spiel J → „Planer zulassen“).<br>3. Die Zeile „Die Mod kennt … Chunks“ ansehen, dann „Gelände aus dem Spiel übernehmen“; danach im Spiel weit weggehen und erneut übernehmen.<br>4. Weltkarte öffnen und das Gelände unter dem Projekt ansehen. | Ohne Datei-Upload entsteht eine Geländeaufnahme „aus dem Spiel“ mit Boden-Höhen und Biomen; fehlt Gelände, nennt die Seite die Richtung; auch weit weg kommt das früher gesehene Gelände aus dem Geländegedächtnis; die Weltkarte zeigt es unter dem Projekt. (Abnahme TERRAIN-04) |
 | PROJ-25 | Gelände aus dem Spiel blockgenau prüfen und nach Biomen gestalten | vertieft | 1. Am Bauplatz stehen, Reiter „Gelände“ → „Gelände aus dem Spiel prüfen“.<br>2. Ergebnis mit dem Spiel vergleichen (Bäume, Hang, Wasser am Bauplatz).<br>3. Reiter „Landschaft“: „Gestaltung beginnen“ (oder „Aus dem Spiel holen und gestalten“), unter „Nach Biomen bemalen“ den Knopf drücken. | Die Prüfung zeigt Abtragen/Unterbau ohne Regionsdateien und „Quelle: Blöcke aus dem Spiel“; nicht geladene Teile werden als unbekannt genannt; die Landschaft wird passend zu den Biomen bemalt (Wald, Wüste, Schnee, Strand), Wege und Wasser bleiben. (Abnahme TERRAIN-04) |
+| PROJ-26 | Gelände-Werkzeuge: Formstempel, Verwittern, Fluss, Maske | vertieft | 1. Tab „Landschaft“: Gestaltung beginnen, Werkzeug „Formstempel“ (F), Form „Berg“, Höhe 30, Größe 16, einmal klicken; daneben eine „Mulde“.<br>2. Werkzeug „Verwittern“ (V) mit Regen über den Berg ziehen, dann unter „Ganze Fläche“ „Verwittern lassen“ → „Ganze Fläche verwittern“.<br>3. Werkzeug „Fluss“ (L): Punkte vom Berg ins Tal setzen, Breite 5, Tiefe 3, „Fluss graben“.<br>4. Bei einem Projekt mit Bauten unter „Maske“ „Bauplätze schützen“ anhaken und über die Bauten absenken; „nur bis Y“ setzen und anheben.<br>5. Als Bauteil ins Projekt übernehmen und im Spiel ansehen. | Der Berg steht mit unruhigem Hang, die Mulde ist eine Senke; nach dem Verwittern sind Klippen zu Hängen geworden, Rinnen laufen den Berg hinab und die Erde liegt am Fuß (Bilanz: Abtragen und Aufschütten etwa gleich); der Fluss hat ein Kiesbett, Wasser steigt flussab nie an, Ufer laufen ins Gelände aus; geschützte Bauplätze und Spalten über der Maske bleiben unverändert; alles ist rückgängig machbar. (Abnahme TERRAIN-05) |
 | PROJ-19 | Gelände und Wege: Rampe, Treppen, Brücke | vertieft | 1. Tab „Landschaft“: Gestaltung beginnen, mit „Rampe“ (M) eine Zufahrt zu einem höheren Platz legen, mit „Aufschütten“ (U) eine Mulde füllen.<br>2. Werkzeug „Weg“: Stufen „Treppen“, Belag Steinweg, einen Weg die Rampe hinauf legen; einen zweiten Weg mit „Über Wasser: Brücke mit Geländer“ über einen Bach legen (oder einen Weg aus der Weltkarte übernehmen).<br>3. „Als Bauteil ins Projekt übernehmen“, als .litematic exportieren und im Spiel ansehen. | Jeder Höhenwechsel des Wegs hat eine Treppe, die bergauf zeigt (über die ganze Breite); die Brücke liegt einen Block über dem Wasser, das Wasser bleibt, Zäune oder Mauern stehen an den Seiten und hängen zusammen; Materialliste zählt Treppen, Planken und Zäune. (Abnahme TERRAIN-03) |
 
 ## WERK · Werkstatt (Blockeditor) (Planer)
@@ -328,7 +329,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | VIEW-02 | START-06, DATEI-01 |
 | WORLD-IMPORT-01 | KARTE-04 |
 
-### Mit Minecraft (Mod oder Spiel) (42 Pakete)
+### Mit Minecraft (Mod oder Spiel) (43 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -374,6 +375,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | SIZE-01 | DATEI-05, WERK-07, MOD-15, LIVE-09 |
 | TERRAIN-03 | PROJ-19, PROJ-06, BIB-19, BIB-20 |
 | TERRAIN-04 | PROJ-24, PROJ-25 |
+| TERRAIN-05 | PROJ-26 |
 
 ### Mit Paper-Server und Plugin (13 Pakete)
 

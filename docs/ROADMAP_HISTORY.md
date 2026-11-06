@@ -7856,3 +7856,28 @@ Mod-Kartenstil verweist auf das Planer-Design-System UI-03 (docs/architecture/pl
 |---|---|---:|---|
 | GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
 
+## 2026-11-06T20:21:49.359Z · progress
+
+**Aufgaben:** TERRAIN-05, EDIT-04
+
+TERRAIN-05 Gelände-Werkzeuge auf dem Projektgelände: Verwittern (mengengleich, Regenrinnen), Formstempel Hügel/Berg/Krater/Mulde/Plateau, Fluss mit nie steigendem Spiegel, Maske für alle Pinsel und Bauplätze schützen; check 966/966, Landschafts-Browsertests 12/12; Abnahme PROJ-26 offen. EDIT-04 ohne verwaisten Punkt.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TERRAIN-05 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp im Planer und im Spiel (PROJ-26). |
+| EDIT-04 | 🧩 Implementiert · Abnahme offen | 7/8 | Spielprüfung gespiegelter Zustände im Planer (S07) und der Bauhilfen in der Mod (MOD-18/19); Gelände-Werkzeuge auf dem Projektgelände sind als TERRAIN-05 umgesetzt. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/project/LandscapeTab.tsx`
+- `apps/web/src/views/project/landscape/landscape.css`
+- `docs/TESTING.md`
+- `docs/architecture/welt/LANDSCAPE.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/world/terrainDesign.ts`
+- `packages/domain/src/world/terrainSculpt.ts`
+- `tests/e2e/landscape-sculpt.e2e.mjs`
+- `tests/unit/world/terrain-sculpt.test.mjs`
+

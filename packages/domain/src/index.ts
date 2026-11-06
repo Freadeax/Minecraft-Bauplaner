@@ -89,6 +89,8 @@ export { DESIGN_SCHEMA_VERSION, DESIGN_MEDIA_TYPE, NO_WATER, SURFACE_STYLES, BRU
   PATH_PLAIN, PATH_STAIR, PATH_SLAB, PATH_DECK, PATH_DECK_RAIL, PATH_DIRS, PATH_MATERIALS, PATH_STYLE_MATERIAL, pathMaterialById, hasPieces, risingDirs, pathPieceCells, layRamp, layPathCells, fortifyShore } from './world/terrainDesign.js';
 export type { DesignBase, TerrainDesign, ProjectTerrainDesignReference, SurfaceStyle, BrushTool, Falloff, Brush, PaintFilter, FloodResult, PathOptions, PathReport, AutoPaintRules,
   GradeResult, DesignStats, DesignBlocks, DesignCell, PathMaterial, PathSteps, PathWater, RampOptions, RampReport, NetworkOptions } from './world/terrainDesign.js';
+export { RAIN_LABEL, STAMP_LABEL, RIVER_BED_LABEL, erodeTerrain, stampShape, carveRiver, footprintMask, maskCount } from './world/terrainSculpt.js';
+export type { SculptRegion, SculptMask, RainAmount, ErodeOptions, ErodeReport, StampShape, StampOptions, StampReport, RiverBed, RiverOptions, RiverReport } from './world/terrainSculpt.js';
 export { MAX_SCATTER_LAYERS, MAX_SCATTER_ITEMS, EMPTY_SCATTER, checkScatterLayer, checkScatterPlan } from './world/terrainScatterPlan.js';
 export type { ScatterPartRef, ScatterLayer, ScatterItem, ScatterPlan } from './world/terrainScatterPlan.js';
 export { SCATTER_NEED_LABEL, SCATTER_GROUP_LABEL, SCATTER_MISS_LABEL, BUILTIN_SCATTER_PARTS, SCATTER_PRESETS, builtinScatterPart, stencilScatterPart, builtinResolver, newScatterLayer,
