@@ -1124,3 +1124,11 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Neu `tests/e2e/engine-hook.mjs` + `scripts/checks/e2e_engine.mjs` (`npm run test:e2e:firefox|webkit`): dieselben Browsertests ohne Änderung in Firefox 1555 und WebKit 2370 (Playwright 1.64.1); Firefox unter `xvfb-run` mit llvmpipe-WebGL (headless sonst kein WebGL).
 - Stichprobe: `viewer.e2e.mjs` in Firefox 4/5 (der fünfte braucht Chromium-CDP), `shell.e2e.mjs`+`viewer.e2e.mjs` in WebKit 5/10; Befunde werden in Block 5 abgearbeitet.
 - `npm run check:architecture`, `npm run check:docs` grün. Grenze: weiterhin keine echten Geräte/GPUs.
+
+## TEAM-03 · Mehrere Spieler je Abschnitt, versionierte Zuständigkeiten und Buchungen · 06.11.2026 · Claude
+
+- Neu `tests/unit/team/teamCrew.test.mjs` 9/9: Mitbauer festlegen, mitbauen, aussteigen (Verantwortung rückt nach), Rechte, gleichzeitige Zuweisung zweier Meister (spätere überholt, Merge in beide Richtungen gleich, „Trotzdem so übernehmen“), alte Ereignisse ohne Version, Sammelauftrag verteilen mit Version, Buchung korrigieren/stornieren mit Konto, Verdichten netto, Grenzen, Zeitplan und Fortschritt mit Mitbauern.
+- Neu `tests/e2e/teamcrew.e2e.mjs` 2/2 (1400/390 px, Port 4383): Mitbauer wählen, „Meine Aufgaben“ des Mitbauers, Aussteigen/Mitbauen, Sammelauftrag 51/60 verteilen, Buchung V1 → V2 → storniert, Helfer ohne Mitbauer-Auswahl.
+- Paper: `TeamLogCrewTest` 3/3 (`./gradlew -PwithPaper :paper:test`, JDK 25).
+- `npm run check` grün; voller Browserlauf nach Rebase auf TEAM-02/QA-04: 86 Dateien, 199/199 grün (dabei `team.e2e` und `builder-account.e2e` unverändert grün: Doppelübernahme gibt weiter den alten Hinweis).
+- Nicht automatisch geprüft: zwei echte Geräte gleichzeitig über den Team-Raum; Abnahme TEAMBAU-30 offen.

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import {
-  appendEvents, authorize, canTeam, createTeam, describeEvent, freezeRevision, newId, NOTE_TAG_LABEL, NOTE_TAGS, PLAYER_NAME, SECTION_TEAM_STATUS_LABEL, siteOf, siteOperation,
+  appendEvents, authorize, canTeam, createTeam, MAX_CREW, describeEvent, freezeRevision, newId, NOTE_TAG_LABEL, NOTE_TAGS, PLAYER_NAME, SECTION_TEAM_STATUS_LABEL, siteOf, siteOperation,
   programOf, setProgram, setStock, teamContextOf, teamIntoProgram, teamEvent, laterThan, TEAM_ROLE_LABEL, TEAM_ROLE_TEXT, TEAM_ROLES, teamView,
 } from '../../../../../../packages/domain/src/index.js';
 import type { NoteTag, SectionTeamState, SitePlan, TeamEventBody, TeamRole, TeamState, TeamView } from '../../../../../../packages/domain/src/index.js';
@@ -116,11 +116,16 @@ function TeamPage({ session, site, team, message, setMessage, saveTeam, saveSite
   const names = useMemo(() => new Map(view.members.map(m => [m.id, m.name])), [view]);
   const nameOf = (id: string | null | undefined) => id ? names.get(id) ?? id : '–';
 
-  const act = (body: TeamEventBody, label: string): boolean => {
+  // Several bodies are checked one after the other and saved as one step (one Strg+Z).
+  const act = (bodies: TeamEventBody | readonly TeamEventBody[], label: string): boolean => {
     if (!me) { setMessage('Bitte zuerst oben wählen, wer du bist.'); return false; }
-    const ok = authorize(team, ctx, me.id, body);
-    if (!ok.ok) { setMessage(ok.reason); return false; }
-    return saveTeam(appendEvents(team, [teamEvent(me.id, body, laterThan(team))]), label);
+    let next = team;
+    for (const body of Array.isArray(bodies) ? bodies as readonly TeamEventBody[] : [bodies as TeamEventBody]) {
+      const ok = authorize(next, ctx, me.id, body);
+      if (!ok.ok) { setMessage(ok.reason); return false; }
+      next = appendEvents(next, [teamEvent(me.id, body, laterThan(next))]);
+    }
+    return saveTeam(next, label);
   };
   const release = () => {
     if (!me || !canTeam(role, 'plan.release')) return;
@@ -191,10 +196,11 @@ function Who({ view, me, onPick, onJoin }: { team: TeamState; view: TeamView; me
   </div>;
 }
 
-type Act = (body: TeamEventBody, label: string) => boolean;
+type Act = (body: TeamEventBody | readonly TeamEventBody[], label: string) => boolean;
 
 function Mine({ view, me, ctx, progress, projectId, act }: { view: TeamView; me: string; ctx: ReturnType<typeof teamContextOf>; progress: Map<string, number>; projectId: string; act: Act }) {
-  const mine = view.sections.filter(s => s.owner === me && s.status !== 'bestaetigt' && !s.orphan);
+  const mine = view.sections.filter(s => (s.owner === me || s.crew.includes(me)) && s.status !== 'bestaetigt' && !s.orphan);
+  const nameOf = (id: string) => view.members.find(m => m.id === id)?.name ?? id;
   const notes = view.notes.filter(n => !n.resolved && n.mentions.includes(me));
   const gather = view.gather.filter(g => g.member === me);
   return <div role="region" className="team-block team-mine" aria-label="Meine Aufgaben">
@@ -204,17 +210,21 @@ function Mine({ view, me, ctx, progress, projectId, act }: { view: TeamView; me:
       const name = ctx.sections.find(x => x.id === s.sectionId)?.name ?? s.sectionId, p = progress.get(s.sectionId);
       return <li key={s.sectionId}><span className={`team-status st-${s.status}`}>{SECTION_TEAM_STATUS_LABEL[s.status]}</span><strong>{name}</strong>
         {p !== undefined && <small>{Math.round(p * 100)} % abgehakt</small>}{s.status === 'nacharbeit' && s.note && <small className="bad">{s.note}</small>}
+        {s.crew.length > 0 && <small className="team-crew-line">{s.owner === me ? `mit ${s.crew.map(nameOf).join(', ')}` : `Mitbauer · verantwortlich ${nameOf(s.owner ?? '')}`}</small>}
         <span className="team-actions">{s.status !== 'gemeldet' && <button onClick={() => { const note = window.prompt(`„${name}“ fertig melden – Notiz für die Bauleitung (optional):`, ''); if (note !== null) act({ kind: 'section.done', section: s.sectionId, ...(note.trim() && { note: note.trim().slice(0, 300) }) }, 'Fertig gemeldet'); }}>Fertig melden</button>}
-          <button className="secondary" onClick={() => act({ kind: 'section.release', section: s.sectionId }, 'Abschnitt abgegeben')}>Abgeben</button></span></li>;
+          {s.owner === me && !s.crew.length ? <button className="secondary" onClick={() => act({ kind: 'section.release', section: s.sectionId, base: s.version }, 'Abschnitt abgegeben')}>Abgeben</button>
+            : <button className="secondary" title={s.owner === me ? `Die Verantwortung geht an ${nameOf(s.crew[0]!)}` : undefined} onClick={() => act({ kind: 'section.leave', section: s.sectionId, base: s.version }, 'Aus dem Abschnitt ausgestiegen')}>Aussteigen</button>}</span></li>;
     })}
     {gather.map(g => <li key={g.item}><span className="team-status st-vergeben">sammeln</span><strong>{formatNumber(g.count)} × {short(g.item)}</strong>
-      <span className="team-actions"><button className="secondary" onClick={() => act({ kind: 'gather.claim', item: g.item, count: 0 }, 'Sammelauftrag zurückgegeben')}>Zurückgeben</button></span></li>)}
+      {g.by && <small>von {nameOf(g.by)} zugeteilt</small>}
+      <span className="team-actions"><button className="secondary" onClick={() => act({ kind: 'gather.claim', item: g.item, count: 0, base: view.gatherVersions[g.item] ?? 0 }, 'Sammelauftrag zurückgegeben')}>Zurückgeben</button></span></li>)}
     {notes.map(n => <li key={n.id}><span className="team-status st-gemeldet">für dich</span><span>{NOTE_TAG_LABEL[n.tag]}: {n.text}</span></li>)}</ul>
   </div>;
 }
 
 function Sections({ view, ctx, progress, me, role, nameOf, act }: { view: TeamView; ctx: ReturnType<typeof teamContextOf>; progress: Map<string, number>; me: string | null; role: TeamRole; nameOf(id?: string | null): string; act: Act }) {
   const [open, setOpen] = useState<string | null>(null);
+  const [crew, setCrew] = useState<string | null>(null);
   if (!ctx.sections.length) return <div className="team-block"><h3>Abschnitte</h3><p className="muted">Noch keine Bauabschnitte. Im Reiter „Baustelle“ anlegen (z. B. „Fundament · Rohbau · Dach“), dann hier verteilen.</p></div>;
   const free = view.sections.filter(s => s.status === 'frei' && !s.orphan).length;
   return <div role="region" className="team-block" aria-label="Abschnitte">
@@ -225,11 +235,12 @@ function Sections({ view, ctx, progress, me, role, nameOf, act }: { view: TeamVi
         <div className="team-section-main">
           <strong>{name}</strong>
           <span className={`team-status st-${s.status}`}>{SECTION_TEAM_STATUS_LABEL[s.status]}</span>
-          <span className="team-owner">{s.owner ? nameOf(s.owner) : <em className="muted">niemand</em>}</span>
+          <span className="team-owner">{s.owner ? nameOf(s.owner) : <em className="muted">niemand</em>}{s.crew.length > 0 && <small className="team-crew" aria-label="Mitbauer"> + {s.crew.map(c => nameOf(c)).join(', ')}</small>}</span>
           {p !== undefined && <span className="team-bar" title={`${Math.round(p * 100)} % abgehakt`}><span style={{ width: `${Math.round(p * 100)}%` }} /></span>}
-          <SectionActions s={s} me={me} role={role} view={view} act={act} name={name} />
-          {s.history.length > 0 && <button className="link-button" aria-expanded={open === s.sectionId} onClick={() => setOpen(open === s.sectionId ? null : s.sectionId)}>Verlauf</button>}
+          <SectionActions s={s} me={me} role={role} view={view} act={act} name={name} onCrew={() => setCrew(crew === s.sectionId ? null : s.sectionId)} />
+          {s.history.length > 0 && <button className="link-button" aria-expanded={open === s.sectionId} onClick={() => setOpen(open === s.sectionId ? null : s.sectionId)}>Verlauf{s.version ? ` · V${s.version}` : ''}</button>}
         </div>
+        {crew === s.sectionId && <CrewEditor s={s} view={view} name={name} act={act} onDone={() => setCrew(null)} />}
         {s.note && <small className="muted">Notiz: {s.note}</small>}
         {open === s.sectionId && <ul className="team-history">{s.history.map((h, i) => <li key={i}>{when(h.at)} · {nameOf(h.by)}: {h.text}</li>)}</ul>}
       </li>;
@@ -237,18 +248,46 @@ function Sections({ view, ctx, progress, me, role, nameOf, act }: { view: TeamVi
   </div>;
 }
 
-function SectionActions({ s, me, role, view, act, name }: { s: SectionTeamState; me: string | null; role: TeamRole; view: TeamView; act: Act; name: string }) {
+function SectionActions({ s, me, role, view, act, name, onCrew }: { s: SectionTeamState; me: string | null; role: TeamRole; view: TeamView; act: Act; name: string; onCrew(): void }) {
   if (!me || s.orphan) return <span />;
   const meister = canTeam(role, 'section.assign');
+  const inside = s.owner === me || s.crew.includes(me);
   return <span className="team-actions">
-    {s.status === 'frei' && canTeam(role, 'section.claim') && <button onClick={() => act({ kind: 'section.claim', section: s.sectionId }, `„${name}“ übernommen`)}>Übernehmen</button>}
-    {meister && <select aria-label={`„${name}“ zuweisen`} value="" onChange={e => e.target.value && act({ kind: 'section.assign', section: s.sectionId, member: e.target.value }, `„${name}“ zugewiesen`)}>
+    {s.status === 'frei' && canTeam(role, 'section.claim') && <button onClick={() => act({ kind: 'section.claim', section: s.sectionId, base: s.version }, `„${name}“ übernommen`)}>Übernehmen</button>}
+    {s.owner && !inside && (s.status === 'vergeben' || s.status === 'nacharbeit') && canTeam(role, 'section.join') && 1 + s.crew.length < MAX_CREW &&
+      <button className="secondary" onClick={() => act({ kind: 'section.join', section: s.sectionId, base: s.version }, `Bei „${name}“ mitgebaut`)}>Mitbauen</button>}
+    {s.crew.includes(me) && s.status !== 'bestaetigt' && <button className="secondary" onClick={() => act({ kind: 'section.leave', section: s.sectionId, base: s.version }, `Aus „${name}“ ausgestiegen`)}>Aussteigen</button>}
+    {canTeam(role, 'section.crew') && s.status !== 'bestaetigt' && <button className="secondary" onClick={onCrew}>Mitbauer …</button>}
+    {meister && <select aria-label={`„${name}“ zuweisen`} value="" onChange={e => e.target.value && act({ kind: 'section.assign', section: s.sectionId, member: e.target.value, base: s.version }, `„${name}“ zugewiesen`)}>
       <option value="">zuweisen …</option>{view.members.filter(m => m.role !== 'gast').map(m => <option key={m.id} value={m.id}>{m.name}</option>)}</select>}
     {meister && (s.status === 'gemeldet' || s.status === 'nacharbeit') && <>
       <button onClick={() => act({ kind: 'section.verify', section: s.sectionId, ok: true }, `„${name}“ bestätigt`)}>✓ Bestätigen</button>
       <button className="secondary" onClick={() => { const note = window.prompt('Was muss nachgearbeitet werden?', ''); if (note !== null) act({ kind: 'section.verify', section: s.sectionId, ok: false, ...(note.trim() && { note: note.trim().slice(0, 300) }) }, `„${name}“: Nacharbeit`); }}>Nacharbeit</button></>}
-    {s.owner && s.owner !== me && s.status !== 'bestaetigt' && meister && <button className="secondary" onClick={() => act({ kind: 'section.release', section: s.sectionId }, `„${name}“ freigegeben`)}>Freigeben</button>}
+    {s.owner && s.owner !== me && s.status !== 'bestaetigt' && meister && <button className="secondary" onClick={() => act({ kind: 'section.release', section: s.sectionId, base: s.version }, `„${name}“ freigegeben`)}>Freigeben</button>}
   </span>;
+}
+
+/** TEAM-03: Baumeister choose who builds a section together; the first one is responsible. */
+function CrewEditor({ s, view, name, act, onDone }: { s: SectionTeamState; view: TeamView; name: string; act: Act; onDone(): void }) {
+  const [chosen, setChosen] = useState<string[]>(s.owner ? [s.owner, ...s.crew] : []);
+  const builders = view.members.filter(m => m.role !== 'gast');
+  const toggle = (id: string) => setChosen(c => c.includes(id) ? c.filter(x => x !== id) : c.length >= MAX_CREW ? c : [...c, id]);
+  const save = () => {
+    const owner = s.owner && chosen.includes(s.owner) ? s.owner : chosen[0];
+    const crew = chosen.filter(x => x !== owner);
+    if (!owner) { if (!s.owner || act({ kind: 'section.release', section: s.sectionId, base: s.version }, `„${name}“ freigegeben`)) onDone(); return; }
+    // An owner change goes through an assignment first (stays a visible reassignment), then the crew is set on the new version.
+    const reassign = !!s.owner && owner !== s.owner;
+    const bodies: TeamEventBody[] = [...(reassign ? [{ kind: 'section.assign', section: s.sectionId, member: owner, base: s.version } as const] : []),
+      { kind: 'section.crew', section: s.sectionId, members: [owner, ...crew], base: s.version + (reassign ? 1 : 0) }];
+    if (act(bodies, `Mitbauer für „${name}“`)) onDone();
+  };
+  return <div className="team-crew-editor" role="group" aria-label={`Mitbauer für „${name}“`}>
+    <small className="muted">Wer baut an „{name}“? Der erste Haken ist verantwortlich (meldet fertig, packt das Material), alle anderen bauen mit. Höchstens {MAX_CREW}.</small>
+    <div className="team-chips">{builders.map(m => <label key={m.id} className={`team-check${chosen[0] === m.id ? ' lead' : ''}`}>
+      <input type="checkbox" checked={chosen.includes(m.id)} onChange={() => toggle(m.id)} />{m.name}{chosen[0] === m.id ? ' (verantwortlich)' : ''}{m.away ? ' · abwesend' : ''}</label>)}</div>
+    <span className="team-actions"><button className="primary" onClick={save}>Speichern</button><button className="secondary" onClick={onDone}>Abbrechen</button></span>
+  </div>;
 }
 
 function Members({ view, me, role, act, onToProgram, projectId }: { view: TeamView; me: string | null; role: TeamRole; act: Act; onToProgram(): void; projectId: string }) {
@@ -264,7 +303,7 @@ function Members({ view, me, role, act, onToProgram, projectId }: { view: TeamVi
           {!m.inProgram && <small className="muted"> · nur im Team</small>}</td>
           <td>{role === 'leitung' ? <select aria-label={`Rolle von ${m.name}`} value={m.role} onChange={e => act({ kind: 'member.role', member: m.id, role: e.target.value as TeamRole }, `Rolle von ${m.name}`)}>
             {TEAM_ROLES.map(r => <option key={r} value={r}>{TEAM_ROLE_LABEL[r]}</option>)}</select> : <span className={`team-role role-${m.role}`}>{TEAM_ROLE_LABEL[m.role]}</span>}</td>
-          <td>{m.sections.length} · {m.confirmedSections} bestätigt</td>
+          <td>{m.sections.length}{m.crewSections.length ? ` + ${m.crewSections.length} mit` : ''} · {m.confirmedSections} bestätigt</td>
           <td>{m.blocks ? `${formatNumber(m.blocks)} Blöcke` : ''}{m.blocks && items ? ' · ' : ''}{items ? `${formatNumber(items)} Items` : ''}{!m.blocks && !items ? '–' : ''}</td>
           <td>{when(m.lastActive)}</td></tr>;
       })}</tbody></table>
@@ -295,11 +334,75 @@ function Contribute({ view, ctx, me, role, act, nameOf }: { view: TeamView; ctx:
     </form> : <p className="muted">Beiträge melden Helfer, Baumeister und Bauleitung.</p>}
     {delivered.length > 0 && <><h4>Gemeldete Lieferungen</h4><p className="team-chips static">{delivered.map(([i, n]) => <span key={i}>{formatNumber(n)} × {short(i)}</span>)}</p>
       <small className="muted">Das Lager im Reiter „Baustelle“ führt die Bauleitung; gemeldete Lieferungen dort bei Bedarf eintragen.</small></>}
+    <Bookings view={view} ctx={ctx} me={me} role={role} act={act} nameOf={nameOf} />
     <h4>Sammelaufträge</h4>
-    {view.gather.length ? <ul className="team-list">{view.gather.map(g => <li key={`${g.member}${g.item}`}><strong>{nameOf(g.member)}</strong><span>{formatNumber(g.count)} × {short(g.item)}</span></li>)}</ul> : <p className="muted">Niemand sammelt gerade etwas Bestimmtes.</p>}
-    {allowed && <form className="team-inline" onSubmit={e => { e.preventDefault(); const n = Number(gCount); if (gItem && Number.isSafeInteger(n) && n > 0 && act({ kind: 'gather.claim', item: itemId(gItem), count: n }, 'Sammelauftrag übernommen')) { setGItem(''); setGCount(''); } }}>
+    {view.gather.length ? <ul className="team-list">{[...new Set(view.gather.map(g => g.item))].map(item => { const list = view.gather.filter(g => g.item === item).sort((x, y) => nameOf(x.member).localeCompare(nameOf(y.member), 'de'));
+      return <li key={item}><strong>{formatNumber(list.reduce((n, g) => n + g.count, 0))} × {short(item)}</strong>
+        <small>{list.map(g => `${nameOf(g.member)} ${formatNumber(g.count)}`).join(' · ')}{list.some(g => g.by) ? ` · verteilt von ${nameOf(list.find(g => g.by)!.by)}` : ''}</small></li>; })}</ul>
+      : <p className="muted">Niemand sammelt gerade etwas Bestimmtes.</p>}
+    {me && canTeam(role, 'gather.assign') && <GatherSplit view={view} act={act} />}
+    {allowed && <form className="team-inline" onSubmit={e => { e.preventDefault(); const n = Number(gCount), id = itemId(gItem); if (gItem && Number.isSafeInteger(n) && n > 0 && act({ kind: 'gather.claim', item: id, count: n, base: view.gatherVersions[id] ?? 0 }, 'Sammelauftrag übernommen')) { setGItem(''); setGCount(''); } }}>
       <input placeholder="Ich sammle: Item" value={gItem} onChange={e => setGItem(e.target.value)} /><input placeholder="Menge" inputMode="numeric" value={gCount} onChange={e => setGCount(e.target.value.replace(/\D/g, ''))} />
       <button disabled={!gItem || !gCount}>Übernehmen</button></form>}
+  </div>;
+}
+
+/** TEAM-03: a Baumeister splits one gather order over several players (replaces all shares of the item). */
+function GatherSplit({ view, act }: { view: TeamView; act: Act }) {
+  const [item, setItem] = useState(''), [total, setTotal] = useState(''), [chosen, setChosen] = useState<string[]>([]), [shares, setShares] = useState<Record<string, string>>({});
+  const builders = view.members.filter(m => m.role !== 'gast');
+  const id = item ? itemId(item) : '';
+  const even = (list: string[], n: number) => Object.fromEntries(list.map((m, i) => [m, String(Math.floor(n / list.length) + (i < n % list.length ? 1 : 0))]));
+  const pick = (m: string) => {
+    const next = chosen.includes(m) ? chosen.filter(x => x !== m) : chosen.length >= MAX_CREW ? chosen : [...chosen, m];
+    setChosen(next); const n = Number(total); if (Number.isSafeInteger(n) && n > 0 && next.length) setShares(even(next, n));
+  };
+  const onTotal = (v: string) => { setTotal(v); const n = Number(v); if (Number.isSafeInteger(n) && n > 0 && chosen.length) setShares(even(chosen, n)); };
+  const list = chosen.map(m => ({ member: m, count: Number(shares[m] ?? 0) })).filter(l => Number.isSafeInteger(l.count) && l.count > 0);
+  const current = id ? view.gather.filter(g => g.item === id) : [];
+  const save = () => { if (id && act({ kind: 'gather.assign', item: id, shares: list, base: view.gatherVersions[id] ?? 0 }, list.length ? `Sammelauftrag ${short(id)} verteilt` : `Sammelauftrag ${short(id)} aufgehoben`)) { setItem(''); setTotal(''); setChosen([]); setShares({}); } };
+  return <details className="team-split"><summary>Sammelauftrag auf mehrere verteilen</summary>
+    <div className="team-inline"><input aria-label="Item zum Verteilen" placeholder="Item, z. B. oak_log" value={item} onChange={e => setItem(e.target.value)} />
+      <input aria-label="Gesamtmenge" placeholder="Gesamt" inputMode="numeric" value={total} onChange={e => onTotal(e.target.value.replace(/\D/g, ''))} /></div>
+    {current.length > 0 && <small className="muted">Bisher: {current.map(g => `${view.members.find(m => m.id === g.member)?.name ?? g.member} ${g.count}`).join(' · ')} – wird ersetzt.</small>}
+    <div className="team-chips">{builders.map(m => <label key={m.id} className="team-check"><input type="checkbox" checked={chosen.includes(m.id)} onChange={() => pick(m.id)} />{m.name}
+      {chosen.includes(m.id) && <input aria-label={`Anteil ${m.name}`} className="team-share" inputMode="numeric" value={shares[m.id] ?? ''} onChange={e => setShares({ ...shares, [m.id]: e.target.value.replace(/\D/g, '') })} />}</label>)}</div>
+    <span className="team-actions"><button disabled={!id || (!list.length && !current.length)} onClick={save}>{list.length ? `An ${list.length} verteilen` : 'Auftrag aufheben'}</button>
+      <small className="muted">Gleichmäßig vorgeschlagen, Anteile frei änderbar. Jeder sieht seinen Teil unter „Meine Aufgaben“ und in der Mod.</small></span>
+  </details>;
+}
+
+/** TEAM-03: booked contributions with versions – correct or cancel instead of overwriting. */
+function Bookings({ view, ctx, me, role, act, nameOf }: { view: TeamView; ctx: ReturnType<typeof teamContextOf>; me: string | null; role: TeamRole; act: Act; nameOf(id?: string | null): string }) {
+  const [all, setAll] = useState(false);
+  const mayAll = canTeam(role, 'section.verify');
+  const list = view.bookings.filter(b => all ? mayAll || b.by === me : b.by === me).slice(0, all ? 60 : 8);
+  if (!me || !view.bookings.some(b => b.by === me || mayAll)) return null;
+  const fix = (b: TeamView['bookings'][number]) => {
+    const now = [b.blocks ? `${b.blocks} blöcke` : '', ...b.items.map(l => `${l.count} ${short(l.item)}`)].filter(Boolean).join(', ');
+    const raw = window.prompt('Neue Werte, z. B. „120 blöcke, 32 stone, 16 oak_log“ (leer = stornieren):', now);
+    if (raw === null) return;
+    let blocks = 0; const items: { item: string; count: number }[] = [];
+    for (const part of raw.split(',').map(x => x.trim()).filter(Boolean)) {
+      const m = /^(\d+)\s*[x×]?\s*(.+)$/i.exec(part);
+      if (!m) { window.alert(`Nicht verstanden: „${part}“`); return; }
+      if (/^bl(ö|oe)cke?$/i.test(m[2]!.trim())) blocks += Number(m[1]); else { const id = itemId(m[2]!); const old = items.find(l => l.item === id); if (old) old.count += Number(m[1]); else items.push({ item: id, count: Number(m[1]) }); }
+    }
+    const note = blocks || items.length ? window.prompt('Grund der Korrektur (optional):', '') ?? '' : '';
+    act({ kind: 'contribution.fix', ref: b.id, ...(blocks && { blocks }), ...(items.length && { items: items.filter(l => l.count > 0) }), ...(note.trim() && { note: note.trim().slice(0, 300) }), base: b.version },
+      blocks || items.length ? 'Buchung korrigiert' : 'Buchung storniert');
+  };
+  return <div className="team-bookings">
+    <h4>{all && mayAll ? 'Alle Buchungen' : 'Meine Buchungen'} <small>korrigieren statt überschreiben</small></h4>
+    <ul className="team-list">{list.map(b => <li key={b.id} className={b.cancelled ? 'done' : undefined}>
+      <span className="team-status st-vergeben">V{b.version}</span>
+      <span>{all && <strong>{nameOf(b.by)}: </strong>}{b.cancelled ? <s>storniert</s> : [b.blocks ? `${formatNumber(b.blocks)} Blöcke` : '', ...b.items.map(l => `${short(l.item)} ${formatNumber(l.count)}`)].filter(Boolean).join(', ')}
+        {b.section ? ` · ${ctx.sections.find(x => x.id === b.section)?.name ?? 'Abschnitt'}` : ''} · {when(b.at)}{b.note ? ` – ${b.note}` : ''}
+        {b.history.length > 0 && <small className="muted"><br />{b.history.map(h => `V${h.version} ${h.text} (${nameOf(h.by)}, ${when(h.at)})`).join(' · ')}</small>}</span>
+      {(b.by === me || mayAll) && !b.cancelled && <span className="team-actions"><button className="secondary" onClick={() => fix(b)}>Korrigieren</button>
+        <button className="secondary" onClick={() => { if (window.confirm('Buchung stornieren? Sie bleibt im Verlauf sichtbar.')) act({ kind: 'contribution.fix', ref: b.id, base: b.version }, 'Buchung storniert'); }}>Stornieren</button></span>}
+    </li>)}</ul>
+    {mayAll && <button className="link-button" onClick={() => setAll(!all)}>{all ? 'nur meine' : 'alle Buchungen zeigen'}</button>}
   </div>;
 }
 

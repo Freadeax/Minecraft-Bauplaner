@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T21:17:39.366Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T21:23:28.718Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,10 +12,10 @@ Stand: 2026-11-06T21:17:39.366Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 4 |
+| ⏳ Offen | 3 |
 | 🚧 In Arbeit | 9 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 98 |
+| 🧩 Implementiert · Abnahme offen | 99 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
 | ⏸ Zurückgestellt | 3 |
 
@@ -28,7 +28,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 28 | 0 | 28 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 0 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
-| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 16 | 0 | 14 | 0 |
+| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 17 | 0 | 14 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 13 | 0 | 10 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 4 | 0 |
@@ -36,7 +36,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Performance und Stabilität](#bereich-perf) | 5 | 0 | 2 | 3 |
 | [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 14 | 0 | 7 | 8 |
 | [Testphase, Qualität und Betrieb](#bereich-qa) | 2 | 1 | 2 | 8 |
-| [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 4 | 0 | 0 | 0 |
+| [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 3 | 0 | 0 | 0 |
 
 <a id="bereich-planer"></a>
 
@@ -135,6 +135,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [LINK-04](#link-04) | Planer | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Mehrspieler und Server automatisch abnehmen“ | Testplan-Bereich LINK durchgehen. |
 | [LINK-05](#link-05) | Zweiter Weg über den Team-Raum | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Mehrspieler und Server automatisch abnehmen“ | Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern. |
 | [OPS-04](#ops-04) | Teamdienst betreiben und Wiederherstellung prüfen | 🚧 In Arbeit 0/2 | P1 | „Team-Raum sichern und wiederherstellen“ | — |
+| [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Abschnitte mehreren Spielern zuweisen“ | — |
 | [WORLD-SHARE-01](#world-share-01) | Weltplan und Server-Karte nur über den Team-Raum | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Weltplan und Server-Karte über den Team-Raum“ | Mit dem Paper-Plugin und BlueMap oder Dynmap prüfen, ob die Marker des Weltplans ohne Datei auf der Server-Karte erscheinen und gesperrte Bauplätze geschützt sind (KARTE-10..12). |
 | [COOP-08](#coop-08) | Ertragskisten | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Mehrspieler und Server automatisch abnehmen“ | LAGER-01…09 mit echten Spielern. |
 
@@ -243,7 +244,6 @@ Abgeschlossen oder zurückgestellt: OPS-01 (geprüft), PLAN-01 (geprüft), DOC-0
 | [AUTH-01](#auth-01) | Konten, Rechte und Übernahme lokaler Projekte | ⏳ Offen 0/2 | P0 | — | — |
 | [TEAM-01](#team-01) | Backendvertrag, Datenbank und Payloadspeicher | ⏳ Offen 0/2 | P0 | — | — |
 | [GAME-06](#game-06) | Sichere Serveranbindung (Webhooks) für Server-Plugins | ⏳ Offen 0/1 | P1 | — | — |
-| [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung | ⏳ Offen 0/2 | P1 | — | — |
 
 Abgeschlossen oder zurückgestellt: GAME-13 (zurückgestellt), DEFER-01 (zurückgestellt), DEFER-02 (zurückgestellt).
 
@@ -615,7 +615,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [TEAM-01](#team-01) | Backendvertrag, Datenbank und Payloadspeicher | ⏳ Offen | 0/2 | ARCH-01, FORMAT-01, STORE-02, LICENSE-01 | ausstehend | ausstehend |
 | [AUTH-01](#auth-01) | Konten, Rechte und Übernahme lokaler Projekte | ⏳ Offen | 0/2 | TEAM-01 | ausstehend | ausstehend |
 | [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo im Team-Raum | 🧩 Implementiert · Abnahme offen | 2/2 | AUTH-01, UPDATE-01 | ausstehend | ausstehend |
-| [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung | ⏳ Offen | 0/2 | TEAM-02, BUILD-01 | ausstehend | ausstehend |
+| [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung: mehrere Spieler je Abschnitt und Sammelauftrag, versionierte Zuständigkeiten und Buchungen, live über den Team-Raum | 🧩 Implementiert · Abnahme offen | 2/3 | TEAM-02, COOP-06, PROJ-05 | ausstehend | ausstehend |
 | [GAME-06](#game-06) | Sichere Serveranbindung (Webhooks) für Server-Plugins | ⏳ Offen | 0/1 | TEAM-02, GAME-04 | ausstehend | ausstehend |
 | [LAGER-01](#lager-01) | Optionale Truhen-/Lagerintegration | 🧩 Implementiert · Abnahme offen | 2/2 | GAME-04 | ausstehend | ausstehend |
 | [OPS-04](#ops-04) | Teamdienst betreiben und Wiederherstellung prüfen | 🚧 In Arbeit | 0/2 | TEAM-02 | ausstehend | ausstehend |
@@ -2323,20 +2323,21 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TEAM-03
 
-**Gemeinsame Aufgaben, Abschnitte und Sammelplanung** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: — · Aktualisiert: 2026-11-05T10:34:38.680Z
+**Gemeinsame Aufgaben, Abschnitte und Sammelplanung: mehrere Spieler je Abschnitt und Sammelauftrag, versionierte Zuständigkeiten und Buchungen, live über den Team-Raum** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Abschnitte mehreren Spielern zuweisen“) · Zuständiger Thread: „Abschnitte mehreren Spielern zuweisen“ · Aktualisiert: 2026-11-06T21:23:28.718Z
 
-- [ ] TEAM-03-S01: Zuständigkeiten und Lagerbuchungen versionieren.
-- [ ] TEAM-03-S02: Abschnitte und Sammelaufträge mehreren Spielern zuweisen.
+- [x] TEAM-03-S01: Zuständigkeiten und Lagerbuchungen versionieren: Version je Abschnitt, Sammelauftrag und Buchung; Änderungen auf überholter Version wirken nicht und stehen mit „Trotzdem so übernehmen“ in den Hinweisen; Buchungen korrigieren/stornieren (contribution.fix).
+- [x] TEAM-03-S02: Abschnitte und Sammelaufträge mehreren Spielern zuweisen: section.crew/join/leave (Verantwortliche + bis zu 7 Mitbauer), gather.assign; Zeitplan, Fortschritt, Planung und Paper-Plugin (Abschnitts- und Lagerschutz) berücksichtigen Mitbauer.
+- [ ] TEAM-03-S03: Abnahme TEAMBAU-30 durch Philipp (zwei Browser oder Mitspieler, Team live).
 
-**Abnahme:** Planung, manuelle Bestätigung und Spielnachweis bleiben getrennt.
+**Abnahme:** Planung, manuelle Bestätigung und Spielnachweis bleiben getrennt. Kein stiller Verlust und kein Überschreiben fremder Zuständigkeiten: überholte Änderungen werden sichtbar abgelehnt, alle Geräte entscheiden gleich. Ereignisse ohne Version (ältere Mod/Plugin) wirken wie bisher.
 
-**Nächste Aktion:** Zuständigkeiten und Lagerbuchungen versionieren. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option.
+**Nächste Aktion:** Abnahme TEAMBAU-30 durch Philipp; Plugin-Faltung kommt mit der nächsten Plugin-Version.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Einheits-, Browser- und Plugin-Tests grün; Abnahme TEAMBAU-30 offen.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/unit/team/teamCrew.test.mjs](../tests/unit/team/teamCrew.test.mjs) — 9 Fälle: Mitbauer, Rechte, gleichzeitige Zuweisung (überholt, Merge beidseitig gleich, Lösung), alte Ereignisse, Sammelauftrag verteilen, Buchung korrigieren/stornieren, Verdichten, Grenzen, Zeitplan/Fortschritt.; [tests/e2e/teamcrew.e2e.mjs](../tests/e2e/teamcrew.e2e.mjs) — Chromium 1400/390 px: Mitbauer wählen, mitbauen/aussteigen, Sammelauftrag verteilen, Buchung V1→V2→storniert.; [mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/TeamLogCrewTest.java](../mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/TeamLogCrewTest.java) — Plugin faltet Mitbauer und Versionen wie team.ts.
 
-**Dateiumfang:** `packages/domain/src/building/site.ts`, `packages/application/`. **Abhängigkeiten:** TEAM-02, BUILD-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/team/team.ts`, `packages/domain/src/team/teamPlan.ts`, `apps/web/src/views/project/team/TeamTab.tsx`, `apps/web/src/views/project/team/TeamPlan.tsx`, `apps/web/src/styles/team.css`, `mods/bauplaner-bridge/paper/`, `tests/unit/team/teamCrew.test.mjs`, `tests/e2e/teamcrew.e2e.mjs`, `docs/architecture/team/TEAMBAU.md`. **Abhängigkeiten:** TEAM-02, COOP-06, PROJ-05. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

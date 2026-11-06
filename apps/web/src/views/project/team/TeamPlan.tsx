@@ -178,6 +178,7 @@ function Schedule(p: TeamPlanProps & { work: readonly SectionWork[]; proposal: r
   const span = Math.max(plan.makespan, 0.01);
   const critical = new Set(plan.critical);
   const sname = (id: string) => work.find(w => w.id === id)?.name ?? id;
+  const mname = (id: string) => p.view.members.find(m => m.id === id)?.name ?? id;
   return <div role="region" className="team-block" aria-label="Zeitplan">
     <div className="team-block-head"><h3>Zeitplan <small>parallel nach Bautempo</small></h3>
       <div className="team-inline">
@@ -192,7 +193,7 @@ function Schedule(p: TeamPlanProps & { work: readonly SectionWork[]; proposal: r
         <span className="team-lane-track" role="cell">{lane.items.filter(i => i.work > 0).map(i => <span key={i.sectionId}
           className={`team-gbar${critical.has(i.sectionId) ? ' critical' : ''}${lane.member === null ? ' free' : ''}`}
           style={{ left: `${i.start / span * 100}%`, width: `max(3px, ${(i.end - i.start) / span * 100}%)` }}
-          title={`${i.name}: Tag ${formatNumber(i.start)}–${formatNumber(i.end)}${i.waitsFor ? `, wartet auf „${sname(i.waitsFor)}“` : ''}`}>{i.name}</span>)}</span>
+          title={`${i.name}: Tag ${formatNumber(i.start)}–${formatNumber(i.end)}${i.crew?.length ? `, mit ${i.crew.map(mname).join(', ')}` : ''}${i.waitsFor ? `, wartet auf „${sname(i.waitsFor)}“` : ''}`}>{i.name}{i.crew?.length ? ` +${i.crew.length}` : ''}</span>)}</span>
         <small role="cell">{days(lane.end)}</small>
       </div>)}
     </div>}
@@ -281,7 +282,7 @@ export function TeamProgressArea(p: TeamPlanProps) {
       <div className="team-board">{(['frei', 'vergeben', 'nacharbeit', 'gemeldet', 'bestaetigt'] as const).map(st => <div key={st} className="team-col" role="list" aria-label={SECTION_TEAM_STATUS_LABEL[st]}>
         <h4><span className={`team-status st-${st}`}>{SECTION_TEAM_STATUS_LABEL[st]}</span> <small>{prog.board[st].length}</small></h4>
         {prog.board[st].map(id => { const w = work.find(x => x.id === id), s = view.sections.find(x => x.sectionId === id) as SectionState | undefined;
-          return <div key={id} role="listitem" className={`team-tile${changed.has(id) ? ' changed' : ''}`}><strong>{sname(id)}</strong><small>{name(s?.owner)}{w ? ` · ${formatNumber(w.work)} Bl.` : ''}</small>
+          return <div key={id} role="listitem" className={`team-tile${changed.has(id) ? ' changed' : ''}`}><strong>{sname(id)}</strong><small>{name(s?.owner)}{s?.crew?.length ? ` + ${s.crew.map(c => name(c)).join(', ')}` : ''}{w ? ` · ${formatNumber(w.work)} Bl.` : ''}</small>
             {w && w.work > 0 && <span className="team-bar"><span style={{ width: `${pct(w.work - w.openWork, w.work)}%` }} /></span>}
             {s?.offer && <small className="muted">Übergabe an {name(s.offer.to)} angeboten</small>}</div>; })}
       </div>)}</div>

@@ -221,7 +221,7 @@ final class StorageModule implements Listener {
         TeamLog.View v = teams.view(team);
         Optional<String> m = teams.member(team, p.getName(), p.getUniqueId());
         int rank = m.map(id -> StoreLedger.rank(v.role(id))).orElse(-1);
-        boolean owner = m.isPresent() && s.section != null && m.get().equals(v.section(s.section).owner);
+        boolean owner = m.isPresent() && s.section != null && v.section(s.section).builds(m.get());
         return new Rights(rank, owner, p.hasPermission("bauplaner.lager.verwalten"), m);
     }
 

@@ -8106,3 +8106,32 @@ Gemeinsame Stelle für automatische Abnahmen aller Blöcke: autochecks.ts (AUTO_
 - `docs/testing/TESTPLAN.md`
 - `scripts/checks/render_testplan.mjs`
 
+## 2026-11-06T21:23:28.718Z · progress
+
+**Aufgaben:** TEAM-03
+
+Mehrere Spieler je Abschnitt (Mitbauer) und je Sammelauftrag, versionierte Zuständigkeiten, Sammelaufträge und Buchungen (überholte Änderungen sichtbar abgelehnt), Zeitplan/Fortschritt mit Mitbauern, Plugin-Faltung; check 988/988, Browser 199/199, Plugin-Tests grün; Abnahme TEAMBAU-30 offen
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TEAM-03 | 🧩 Implementiert · Abnahme offen | 2/3 | Abnahme TEAMBAU-30 durch Philipp; Plugin-Faltung kommt mit der nächsten Plugin-Version. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/styles/team.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/project/team/TeamPlan.tsx`
+- `apps/web/src/views/project/team/TeamTab.tsx`
+- `docs/TESTING.md`
+- `docs/architecture/team/TEAMBAU.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
+- `mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/TeamLogCrewTest.java`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/team/team.ts`
+- `packages/domain/src/team/teamPlan.ts`
+- `tests/e2e/teamcrew.e2e.mjs`
+- `tests/unit/team/teamCrew.test.mjs`
+

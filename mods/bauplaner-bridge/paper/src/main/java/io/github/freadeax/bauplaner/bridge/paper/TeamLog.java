@@ -47,6 +47,8 @@ final class TeamLog {
         NEED.put("store.yield", "gast"); // COOP-08 yield stores
         // Client-first (COOP-10): what a player's mod saw – unverified, kept in the log, no effect on the fold here.
         NEED.put("section.seen", "helfer"); NEED.put("store.seen", "helfer");
+        // TEAM-03 (team.ts): Mitbauer, versioned assignments
+        NEED.put("section.crew", "meister"); NEED.put("section.join", "helfer"); NEED.put("section.leave", "helfer");
     }
     /** Measurements only the server writes (origin server), as in team.ts SERVER_ONLY_KINDS. */
     static final Set<String> SERVER_ONLY = Set.of("build.tally", "store.count", "store.move", "store.check", "store.yield");
@@ -165,8 +167,12 @@ final class TeamLog {
 
     static final class SectionState {
         String status = "frei", owner, doneBy, verifiedBy, note;
+        /** TEAM-03: Mitbauer besides the owner; authors of every effective assignment change (version = size). */
+        final List<String> crew = new ArrayList<>(), changes = new ArrayList<>();
         /** Open handover offer (section.handover) until accepted, declined or overtaken. */
         Offer offer;
+        /** Owner or Mitbauer (TEAM-03). */
+        boolean builds(String member) { return member != null && (member.equals(owner) || crew.contains(member)); }
         final List<String> history = new ArrayList<>();
     }
     record Offer(String to, String by, String at, String note) {}
@@ -289,30 +295,36 @@ final class TeamLog {
                 if (by.equals(s.owner)) return;
                 if (s.owner != null) { conflict(v, id, v.name(by) + " wollte „" + sectionName(sec) + "“ übernehmen, der Abschnitt war schon an " + v.name(s.owner) + " vergeben."); return; }
                 if (s.status.equals("bestaetigt")) { reject(v, id, "„" + sectionName(sec) + "“ ist schon bestätigt."); return; }
-                s.owner = by; s.status = "vergeben"; s.doneBy = null; s.verifiedBy = null; s.offer = null;
+                s.owner = by; s.crew.remove(by); s.status = "vergeben"; s.doneBy = null; s.verifiedBy = null; s.offer = null;
                 if (str(e, "note") != null) s.note = str(e, "note");
+                s.changes.add(by);
                 s.history.add(at + " " + v.name(by) + ": übernommen");
             }
             case "section.assign" -> {
                 SectionState s = v.section(sec);
                 String m = str(e, "member");
                 if (!v.known.contains(m)) { reject(v, id, "Unbekanntes Mitglied."); return; }
-                if (s.owner != null && !s.owner.equals(m)) conflict(v, id, v.name(by) + " hat „" + sectionName(sec) + "“ von " + v.name(s.owner) + " an " + v.name(m) + " umgewiesen.");
-                s.owner = m; s.offer = null;
+                if (stale(v, id, e, by, s, sectionName(sec))) return;
+                if (m.equals(s.owner)) return;
+                if (s.owner != null && !s.crew.contains(m)) conflict(v, id, v.name(by) + " hat „" + sectionName(sec) + "“ von " + v.name(s.owner) + " an " + v.name(m) + " umgewiesen.");
+                s.crew.remove(m); s.owner = m; s.offer = null;
                 if (s.status.equals("frei")) s.status = "vergeben";
+                s.changes.add(by);
                 s.history.add(at + " " + v.name(by) + ": zugewiesen an " + v.name(m));
             }
             case "section.release" -> {
                 SectionState s = v.section(sec);
+                if (stale(v, id, e, by, s, sectionName(sec))) return;
+                if (!by.equals(s.owner) && s.crew.contains(by)) { s.crew.remove(by); s.changes.add(by); s.history.add(at + " " + v.name(by) + ": baut nicht mehr mit"); return; }
                 if (!by.equals(s.owner) && !can(role, "section.assign")) { reject(v, id, "Nur " + (s.owner == null ? "der Inhaber" : v.name(s.owner)) + " oder ein Baumeister kann „" + sectionName(sec) + "“ abgeben."); return; }
                 if (s.status.equals("bestaetigt")) { reject(v, id, "„" + sectionName(sec) + "“ ist bestätigt und kann nicht mehr abgegeben werden."); return; }
-                s.owner = null; s.status = "frei"; s.doneBy = null; s.offer = null;
+                s.owner = null; s.crew.clear(); s.status = "frei"; s.doneBy = null; s.offer = null; s.changes.add(by);
                 s.history.add(at + " " + v.name(by) + ": abgegeben");
             }
             case "section.done" -> {
                 SectionState s = v.section(sec);
-                if (s.owner != null && !s.owner.equals(by)) conflict(v, id, v.name(by) + " hat „" + sectionName(sec) + "“ fertig gemeldet, Inhaber ist " + v.name(s.owner) + ".");
-                if (s.owner == null) s.owner = by;
+                if (s.owner != null && !s.builds(by)) conflict(v, id, v.name(by) + " hat „" + sectionName(sec) + "“ fertig gemeldet, Inhaber ist " + v.name(s.owner) + ".");
+                if (s.owner == null) { s.owner = by; s.changes.add(by); }
                 s.status = "gemeldet"; s.doneBy = by; s.verifiedBy = null; s.offer = null;
                 if (str(e, "note") != null) s.note = str(e, "note");
                 s.history.add(at + " " + v.name(by) + ": fertig gemeldet");
@@ -388,6 +400,7 @@ final class TeamLog {
                 if (s.status.equals("bestaetigt") || s.status.equals("gemeldet")) { reject(v, id, "„" + label + "“ ist " + (s.status.equals("bestaetigt") ? "bestätigt" : "fertig gemeldet") + " und wird nicht mehr übergeben."); return; }
                 if (!by.equals(s.owner) && !can(role, "section.assign")) { reject(v, id, "Nur " + (s.owner == null ? "der Inhaber" : v.name(s.owner)) + " oder ein Baumeister kann „" + label + "“ übergeben."); return; }
                 if (m == null || !v.known.contains(m)) { reject(v, id, "Unbekanntes Mitglied " + m + "."); return; }
+                if (stale(v, id, e, by, s, label)) return;
                 if (m.equals(s.owner)) { reject(v, id, v.name(m) + " hat „" + label + "“ schon."); return; }
                 if (!can(v.role(m), "section.claim")) { reject(v, id, v.name(m) + " ist " + ROLE_LABEL.get(v.role(m)) + " und kann keine Abschnitte übernehmen."); return; }
                 s.offer = new Offer(m, by, at, note);
@@ -397,7 +410,8 @@ final class TeamLog {
                 SectionState s = v.section(sec);
                 if (s.offer == null || !s.offer.to().equals(by)) { reject(v, id, "Für " + v.name(by) + " liegt kein Übergabeangebot für „" + sectionName(sec) + "“ vor."); return; }
                 String from = s.owner;
-                s.owner = by; if (s.status.equals("frei")) s.status = "vergeben";
+                s.owner = by; s.crew.remove(by); if (s.status.equals("frei")) s.status = "vergeben";
+                s.changes.add(by);
                 if (s.offer.note() != null) s.note = s.offer.note();
                 s.offer = null;
                 s.history.add(at + " " + v.name(by) + ": Übergabe angenommen" + (from != null ? " (von " + v.name(from) + ")" : ""));
@@ -415,6 +429,47 @@ final class TeamLog {
                 String until = opt(e, "until"), note = opt(e, "note");
                 if (until != null || note != null) v.away.put(m, new Away(until, note)); else v.away.remove(m);
             }
+            case "section.crew" -> {
+                SectionState s = v.section(sec);
+                String label = sectionName(sec);
+                if (s.status.equals("bestaetigt")) { reject(v, id, "„" + label + "“ ist schon bestätigt."); return; }
+                List<String> list = new ArrayList<>();
+                for (JsonElement x : array(e, "members")) list.add(x.getAsString());
+                for (String m : list) if (!v.known.contains(m) || !can(v.role(m), "section.claim")) { reject(v, id, v.known.contains(m) ? v.name(m) + " ist " + ROLE_LABEL.get(v.role(m)) + " und kann nicht mitbauen." : "Unbekanntes Mitglied " + m + "."); return; }
+                if (stale(v, id, e, by, s, label)) return;
+                if (s.owner == null && !list.isEmpty()) { s.owner = list.remove(0); if (s.status.equals("frei")) s.status = "vergeben"; }
+                s.crew.clear();
+                for (String m : list) if (!m.equals(s.owner) && s.crew.size() < MAX_CREW - 1) s.crew.add(m);
+                if (str(e, "note") != null) s.note = str(e, "note");
+                s.changes.add(by);
+                s.history.add(at + " " + v.name(by) + ": " + (s.crew.isEmpty() ? "keine Mitbauer mehr" : "Mitbauer: " + s.crew.stream().map(v::name).collect(java.util.stream.Collectors.joining(", "))));
+            }
+            case "section.join" -> {
+                SectionState s = v.section(sec);
+                String label = sectionName(sec);
+                if (s.builds(by)) return;
+                if (s.status.equals("bestaetigt")) { reject(v, id, "„" + label + "“ ist schon bestätigt."); return; }
+                if (stale(v, id, e, by, s, label)) return;
+                if (s.owner == null) { s.owner = by; s.status = "vergeben"; s.doneBy = null; s.verifiedBy = null; s.changes.add(by); s.history.add(at + " " + v.name(by) + ": übernommen"); return; }
+                if (s.crew.size() >= MAX_CREW - 1) { reject(v, id, "An „" + label + "“ bauen schon " + MAX_CREW + " Spieler."); return; }
+                s.crew.add(by); s.changes.add(by);
+                s.history.add(at + " " + v.name(by) + ": baut mit");
+            }
+            case "section.leave" -> {
+                SectionState s = v.section(sec);
+                String label = sectionName(sec), who = opt(e, "member") != null ? opt(e, "member") : by;
+                if (!who.equals(by) && !can(role, "section.assign")) { reject(v, id, "Nur " + v.name(who) + " selbst oder ein Baumeister nimmt " + v.name(who) + " aus „" + label + "“."); return; }
+                if (!s.builds(who)) { reject(v, id, v.name(who) + " baut nicht an „" + label + "“."); return; }
+                if (s.status.equals("bestaetigt")) { reject(v, id, "„" + label + "“ ist bestätigt und bleibt so."); return; }
+                if (stale(v, id, e, by, s, label)) return;
+                if (who.equals(s.owner)) {
+                    s.owner = s.crew.isEmpty() ? null : s.crew.remove(0);
+                    if (s.owner == null) { s.status = "frei"; s.doneBy = null; }
+                    s.offer = null;
+                } else s.crew.remove(who);
+                s.changes.add(by);
+                s.history.add(at + " " + v.name(by) + ": " + (who.equals(by) ? "ausgestiegen" : v.name(who) + " herausgenommen"));
+            }
             case "issue.ack" -> { for (JsonElement x : array(e, "events")) v.acknowledged.add(x.getAsString()); }
             case "store.config", "store.move", "store.check", "store.seal", "store.yield" -> {
                 if (!v.chests.containsKey(str(e, "chest"))) { reject(v, id, "Lagerkiste unbekannt oder entfernt."); return; }
@@ -424,6 +479,19 @@ final class TeamLog {
         if (kind.startsWith("store.")) v.stores.apply(e);
     }
 
+    /** TEAM-03, same rule as team.ts: written on an older version that someone else changed since – not applied. */
+    /** Most players per section (owner + Mitbauer), as MAX_CREW in team.ts. */
+    static final int MAX_CREW = 8;
+    private static boolean stale(View v, String id, JsonObject e, String by, SectionState s, String label) {
+        if (!e.has("base") || !e.get("base").isJsonPrimitive()) return false;
+        int base = e.get("base").getAsInt();
+        if (base >= s.changes.size()) return false;
+        java.util.LinkedHashSet<String> others = new java.util.LinkedHashSet<>();
+        for (String x : s.changes.subList(Math.max(0, base), s.changes.size())) if (!x.equals(by)) others.add(v.name(x));
+        if (others.isEmpty()) return false;
+        reject(v, id, "Überholt: „" + label + "“ wurde inzwischen von " + String.join(", ", others) + " geändert (gesehen Version " + base + ", jetzt " + s.changes.size() + "). Bitte neu entscheiden.");
+        return true;
+    }
     private static void reject(View v, String id, String text) { v.rejected.add(text); v.problems.put(id, text); v.rejectedIds.add(id); }
     private static void conflict(View v, String id, String text) { v.conflicts.add(text); v.problems.put(id, text); }
 

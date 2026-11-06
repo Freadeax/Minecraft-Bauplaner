@@ -118,3 +118,15 @@ details.team-emergency:not(.team-block) { margin-top: .6rem; }
 .team-undo summary { cursor: pointer; font-weight: 600; }
 .team-undo ul { list-style: none; margin: .5rem 0 0; padding: 0; display: grid; gap: .35rem; }
 .team-undo li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; }
+
+/* TEAM-03: Mitbauer, verteilte Sammelaufträge, versionierte Buchungen */
+.team-crew{color:var(--muted);font-weight:400}
+.team-crew-line{color:var(--muted)}
+.team-crew-editor{display:grid;gap:8px;margin:6px 0 4px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2)}
+.team-crew-editor .team-check{border:1px solid var(--line);border-radius:14px;padding:4px 10px;background:var(--panel);color:var(--text)}
+.team-crew-editor .team-check.lead{border-color:var(--ds-accent, var(--mint));font-weight:600}
+.team-split{margin:6px 0 10px}.team-split>summary{cursor:pointer;font-size:12px;color:var(--ds-accent, var(--mint))}
+.team-split[open]{display:grid;gap:8px}
+.team-split .team-check{border:1px solid var(--line);border-radius:14px;padding:4px 10px;color:var(--text)}
+.team-share{width:64px;padding:2px 6px}
+.team-bookings .team-list li.done{opacity:.6}

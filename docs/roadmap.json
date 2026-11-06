@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T21:17:39.366Z",
+  "updatedAt": "2026-11-06T21:23:28.718Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -6187,49 +6187,77 @@
     },
     {
       "id": "TEAM-03",
-      "title": "Gemeinsame Aufgaben, Abschnitte und Sammelplanung",
+      "title": "Gemeinsame Aufgaben, Abschnitte und Sammelplanung: mehrere Spieler je Abschnitt und Sammelauftrag, versionierte Zuständigkeiten und Buchungen, live über den Team-Raum",
       "phase": "P4",
       "priority": "P1",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "implemented",
+      "owner": "Claude (Thread „Abschnitte mehreren Spielern zuweisen“)",
       "dependencies": [
         "TEAM-02",
-        "BUILD-01"
+        "COOP-06",
+        "PROJ-05"
       ],
       "scope": [
-        "packages/domain/src/building/site.ts",
-        "packages/application/"
+        "packages/domain/src/team/team.ts",
+        "packages/domain/src/team/teamPlan.ts",
+        "apps/web/src/views/project/team/TeamTab.tsx",
+        "apps/web/src/views/project/team/TeamPlan.tsx",
+        "apps/web/src/styles/team.css",
+        "mods/bauplaner-bridge/paper/",
+        "tests/unit/team/teamCrew.test.mjs",
+        "tests/e2e/teamcrew.e2e.mjs",
+        "docs/architecture/team/TEAMBAU.md"
       ],
       "legacyIds": [],
       "steps": [
         {
           "id": "TEAM-03-S01",
-          "title": "Zuständigkeiten und Lagerbuchungen versionieren.",
-          "done": false
+          "title": "Zuständigkeiten und Lagerbuchungen versionieren: Version je Abschnitt, Sammelauftrag und Buchung; Änderungen auf überholter Version wirken nicht und stehen mit „Trotzdem so übernehmen“ in den Hinweisen; Buchungen korrigieren/stornieren (contribution.fix).",
+          "done": true
         },
         {
           "id": "TEAM-03-S02",
-          "title": "Abschnitte und Sammelaufträge mehreren Spielern zuweisen.",
+          "title": "Abschnitte und Sammelaufträge mehreren Spielern zuweisen: section.crew/join/leave (Verantwortliche + bis zu 7 Mitbauer), gather.assign; Zeitplan, Fortschritt, Planung und Paper-Plugin (Abschnitts- und Lagerschutz) berücksichtigen Mitbauer.",
+          "done": true
+        },
+        {
+          "id": "TEAM-03-S03",
+          "title": "Abnahme TEAMBAU-30 durch Philipp (zwei Browser oder Mitspieler, Team live).",
           "done": false
         }
       ],
       "acceptance": [
-        "Planung, manuelle Bestätigung und Spielnachweis bleiben getrennt."
+        "Planung, manuelle Bestätigung und Spielnachweis bleiben getrennt.",
+        "Kein stiller Verlust und kein Überschreiben fremder Zuständigkeiten: überholte Änderungen werden sichtbar abgelehnt, alle Geräte entscheiden gleich.",
+        "Ereignisse ohne Version (ältere Mod/Plugin) wirken wie bisher."
       ],
-      "next": "Zuständigkeiten und Lagerbuchungen versionieren. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option.",
+      "next": "Abnahme TEAMBAU-30 durch Philipp; Plugin-Faltung kommt mit der nächsten Plugin-Version.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/unit/team/teamCrew.test.mjs",
+          "note": "9 Fälle: Mitbauer, Rechte, gleichzeitige Zuweisung (überholt, Merge beidseitig gleich, Lösung), alte Ereignisse, Sammelauftrag verteilen, Buchung korrigieren/stornieren, Verdichten, Grenzen, Zeitplan/Fortschritt."
+        },
+        {
+          "path": "tests/e2e/teamcrew.e2e.mjs",
+          "note": "Chromium 1400/390 px: Mitbauer wählen, mitbauen/aussteigen, Sammelauftrag verteilen, Buchung V1→V2→storniert."
+        },
+        {
+          "path": "mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/TeamLogCrewTest.java",
+          "note": "Plugin faltet Mitbauer und Versionen wie team.ts."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Einheits-, Browser- und Plugin-Tests grün; Abnahme TEAMBAU-30 offen."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T10:34:38.680Z",
-      "area": "SPAETER",
-      "thread": null,
+      "updatedAt": "2026-11-06T21:23:28.718Z",
+      "area": "TEAM",
+      "thread": "Abschnitte mehreren Spielern zuweisen",
       "philipp": [],
       "orphans": []
     },
@@ -25264,6 +25292,41 @@
           "done": 4,
           "total": 6,
           "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T21:23:28.718Z",
+      "kind": "progress",
+      "items": [
+        "TEAM-03"
+      ],
+      "summary": "Mehrere Spieler je Abschnitt (Mitbauer) und je Sammelauftrag, versionierte Zuständigkeiten, Sammelaufträge und Buchungen (überholte Änderungen sichtbar abgelehnt), Zeitplan/Fortschritt mit Mitbauern, Plugin-Faltung; check 988/988, Browser 199/199, Plugin-Tests grün; Abnahme TEAMBAU-30 offen",
+      "files": [
+        "apps/web/src/styles/team.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/project/team/TeamPlan.tsx",
+        "apps/web/src/views/project/team/TeamTab.tsx",
+        "docs/TESTING.md",
+        "docs/architecture/team/TEAMBAU.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java",
+        "mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/TeamLogCrewTest.java",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/team/team.ts",
+        "packages/domain/src/team/teamPlan.ts",
+        "tests/e2e/teamcrew.e2e.mjs",
+        "tests/unit/team/teamCrew.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "TEAM-03",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Abnahme TEAMBAU-30 durch Philipp; Plugin-Faltung kommt mit der nächsten Plugin-Version."
         }
       ]
     }

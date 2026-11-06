@@ -4,8 +4,8 @@ import type { Guide, GuideProgress, GuideStep } from '../building/guide.js';
 import type { MaterialReport } from '../materials/materials.js';
 import { memberMatches, sectionOfStep } from '../building/sectionMembership.js';
 import type { SectionMember, SiteOverview, SitePlan, SiteSection } from '../building/site.js';
-import { canTeam, TEAM_ROLES } from './team.js';
-import type { ItemCount, SectionTeamStatus, TeamAction, TeamContext, TeamEvent, TeamEventBody, TeamRole, TeamState, TeamView } from './team.js';
+import { canTeam, isKnownEvent, TEAM_ROLES } from './team.js';
+import type { ItemCount, KnownTeamEvent, SectionTeamStatus, TeamAction, TeamContext, TeamEvent, TeamEventBody, TeamRole, TeamState, TeamView } from './team.js';
 import { teamView } from './team.js';
 import { DomainError } from '../core/types.js';
 
@@ -269,6 +269,8 @@ export interface ScheduleItem {
   readonly status: SectionTeamStatus;
   /** Section whose end decides the start (dependency), when the member is waiting for it. */
   readonly waitsFor?: string;
+  /** TEAM-03: Mitbauer; the section goes as many times faster and blocks their lanes too. */
+  readonly crew?: readonly string[];
 }
 export interface ScheduleLane { readonly member: string | null; readonly name: string; readonly items: readonly ScheduleItem[]; readonly end: number; readonly work: number; readonly awayDays: number }
 export interface TeamSchedule {
@@ -322,21 +324,23 @@ export function teamSchedule(input: { view: TeamView; work: readonly SectionWork
     const s = state.get(w.id);
     const status: SectionTeamStatus = s?.status ?? 'frei';
     const member = s?.owner ?? proposed.get(w.id) ?? null;
+    const crew = s?.owner ? s.crew ?? [] : [];
+    const builders = member !== null ? [member, ...crew] : [];
     const doneish = status === 'gemeldet' || status === 'bestaetigt';
     const work = doneish ? 0 : w.openWork;
     const depEnd = w.dependsOn.reduce<{ end: number; id?: string }>((best, d) => { const e = ends.get(d)?.end ?? 0; return e > best.end ? { end: e, id: d } : best; }, { end: 0 });
     let laneFree = 0;
-    if (member !== null) {
-      if (!free.has(member)) { const a = awayDays(member); free.set(member, Number.isFinite(a) ? a : 0); }
-      laneFree = work ? free.get(member)! : 0;
+    for (const b of builders) {
+      if (!free.has(b)) { const a = awayDays(b); free.set(b, Number.isFinite(a) ? a : 0); }
+      if (work) laneFree = Math.max(laneFree, free.get(b)!);
     }
     const start = Math.max(laneFree, depEnd.end);
-    const end = start + work / rate;
+    const end = start + work / (rate * Math.max(1, builders.length));
     const by = work === 0 ? 'none' : depEnd.end > laneFree ? 'dep' : 'lane';
     ends.set(w.id, { end, by, ...(by === 'dep' ? { prev: depEnd.id! } : by === 'lane' && member && laneLast.has(member) ? { prev: laneLast.get(member)! } : {}) });
-    if (member !== null && work) { free.set(member, end); laneLast.set(member, w.id); }
+    if (member !== null && work) { for (const b of builders) free.set(b, end); laneLast.set(member, w.id); }
     items.push({ sectionId: w.id, name: w.name, member, start: round2(start), end: round2(end), work, status,
-      ...(depEnd.id && depEnd.end > laneFree && work > 0 && { waitsFor: depEnd.id }) });
+      ...(depEnd.id && depEnd.end > laneFree && work > 0 && { waitsFor: depEnd.id }), ...(crew.length && { crew: [...crew] }) });
   }
   const makespan = round2(Math.max(0, ...[...ends.values()].map(e => e.end)));
   const critical: string[] = [];
@@ -353,6 +357,7 @@ export function teamSchedule(input: { view: TeamView; work: readonly SectionWork
   const solo = round2(items.reduce((n, i) => n + i.work, 0) / rate);
   const notes = [`Zeitplan nach Bautempo ${rate} Blöcke je Bautag und ${perWeek} Bautagen je Woche – eine Planungshilfe, keine Messung.`];
   if (items.some(i => i.member === null && i.work > 0)) notes.push('Freie Abschnitte sind so geplant, als ob sie sofort jemand übernimmt.');
+  if (items.some(i => i.crew?.length && i.work > 0)) notes.push('Abschnitte mit Mitbauern gehen entsprechend schneller und belegen die Zeit aller Beteiligten (steht in der Spur der Verantwortlichen).');
   if (lanes.some(l => l.awayDays === -1)) notes.push('Mindestens ein Mitglied ist ohne Enddatum abwesend; seine Abschnitte sind ab heute geplant.');
   if (input.work.some(w => w.dependsOnLater.length)) notes.push('Einige Abschnitte brauchen Vorarbeit aus später geplanten Abschnitten (Reihenfolge im Reiter „Baustelle“ prüfen).');
   return { lanes, items, makespan, solo, critical, finish: calendarAfter(day, makespan, perWeek), sessionsPerWeek: perWeek, notes };
@@ -504,12 +509,15 @@ export function teamProgress(input: { view: TeamView; work: readonly SectionWork
     total += w.work; done += w.work - w.openWork;
     if (s.status === 'gemeldet' || s.status === 'bestaetigt') reported += w.work;
     if (s.status === 'bestaetigt') confirmed += w.work;
-    if (s.owner) {
-      const p = per.get(s.owner) ?? { sections: 0, work: 0, workDone: 0, reported: 0, confirmed: 0 };
-      p.sections++; p.work += w.work; p.workDone += w.work - w.openWork;
-      if (s.status === 'gemeldet' || s.status === 'bestaetigt') p.reported += w.work;
-      if (s.status === 'bestaetigt') p.confirmed += w.work;
-      per.set(s.owner, p);
+    // TEAM-03: the work of a section is shared equally between owner and Mitbauer.
+    const crew = s.owner ? [s.owner, ...(s.crew ?? [])] : [];
+    for (const id of crew) {
+      const share = 1 / crew.length;
+      const p = per.get(id) ?? { sections: 0, work: 0, workDone: 0, reported: 0, confirmed: 0 };
+      p.sections++; p.work += w.work * share; p.workDone += (w.work - w.openWork) * share;
+      if (s.status === 'gemeldet' || s.status === 'bestaetigt') p.reported += w.work * share;
+      if (s.status === 'bestaetigt') p.confirmed += w.work * share;
+      per.set(id, p);
     }
     const last = s.history.at(-1);
     const owner = s.owner ? members.find(m => m.id === s.owner) : undefined;
@@ -535,7 +543,8 @@ export function teamProgress(input: { view: TeamView; work: readonly SectionWork
   }
   const memberList: MemberProgress[] = members.filter(m => per.has(m.id) || m.role !== 'gast').map(m => {
     const p = per.get(m.id) ?? { sections: 0, work: 0, workDone: 0, reported: 0, confirmed: 0 };
-    return { member: m.id, name: m.name, role: m.role, ...p, ...(m.away && { away: m.away }) };
+    return { member: m.id, name: m.name, role: m.role, sections: p.sections, work: Math.round(p.work), workDone: Math.round(p.workDone), reported: Math.round(p.reported), confirmed: Math.round(p.confirmed),
+      ...(m.away && { away: m.away }) };
   });
   return { board, members: memberList, totals: { work: total, workDone: done, reportedWork: reported, confirmedWork: confirmed,
     sections: input.view.sections.filter(s => !s.orphan).length, confirmed: board.bestaetigt.length }, attention };
@@ -597,6 +606,11 @@ export function teamIssues(team: TeamState, ctx: TeamContext, view: TeamView, ac
     const roleThen = before(e).members.find(m => m.id === e.by)?.role ?? 'gast';
     const roleNow = view.members.find(m => m.id === e.by)?.role;
     if (roleThen === 'gast' && known.has(e.by) && roleNow === 'gast') fixes.push({ label: `${name(e.by)} zum Helfer machen`, body: { kind: 'member.role', member: e.by, role: 'helfer' }, needs: 'member.role' });
+    if (r.stale && isKnownEvent(e)) {
+      // TEAM-03: written on an old version – offer to apply it on the current one (a new, checked event).
+      const { id: _id, at: _at, by: _by, origin: _origin, ...body } = e as KnownTeamEvent & { base?: number };
+      fixes.push({ label: 'Trotzdem so übernehmen', body: { ...body, base: r.stale.current } as TeamEventBody, needs: e.kind });
+    }
     if (e.kind === 'section.claim' && e.section && known.has(e.by)) {
       const s = view.sections.find(x => x.sectionId === e.section);
       if (s && s.status === 'frei') fixes.push({ label: `„${ctx.sections.find(x => x.id === e.section)?.name ?? 'Abschnitt'}“ an ${name(e.by)} zuweisen`, body: { kind: 'section.assign', section: e.section, member: e.by }, needs: 'section.assign' });
@@ -661,7 +675,11 @@ const RIGHT_LABEL: readonly (readonly [TeamAction, string, string?])[] = [
   ['section.handover', 'Abschnitt übergeben (der andere nimmt an)', 'den eigenen; fremde ab Baumeister'],
   ['member.away', 'Abwesenheit eintragen', 'für sich selbst; für andere die Bauleitung'],
   ['issue.ack', 'Hinweise als erledigt markieren'],
+  ['section.join', 'In einem Abschnitt mitbauen', 'sich selbst; aussteigen ebenso'],
+  ['contribution.fix', 'Eigene Buchungen korrigieren oder stornieren', 'fremde ab Baumeister'],
   ['section.assign', 'Abschnitte zuweisen und umweisen'],
+  ['section.crew', 'Mitbauer eines Abschnitts festlegen'],
+  ['gather.assign', 'Sammelaufträge auf mehrere Spieler verteilen'],
   ['section.verify', 'Meldungen bestätigen oder Nacharbeit verlangen'],
   ['member.role', 'Rollen vergeben'],
   ['plan.release', 'Planstand freigeben'],

@@ -480,7 +480,7 @@ final class TeamModule implements Listener {
             Location l = p.getLocation(); String dim = PaperCompat.dimension(p.getWorld());
             for (TeamLog.Section sec : team.ordered()) for (TeamLog.Box b : sec.boxes()) if (b.contains(dim, l.getBlockX(), l.getBlockY(), l.getBlockZ())) return Optional.of(sec);
         }
-        List<TeamLog.Section> mine = team.ordered().stream().filter(sec -> member.equals(v.section(sec.id()).owner) && !v.section(sec.id()).status.equals("bestaetigt")).collect(Collectors.toList());
+        List<TeamLog.Section> mine = team.ordered().stream().filter(sec -> v.section(sec.id()).builds(member) && !v.section(sec.id()).status.equals("bestaetigt")).collect(Collectors.toList());
         return mine.size() == 1 ? Optional.of(mine.get(0)) : Optional.empty();
     }
 
@@ -536,6 +536,7 @@ final class TeamModule implements Listener {
             TeamLog.SectionState st = v.section(sec.id());
             ChatColor c = switch (st.status) { case "frei" -> ChatColor.GREEN; case "vergeben" -> ChatColor.YELLOW; case "gemeldet" -> ChatColor.AQUA; case "bestaetigt" -> ChatColor.GRAY; default -> ChatColor.RED; };
             say(s, c + "" + sec.number() + ". " + sec.name() + ChatColor.RESET + " – " + TeamLog.STATUS_LABEL.get(st.status) + (st.owner != null ? " · " + v.name(st.owner) : "")
+                    + (st.crew.isEmpty() ? "" : " + " + st.crew.stream().map(v::name).collect(Collectors.joining(", ")))
                     + (st.owner != null && v.away.containsKey(st.owner) ? " (abwesend)" : "") + (st.offer != null ? ChatColor.AQUA + " → Übergabe an " + v.name(st.offer.to()) + " offen" : ""));
         }
         if (team.sections.isEmpty()) say(s, "Das Projekt hat keine Bauabschnitte.");
@@ -833,7 +834,7 @@ final class TeamModule implements Listener {
         if (st.owner == null || st.status.equals("frei")) return;
         Actor a = new Actor(p, p.getName(), p.getUniqueId(), false);
         Optional<String> me = memberOf(hit.team, a);
-        if (me.isPresent() && (me.get().equals(st.owner) || TeamLog.rank(v.role(me.get())) >= TeamLog.rank("meister"))) return;
+        if (me.isPresent() && (st.builds(me.get()) || TeamLog.rank(v.role(me.get())) >= TeamLog.rank("meister"))) return;
         if (p.hasPermission("bauplaner.team.leitung")) return;
         boolean block = "sperren".equals(mode);
         if (block) cancel.run();

@@ -365,3 +365,27 @@ Jede Baunachweis-Meldung, jede Lagerbuchung, jeder Trichterschub und jede Ertrag
 
 Prüfung: `tests/unit/team/team-digest.test.mjs` (gleicher Stand, Produktion, Trichter, Merge mit alter und halber Kopie, zweimal verdichten, Rechte, halbe und gefälschte Läufe, Postausgang), `tests/e2e/team-digest.e2e.mjs` (Ertragsbuch, Verdichten, Rückgängig, Desktop und Handy). Abnahme: TEAMBAU-28.
 
+
+## 20. Mehrere Spieler je Abschnitt, versionierte Zuständigkeiten und Buchungen (TEAM-03, 06.11.2026)
+
+Ein Abschnitt hat weiter genau eine **Verantwortliche** (`owner`: meldet fertig, packt das Material, bekommt Hinweise) und dazu bis zu sieben **Mitbauer** (`crew`, zusammen höchstens `MAX_CREW` = 8). Sammelaufträge lassen sich auf mehrere Spieler verteilen. Zuständigkeiten, Sammelaufträge und Buchungen tragen **Versionen**, damit gleichzeitige Änderungen über den Team-Raum nichts still überschreiben. Domäne `packages/domain/src/team/team.ts`, Oberfläche Reiter „Team“ → „Bauen“.
+
+**Neue Ereignisse** (hinten angehängt, ältere Planer, Mod und Plugin behalten sie wirkungslos):
+
+| Art | Mindestrolle | Wirkung |
+|---|---|---|
+| `section.crew` `{section, members[], base?, note?}` | Baumeister | setzt die Mitbauer; ohne Verantwortliche wird der erste Eintrag verantwortlich |
+| `section.join` `{section, base?}` | Helfer (für sich) | baut in einem vergebenen Abschnitt mit; einen freien übernimmt er |
+| `section.leave` `{section, member?, base?}` | Helfer für sich, andere ab Baumeister | steigt aus; steigt die Verantwortliche aus, rückt der erste Mitbauer nach, sonst wird der Abschnitt frei |
+| `gather.assign` `{item, shares[{member,count}], base?, note?}` | Baumeister | ersetzt alle Anteile eines Sammelauftrags (leer = aufheben); nur an Helfer und höher |
+| `contribution.fix` `{ref, blocks?, items?, note?, base?}` | Urheber der Buchung, fremde ab Baumeister | neue Version einer gemeldeten Lieferung; ohne Inhalt = storniert |
+
+**Versionen:** Jeder Abschnitt zählt seine wirksamen Zuständigkeitsänderungen (`claim`, `assign`, `release`, `accept`, `crew`, `join`, `leave`, erstes `done` ohne Inhaber), jeder Sammelauftrag (`gather.claim`, `gather.assign`) und jede Buchung (`contribution`, `contribution.fix`) ihre Fassungen. Ein Ereignis mit `base` (die Version, die der Schreibende sah) ist **überholt**, wenn seit `base` jemand anderes geändert hat: es wirkt nicht und steht als abgelehntes Ereignis mit `stale` in den Hinweisen, mit der Lösung „Trotzdem so übernehmen“ (dasselbe Ereignis auf der aktuellen Version). Eigene Folgeänderungen sind nie überholt. `section.claim` prüft keine Version: ein schon vergebener Abschnitt gibt wie bisher den Hinweis „wollte übernehmen, war schon vergeben“, ein freier wird einfach übernommen. Weil alle Geräte in derselben Reihenfolge (`at`, `id`) falten, entscheiden sie gleich; Merge in beide Richtungen ergibt denselben Stand. Ereignisse ohne `base` (ältere Mod, Plugin, Teampakete) folgen den alten Regeln.
+
+**Weitere Regeln:** `section.release` durch einen Mitbauer heißt nur Aussteigen; durch Verantwortliche oder Baumeister wird der ganze Abschnitt frei (Mitbauer auch). `section.assign` an einen Mitbauer ist kein Umweisen gegen jemanden (kein Hinweis). Fertigmelden durch einen Mitbauer ist kein Konflikt. Gemeldet/bestätigt zählt für alle Beteiligten. `teamAssignments` gibt Verantwortliche und Mitbauer an die Projektplanung. `contribution.fix` wird wie `contribution` verdichtet (die Summen sind netto); eine Korrektur einer schon verdichteten Buchung wird abgelehnt.
+
+**Planung:** Im Teamzeitplan (`teamSchedule`) arbeitet ein Abschnitt mit n Beteiligten n-mal so schnell und belegt die Zeit aller Beteiligten; der Fortschritt je Mitglied (`teamProgress`) teilt die Arbeit gleich auf. Das Bauleute-Konto (PROJ-05) liest verteilte Sammelaufträge wie eigene Zusagen.
+
+**Plugin (`TeamLog.java`):** faltet `section.crew/join/leave` und `base` genauso (Test `TeamLogCrewTest`); Abschnittsschutz und Lagerschutz „abschnitt“ lassen Mitbauer wie Verantwortliche zu, `/bauplaner team liste` nennt die Mitbauer. Kommt mit der nächsten Plugin-Version. Die Mod zeigt Abschnitte weiter in der Farbe der Verantwortlichen.
+
+Prüfung: `tests/unit/team/teamCrew.test.mjs`, `tests/e2e/teamcrew.e2e.mjs` (Desktop und Handy), Paper `TeamLogCrewTest`. Abnahme: TEAMBAU-30.

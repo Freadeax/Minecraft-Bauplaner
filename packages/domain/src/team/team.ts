@@ -51,13 +51,13 @@ export type TeamEventBody =
   | { readonly kind: 'member.join'; readonly member: string; readonly name: string; readonly player?: string }
   | { readonly kind: 'member.role'; readonly member: string; readonly role: TeamRole }
   | { readonly kind: 'member.player'; readonly member: string; readonly player: string }
-  | { readonly kind: 'section.claim'; readonly section: string; readonly note?: string }
-  | { readonly kind: 'section.assign'; readonly section: string; readonly member: string }
-  | { readonly kind: 'section.release'; readonly section: string }
+  | { readonly kind: 'section.claim'; readonly section: string; readonly note?: string; readonly base?: number }
+  | { readonly kind: 'section.assign'; readonly section: string; readonly member: string; readonly base?: number }
+  | { readonly kind: 'section.release'; readonly section: string; readonly base?: number }
   | { readonly kind: 'section.done'; readonly section: string; readonly note?: string }
   | { readonly kind: 'section.verify'; readonly section: string; readonly ok: boolean; readonly note?: string }
   | { readonly kind: 'contribution'; readonly section?: string; readonly blocks?: number; readonly items?: readonly ItemCount[]; readonly note?: string }
-  | { readonly kind: 'gather.claim'; readonly item: string; readonly count: number }
+  | { readonly kind: 'gather.claim'; readonly item: string; readonly count: number; readonly base?: number }
   | { readonly kind: 'note.add'; readonly noteId: string; readonly text: string; readonly tag: NoteTag; readonly section?: string; readonly pos?: readonly [number, number, number] }
   | { readonly kind: 'note.resolve'; readonly noteId: string; readonly text?: string }
   | { readonly kind: 'plan.release'; readonly revisionId: string; readonly revisionNumber: number; readonly summary: string }
@@ -82,15 +82,30 @@ export type TeamEventBody =
   /** Baumeister+ accepts the current content: open differences are closed. */
   | { readonly kind: 'store.seal'; readonly chest: string; readonly sha256: string; readonly note?: string }
   // COOP-06 (TEAMBAU §4, §18): handover with acceptance, absence, acknowledged hints
-  | { readonly kind: 'section.handover'; readonly section: string; readonly member: string; readonly note?: string }
-  | { readonly kind: 'section.accept'; readonly section: string }
+  | { readonly kind: 'section.handover'; readonly section: string; readonly member: string; readonly note?: string; readonly base?: number }
+  | { readonly kind: 'section.accept'; readonly section: string; readonly base?: number }
   | { readonly kind: 'section.decline'; readonly section: string }
   | { readonly kind: 'member.away'; readonly member: string; readonly until?: string; readonly note?: string }
   | { readonly kind: 'issue.ack'; readonly events: readonly string[] }
   /** COOP-08 (LAGERKISTEN §13): what hoppers and players put into a yield store (purpose ertrag) between from and until, minutes = time the store's chunk was loaded. Server only. */
   | { readonly kind: 'store.yield'; readonly chest: string; readonly farm?: string; readonly items: readonly ItemCount[]; readonly from: string; readonly until: string; readonly minutes: number }
   /** COOP-11 „Verlauf verdichten“: one part of a digest of all measurements up to `cutoff` (Bauleitung). Sorts right after the cutoff event. */
-  | ({ readonly kind: 'team.digest' } & DigestBody);
+  | ({ readonly kind: 'team.digest' } & DigestBody)
+  // TEAM-03 (TEAMBAU §20): several players per section and per gather order; versioned assignments and bookings.
+  // `base` = version of the section / gather order / booking the author saw; a change on an older version
+  // that someone else has changed since is not applied (überholt) – nothing is overwritten silently.
+  /** Baumeister+: sets who builds along (Mitbauer) besides the responsible owner; without an owner the first one becomes it. */
+  | { readonly kind: 'section.crew'; readonly section: string; readonly members: readonly string[]; readonly base?: number; readonly note?: string }
+  /** Helfer+: builds along in a taken section (a free one is taken over). */
+  | { readonly kind: 'section.join'; readonly section: string; readonly base?: number }
+  /** Leaves a section (oneself; others: Baumeister+). The owner leaving hands the lead to the first Mitbauer. */
+  | { readonly kind: 'section.leave'; readonly section: string; readonly member?: string; readonly base?: number }
+  /** Baumeister+: splits one gather order (item) over several players; replaces all shares of that item. */
+  | { readonly kind: 'gather.assign'; readonly item: string; readonly shares: readonly { readonly member: string; readonly count: number }[]; readonly base?: number; readonly note?: string }
+  /** Corrects (or with nothing left cancels) a booked contribution; author of the booking or Baumeister+. New version, the old one stays in the history. */
+  | { readonly kind: 'contribution.fix'; readonly ref: string; readonly blocks?: number; readonly items?: readonly ItemCount[]; readonly note?: string; readonly base?: number };
+/** Most players per section (owner + Mitbauer) and per split gather order. */
+export const MAX_CREW = 8;
 
 /** An item and a signed amount (expected stock and open differences of a store can be negative). */
 export interface ItemDelta { readonly item: string; readonly delta: number }
@@ -148,7 +163,8 @@ export type TeamEventKind = TeamEventBody['kind'];
 const KNOWN = new Set<string>(['member.join', 'member.role', 'member.player', 'section.claim', 'section.assign', 'section.release', 'section.done',
   'section.verify', 'contribution', 'gather.claim', 'note.add', 'note.resolve', 'plan.release', 'build.tally', 'member.tally', 'store.chest', 'store.count',
   'store.config', 'store.move', 'store.check', 'store.seal',
-  'section.handover', 'section.accept', 'section.decline', 'member.away', 'issue.ack', 'store.yield', 'section.seen', 'store.seen', 'team.digest']);
+  'section.handover', 'section.accept', 'section.decline', 'member.away', 'issue.ack', 'store.yield', 'section.seen', 'store.seen', 'team.digest',
+  'section.crew', 'section.join', 'section.leave', 'gather.assign', 'contribution.fix']);
 /** Kinds only the server plugin may write (origin server): they are measurements, not claims. */
 export const SERVER_ONLY_KINDS: ReadonlySet<string> = new Set(['build.tally', 'store.count', 'store.move', 'store.check', 'store.yield']);
 export const isKnownEvent = (e: TeamEvent): e is KnownTeamEvent => KNOWN.has(e.kind);
@@ -206,6 +222,7 @@ export function checkTeamEvent(raw: unknown): TeamEvent {
   if (raw.origin !== 'planer' && raw.origin !== 'server') fail('Herkunft muss planer oder server sein');
   if (JSON.stringify(raw).length > MAX_EVENT_JSON) fail(`Ereignis ${String(raw.id)} ist zu groß`);
   const where = `Ereignis ${String(raw.id)}`;
+  if (raw.base !== undefined) int(raw.base, 0, 1_000_000, `${where}: Version`);
   switch (raw.kind) {
     case 'member.join': text(raw.member, 64, `${where}: Mitglied`); text(raw.name, 60, `${where}: Name`);
       if (raw.player !== undefined && (typeof raw.player !== 'string' || !PLAYER_NAME.test(raw.player))) fail(`${where}: Spielername ungültig`); break;
@@ -316,6 +333,36 @@ export function checkTeamEvent(raw: unknown): TeamEvent {
       for (const id of raw.events as unknown[]) text(id, 64, `${where}: Ereignis-ID`);
       break;
     case 'team.digest': checkDigest(raw, where); break;
+    case 'section.crew': {
+      text(raw.section, 64, `${where}: Abschnitt`); optText(raw.note, 300, `${where}: Notiz`);
+      if (!Array.isArray(raw.members) || raw.members.length > MAX_CREW) fail(`${where}: höchstens ${MAX_CREW} Mitbauer`);
+      for (const m of raw.members as unknown[]) text(m, 64, `${where}: Mitglied`);
+      if (new Set(raw.members as string[]).size !== (raw.members as string[]).length) fail(`${where}: Mitglied doppelt`);
+      break;
+    }
+    case 'section.join': text(raw.section, 64, `${where}: Abschnitt`); break;
+    case 'section.leave': text(raw.section, 64, `${where}: Abschnitt`); if (raw.member !== undefined) text(raw.member, 64, `${where}: Mitglied`); break;
+    case 'gather.assign': {
+      if (typeof raw.item !== 'string' || !ITEM_ID.test(raw.item)) fail(`${where}: Item ungültig`);
+      optText(raw.note, 300, `${where}: Notiz`);
+      if (!Array.isArray(raw.shares) || raw.shares.length > MAX_CREW) fail(`${where}: höchstens ${MAX_CREW} Anteile`);
+      const seen = new Set<string>();
+      for (const l of raw.shares as unknown[]) {
+        if (!isObj(l)) fail(`${where}: Anteil ungültig`);
+        const m = text((l as Record<string, unknown>).member, 64, `${where}: Mitglied`);
+        if (seen.has(m)) fail(`${where}: Mitglied doppelt`);
+        seen.add(m);
+        int((l as Record<string, unknown>).count, 1, 1e9, `${where}: Menge`);
+      }
+      break;
+    }
+    case 'contribution.fix': {
+      text(raw.ref, 64, `${where}: Buchung`);
+      if (raw.blocks !== undefined) int(raw.blocks, 0, 10_000_000, `${where}: Blöcke`);
+      itemLines(raw.items, 64, `${where}: Items`);
+      optText(raw.note, 300, `${where}: Notiz`);
+      break;
+    }
     default: break; // newer kinds: kept as they are
   }
   return raw as unknown as TeamEvent;
@@ -411,7 +458,7 @@ export function checkTeam(raw: unknown): TeamState {
 // ---------------------------------------------------------------- COOP-11 digest (Verlauf verdichten)
 
 /** Measurements that a digest replaces completely up to its cutoff. */
-const DIGESTED_KINDS: ReadonlySet<string> = new Set(['build.tally', 'contribution', 'store.move', 'store.check', 'store.seal', 'store.yield']);
+const DIGESTED_KINDS: ReadonlySet<string> = new Set(['build.tally', 'contribution', 'contribution.fix', 'store.move', 'store.check', 'store.seal', 'store.yield']);
 /** Snapshot kinds: only the newest per chest/section up to the cutoff stays (it is the state; older ones are history). */
 function snapshotKey(e: TeamEvent): string | null {
   const r = e as unknown as Record<string, unknown>;
@@ -576,6 +623,8 @@ export interface TeamMember {
   /** In site.program.builders (known to the plan) or only through a member.join. */
   readonly inProgram: boolean;
   readonly sections: readonly string[];
+  /** TEAM-03: sections this member builds along in (Mitbauer), not as owner. */
+  readonly crewSections: readonly string[];
   readonly blocks: number;
   readonly items: Readonly<Record<string, number>>;
   readonly reportedSections: number;
@@ -596,6 +645,10 @@ export interface SectionTeamState {
   readonly sectionId: string;
   readonly status: SectionTeamStatus;
   readonly owner: string | null;
+  /** TEAM-03: Mitbauer besides the owner, in the order they came. */
+  readonly crew: readonly string[];
+  /** TEAM-03: version of the assignment (owner + crew); counts every effective change. */
+  readonly version: number;
   readonly doneBy?: string;
   readonly verifiedBy?: string;
   readonly note?: string;
@@ -670,9 +723,24 @@ export interface TeamNote {
   /** Builder ids mentioned with @Name. */
   readonly mentions: readonly string[];
 }
-export interface TeamRejection { readonly event: TeamEvent; readonly reason: string }
+/** `stale`: TEAM-03 – the event was written on an older version that someone else changed since (not applied). */
+export interface TeamRejection { readonly event: TeamEvent; readonly reason: string; readonly stale?: { readonly current: number } }
 export interface TeamConflict { readonly event: TeamEvent; readonly text: string }
-export interface GatherClaim { readonly member: string; readonly item: string; readonly count: number; readonly at: string }
+/** `by`: who assigned it when not the member (gather.assign, TEAM-03). */
+export interface GatherClaim { readonly member: string; readonly item: string; readonly count: number; readonly at: string; readonly by?: string }
+/** TEAM-03: one booked contribution with its versions (contribution.fix); amounts are the newest version. */
+export interface TeamBooking {
+  readonly id: string;
+  readonly by: string;
+  readonly at: string;
+  readonly section?: string;
+  readonly blocks: number;
+  readonly items: readonly ItemCount[];
+  readonly note?: string;
+  readonly version: number;
+  readonly cancelled: boolean;
+  readonly history: readonly { readonly at: string; readonly by: string; readonly version: number; readonly text: string }[];
+}
 export interface PlanRelease { readonly revisionId: string; readonly revisionNumber: number; readonly summary: string; readonly at: string; readonly by: string }
 
 export interface TeamView {
@@ -680,6 +748,10 @@ export interface TeamView {
   readonly sections: readonly SectionTeamState[];
   readonly notes: readonly TeamNote[];
   readonly gather: readonly GatherClaim[];
+  /** TEAM-03: version per gathered item (changes by gather.claim and gather.assign). */
+  readonly gatherVersions: Readonly<Record<string, number>>;
+  /** TEAM-03: booked contributions after the last digest, newest first, with their versions. */
+  readonly bookings: readonly TeamBooking[];
   /** Delivered items over all members. */
   readonly delivered: Readonly<Record<string, number>>;
   readonly release: PlanRelease | null;
@@ -722,6 +794,7 @@ const NEED: Readonly<Record<TeamEventKind, TeamRole>> = {
   'store.config': 'meister', 'store.seal': 'meister', 'store.move': 'gast', 'store.check': 'gast', 'store.yield': 'gast',
   'section.handover': 'helfer', 'section.accept': 'helfer', 'section.decline': 'helfer', 'member.away': 'gast', 'issue.ack': 'meister',
   'section.seen': 'helfer', 'store.seen': 'helfer', 'team.digest': 'leitung',
+  'section.crew': 'meister', 'section.join': 'helfer', 'section.leave': 'helfer', 'gather.assign': 'meister', 'contribution.fix': 'helfer',
 };
 export const canTeam = (role: TeamRole | undefined, action: TeamAction): boolean => RANK[role ?? 'gast'] >= RANK[NEED[action]];
 
@@ -759,10 +832,25 @@ export function foldTeam(team: TeamState, ctx: TeamContext, opts: { until?: { at
   const players = new Map<string, string>(ctx.builders.filter(b => b.player).map(b => [b.id, b.player!]));
   const known = new Set<string>([...inProgram, team.founder]);
   const lastActive = new Map<string, string>();
-  type Mutable = { status: SectionTeamStatus; owner: string | null; doneBy?: string; verifiedBy?: string; note?: string; offer?: { to: string; by: string; at: string; note?: string };
+  type Mutable = { status: SectionTeamStatus; owner: string | null; crew: string[]; changes: string[]; doneBy?: string; verifiedBy?: string; note?: string; offer?: { to: string; by: string; at: string; note?: string };
     history: { at: string; by: string; text: string }[] };
   const sections = new Map<string, Mutable>();
-  const sec = (id: string): Mutable => { let s = sections.get(id); if (!s) sections.set(id, s = { status: 'frei', owner: null, history: [] }); return s; };
+  const sec = (id: string): Mutable => { let s = sections.get(id); if (!s) sections.set(id, s = { status: 'frei', owner: null, crew: [], changes: [], history: [] }); return s; };
+  // TEAM-03 versions: `changes` holds the author of every effective change (version = its length).
+  const gatherChanges = new Map<string, string[]>();
+  type Booking = { by: string; at: string; section?: string; blocks: number; items: ItemCount[]; note?: string; changes: string[]; history: { at: string; by: string; version: number; text: string }[] };
+  const bookings = new Map<string, Booking>();
+  /** Written on an older version that someone else has changed since: not applied (TEAM-03). */
+  const staleAgainst = (event: KnownTeamEvent, changes: readonly string[], what: string): boolean => {
+    const base = (event as { base?: number }).base;
+    if (base === undefined || base >= changes.length) return false;
+    const others = [...new Set(changes.slice(base).filter(by => by !== event.by))];
+    if (!others.length) return false;
+    rejected.push({ event, reason: `Überholt: ${what} wurde inzwischen von ${others.map(nameOf).join(', ')} geändert (gesehen Version ${base}, jetzt ${changes.length}). Bitte neu entscheiden.`, stale: { current: changes.length } });
+    return true;
+  };
+  const changed = (s: Mutable, by: string) => { s.changes.push(by); };
+  const canBuild = (id: string) => canTeam(roleOf(id), 'section.claim');
   const notes = new Map<string, { at: string; by: string; text: string; tag: NoteTag; section?: string; pos?: readonly [number, number, number]; resolved?: { at: string; by: string; text?: string } }>();
   const gather = new Map<string, GatherClaim>();
   const blocks = new Map<string, number>(), items = new Map<string, Map<string, number>>();
@@ -878,34 +966,48 @@ export function foldTeam(team: TeamState, ctx: TeamContext, opts: { until?: { at
       case 'section.claim': {
         const s = sec(event.section);
         if (s.owner === event.by) break;
+        // A claim needs no version: a taken section gives the known double-claim hint, a free one is simply taken.
         if (s.owner) { conflicts.push({ event, text: `${nameOf(event.by)} wollte „${sectionName(ctx, event.section)}“ übernehmen, der Abschnitt war schon an ${nameOf(s.owner)} vergeben.` }); break; }
         if (s.status === 'bestaetigt') { reject(event, `„${sectionName(ctx, event.section)}“ ist schon bestätigt.`); break; }
-        s.owner = event.by; s.status = 'vergeben'; delete s.doneBy; delete s.verifiedBy; delete s.offer;
+        s.owner = event.by; s.crew = s.crew.filter(m => m !== event.by); s.status = 'vergeben'; delete s.doneBy; delete s.verifiedBy; delete s.offer;
         if (event.note) s.note = event.note;
+        changed(s, event.by);
         s.history.push({ at: event.at, by: event.by, text: 'übernommen' });
         break;
       }
       case 'section.assign': {
         const s = sec(event.section);
         if (!known.has(event.member)) { reject(event, `Unbekanntes Mitglied ${event.member}.`); break; }
-        if (s.owner && s.owner !== event.member) conflicts.push({ event, text: `${nameOf(event.by)} hat „${sectionName(ctx, event.section)}“ von ${nameOf(s.owner)} an ${nameOf(event.member)} umgewiesen.` });
+        if (staleAgainst(event, s.changes, `„${sectionName(ctx, event.section)}“`)) break;
+        if (s.owner === event.member) break;
+        if (s.owner && !s.crew.includes(event.member)) conflicts.push({ event, text: `${nameOf(event.by)} hat „${sectionName(ctx, event.section)}“ von ${nameOf(s.owner)} an ${nameOf(event.member)} umgewiesen.` });
+        s.crew = s.crew.filter(m => m !== event.member);
         s.owner = event.member; delete s.offer;
         if (s.status === 'frei') s.status = 'vergeben';
+        changed(s, event.by);
         s.history.push({ at: event.at, by: event.by, text: `zugewiesen an ${nameOf(event.member)}` });
         break;
       }
       case 'section.release': {
         const s = sec(event.section);
+        if (staleAgainst(event, s.changes, `„${sectionName(ctx, event.section)}“`)) break;
+        if (s.owner !== event.by && s.crew.includes(event.by)) {
+          // A Mitbauer giving back only leaves the crew.
+          s.crew = s.crew.filter(m => m !== event.by); changed(s, event.by);
+          s.history.push({ at: event.at, by: event.by, text: 'baut nicht mehr mit' });
+          break;
+        }
         if (s.owner !== event.by && !canTeam(role, 'section.assign')) { reject(event, `Nur ${s.owner ? nameOf(s.owner) : 'der Inhaber'} oder ein Baumeister kann „${sectionName(ctx, event.section)}“ abgeben.`); break; }
         if (s.status === 'bestaetigt') { reject(event, `„${sectionName(ctx, event.section)}“ ist bestätigt und kann nicht mehr abgegeben werden.`); break; }
-        s.owner = null; s.status = 'frei'; delete s.doneBy; delete s.offer;
+        s.owner = null; s.crew = []; s.status = 'frei'; delete s.doneBy; delete s.offer;
+        changed(s, event.by);
         s.history.push({ at: event.at, by: event.by, text: 'abgegeben' });
         break;
       }
       case 'section.done': {
         const s = sec(event.section);
-        if (s.owner && s.owner !== event.by) conflicts.push({ event, text: `${nameOf(event.by)} hat „${sectionName(ctx, event.section)}“ fertig gemeldet, Inhaber ist ${nameOf(s.owner)}.` });
-        if (!s.owner) s.owner = event.by;
+        if (s.owner && s.owner !== event.by && !s.crew.includes(event.by)) conflicts.push({ event, text: `${nameOf(event.by)} hat „${sectionName(ctx, event.section)}“ fertig gemeldet, Inhaber ist ${nameOf(s.owner)}.` });
+        if (!s.owner) { s.owner = event.by; changed(s, event.by); }
         s.status = 'gemeldet'; s.doneBy = event.by; delete s.verifiedBy; delete s.offer;
         if (event.note) s.note = event.note;
         s.history.push({ at: event.at, by: event.by, text: 'fertig gemeldet' });
@@ -920,6 +1022,8 @@ export function foldTeam(team: TeamState, ctx: TeamContext, opts: { until?: { at
         break;
       }
       case 'contribution': {
+        bookings.set(event.id, { by: event.by, at: event.at, ...(event.section && { section: event.section }), blocks: event.blocks ?? 0, items: [...(event.items ?? [])],
+          ...(event.note && { note: event.note }), changes: [event.by], history: [] });
         if (event.blocks) blocks.set(event.by, (blocks.get(event.by) ?? 0) + event.blocks);
         for (const l of event.items ?? []) {
           let m = items.get(event.by); if (!m) items.set(event.by, m = new Map());
@@ -929,8 +1033,39 @@ export function foldTeam(team: TeamState, ctx: TeamContext, opts: { until?: { at
         break;
       }
       case 'gather.claim': {
+        let ch = gatherChanges.get(event.item); if (!ch) gatherChanges.set(event.item, ch = []);
+        if (staleAgainst(event, ch, `Der Sammelauftrag ${event.item.replace(/^minecraft:/, '')}`)) break;
         const key = `${event.by} ${event.item}`;
         if (event.count === 0) gather.delete(key); else gather.set(key, { member: event.by, item: event.item, count: event.count, at: event.at });
+        ch.push(event.by);
+        break;
+      }
+      case 'gather.assign': {
+        let ch = gatherChanges.get(event.item); if (!ch) gatherChanges.set(event.item, ch = []);
+        const bad = event.shares.find(l => !known.has(l.member) || !canBuild(l.member));
+        if (bad) { reject(event, known.has(bad.member) ? `${nameOf(bad.member)} ist ${TEAM_ROLE_LABEL[roleOf(bad.member)]} und sammelt nicht für das Team.` : `Unbekanntes Mitglied ${bad.member}.`); break; }
+        if (staleAgainst(event, ch, `Der Sammelauftrag ${event.item.replace(/^minecraft:/, '')}`)) break;
+        for (const key of [...gather.keys()]) if (gather.get(key)!.item === event.item) gather.delete(key);
+        for (const l of event.shares) gather.set(`${l.member} ${event.item}`, { member: l.member, item: event.item, count: l.count, at: event.at, ...(l.member !== event.by && { by: event.by }) });
+        ch.push(event.by);
+        break;
+      }
+      case 'contribution.fix': {
+        const b = bookings.get(event.ref);
+        if (!b) { reject(event, 'Die Buchung gibt es nicht (mehr) – vielleicht schon verdichtet.'); break; }
+        if (b.by !== event.by && !canTeam(role, 'section.verify')) { reject(event, `Nur ${nameOf(b.by)} oder ein Baumeister kann diese Buchung ändern.`); break; }
+        if (staleAgainst(event, b.changes, 'Die Buchung')) break;
+        // take the old version out, put the new one in (always on the account of the one who booked it)
+        if (b.blocks) blocks.set(b.by, (blocks.get(b.by) ?? 0) - b.blocks);
+        const mine = items.get(b.by) ?? new Map<string, number>(); items.set(b.by, mine);
+        for (const l of b.items) { addTo(mine, l.item, -l.count); delivered[l.item] = (delivered[l.item] ?? 0) - l.count; if (!delivered[l.item]) delete delivered[l.item]; }
+        b.blocks = event.blocks ?? 0; b.items = [...(event.items ?? [])];
+        if (event.note !== undefined) { if (event.note) b.note = event.note; else delete b.note; }
+        if (b.blocks) blocks.set(b.by, (blocks.get(b.by) ?? 0) + b.blocks);
+        for (const l of b.items) { addTo(mine, l.item, l.count); delivered[l.item] = (delivered[l.item] ?? 0) + l.count; }
+        b.changes.push(event.by);
+        const cancelled = !b.blocks && !b.items.length;
+        b.history.push({ at: event.at, by: event.by, version: b.changes.length, text: cancelled ? 'storniert' : `korrigiert${event.note ? `: ${event.note}` : ''}` });
         break;
       }
       case 'note.add':
@@ -1038,6 +1173,7 @@ export function foldTeam(team: TeamState, ctx: TeamContext, opts: { until?: { at
         if (s.status === 'bestaetigt' || s.status === 'gemeldet') { reject(event, `„${label}“ ist ${s.status === 'bestaetigt' ? 'bestätigt' : 'fertig gemeldet'} und wird nicht mehr übergeben.`); break; }
         if (s.owner !== event.by && !canTeam(role, 'section.assign')) { reject(event, `Nur ${s.owner ? nameOf(s.owner) : 'der Inhaber'} oder ein Baumeister kann „${label}“ übergeben.`); break; }
         if (!known.has(event.member)) { reject(event, `Unbekanntes Mitglied ${event.member}.`); break; }
+        if (staleAgainst(event, s.changes, `„${label}“`)) break;
         if (event.member === s.owner) { reject(event, `${nameOf(event.member)} hat „${label}“ schon.`); break; }
         if (!canTeam(roleOf(event.member), 'section.claim')) { reject(event, `${nameOf(event.member)} ist ${TEAM_ROLE_LABEL[roleOf(event.member)]} und kann keine Abschnitte übernehmen.`); break; }
         s.offer = { to: event.member, by: event.by, at: event.at, ...(event.note && { note: event.note }) };
@@ -1048,7 +1184,8 @@ export function foldTeam(team: TeamState, ctx: TeamContext, opts: { until?: { at
         const s = sec(event.section), label = sectionName(ctx, event.section);
         if (!s.offer || s.offer.to !== event.by) { reject(event, `Für ${nameOf(event.by)} liegt kein Übergabeangebot für „${label}“ vor.`); break; }
         const from = s.owner;
-        s.owner = event.by; if (s.status === 'frei') s.status = 'vergeben';
+        s.owner = event.by; s.crew = s.crew.filter(m => m !== event.by); if (s.status === 'frei') s.status = 'vergeben';
+        changed(s, event.by);
         if (s.offer.note) s.note = s.offer.note;
         delete s.offer;
         s.history.push({ at: event.at, by: event.by, text: `Übergabe angenommen${from ? ` (von ${nameOf(from)})` : ''}` });
@@ -1060,6 +1197,47 @@ export function foldTeam(team: TeamState, ctx: TeamContext, opts: { until?: { at
         if (![s.offer.to, s.offer.by, s.owner].includes(event.by) && !canTeam(role, 'section.assign')) { reject(event, 'Ein fremdes Übergabeangebot zieht ein Baumeister zurück.'); break; }
         s.history.push({ at: event.at, by: event.by, text: event.by === s.offer.to ? 'Übergabe abgelehnt' : 'Übergabeangebot zurückgezogen' });
         delete s.offer;
+        break;
+      }
+      case 'section.crew': {
+        const s = sec(event.section), label = sectionName(ctx, event.section);
+        if (s.status === 'bestaetigt') { reject(event, `„${label}“ ist schon bestätigt.`); break; }
+        const bad = event.members.find(m => !known.has(m) || !canBuild(m));
+        if (bad) { reject(event, known.has(bad) ? `${nameOf(bad)} ist ${TEAM_ROLE_LABEL[roleOf(bad)]} und kann nicht mitbauen.` : `Unbekanntes Mitglied ${bad}.`); break; }
+        if (staleAgainst(event, s.changes, `„${label}“`)) break;
+        let list = [...event.members];
+        if (!s.owner && list.length) { s.owner = list.shift()!; if (s.status === 'frei') s.status = 'vergeben'; }
+        list = list.filter(m => m !== s.owner).slice(0, MAX_CREW - 1);
+        s.crew = list;
+        if (event.note) s.note = event.note;
+        changed(s, event.by);
+        s.history.push({ at: event.at, by: event.by, text: s.crew.length ? `Mitbauer: ${s.crew.map(nameOf).join(', ')}` : 'keine Mitbauer mehr' });
+        break;
+      }
+      case 'section.join': {
+        const s = sec(event.section), label = sectionName(ctx, event.section);
+        if (s.owner === event.by || s.crew.includes(event.by)) break;
+        if (s.status === 'bestaetigt') { reject(event, `„${label}“ ist schon bestätigt.`); break; }
+        if (staleAgainst(event, s.changes, `„${label}“`)) break;
+        if (!s.owner) { s.owner = event.by; s.status = 'vergeben'; delete s.doneBy; delete s.verifiedBy; changed(s, event.by); s.history.push({ at: event.at, by: event.by, text: 'übernommen' }); break; }
+        if (s.crew.length >= MAX_CREW - 1) { reject(event, `An „${label}“ bauen schon ${MAX_CREW} Spieler.`); break; }
+        s.crew.push(event.by); changed(s, event.by);
+        s.history.push({ at: event.at, by: event.by, text: 'baut mit' });
+        break;
+      }
+      case 'section.leave': {
+        const s = sec(event.section), label = sectionName(ctx, event.section), who = event.member ?? event.by;
+        if (who !== event.by && !canTeam(role, 'section.assign')) { reject(event, `Nur ${nameOf(who)} selbst oder ein Baumeister nimmt ${nameOf(who)} aus „${label}“.`); break; }
+        if (s.owner !== who && !s.crew.includes(who)) { reject(event, `${nameOf(who)} baut nicht an „${label}“.`); break; }
+        if (s.status === 'bestaetigt') { reject(event, `„${label}“ ist bestätigt und bleibt so.`); break; }
+        if (staleAgainst(event, s.changes, `„${label}“`)) break;
+        if (s.owner === who) {
+          s.owner = s.crew.shift() ?? null;
+          if (!s.owner) { s.status = 'frei'; delete s.doneBy; }
+          delete s.offer;
+        } else s.crew = s.crew.filter(m => m !== who);
+        changed(s, event.by);
+        s.history.push({ at: event.at, by: event.by, text: `${who === event.by ? 'ausgestiegen' : `${nameOf(who)} herausgenommen`}${s.owner && s.owner !== who ? ` – verantwortlich: ${nameOf(s.owner)}` : ''}` });
         break;
       }
       case 'member.away':
@@ -1106,14 +1284,17 @@ export function foldTeam(team: TeamState, ctx: TeamContext, opts: { until?: { at
       ...(c.seen && { seen: { by: c.seen.by, at: c.seen.at, items: Object.fromEntries(c.seen.items), partial: c.seen.partial } }) };
   }).sort((a, b) => a.name.localeCompare(b.name, 'de'));
 
-  const ownerOf = new Map<string, string[]>();
-  for (const [id, s] of sections) if (s.owner) { let l = ownerOf.get(s.owner); if (!l) ownerOf.set(s.owner, l = []); l.push(id); }
+  const ownerOf = new Map<string, string[]>(), crewOf = new Map<string, string[]>();
+  for (const [id, s] of sections) {
+    if (s.owner) { let l = ownerOf.get(s.owner); if (!l) ownerOf.set(s.owner, l = []); l.push(id); }
+    for (const m of s.crew) { let l = crewOf.get(m); if (!l) crewOf.set(m, l = []); l.push(id); }
+  }
   const order = new Map(ctx.sections.map((s, i) => [s.id, i]));
   const byOrder = (a: string, b: string) => (order.get(a) ?? 1e9) - (order.get(b) ?? 1e9) || (a < b ? -1 : 1);
-  const counts = (id: string, st: SectionTeamStatus[]) => [...sections.values()].filter(s => (s.doneBy === id || s.owner === id) && st.includes(s.status)).length;
+  const counts = (id: string, st: SectionTeamStatus[]) => [...sections.values()].filter(s => (s.doneBy === id || s.owner === id || s.crew.includes(id)) && st.includes(s.status)).length;
   const members: TeamMember[] = [...known].map(id => ({
     id, name: nameOf(id), role: roleOf(id), ...(players.has(id) && { player: players.get(id)! }), inProgram: inProgram.has(id),
-    sections: (ownerOf.get(id) ?? []).sort(byOrder), blocks: blocks.get(id) ?? 0, items: Object.fromEntries(items.get(id) ?? []),
+    sections: (ownerOf.get(id) ?? []).sort(byOrder), crewSections: (crewOf.get(id) ?? []).sort(byOrder), blocks: blocks.get(id) ?? 0, items: Object.fromEntries(items.get(id) ?? []),
     reportedSections: counts(id, ['gemeldet', 'bestaetigt']), confirmedSections: counts(id, ['bestaetigt']), ...(lastActive.has(id) && { lastActive: lastActive.get(id)! }),
     placed: placedBy.get(id) ?? 0, broken: brokenBy.get(id) ?? 0, stored: Object.fromEntries(stored.get(id) ?? []), taken: Object.fromEntries(taken.get(id) ?? []), tally: !tallyOff.has(id),
     ...(away.has(id) && { away: away.get(id)! }),
@@ -1121,8 +1302,8 @@ export function foldTeam(team: TeamState, ctx: TeamContext, opts: { until?: { at
 
   const allSectionIds = [...new Set([...ctx.sections.map(s => s.id), ...sections.keys()])].sort(byOrder);
   const sectionStates: SectionTeamState[] = allSectionIds.map(id => {
-    const s = sections.get(id) ?? { status: 'frei' as const, owner: null, history: [] };
-    return { sectionId: id, status: s.status, owner: s.owner, ...(s.doneBy && { doneBy: s.doneBy }), ...(s.verifiedBy && { verifiedBy: s.verifiedBy }),
+    const s = sections.get(id) ?? { status: 'frei' as const, owner: null, crew: [], changes: [], history: [] };
+    return { sectionId: id, status: s.status, owner: s.owner, crew: [...s.crew], version: s.changes.length, ...(s.doneBy && { doneBy: s.doneBy }), ...(s.verifiedBy && { verifiedBy: s.verifiedBy }),
       ...(s.note && { note: s.note }), orphan: !sectionIds.has(id), ...(s.offer && { offer: s.offer }), history: s.history,
       placed: sectionTally.get(id)?.placed ?? 0, broken: sectionTally.get(id)?.broken ?? 0, builders: Object.fromEntries(sectionTally.get(id)?.builders ?? []),
       ...(seenSections.has(id) && { seen: seenSections.get(id)! }) };
@@ -1139,7 +1320,11 @@ export function foldTeam(team: TeamState, ctx: TeamContext, opts: { until?: { at
       conflicts.push({ event: team.events.find(e => e.kind === 'plan.release' && (e as KnownTeamEvent & { revisionId: string }).revisionId === last.revisionId)!,
         text: `Planstände auseinander: ${nameOf(last.by)} hat Planstand ${last.revisionNumber} nach Planstand ${previous.revisionNumber} von ${nameOf(previous.by)} freigegeben.` });
   }
+  const bookingList: TeamBooking[] = [...bookings.entries()].map(([id, b]) => ({ id, by: b.by, at: b.at, ...(b.section && { section: b.section }), blocks: b.blocks, items: b.items,
+    ...(b.note && { note: b.note }), version: b.changes.length, cancelled: !b.blocks && !b.items.length && b.changes.length > 1, history: b.history }))
+    .sort((a, b) => compareEvents({ at: b.at, id: b.id }, { at: a.at, id: a.id }));
   return { members, sections: sectionStates, notes: noteList, gather: [...gather.values()].sort((a, b) => a.item.localeCompare(b.item) || a.member.localeCompare(b.member)),
+    gatherVersions: Object.fromEntries([...gatherChanges].map(([item, ch]) => [item, ch.length])), bookings: bookingList,
     delivered, release, releases, rejected, conflicts, unknownKinds, stores, stock, stockSeen, placedBlocks,
     tallySpan: tallyFrom && tallyUntil ? { from: tallyFrom, until: tallyUntil } : null, acknowledged: [...acknowledged], yields };
 }
@@ -1179,6 +1364,11 @@ export function eventLabel(e: TeamEvent): string {
     case 'member.away': return e.until || e.note ? `abwesend${e.until ? ` bis ${e.until}` : ''}` : 'wieder da';
     case 'issue.ack': return `${e.events.length} Hinweis${e.events.length === 1 ? '' : 'e'} erledigt`;
     case 'team.digest': return `Verlauf verdichtet (Teil ${e.part + 1} von ${e.parts}, ${e.covered} Ereignisse)`;
+    case 'section.crew': return e.members.length ? `Mitbauer festgelegt (${e.members.length})` : 'Mitbauer entfernt';
+    case 'section.join': return 'baut mit';
+    case 'section.leave': return e.member && e.member !== e.by ? 'aus dem Abschnitt genommen' : 'aus dem Abschnitt ausgestiegen';
+    case 'gather.assign': return e.shares.length ? `Sammelauftrag ${e.item.replace(/^minecraft:/, '')} auf ${e.shares.length} verteilt` : `Sammelauftrag ${e.item.replace(/^minecraft:/, '')} aufgehoben`;
+    case 'contribution.fix': return !e.blocks && !e.items?.length ? 'Buchung storniert' : 'Buchung korrigiert';
   }
 }
 
@@ -1191,6 +1381,9 @@ export function describeEvent(e: TeamEvent, ctx: TeamContext, names: ReadonlyMap
     case 'section.assign': return `${who}: Abschnitt${s} an ${names.get(e.member) ?? e.member} zugewiesen`;
     case 'member.role': return `${who}: ${names.get(e.member) ?? e.member} ist jetzt ${TEAM_ROLE_LABEL[e.role]}`;
     case 'section.handover': return `${who}: Abschnitt${s} an ${names.get(e.member) ?? e.member} übergeben (wartet auf Annahme)${e.note ? ` – ${e.note}` : ''}`;
+    case 'section.crew': return `${who}: Mitbauer an${s}: ${e.members.map(m => names.get(m) ?? m).join(', ') || 'keine'}`;
+    case 'section.leave': return e.member && e.member !== e.by ? `${who}: ${names.get(e.member) ?? e.member} aus${s} genommen` : `${who}: aus${s} ausgestiegen`;
+    case 'gather.assign': return `${who}: Sammelauftrag ${e.item.replace(/^minecraft:/, '')} → ${e.shares.map(l => `${names.get(l.member) ?? l.member} ${l.count}`).join(', ') || 'aufgehoben'}`;
     case 'member.away': return e.member === e.by ? `${who}: ${eventLabel(e)}${e.note ? ` (${e.note})` : ''}` : `${who}: ${names.get(e.member) ?? e.member} ${eventLabel(e)}`;
     case 'contribution': {
       const parts = [e.blocks ? `${e.blocks} Blöcke gebaut` : '', ...(e.items ?? []).map(l => `${l.count} × ${l.item.replace(/^minecraft:/, '')}`)].filter(Boolean);
@@ -1228,7 +1421,7 @@ export function laterThan(team: TeamState, now: string = new Date().toISOString(
  */
 export function teamAssignments(view: TeamView): Record<string, string[]> {
   const out: Record<string, string[]> = {};
-  for (const s of view.sections) if (!s.orphan && (s.owner || s.history.length)) out[s.sectionId] = s.owner ? [s.owner] : [];
+  for (const s of view.sections) if (!s.orphan && (s.owner || s.history.length)) out[s.sectionId] = s.owner ? [s.owner, ...s.crew] : [];
   return out;
 }
 
