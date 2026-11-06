@@ -11,13 +11,16 @@ import { WorldClient } from '../world/protocol';
 import type { WorldResponse } from '../world/protocol';
 import { RegionPicker } from '../world/RegionPicker';
 import { TerrainSurveyPanel } from './TerrainSurveyPanel';
-import { placedBounds } from '../../../../../packages/domain/src/index.js';
+import { checkTerrain, placedBounds, terrainBox, LIVE_BOX_MAX_CELLS } from '../../../../../packages/domain/src/index.js';
 import type { PickedWorld } from '../world/RegionPicker';
 import { isResolved } from './session';
+import { useLiveGame } from '../map/liveClient';
+import { canReadBox, gameDimension, readGameGrid } from '../world/gameTerrain';
+import { GameLinkBar } from '../world/GameLinkBar';
 import type { ProjectSession } from './session';
 import '../world/world.css';
 
-type Result = Extract<WorldResponse, { kind: 'terrain' }> & { readonly revision: number; readonly originKey: string };
+type Result = Extract<WorldResponse, { kind: 'terrain' }> & { readonly revision: number; readonly originKey: string; readonly source: 'region' | 'mod' };
 
 const COLORS: Readonly<Record<TerrainVerdict, string | null>> = {
   present: '#4fbf7a', free: null, obstacle: '#e04848', clear: '#f08a24', fluid: '#3a7bd5', unknown: '#8a8f98',
@@ -26,9 +29,9 @@ const HANGING = '#f3d23a';
 const short = (id: string) => id.replace(/^minecraft:/, '');
 
 /**
- * Gelände (WORLD-IMPORT-01): compares the placed project with the terrain in the
- * player's own region files. Read-only; the only change offered is the origin
- * height suggestion, applied as an undoable world.set operation.
+ * Gelände (WORLD-IMPORT-01, TERRAIN-04): compares the placed project with the real terrain, straight
+ * from the game over the mod (loaded chunks, no files) or from the player's own region files.
+ * Read-only; the only change offered is the origin height suggestion, an undoable world.set operation.
  */
 export function TerrainTab({ session }: { session: ProjectSession }) {
   const { project, resolution } = session;
@@ -44,6 +47,7 @@ export function TerrainTab({ session }: { session: ProjectSession }) {
   const [incomplete, setIncomplete] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [note, setNote] = useState('');
+  const game = useLiveGame();
   const originKey = placement ? `${placement.origin.join(',')}|${placement.turns ?? 0}${placement.mirror ? 'm' : ''}` : '';
   const stale = result !== null && (result.revision !== project.revision || result.originKey !== originKey);
 
@@ -56,8 +60,20 @@ export function TerrainTab({ session }: { session: ProjectSession }) {
     setBusy('Gelände wird geprüft'); setError(''); setNote(''); setProgress(null);
     try {
       const r = await client.current!.terrain({ planned: resolution.world, placement, depth, includeIncomplete: incomplete }, (d, t) => setProgress([d, t]));
-      setResult({ ...r, revision: project.revision, originKey });
+      setResult({ ...r, revision: project.revision, originKey, source: 'region' });
     } catch (e) { const t = errorText(e); if (t !== 'Abgebrochen.') setError(t); } finally { setBusy(''); setProgress(null); }
+  };
+  /** TERRAIN-04: the same check with the blocks the game has loaded (GET /v1/box). */
+  const checkFromGame = async () => {
+    if (!placement || !isResolved(resolution) || !resolution.world) return;
+    setBusy('Gelände kommt aus dem Spiel'); setError(''); setNote(''); setProgress(null);
+    try {
+      const box = terrainBox(resolution.world.bounds, placement, depth);
+      const { grid, unloaded } = await readGameGrid(game, box, placement.dimension);
+      const check = checkTerrain(resolution.world, placement, grid, { depth });
+      const warnings = unloaded ? [`${formatNumber(unloaded)} Zellen liegen in Chunks, die das Spiel gerade nicht geladen hat (unbekannt). Geh näher an den Bauplatz und prüfe erneut.`] : [];
+      setResult({ id: 0, kind: 'terrain', check, chunks: [], warnings, box, revision: project.revision, originKey, source: 'mod' });
+    } catch (e) { setError(errorText(e)); } finally { setBusy(''); }
   };
   const applySuggestion = () => {
     if (!placement || !result || result.check.suggestedOriginY === null) return;
@@ -86,25 +102,40 @@ export function TerrainTab({ session }: { session: ProjectSession }) {
   const world = resolution.world;
   const b = world.bounds, o = placement.origin;
   const empty = !world.cells.length;
+  const picker = <RegionPicker dimension={placement.dimension} picked={picked} busy={!!busy} onFiles={f => void open(f)} />;
   const survey = <TerrainSurveyPanel project={project} placement={placement} worldBounds={empty ? null : placedBounds(b, placement)} client={client.current!} canRead={!!picked}
-    busy={!!busy} setBusy={setBusy} execute={op => session.execute(op)} />;
+    busy={!!busy} setBusy={setBusy} execute={op => session.execute(op)} game={game} picker={picker} />;
+  const box = empty ? null : terrainBox(b, placement, depth);
+  const boxCells = box ? (box.maxExclusive[0] - box.min[0]) * (box.maxExclusive[1] - box.min[1]) * (box.maxExclusive[2] - box.min[2]) : 0;
+  const gameBox = canReadBox(game), here = gameDimension(game);
 
   return <section className="terrain" aria-label="Gelände">
     <header className="terrain-head">
       <div><span className="panel-kicker">GELÄNDE AN DER WELTLAGE</span>
         {empty ? <h2>{dimensionLabel(placement.dimension)} · Ursprung X {o[0]} · Y {o[1]} · Z {o[2]}</h2>
           : <h2>{dimensionLabel(placement.dimension)} · X {b.min[0] + o[0]} … {b.maxExclusive[0] + o[0] - 1} · Y {b.min[1] + o[1]} … {b.maxExclusive[1] + o[1] - 1} · Z {b.min[2] + o[2]} … {b.maxExclusive[2] + o[2] - 1}</h2>}
-        <p className="muted">Wähle die Regionsdateien dieser Dimension. Gelesen werden nur die Chunks unter dem Projekt und {depth} Blöcke darunter, für die Geländeaufnahme die Oberfläche rund um den Bauplatz.</p></div>
+        <p className="muted">Das Gelände kommt direkt aus dem Spiel: Die Bauplaner-Mod liefert die Oberfläche rund um den Bauplatz und die Blöcke unter dem Projekt ({depth} Blöcke tief), ohne dass du Dateien hochlädst. Alles läuft über die Verbindung zur Mod; Regionsdateien bleiben nur ein Notfallweg.</p></div>
     </header>
-    <RegionPicker dimension={placement.dimension} picked={picked} busy={!!busy} onFiles={f => void open(f)} />
     {busy && <div className="notice world-busy" role="status">{busy}{progress && ` … ${progress[0]} / ${progress[1]} Chunks`}<button onClick={() => client.current?.abort()}>Abbrechen</button></div>}
     {survey}
     {empty && <div className="notice">Noch nichts geplant. Füge im <a href={`#/projekt/${project.id}/editor`}>Editor</a> Bauteile ein oder plane eine <a href="#/bibliothek/anlagen">Anlage</a> auf diesem Gelände.</div>}
-    {picked && !empty && <div className="terrain-run">
-      <label>Tiefe unter dem Fundament <input type="number" min={1} max={64} value={depth} onChange={e => setDepth(Math.max(1, Math.min(64, Number(e.target.value) || TERRAIN_DEPTH)))} /></label>
-      <label className="chip-check"><input type="checkbox" checked={incomplete} onChange={e => setIncomplete(e.target.checked)} /> unfertige Chunks lesen</label>
-      <button className="primary" disabled={!!busy} onClick={() => void check()}>{result ? 'Erneut prüfen' : 'Gelände prüfen'}</button>
-    </div>}
+    {!empty && <section className="terrain-check" aria-label="Blockgenau prüfen">
+      <h3>Blockgenau prüfen</h3>
+      <div className="terrain-run">
+        <label>Tiefe unter dem Fundament <input type="number" min={1} max={64} value={depth} onChange={e => setDepth(Math.max(1, Math.min(64, Number(e.target.value) || TERRAIN_DEPTH)))} /></label>
+        {gameBox && <button className={picked ? 'secondary' : 'primary'} disabled={!!busy || game.phase !== 'connected' || boxCells > LIVE_BOX_MAX_CELLS || (here !== null && here !== placement.dimension)}
+          onClick={() => void checkFromGame()} title="Liest die Blöcke unter dem Projekt aus den Chunks, die das Spiel gerade geladen hat.">{result?.source === 'mod' ? 'Erneut aus dem Spiel prüfen' : 'Gelände aus dem Spiel prüfen'}</button>}
+        {picked && <>
+          <label className="chip-check"><input type="checkbox" checked={incomplete} onChange={e => setIncomplete(e.target.checked)} /> unfertige Chunks lesen</label>
+          <button className="primary" disabled={!!busy} onClick={() => void check()}>{result?.source === 'region' ? 'Erneut prüfen' : 'Gelände prüfen'}</button>
+        </>}
+      </div>
+      {gameBox && boxCells > LIVE_BOX_MAX_CELLS && <p className="muted small">Das Projekt ist für die Prüfung aus dem Spiel zu groß ({formatNumber(boxCells)} Zellen, höchstens {formatNumber(LIVE_BOX_MAX_CELLS)}). Bitte mit den Regionsdateien prüfen.</p>}
+      {!gameBox && !picked && <>{game.phase === 'connected'
+        ? <p className="muted small">Die verbundene Mod kann noch nicht blockgenau lesen (ab Mod 0.20.0). Bitte die Mod aktualisieren (#/mod).</p>
+        : <GameLinkBar game={game} purpose="Für die blockgenaue Prüfung ohne Dateien." />}</>}
+      {gameBox && <p className="muted small">Aus dem Spiel zählen nur Chunks, die gerade geladen sind: am besten in der Nähe des Bauplatzes stehen.</p>}
+    </section>}
     {error && <div className="notice warning" role="alert">{error}</div>}
     {note && <div className="notice" role="status">{note}</div>}
     {c && <>
@@ -132,7 +163,7 @@ export function TerrainTab({ session }: { session: ProjectSession }) {
               <button className="secondary" disabled={stale} onClick={applySuggestion}>Y {c.suggestedOriginY} übernehmen</button></>}</p>}
           {c.removal.length > 0 && <><h3>Abtragen</h3><table className="terrain-removal"><tbody>{c.removal.slice(0, 12).map(r => <tr key={r.id}><td>{short(r.id)}</td><td>{formatNumber(r.count)}</td></tr>)}</tbody></table>
             {c.removal.length > 12 && <p className="muted small">… und {c.removal.length - 12} weitere Blockarten</p>}</>}
-          <p className="muted small">Chunks: {Object.entries(chunkStates).map(([k, n]) => `${n} ${CHUNK_STATE_LABEL[k as ChunkState]}`).join(' · ')}</p>
+          <p className="muted small">{result!.source === 'mod' ? 'Quelle: Blöcke aus dem Spiel (geladene Chunks)' : <>Chunks: {Object.entries(chunkStates).map(([k, n]) => `${n} ${CHUNK_STATE_LABEL[k as ChunkState]}`).join(' · ')}</>}</p>
           <ul className="world-warnings">{[...result!.warnings, ...c.notes].map(w => <li key={w}>{w}</li>)}</ul>
         </div>
       </div>

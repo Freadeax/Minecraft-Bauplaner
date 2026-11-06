@@ -373,6 +373,58 @@ public final class LiveLink implements LiveLinkServer.Handler {
         });
     }
 
+    // ------------------------------------------------------------------ Gelände (TERRAIN-04, 0.20.0)
+
+    private TerrainRecorder terrain;
+
+    /** Set once by {@link HologramClient}: the Geländegedächtnis behind {@code /v1/terrain}. */
+    void terrain(TerrainRecorder recorder) { this.terrain = recorder; }
+
+    @Override
+    public String terrain(int[][] wanted) throws Exception {
+        lastRequest = System.currentTimeMillis();
+        TerrainRecorder rec = terrain;
+        if (rec == null) throw new LiveLinkServer.HttpError(404, "Diese Mod hat kein Geländegedächtnis.");
+        return onGame(() -> {
+            var level = Minecraft.getInstance().level;
+            if (level == null) throw new LiveLinkServer.HttpError(409, "Keine Welt geladen.");
+            return rec.memory().answer(McCompat.dimension(level), wanted, System.currentTimeMillis(), (x, z) -> TerrainRecorder.read(level, x, z));
+        });
+    }
+
+    @Override
+    public String terrainKnown(int[] a) throws Exception {
+        lastRequest = System.currentTimeMillis();
+        TerrainRecorder rec = terrain;
+        if (rec == null) throw new LiveLinkServer.HttpError(404, "Diese Mod hat kein Geländegedächtnis.");
+        String dim = onGame(() -> {
+            var level = Minecraft.getInstance().level;
+            if (level == null) throw new LiveLinkServer.HttpError(409, "Keine Welt geladen.");
+            return McCompat.dimension(level);
+        });
+        return rec.memory().knownJson(dim, a[0], a[1], a[2], a[3]);
+    }
+
+    @Override
+    public String box(int[] b) throws Exception {
+        lastRequest = System.currentTimeMillis();
+        final net.minecraft.client.multiplayer.ClientLevel[] at = new net.minecraft.client.multiplayer.ClientLevel[1];
+        io.github.freadeax.bauplaner.mod.live.BoxRead job = onGame(() -> {
+            var level = Minecraft.getInstance().level;
+            if (level == null) throw new LiveLinkServer.HttpError(409, "Keine Welt geladen.");
+            at[0] = level;
+            return new io.github.freadeax.bauplaner.mod.live.BoxRead(McCompat.dimension(level), b, McCompat.clientBlocks(level));
+        });
+        while (!job.finished()) {
+            boolean done = onGame(() -> {
+                if (Minecraft.getInstance().level != at[0]) throw new LiveLinkServer.HttpError(409, "Die Welt wurde während des Lesens gewechselt.");
+                return job.step(io.github.freadeax.bauplaner.mod.live.BoxRead.CELLS_PER_SLICE);
+            }, 15);
+            if (done) break;
+        }
+        return job.json();
+    }
+
     @Override
     public String plan(Map<String, String> q, byte[] schem) throws Exception {
         lastRequest = System.currentTimeMillis();

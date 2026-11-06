@@ -50,6 +50,18 @@ Merkmal `groups` in `hello.features`. Markierungen tragen Weltplan-Schema 3: an 
 | `POST /v1/group {group}` | Hologramm auf eine Weltplan-Gruppe beschränken, `null` = alles. 400 bei unbekannter Gruppe, 409 ohne Plan. Antwort `{group}`; der Spieler bekommt „[Bauplaner] Website: …“. |
 | `GET /v1/status` | `hologram.group` (Name oder `null`) und `hologram.locked` (Planblöcke des gezeigten Teils in gesperrten Flächen, grau gezeichnet). `readLiveStatus` setzt für ältere Mods `null` und 0. |
 
+## Gelände (TERRAIN-04, Mod 0.20.0)
+
+Merkmale `terrain` und `box` in `hello.features`; `hello.protocol` bleibt 2. Einzelheiten in [TERRAIN](../welt/TERRAIN.md#gelände-direkt-aus-der-mod-terrain-04-mod-0200).
+
+| Route | Antwort |
+|---|---|
+| `GET /v1/terrain?c=x,z;…` (höchstens 64) | wie `/v1/chunks`, je Chunk zusätzlich `at` (ms, wann gesehen), `live` (gerade geladen) und `biome` (256 Indizes in `biomes`). Nicht geladene Chunks kommen aus dem Geländegedächtnis. |
+| `GET /v1/terrain/known?a=x0,z0,x1,z1` | `{dimension, total, chunks:[[x,z,at]…]}` – gemerkte Chunks im Rechteck (höchstens 4096). |
+| `GET /v1/box?b=x0,y0,z0,x1,y1,z1` (Max exklusiv) | `{dimension, box, palette:[Zustände], data: base64 uint16 LE (x + z·W + y·W·L), unloaded}`, höchstens 2 000 000 Zellen (413), nicht geladene Zellen `bauplaner:unloaded`. |
+
+Leser: `readLiveTerrain`, `readLiveKnown`, `readLiveBox` (`packages/domain/src/world/liveTerrain.ts`). Simulator: `startModSimulator(port, {features: […, 'terrain', 'box']})`.
+
 ## Protokoll 3 (GAME-08, Mod 0.13.0)
 
 Rückrichtung: Punkte, die im Spiel gesetzt werden, landen im Weltplan. Merkmal `marks3` in `hello.features`; `hello.protocol` bleibt 2, eine Website ohne Protokoll 3 merkt nichts.

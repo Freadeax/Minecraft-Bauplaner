@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T10:49:44.743Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T12:37:11.138Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-06T10:49:44.743Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 6 |
 | 🚧 In Arbeit | 7 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 90 |
+| 🧩 Implementiert · Abnahme offen | 91 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -25,7 +25,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 
 | Bereich | Offen | Verwaist | Nur Philipp | Geprüft |
 |---|---:|---:|---:|---:|
-| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 23 | 1 | 23 | 2 |
+| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 24 | 1 | 24 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 0 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 13 | 0 | 13 | 0 |
@@ -63,6 +63,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [TERRAIN-01](#terrain-01) | Geländeaufnahmen für Weltkarte und Anlagen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Kopie deiner 26.3-Welt für die Geländeabnahme (S05). |
 | [TERRAIN-02](#terrain-02) | Landschaft gestalten | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Abnahme in deiner eigenen Welt und auf Touch-Geräten (S05). |
 | [TERRAIN-03](#terrain-03) | Gelände und Wege im Projekt | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Gelände, Wege und Küste ausbauen“ | PROJ-19: Weg mit Treppen und Brücke als .litematic in deiner Welt ansehen.<br>BIB-20: Basis mit Wegenetz als Landschaftsweg auf einem echten Hang einfügen und im Spiel ansehen. |
+| [TERRAIN-04](#terrain-04) | Gelände direkt aus der Mod | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Gelände direkt aus der Mod übernehmen“ | Mod 0.20.0 installieren, einmal um den Bauplatz laufen, im Reiter „Gelände“ „Gelände aus dem Spiel übernehmen“ und „Gelände aus dem Spiel prüfen“ (S05). |
 | [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Ansicht auf echter GPU und mit Touch prüfen, negative Koordinaten, alle Schnittachsen (S02). |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Mojang-Download und Blockformen in Firefox/Safari und auf echten Geräten (S06). |
 | [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Ausschnitt aus einer Kopie deiner Modpack-Welt übernehmen. |
@@ -281,6 +282,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **EDIT-05** · Gestapelte und gedrehte Bauteile mit Ausstattung im Spiel.
 - **TERRAIN-03** · PROJ-19: Weg mit Treppen und Brücke als .litematic in deiner Welt ansehen.
 - **TERRAIN-03** · BIB-20: Basis mit Wegenetz als Landschaftsweg auf einem echten Hang einfügen und im Spiel ansehen.
+- **TERRAIN-04** · Mod 0.20.0 installieren, einmal um den Bauplatz laufen, im Reiter „Gelände“ „Gelände aus dem Spiel übernehmen“ und „Gelände aus dem Spiel prüfen“ (S05).
 - **GEN-02** · Treppenhaus, Torhaus-Wehrgang und Hafen im Spiel.
 - **MAP-02** · BlueMap-Marker (.conf) bzw. Dynmap-Befehle auf eurer Server-Karte einspielen und prüfen, ob Projekte, Wege und Punkte an der richtigen Stelle erscheinen (KARTE-08).
 - **GAME-05** · Forge-Testversion auf einem Rechner mit Bildschirm starten (S03).
@@ -531,6 +533,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [TERRAIN-01](#terrain-01) | Geländeaufnahmen für Weltkarte und Anlagen | 🧩 Implementiert · Abnahme offen | 4/5 | WORLD-IMPORT-01, BUILD-05, MAP-01 | ausstehend | ausstehend |
 | [TERRAIN-02](#terrain-02) | Landschaft gestalten: Gelände formen, bemalen, Wasser und Wege | 🧩 Implementiert · Abnahme offen | 6/7 | TERRAIN-01, BUILD-05, MAP-01 | ausstehend | ausstehend |
 | [TERRAIN-03](#terrain-03) | Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte | 🧩 Implementiert · Abnahme offen | 7/8 | TERRAIN-02, TERRAIN-01, MAP-04, BASE-01 | ausstehend | ausstehend |
+| [TERRAIN-04](#terrain-04) | Gelände direkt aus der Mod: Geländegedächtnis, Übernahme ohne Dateien, blockgenaue Prüfung aus dem Spiel | 🧩 Implementiert · Abnahme offen | 4/5 | TERRAIN-01, TERRAIN-02, MAP-03, GAME-08 | ausstehend | ausstehend |
 | [BUILD-06](#build-06) | Bauführung im Spiel: Schichtführung, Tagesziele, Packlisten, Druck-/Handyansicht, Spielfortschritt | 🧩 Implementiert · Abnahme offen | 5/5 | BUILD-01, GAME-01, MAP-01 | ausstehend | ausstehend |
 | [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | 🧩 Implementiert · Abnahme offen | 5/5 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen | 4/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
@@ -1861,6 +1864,30 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
+### TERRAIN-04
+
+**Gelände direkt aus der Mod: Geländegedächtnis, Übernahme ohne Dateien, blockgenaue Prüfung aus dem Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gelände direkt aus der Mod übernehmen“) · Zuständiger Thread: „Gelände direkt aus der Mod übernehmen“ · Aktualisiert: 2026-11-06T12:37:11.138Z
+
+- [x] TERRAIN-04-S01: Mod 0.20.0: Geländegedächtnis (gesehene Chunks mit Biom, je Welt/Server auf dem PC gespeichert), GET /v1/terrain, /v1/terrain/known, /bauplaner gelaende an|aus|vergessen.
+- [x] TERRAIN-04-S02: Mod 0.20.0: GET /v1/box liest einen Weltbereich blockgenau aus den geladenen Chunks (bis 2 Mio. Zellen, in Scheiben je Tick).
+- [x] TERRAIN-04-S03: Reiter Gelände: Spiel verbinden, Abdeckung des Bauplatzes, Geländeaufnahme aus dem Spiel (Quelle mod, Biome im Kopf der Datei), blockgenaue Prüfung aus dem Spiel; Regionsdateien nur noch als eingeklappter Notfall.
+- [x] TERRAIN-04-S04: Reiter Landschaft: Gelände aus dem Spiel holen und gestalten, nach Biomen bemalen; ältere Mods liefern geladene Chunks über /v1/chunks.
+- [ ] TERRAIN-04-S05: Abnahme durch Philipp im Spiel (Testfälle PROJ-24, PROJ-25).
+
+**Abnahme:** Ohne Datei-Upload: Geländeaufnahme und blockgenaue Prüfung kommen über die Live-Verbindung; dieselbe Einstufung wie bei Regionsdateien (classifyRuns/checkTerrain). Nichts geht an den Server; das Gedächtnis liegt nur auf dem PC des Spielers. Alte Aufnahmen und alte Mods bleiben lesbar bzw. nutzbar.
+
+**Nächste Aktion:** Abnahme durch Philipp im Spiel (S05).
+
+**Nur Philipp:** Im Spiel an deinem PC: Mod 0.20.0 installieren, einmal um den Bauplatz laufen, im Reiter „Gelände“ „Gelände aus dem Spiel übernehmen“ und „Gelände aus dem Spiel prüfen“ (S05).
+
+**Prüfstand:** Kern-, Browser- und Spieltests bestanden; Abnahme durch Philipp offen.
+
+**Nachweise:** [tests/unit/world/live-terrain.test.mjs](../tests/unit/world/live-terrain.test.mjs) — Leser, Abdeckung, Aufnahme mit Biomen und Dateikopf, Box als Prüfraster, Biom-Stile.; [tests/e2e/terrain-game.e2e.mjs](../tests/e2e/terrain-game.e2e.mjs) — Chromium 1400/390 px gegen den Mod-Simulator: verbinden, Abdeckung, Übernahme, Prüfung aus dem Spiel, Landschaft nach Biomen, alte Mod.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/TerrainMemoryTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/TerrainMemoryTest.java) — Antwort live/Gedächtnis, Datei speichern/laden, Grenze, Box, Routen.
+
+**Dateiumfang:** `packages/domain/src/world/liveTerrain.ts`, `packages/domain/src/world/terrainSurvey.ts`, `packages/domain/src/team/liveLink.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/world/gameTerrain.ts`, `apps/web/src/views/world/GameLinkBar.tsx`, `apps/web/src/views/world/world.css`, `apps/web/src/views/project/TerrainSurveyPanel.tsx`, `apps/web/src/views/project/TerrainTab.tsx`, `apps/web/src/views/project/LandscapeTab.tsx`, `apps/web/src/views/map/liveClient.ts`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/TerrainMemory.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/BoxRead.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/TerrainMemoryTest.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TerrainRecorder.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java`, `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`, `scripts/mod/bridge_gametest.mjs`, `mods/bauplaner-bridge/VERSION`, `mods/bauplaner-bridge/CHANGELOG.md`, `tests/unit/world/live-terrain.test.mjs`, `tests/e2e/terrain-game.e2e.mjs`, `tests/e2e/modSimulator.mjs`, `docs/architecture/welt/TERRAIN.md`, `docs/architecture/team/LIVE_LINK.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`. **Abhängigkeiten:** TERRAIN-01, TERRAIN-02, MAP-03, GAME-08. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
 ### BUILD-06
 
 **Bauführung im Spiel: Schichtführung, Tagesziele, Packlisten, Druck-/Handyansicht, Spielfortschritt** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Bauanleitung fürs Spiel vertiefen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T11:03:24.121Z
@@ -2874,7 +2901,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-09
 
-**Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Claude (Thread „Mod auf Modrinth veröffentlichen“) · Zuständiger Thread: „Mod auf Modrinth veröffentlichen“ · Aktualisiert: 2026-11-06T10:49:44.743Z
+**Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Claude (Thread „Mod auf Modrinth veröffentlichen“) · Zuständiger Thread: „Mod auf Modrinth veröffentlichen“ · Aktualisiert: 2026-11-06T12:37:11.138Z
 
 - [x] GAME-09-S01: Projektdaten: project.json (Slug, Titel, Kurztext, Kategorien, Seiten, Lizenz, Links, Loader, Abhängigkeit Fabric API), DESCRIPTION.md Englisch + Deutsch, Icon 512 px, 6 Bilder aus den Spieltests.
 - [x] GAME-09-S02: scripts/modrinth_publish.mjs check|plan|create|sync|release: Dateien aus releases.json mit SHA-256-Vergleich, Änderungsliste aus CHANGELOG.md je Version, Token nur aus MODRINTH_TOKEN; Offline-Prüfung in npm test, Ablauf gegen nachgebaute API geprüft.

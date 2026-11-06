@@ -59,4 +59,17 @@ In Anlagen mit Hauptweg dreht `planAnlage` jedes Einzelgebäude so, dass der Ein
 - Die Aufnahme ist ein Stand: Änderungen in der Welt danach kennt sie erst nach „Geländeaufnahme erneuern“.
 - Abnahme mit Philipps eigener 26.3-Welt und auf echten Geräten offen.
 
+## Gelände direkt aus der Mod (TERRAIN-04, Mod 0.20.0)
+
+Philipp 06.11.2026: Gelände und Landschaft sollen ihre Daten von der Mod bekommen, ohne Dateien hochzuladen; alle Systeme sprechen über die Verbindung. Regionsdateien bleiben nur als eingeklappter Notfallweg („Notfall ohne Mod“).
+
+- **Geländegedächtnis in der Mod** (`mod-core` `live/TerrainMemory`, Client `hologram-26.3` `TerrainRecorder`): alle 10 Ticks bis zu 4 geladene Chunks um den Spieler, zuerst nie gesehene, dann solche älter als 3 Minuten. Je Spalte die `SurfaceRuns` (wie `/v1/chunks`) und das Biom an der Oberfläche. Getrennt je Welt/Server (`McCompat.worldKey`) und Dimension, höchstens 12 288 Chunks je Dimension (älteste zuerst raus), gzip-Datei `bauplaner/gelaende/<welt>.bpgd`, gespeichert jede Minute und beim Verlassen. Nur auf dem PC, nichts an den Server. `/bauplaner gelaende [an|aus|vergessen]`.
+- **Routen** (Merkmale `terrain`, `box`, Vertrag in [LIVE_LINK](../team/LIVE_LINK.md)): `GET /v1/terrain?c=…` (64 Chunks je Anfrage; geladen = live gelesen und gemerkt, sonst aus dem Gedächtnis, sonst `missing`), `GET /v1/terrain/known?a=x0,z0,x1,z1` (höchstens 4096 Chunks), `GET /v1/box?b=x0,y0,z0,x1,y1,z1` (höchstens 2 Mio. Zellen, Scheiben zu 200 000 Zellen je Tick, nicht geladene Zellen `bauplaner:unloaded`).
+- **Planer** (`packages/domain/src/world/liveTerrain.ts`, `apps/web/src/views/world/gameTerrain.ts`): Einstufung bleibt `classifyRuns` (gleiche Regeln wie die Regionsdatei-Aufnahme). Die Aufnahme bekommt `source: 'mod'` und optional Biome; beides steht nur im JSON-Kopf von BPTERR01 (Biome lauflängenkodiert), die Datenlänge bleibt, alte Leser lesen weiter. `project.terrain.source` sagt „aus dem Spiel“.
+- **Reiter „Gelände“**: Bereich „Aus dem Spiel“ mit Verbindung (`GameLinkBar`, dieselbe Kopplung wie die Weltkarte), Abdeckung („Die Mod kennt 18 von 24 Chunks … es fehlt Gelände im Norden“, alle 5 s), „Gelände aus dem Spiel übernehmen/erneuern“. „Blockgenau prüfen“: „Gelände aus dem Spiel prüfen“ liest `terrainBox` über `/v1/box` und rechnet `checkTerrain` wie bei Regionsdateien.
+- **Reiter „Landschaft“**: „Aus dem Spiel holen und gestalten“ speichert die Aufnahme (`terrain.set`) und beginnt die Gestaltung darauf; „Nach Biomen bemalen“ (`paintByBiome`, `styleForBiome`) bemalt jede Spalte im Stil ihres Bioms, Wege und Wasser bleiben.
+- **Ältere Mods** ohne `terrain`: Übernahme über `/v1/chunks` (nur geladene Chunks, ohne Biome), Hinweis auf 0.20.0. Ohne `box` keine Prüfung aus dem Spiel.
+- Prüfung: `tests/unit/world/live-terrain.test.mjs`, `tests/e2e/terrain-game.e2e.mjs` (Simulator mit `terrain`/`box`), `TerrainMemoryTest` (mod-core), Spieltest (`bridge_gametest.mjs` liest `/v1/terrain`, `/v1/terrain/known`, `/v1/box` mit den Lesern der Website).
+- Grenzen: Die blockgenaue Prüfung sieht nur geladene Chunks (Sichtweite); das Gedächtnis ist 2,5D wie jede Aufnahme; es kennt nur Gelände, das der Spieler gesehen hat.
+
 Geplantes Gelände (formen, bemalen, Wasser, Wege, Bauplätze einebnen) beschreibt [LANDSCAPE](LANDSCAPE.md) (TERRAIN-02).

@@ -35,6 +35,8 @@ public final class HologramClient {
     private final TeamClient team;
     /** EDIT-04: symmetry and curves while building by hand (ghosts only). */
     private final GuideClient guides;
+    /** TERRAIN-04: remembered surface of the chunks the player has seen, for the website's Gelände tab. */
+    private final TerrainRecorder terrain;
 
     /** @param loader "fabric" or "neoforge" (reported to the website); @param version mod version */
     public HologramClient(Path root, String loader, String version) {
@@ -52,6 +54,8 @@ public final class HologramClient {
         guides = new GuideClient(hologram);
         keys.guides(guides);
         link.team(team);
+        terrain = new TerrainRecorder(root);
+        link.terrain(terrain);
         current = this;
     }
 
@@ -75,7 +79,10 @@ public final class HologramClient {
     public void started(Minecraft mc) { link.resume(mc); }
 
     /** Game is closing: stop the website link. */
-    public void stopping() { link.close(); }
+    public void stopping() { guarded("gelaende", terrain::leave); link.close(); }
+
+    /** Geländegedächtnis (TERRAIN-04). */
+    TerrainRecorder terrain() { return terrain; }
 
     /** Keys to register with the loader (all in the "Bauplaner" category, {@link HologramKeys#CATEGORY}). */
     public List<KeyMapping> keys() { return keys.all(); }
@@ -85,9 +92,20 @@ public final class HologramClient {
         List<LiteralArgumentBuilder<S>> list = new java.util.ArrayList<>(HologramCommands.build(hologram, link));
         list.add(team.command());
         list.addAll(guides.<S>commands());
+        list.add(terrainCommand());
         // GAME-10: command page; opened on the next tick because the chat screen closes right after the command.
         list.add(LiteralArgumentBuilder.<S>literal("befehle").executes(c -> { openCommands = true; return 1; }));
         return list;
+    }
+
+    /** {@code /bauplaner gelaende [an|aus|vergessen]}: Geländegedächtnis for the website (TERRAIN-04). */
+    private <S> LiteralArgumentBuilder<S> terrainCommand() {
+        java.util.function.Consumer<String> say = t -> McCompat.chat(Minecraft.getInstance(), Component.literal("[Bauplaner] " + t));
+        return LiteralArgumentBuilder.<S>literal("gelaende")
+                .executes(c -> { say.accept(terrain.status(Minecraft.getInstance())); return 1; })
+                .then(LiteralArgumentBuilder.<S>literal("an").executes(c -> { say.accept(terrain.setEnabled(true)); return 1; }))
+                .then(LiteralArgumentBuilder.<S>literal("aus").executes(c -> { say.accept(terrain.setEnabled(false)); return 1; }))
+                .then(LiteralArgumentBuilder.<S>literal("vergessen").executes(c -> { say.accept(terrain.forget()); return 1; }));
     }
 
     private volatile boolean openCommands;
@@ -98,6 +116,7 @@ public final class HologramClient {
     /** End of every client tick. */
     public void tick(Minecraft mc) {
         guarded("tick", () -> { keys.tick(mc); hologram.tick(mc); assist.tick(mc); marks.tick(mc); team.tick(mc); guides.tick(mc); });
+        guarded("gelaende", () -> terrain.tick(mc));
         if (openCommands && mc.gui.screen() == null) { openCommands = false; openCommands(mc); }
     }
 
@@ -152,7 +171,7 @@ public final class HologramClient {
         guarded("team", () -> team.join(mc, mc.isLocalServer() ? null : teamChannel));
     }
 
-    public void leave() { hologram.leave(); guarded("team", team::leave); }
+    public void leave() { hologram.leave(); guarded("team", team::leave); guarded("gelaende", terrain::leave); }
 
     /** A frame on the team channel from the server plugin (any thread). */
     public void teamFrame(byte[] frame) { guarded("teamkanal", () -> team.receive(frame)); }

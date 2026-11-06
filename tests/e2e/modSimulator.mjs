@@ -198,6 +198,48 @@ export function startModSimulator(port, options = {}) {
           missing: list.filter(c => !loaded(c)),
         });
       }
+      // TERRAIN-04 (mod 0.20.0): Geländegedächtnis (wider than the loaded chunks, seen 10 minutes ago) and box reads.
+      const remembered = ([cx, cz]) => Math.abs(cx - 2) <= 12 && Math.abs(cz + 2) <= 12;
+      const biomeOf = (x, z) => x >= 48 && x < 56 && z >= -8 && z < 0 ? 1 : x < 0 ? 2 : 0;
+      if (route === 'GET /v1/terrain' || route === 'GET /v1/terrain/known') {
+        if (!state.features.includes('terrain')) return send(404, { error: 'Diese Mod hat kein Geländegedächtnis.' });
+        const loaded = ([cx, cz]) => Math.abs(cx - 2) <= 6 && Math.abs(cz + 2) <= 6;
+        const seen = state.terrainSeenAt ??= Date.now() - 10 * 60_000;
+        if (route === 'GET /v1/terrain/known') {
+          const [x0, z0, x1, z1] = (url.searchParams.get('a') ?? '').split(',').map(Number);
+          const chunks = [];
+          for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++) if (remembered([x, z])) chunks.push([x, z, loaded([x, z]) ? Date.now() : seen]);
+          return send(200, { dimension: state.player.dimension, total: 625, chunks });
+        }
+        const list = (url.searchParams.get('c') ?? '').split(';').filter(Boolean).map(t => t.split(',').map(Number));
+        if (list.length > 64) return send(400, { error: 'Höchstens 64 Chunks je Anfrage.' });
+        return send(200, {
+          dimension: state.player.dimension, ids: ['minecraft:grass_block', 'minecraft:water', 'minecraft:sand', 'minecraft:dirt'], biomes: ['minecraft:plains', 'minecraft:river', 'minecraft:forest'],
+          chunks: list.filter(remembered).map(([cx, cz]) => ({ x: cx, z: cz, at: loaded([cx, cz]) ? Date.now() : seen, live: loaded([cx, cz]),
+            columns: Array.from({ length: 256 }, (_, i) => column(cx * 16 + (i & 15), cz * 16 + (i >> 4))), biome: Array.from({ length: 256 }, (_, i) => biomeOf(cx * 16 + (i & 15), cz * 16 + (i >> 4))) })),
+          missing: list.filter(c => !remembered(c)),
+        });
+      }
+      if (route === 'GET /v1/box') {
+        if (!state.features.includes('box')) return send(404, { error: 'Diese Mod kann keinen Geländebereich lesen.' });
+        const b = (url.searchParams.get('b') ?? '').split(',').map(Number);
+        const [w, h, l] = [b[3] - b[0], b[4] - b[1], b[5] - b[2]];
+        if (b.length !== 6 || !(w > 0 && h > 0 && l > 0)) return send(400, { error: 'Bereich ungültig.' });
+        if (w * h * l > 2_000_000) return send(413, { error: 'Bereich zu groß.' });
+        const palette = ['minecraft:air', 'minecraft:grass_block[snowy=false]', 'minecraft:dirt', 'minecraft:water[level=0]', 'minecraft:sand', 'bauplaner:unloaded'];
+        const data = Buffer.alloc(w * h * l * 2);
+        let unloaded = 0;
+        for (let y = 0; y < h; y++) for (let z = 0; z < l; z++) for (let x = 0; x < w; x++) {
+          const wx = b[0] + x, wy = b[1] + y, wz = b[2] + z;
+          const inLoaded = Math.abs(Math.floor(wx / 16) - 2) <= 6 && Math.abs(Math.floor(wz / 16) + 2) <= 6;
+          const pond = wx >= 48 && wx < 56 && wz >= -8 && wz < 0;
+          const v = !inLoaded ? 5 : pond ? (wy > 62 ? 0 : wy >= 61 ? 3 : 4) : wy > 64 ? 0 : wy === 64 ? 1 : 2;
+          if (v === 5) unloaded++;
+          data.writeUInt16LE(v, 2 * (x + z * w + y * w * l));
+        }
+        state.boxReads = (state.boxReads ?? 0) + 1;
+        return send(200, { dimension: state.player.dimension, box: b, palette, data: data.toString('base64'), unloaded });
+      }
       if (route === 'POST /v1/plan') {
         const q = Object.fromEntries(url.searchParams);
         state.plans.push({ ...q, bytes: body.length, magic: body.subarray(0, 2).toString('hex') });

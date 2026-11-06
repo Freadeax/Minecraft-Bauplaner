@@ -2,6 +2,22 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.20.0 – 2026-11-06
+
+**Terrain straight from the game / Gelände direkt aus dem Spiel**
+
+- New terrain memory: while you walk or fly around, the mod remembers the surface of the chunks you see (top blocks, ground, water, biome), a few chunks per second, separately for every world or server. It is saved only on your computer (`bauplaner/gelaende/`) and never sent to the server.
+- The planner's tabs “Terrain” and “Landscape” take a building site's terrain straight from the game – also parts you saw earlier and are no longer loaded – including biomes. No region files to upload. The planner shows how much of the site the game already knows and in which direction terrain is still missing.
+- Block-exact terrain check from the game: the planner reads the blocks under a project from the loaded chunks (up to 2 million cells) and shows what is in the way and where the foundation hangs.
+- `/bauplaner gelaende` shows how much the mod remembers; `an`/`aus` switches remembering on or off, `vergessen` deletes it for this world. Also on the command page.
+- New features `terrain` and `box` for the planner (GET /v1/terrain, /v1/terrain/known, /v1/box). Older planners keep working unchanged.
+
+- Neu Geländegedächtnis: Während du läufst oder fliegst, merkt sich die Mod die Oberfläche der Chunks, die du siehst (oberster Block, Boden, Wasser, Biom), ein paar Chunks pro Sekunde, getrennt je Welt oder Server. Gespeichert wird nur auf deinem PC (`bauplaner/gelaende/`), nichts geht an den Server.
+- Die Reiter „Gelände“ und „Landschaft“ im Planer übernehmen das Gelände eines Bauplatzes direkt aus dem Spiel – auch Teile, die du früher gesehen hast und die gerade nicht geladen sind – samt Biomen. Keine Regionsdateien mehr hochladen. Der Planer zeigt, wie viel vom Bauplatz das Spiel schon kennt und in welcher Richtung noch Gelände fehlt.
+- Blockgenaue Geländeprüfung aus dem Spiel: Der Planer liest die Blöcke unter einem Projekt aus den geladenen Chunks (bis 2 Mio. Zellen) und zeigt, was im Weg ist und wo das Fundament hängt.
+- `/bauplaner gelaende` zeigt, wie viel sich die Mod gemerkt hat; `an`/`aus` schaltet das Merken ein oder aus, `vergessen` löscht es für diese Welt. Auch auf der Befehlsseite.
+- Neue Fähigkeiten `terrain` und `box` für den Planer (GET /v1/terrain, /v1/terrain/known, /v1/box). Ältere Planer arbeiten unverändert weiter.
+
 ## 0.19.0 – 2026-11-06
 
 **Groups and locks from the planner in the hologram / Gruppen und Sperren aus dem Planer im Hologramm**

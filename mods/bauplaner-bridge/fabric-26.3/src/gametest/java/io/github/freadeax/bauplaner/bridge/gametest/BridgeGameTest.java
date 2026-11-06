@@ -375,6 +375,16 @@ public final class BridgeGameTest implements FabricClientGameTest {
         out.append(",\"status\":").append(request(context, http, base + "/v1/status", "GET", null, token, "https://freadeax.github.io"));
         int cx = Math.floorDiv(anchor[0], 16), cz = Math.floorDiv(anchor[2], 16);
         out.append(",\"chunks\":").append(request(context, http, base + "/v1/chunks?c=" + cx + "," + cz + ";4000,4000", "GET", null, token, "https://freadeax.github.io"));
+        // TERRAIN-04 (0.20.0): Geländegedächtnis and block box for the website's Gelände tab.
+        out.append(",\"terrain\":").append(request(context, http, base + "/v1/terrain?c=" + cx + "," + cz + ";4000,4000", "GET", null, token, "https://freadeax.github.io"));
+        out.append(",\"terrainKnown\":").append(request(context, http, base + "/v1/terrain/known?a=" + (cx - 1) + "," + (cz - 1) + "," + (cx + 1) + "," + (cz + 1), "GET", null, token, "https://freadeax.github.io"));
+        out.append(",\"box\":").append(request(context, http, base + "/v1/box?b=" + (anchor[0] - 2) + "," + (anchor[1] - 3) + "," + (anchor[2] - 2) + "," + (anchor[0] + 6) + "," + (anchor[1] + 4) + "," + (anchor[2] + 6), "GET", null, token, "https://freadeax.github.io"));
+        // Gallery picture for 0.20.0: the terrain memory's status line over the landscape around the site.
+        context.runOnClient(mc -> mc.gui.hud.getChat().clearMessages(false));
+        context.getInput().lookAt(new BlockPos(anchor[0] + 40, anchor[1] - 4, anchor[2] + 24));
+        chat(context, "/bauplaner gelaende");
+        context.waitTicks(20);
+        copy(context.takeScreenshot("bauplaner-gelaende"), io.resolve("gelaende.png"));
         String marks = "{\"dimension\":\"minecraft:overworld\",\"items\":[{\"kind\":\"point\",\"id\":\"point_test\",\"name\":\"Brunnen\",\"note\":\"\",\"dimension\":\"minecraft:overworld\",\"type\":\"ziel\",\"x\":"
                 + (anchor[0] + 12) + ",\"y\":" + anchor[1] + ",\"z\":" + (anchor[2] + 3) + "},{\"kind\":\"site\",\"id\":\"site_test\",\"name\":\"Platz\",\"note\":\"\",\"dimension\":\"minecraft:overworld\",\"minX\":"
                 + (anchor[0] - 4) + ",\"minZ\":" + (anchor[2] - 4) + ",\"width\":16,\"length\":12,\"y\":null,\"projectId\":null}"

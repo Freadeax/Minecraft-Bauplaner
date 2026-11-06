@@ -268,6 +268,11 @@ public final class CommandCatalog {
         c(m, LINK, "gruppe.alle", "Alle Gruppen", "gruppe alle", "Wieder alles zeigen, ausgeblendete Gruppen sichtbar.", Need.NONE);
         c(m, LINK, "gruppe.aus", "Gruppe ausblenden", "gruppe aus", "Markierungen und Hologramm dieser Gruppe ausblenden.", Need.NONE, Arg.of("name", Kind.TEXT));
         c(m, LINK, "gruppe.an", "Gruppe einblenden", "gruppe an", "Ausgeblendete Gruppe wieder zeigen.", Need.NONE, Arg.of("name", Kind.TEXT));
+        // Geländegedächtnis for the website's Gelände tab (TERRAIN-04, 0.20.0)
+        c(m, LINK, "gelaende", "Geländegedächtnis", "gelaende", "Wie viel Gelände sich die Mod gemerkt hat; die Website übernimmt es für Bauplätze ohne Regionsdateien.", Need.NONE);
+        c(m, LINK, "gelaende.an", "Gelände merken an", "gelaende an", "Die Mod merkt sich das Gelände, das du siehst (nur auf diesem PC).", Need.NONE);
+        c(m, LINK, "gelaende.aus", "Gelände merken aus", "gelaende aus", "Nichts Neues merken; Gemerktes bleibt.", Need.NONE);
+        c(m, LINK, "gelaende.vergessen", "Gelände vergessen", "gelaende vergessen", "Gemerktes Gelände dieser Welt löschen.", Need.NONE);
         // Recording for the website (client, all loaders) and on the server
         c(m, RECORD, "plaene", "Pläne", "plaene", "Pläne im Ordner bauplaner/plans.", Need.NONE);
         c(m, RECORD, "plan", "Plan laden", "plan", "Plan für die Aufnahme laden.", Need.NONE, Arg.of("datei", Kind.TEXT));

@@ -48,7 +48,14 @@ export interface TerrainSurvey extends SurveyArea {
   readonly newestChunkSave: number;
   readonly dataVersions: readonly number[];
   readonly regions: readonly string[];
+  /** Where the columns came from (TERRAIN-04): region files (default) or the mod's live link/Geländegedächtnis. */
+  readonly source?: SurveySource;
+  /** Biome at the surface per column (`x + z·width`, index into `ids`; mod surveys only). */
+  readonly biomes?: SurveyBiomes;
 }
+
+export type SurveySource = 'region' | 'mod';
+export interface SurveyBiomes { readonly ids: readonly string[]; readonly data: Uint16Array }
 
 /** What a project stores about its survey; the bytes are an original file. */
 export interface ProjectTerrainReference {
@@ -62,6 +69,8 @@ export interface ProjectTerrainReference {
   readonly known: number;
   /** Lowest and highest ground of the known columns. */
   readonly groundRange: readonly [number, number] | null;
+  /** TERRAIN-04: `mod` when taken from the game (older references: region files). */
+  readonly source?: SurveySource;
 }
 
 const fail = (message: string): never => { throw new DomainError('TERRAIN', `Geländeaufnahme: ${message}`); };
@@ -87,6 +96,7 @@ export function checkTerrainReference(raw: unknown): ProjectTerrainReference {
   const area = checkSurveyArea(raw.area);
   if (typeof raw.readAt !== 'string' || !Number.isFinite(Date.parse(raw.readAt))) fail('ungültige Lesezeit');
   if (!isInt(raw.known, 0, area.width * area.length)) fail('ungültige Anzahl bekannter Spalten');
+  if (raw.source !== undefined && raw.source !== 'region' && raw.source !== 'mod') fail('unbekannte Quelle');
   if (raw.groundRange !== null && !(Array.isArray(raw.groundRange) && raw.groundRange.length === 2 && raw.groundRange.every(n => isInt(n, -32767, 32767)) && raw.groundRange[0] <= raw.groundRange[1])) fail('ungültiger Höhenbereich');
   return raw as unknown as ProjectTerrainReference;
 }
@@ -100,18 +110,25 @@ export interface SurveyColumnsInput extends SurveyArea {
 }
 
 /** Survey from the worker's column scan (packages/formats terrainColumns). */
-export function createSurvey(columns: SurveyColumnsInput, meta: { dimension: string; readAt?: string; newestChunkSave?: number; dataVersions?: readonly number[]; regions?: readonly string[] }): TerrainSurvey {
+export function createSurvey(columns: SurveyColumnsInput, meta: { dimension: string; readAt?: string; newestChunkSave?: number; dataVersions?: readonly number[]; regions?: readonly string[]; source?: SurveySource; biomes?: SurveyBiomes }): TerrainSurvey {
   const area = checkSurveyArea(columns);
   const n = area.width * area.length;
   if (columns.surface.length !== n || columns.surfaceBlock.length !== n || columns.ground.length !== n || columns.groundBlock.length !== n) fail('Spaltenzahl passt nicht zum Bereich');
   if (!DIMENSION_ID.test(meta.dimension)) fail('Dimension muss eine ID wie minecraft:overworld sein');
   if (!columns.ids.length || columns.ids.length > 65_535) fail('ungültige Blockliste');
   for (const a of [columns.surfaceBlock, columns.groundBlock]) for (let i = 0; i < n; i++) if (a[i]! >= columns.ids.length) fail('Blockindex außerhalb der Liste');
+  const biomes = meta.biomes;
+  if (biomes) {
+    if (biomes.data.length !== n || !biomes.ids.length || biomes.ids.length > 65_535 || !biomes.ids.every(id => typeof id === 'string' && DIMENSION_ID.test(id))) fail('ungültige Biome');
+    for (let i = 0; i < n; i++) if (biomes.data[i]! >= biomes.ids.length) fail('Biomindex außerhalb der Liste');
+  }
+  if (meta.source !== undefined && meta.source !== 'region' && meta.source !== 'mod') fail('unbekannte Quelle');
   return {
     schemaVersion: SURVEY_SCHEMA_VERSION, dimension: meta.dimension, ...area,
     surface: columns.surface, surfaceBlock: columns.surfaceBlock, ground: columns.ground, groundBlock: columns.groundBlock, ids: [...columns.ids],
     readAt: meta.readAt ?? new Date().toISOString(), newestChunkSave: meta.newestChunkSave ?? 0,
     dataVersions: [...(meta.dataVersions ?? [])], regions: [...(meta.regions ?? [])].sort(),
+    ...(meta.source && { source: meta.source }), ...(biomes && { biomes: { ids: [...biomes.ids], data: biomes.data } }),
   };
 }
 
@@ -122,7 +139,9 @@ export function createSurvey(columns: SurveyColumnsInput, meta: { dimension: str
  */
 export function encodeSurvey(s: TerrainSurvey): Uint8Array {
   const header = new TextEncoder().encode(JSON.stringify({ schemaVersion: s.schemaVersion, dimension: s.dimension, minX: s.minX, minZ: s.minZ, width: s.width, length: s.length,
-    ids: s.ids, readAt: s.readAt, newestChunkSave: s.newestChunkSave, dataVersions: s.dataVersions, regions: s.regions }));
+    ids: s.ids, readAt: s.readAt, newestChunkSave: s.newestChunkSave, dataVersions: s.dataVersions, regions: s.regions,
+    // TERRAIN-04: optional, in the header so older readers keep the same data layout.
+    ...(s.source && { source: s.source }), ...(s.biomes && { biomes: { ids: s.biomes.ids, runs: runLengths(s.biomes.data) } }) }));
   const start = 12 + header.length + ((12 + header.length) % 2), n = s.width * s.length;
   const out = new Uint8Array(start + n * 8), view = new DataView(out.buffer);
   out.set(new TextEncoder().encode(MAGIC), 0);
@@ -155,7 +174,44 @@ export function decodeSurvey(bytes: Uint8Array): TerrainSurvey {
     return a;
   };
   return createSurvey({ ...area, surface: read16(0, true) as Int16Array, surfaceBlock: read16(1, false) as Uint16Array, ground: read16(2, true) as Int16Array, groundBlock: read16(3, false) as Uint16Array, ids: h.ids as string[] },
-    { dimension: String(h.dimension), readAt: String(h.readAt), newestChunkSave: Number(h.newestChunkSave) || 0, dataVersions: Array.isArray(h.dataVersions) ? h.dataVersions.filter(Number.isInteger) as number[] : [], regions: Array.isArray(h.regions) ? h.regions.map(String) : [] });
+    { dimension: String(h.dimension), readAt: String(h.readAt), newestChunkSave: Number(h.newestChunkSave) || 0, dataVersions: Array.isArray(h.dataVersions) ? h.dataVersions.filter(Number.isInteger) as number[] : [], regions: Array.isArray(h.regions) ? h.regions.map(String) : [],
+      ...(h.source === 'mod' || h.source === 'region' ? { source: h.source } : {}), ...(h.biomes !== undefined && { biomes: readBiomes(h.biomes, n) }) });
+}
+
+/** [value, count, value, count, …] of a 16-bit array. */
+function runLengths(a: Uint16Array): number[] {
+  const out: number[] = [];
+  for (let i = 0; i < a.length;) { let j = i + 1; while (j < a.length && a[j] === a[i]) j++; out.push(a[i]!, j - i); i = j; }
+  return out;
+}
+
+function readBiomes(raw: unknown, n: number): SurveyBiomes {
+  if (!isObj(raw) || !Array.isArray(raw.ids) || !raw.ids.every(i => typeof i === 'string') || !Array.isArray(raw.runs) || raw.runs.length % 2) return fail('ungültige Biome');
+  const data = new Uint16Array(n);
+  let k = 0;
+  for (let r = 0; r < raw.runs.length; r += 2) {
+    const v = raw.runs[r], c = raw.runs[r + 1];
+    if (!isInt(v, 0, 65_534) || !isInt(c, 1, n) || k + (c as number) > n) fail('ungültige Biome');
+    data.fill(v as number, k, k + (c as number)); k += c as number;
+  }
+  if (k !== n) fail('Biome passen nicht zum Bereich');
+  return { ids: raw.ids as string[], data };
+}
+
+/** Biome id at a world position (mod surveys); null without biomes or outside. */
+export function biomeAt(s: TerrainSurvey, x: number, z: number): string | null {
+  const gx = x - s.minX, gz = z - s.minZ;
+  if (!s.biomes || gx < 0 || gz < 0 || gx >= s.width || gz >= s.length) return null;
+  const i = gx + gz * s.width;
+  return s.surface[i] === SURVEY_UNKNOWN ? null : s.biomes.ids[s.biomes.data[i]!] ?? null;
+}
+
+/** Known columns per biome, most first (mod surveys). */
+export function biomeShares(s: TerrainSurvey): { id: string; columns: number }[] {
+  if (!s.biomes) return [];
+  const count = new Map<number, number>();
+  for (let i = 0; i < s.surface.length; i++) if (s.surface[i] !== SURVEY_UNKNOWN) count.set(s.biomes.data[i]!, (count.get(s.biomes.data[i]!) ?? 0) + 1);
+  return [...count].map(([k, n]) => ({ id: s.biomes!.ids[k]!, columns: n })).sort((a, b) => b.columns - a.columns || a.id.localeCompare(b.id));
 }
 
 /** Known columns and ground range of a survey. */
@@ -176,7 +232,7 @@ export async function surveyFile(s: TerrainSurvey, name = 'gelaende'): Promise<{
   const fileName = `${name.replace(/[^\p{L}\p{N}_-]+/gu, '_').slice(0, 60) || 'gelaende'}_${s.minX}_${s.minZ}.bpterrain`;
   const original: OriginalFile = { sha256, fileName, mediaType: SURVEY_MEDIA_TYPE, size: bytes.byteLength, createdAt: s.readAt, bytes };
   const reference = checkTerrainReference({ schemaVersion: SURVEY_SCHEMA_VERSION, sha256, fileName, dimension: s.dimension, area: { minX: s.minX, minZ: s.minZ, width: s.width, length: s.length },
-    readAt: s.readAt, known: stats.known, groundRange: stats.groundRange });
+    readAt: s.readAt, known: stats.known, groundRange: stats.groundRange, ...(s.source === 'mod' && { source: 'mod' }) });
   return { original, reference };
 }
 

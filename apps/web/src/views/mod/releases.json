@@ -817,6 +817,33 @@
       "releasedAt": "2026-11-06",
       "sourceCommit": "17a79f0beafd5a3c9ccf26324db89acba3f8683e",
       "tested": "Minecraft 26.3 neoforge: echter Spieltest bestanden 06.11.2026 (0.19.0: Weltplan-Gruppe „Markt“, 54 Planblöcke gesperrt grau, Hologramm auf Gruppe beschränkt)"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.20.0.jar",
+      "modVersion": "0.20.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 580829,
+      "sha256": "bb50519562b29ed214f60efaf80d3eb34176e986cb4ad656082cb24e82847bd2",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "20640ef197a8c1af3ac4049a53957280e74c059d",
+      "tested": "Echter Fabric-26.3-Client: Spieltest mit Geländegedächtnis (/v1/terrain, /v1/terrain/known, /v1/box), Hologramm, Verbindung"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.20.0.jar",
+      "modVersion": "0.20.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 576640,
+      "sha256": "7d0f1cfc833ce9d13fbbfe74863ffb0d8bd70e06eaa0c32db52473571918b276",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "20640ef197a8c1af3ac4049a53957280e74c059d",
+      "tested": "Echter NeoForge-26.3-Client: Spieltest Hologramm, Verbindung, Gelände"
     }
   ]
 }

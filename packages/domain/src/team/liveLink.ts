@@ -101,6 +101,10 @@ export const LIVE_FEATURE_BIGPLANS = 'bigplans';
 export const LIVE_FEATURE_MARKS3 = 'marks3';
 /** Groups and locks of Weltplan schema 3 in the hologram (GAME-07-S11, mod 0.19.0): POST /v1/group, locked areas greyed out. */
 export const LIVE_FEATURE_GROUPS = 'groups';
+/** TERRAIN-04 (mod 0.20.0): Geländegedächtnis, `GET /v1/terrain` (loaded or remembered chunks with biomes) and `/v1/terrain/known`. */
+export const LIVE_FEATURE_TERRAIN = 'terrain';
+/** TERRAIN-04 (mod 0.20.0): `GET /v1/box` reads every block of a world box from the loaded chunks (blockgenaue Geländeprüfung). */
+export const LIVE_FEATURE_BOX = 'box';
 /** Layer the game points land on in the Weltplan. */
 export const GAME_MARKS_LAYER = 'Aus dem Spiel';
 export const liveCan = (hello: LiveHello | null, feature: string): boolean => !!hello?.features.includes(feature);
@@ -137,6 +141,8 @@ export const LIVE_FEATURE_LABELS: readonly { readonly id: string; readonly label
   { id: 'team', label: 'Teambau im Spiel (Abschnitte, Meldungen, Server-Plugin)' },
   { id: LIVE_FEATURE_MARKS3, label: 'Markierungen aus dem Spiel übernehmen' },
   { id: LIVE_FEATURE_GROUPS, label: 'Gruppen und Sperren im Hologramm' },
+  { id: LIVE_FEATURE_TERRAIN, label: 'Gelände aus dem Geländegedächtnis (ohne Regionsdateien)' },
+  { id: LIVE_FEATURE_BOX, label: 'Blockgenaue Geländeprüfung aus dem Spiel' },
 ];
 /** Other players (feature `players`): name and position in the client's dimension. */
 export interface LiveOtherPlayer { readonly name: string; readonly x: number; readonly y: number; readonly z: number; readonly yaw: number }
@@ -362,7 +368,7 @@ export function liveSurvey(area: SurveyArea, dimension: string, chunkAt: (cx: nu
     const k = dx + dz * area.width;
     surface[k] = col.surface; surfaceBlock[k] = idOf(col.surfaceId); ground[k] = col.ground; groundBlock[k] = idOf(col.groundId);
   }
-  return createSurvey({ ...area, surface, surfaceBlock, ground, groundBlock, ids }, { dimension, readAt });
+  return createSurvey({ ...area, surface, surfaceBlock, ground, groundBlock, ids }, { dimension, readAt, source: 'mod' });
 }
 
 // ------------------------------------------------------------------ hologram ↔ project

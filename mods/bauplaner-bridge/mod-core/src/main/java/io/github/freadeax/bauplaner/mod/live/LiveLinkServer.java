@@ -76,6 +76,12 @@ public final class LiveLinkServer implements AutoCloseable {
         default String group(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keine Weltplan-Gruppen."); }
         /** Baustand of the placed plan as {@code bauplaner-scan} file (MAP-05, since 0.7.1). */
         default Binary scan() throws Exception { throw new HttpError(404, "Diese Mod kann keinen Baustand liefern."); }
+        /** TERRAIN-04 (feature {@code terrain}): surface of loaded or remembered chunks, see {@link TerrainMemory#answer}. */
+        default String terrain(int[][] chunks) throws Exception { throw new HttpError(404, "Diese Mod hat kein Geländegedächtnis."); }
+        /** Remembered chunks in a chunk rectangle {@code [x0, z0, x1, z1]}. */
+        default String terrainKnown(int[] area) throws Exception { throw new HttpError(404, "Diese Mod hat kein Geländegedächtnis."); }
+        /** TERRAIN-04 (feature {@code box}): every block of a world box, see {@link BoxRead}. */
+        default String box(int[] box) throws Exception { throw new HttpError(404, "Diese Mod kann keinen Geländebereich lesen."); }
         /** GET /v1/players: other players the client sees, {@code {dimension, players:[{name,x,y,z,yaw}]}} (GAME-08, since 0.8.0). */
         default String players() throws Exception { throw new HttpError(404, "Diese Mod meldet keine Mitspieler."); }
         /**
@@ -115,7 +121,7 @@ public final class LiveLinkServer implements AutoCloseable {
     public record Binary(String fileName, byte[] bytes) {}
 
     /** What this mod can do beyond protocol 1; the website enables buttons by it. */
-    public static final List<String> FEATURES = List.of("scan", "marks2", "players", "bigplans", "team", "pairask", "server", "marks3", "room", "roomfallback", "groups");
+    public static final List<String> FEATURES = List.of("scan", "marks2", "players", "bigplans", "team", "pairask", "server", "marks3", "room", "roomfallback", "groups", "terrain", "box");
 
     public record Info(String version, String loader, String minecraft) {}
 
@@ -386,6 +392,9 @@ public final class LiveLinkServer implements AutoCloseable {
             switch (route) {
                 case "GET /v1/status": return ok(h, handler.status());
                 case "GET /v1/chunks": return ok(h, handler.chunks(chunkList(r.query().get("c"))));
+                case "GET /v1/terrain": return ok(h, handler.terrain(chunkList(r.query().get("c"))));
+                case "GET /v1/terrain/known": return ok(h, handler.terrainKnown(TerrainMemory.area(r.query().get("a"))));
+                case "GET /v1/box": return ok(h, handler.box(BoxRead.parse(r.query().get("b"))));
                 case "POST /v1/plan":
                     if (r.body().length == 0 || r.body().length > MAX_PLAN_BYTES) throw new HttpError(413, "Plandatei fehlt oder ist zu groß (höchstens " + MAX_PLAN_BYTES / 1_000_000 + " MB).");
                     return ok(h, handler.plan(r.query(), r.body()));

@@ -13,6 +13,7 @@
 - **Placement helper.** Optionally stops you from placing a wrong block or a wrong rotation inside the plan, or only warns you. Pick the planned block straight into your hand. `/bauplaner geruest` finds floating parts and falling blocks without support.
 - **Commands & status.** Press `J` → *Commands & status* for every command as a button, and to see how the mod is connected.
 - **Link to the planner on the same PC.** The website finds the game by itself. Nothing happens until you press `J` in the game and click *Allow planner*. Then the website can send plans and map markers to the game and read back the build state. You can also set map markers in the game (`/bauplaner markieren`).
+- **Terrain for the planner.** While you walk or fly around, the mod remembers the surface of the chunks you have seen (heights, top blocks, water, biomes) on this PC. The planner's *Terrain* and *Landscape* tabs take a building site's terrain straight from the game, without region files, and can check the site block by block. `/bauplaner gelaende aus` switches it off.
 - **Team building (optional).** Connect your game to your team's *team room* from the planner with one click. Section owners, reports, notes and storage chests come live into the game, and your own actions go to the team. Nothing goes to the Minecraft server; the server needs no plugin for this. If the network blocks WebSockets, the mod falls back to plain HTTP, and it keeps the last team state when you are offline.
 - **Large builds.** Plans with up to 4 million blocks load in the background and are checked in slices.
 
@@ -56,6 +57,7 @@ The Paper plugin is optional. It sets itself up, an operator pairs it from the p
 - **Platzierhilfe**, die falsche Blöcke verhindert oder nur warnt; `/bauplaner geruest` findet schwebende Teile.
 - **Befehle & Status** im J-Menü: jeder Befehl als Knopf, dazu der Verbindungsstand.
 - **Planer auf demselben PC:** Die Website findet das Spiel selbst; erst nach `J` → *Planer zulassen* tauscht sie Pläne, Markierungen und Baustand aus.
+- **Gelände für den Planer:** Die Mod merkt sich auf diesem PC das Gelände, das du gesehen hast (Höhen, oberste Blöcke, Wasser, Biome). Die Reiter *Gelände* und *Landschaft* übernehmen es direkt aus dem Spiel, ohne Regionsdateien. `/bauplaner gelaende aus` schaltet es ab.
 - **Teambau** (freiwillig): Spiel im Planer mit einem Klick mit dem Team-Raum verbinden. Abschnitte, Meldungen, Notizen und Kisten kommen live ins Spiel. Der Minecraft-Server braucht dafür nichts.
 
 Reine Client-Mod. Ohne Team-Raum verlässt nichts deinen PC; mit Team-Raum gehen Spielername, Position, Abschnitt, Teamaktionen und Messungen an diesen Raum. `J` öffnet das Planmenü, alle Tasten unter *Optionen → Steuerung → Bauplaner*. Das Paper-Plugin ist freiwillig und gehört nur auf den Server in den Ordner `plugins`.

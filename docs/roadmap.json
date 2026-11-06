@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T10:49:44.743Z",
+  "updatedAt": "2026-11-06T12:37:11.138Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -4512,6 +4512,121 @@
       "orphans": []
     },
     {
+      "id": "TERRAIN-04",
+      "title": "Gelände direkt aus der Mod: Geländegedächtnis, Übernahme ohne Dateien, blockgenaue Prüfung aus dem Spiel",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Gelände direkt aus der Mod übernehmen“)",
+      "dependencies": [
+        "TERRAIN-01",
+        "TERRAIN-02",
+        "MAP-03",
+        "GAME-08"
+      ],
+      "scope": [
+        "packages/domain/src/world/liveTerrain.ts",
+        "packages/domain/src/world/terrainSurvey.ts",
+        "packages/domain/src/team/liveLink.ts",
+        "packages/domain/src/index.ts",
+        "apps/web/src/views/world/gameTerrain.ts",
+        "apps/web/src/views/world/GameLinkBar.tsx",
+        "apps/web/src/views/world/world.css",
+        "apps/web/src/views/project/TerrainSurveyPanel.tsx",
+        "apps/web/src/views/project/TerrainTab.tsx",
+        "apps/web/src/views/project/LandscapeTab.tsx",
+        "apps/web/src/views/map/liveClient.ts",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/TerrainMemory.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/BoxRead.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/TerrainMemoryTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TerrainRecorder.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "scripts/mod/bridge_gametest.mjs",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "tests/unit/world/live-terrain.test.mjs",
+        "tests/e2e/terrain-game.e2e.mjs",
+        "tests/e2e/modSimulator.mjs",
+        "docs/architecture/welt/TERRAIN.md",
+        "docs/architecture/team/LIVE_LINK.md",
+        "apps/web/src/testing/testplan.ts",
+        "docs/testing/TESTPLAN.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "TERRAIN-04-S01",
+          "title": "Mod 0.20.0: Geländegedächtnis (gesehene Chunks mit Biom, je Welt/Server auf dem PC gespeichert), GET /v1/terrain, /v1/terrain/known, /bauplaner gelaende an|aus|vergessen.",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-04-S02",
+          "title": "Mod 0.20.0: GET /v1/box liest einen Weltbereich blockgenau aus den geladenen Chunks (bis 2 Mio. Zellen, in Scheiben je Tick).",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-04-S03",
+          "title": "Reiter Gelände: Spiel verbinden, Abdeckung des Bauplatzes, Geländeaufnahme aus dem Spiel (Quelle mod, Biome im Kopf der Datei), blockgenaue Prüfung aus dem Spiel; Regionsdateien nur noch als eingeklappter Notfall.",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-04-S04",
+          "title": "Reiter Landschaft: Gelände aus dem Spiel holen und gestalten, nach Biomen bemalen; ältere Mods liefern geladene Chunks über /v1/chunks.",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-04-S05",
+          "title": "Abnahme durch Philipp im Spiel (Testfälle PROJ-24, PROJ-25).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Ohne Datei-Upload: Geländeaufnahme und blockgenaue Prüfung kommen über die Live-Verbindung; dieselbe Einstufung wie bei Regionsdateien (classifyRuns/checkTerrain).",
+        "Nichts geht an den Server; das Gedächtnis liegt nur auf dem PC des Spielers.",
+        "Alte Aufnahmen und alte Mods bleiben lesbar bzw. nutzbar."
+      ],
+      "next": "Abnahme durch Philipp im Spiel (S05).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/unit/world/live-terrain.test.mjs",
+          "note": "Leser, Abdeckung, Aufnahme mit Biomen und Dateikopf, Box als Prüfraster, Biom-Stile."
+        },
+        {
+          "path": "tests/e2e/terrain-game.e2e.mjs",
+          "note": "Chromium 1400/390 px gegen den Mod-Simulator: verbinden, Abdeckung, Übernahme, Prüfung aus dem Spiel, Landschaft nach Biomen, alte Mod."
+        },
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/TerrainMemoryTest.java",
+          "note": "Antwort live/Gedächtnis, Datei speichern/laden, Grenze, Box, Routen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Kern-, Browser- und Spieltests bestanden; Abnahme durch Philipp offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-06T12:37:11.138Z",
+      "area": "PLANER",
+      "thread": "Gelände direkt aus der Mod übernehmen",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Mod 0.20.0 installieren, einmal um den Bauplatz laufen, im Reiter „Gelände“ „Gelände aus dem Spiel übernehmen“ und „Gelände aus dem Spiel prüfen“ (S05)."
+        }
+      ],
+      "orphans": []
+    },
+    {
       "id": "BUILD-06",
       "title": "Bauführung im Spiel: Schichtführung, Tagesziele, Packlisten, Druck-/Handyansicht, Spielfortschritt",
       "phase": "P3",
@@ -8277,7 +8392,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T10:49:44.743Z",
+      "updatedAt": "2026-11-06T12:37:11.138Z",
       "area": "MODRINTH",
       "thread": "Mod auf Modrinth veröffentlichen",
       "philipp": [],
@@ -22651,6 +22766,71 @@
         "mods/bauplaner-bridge/modrinth/project.json"
       ],
       "snapshot": [
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 4,
+          "total": 5,
+          "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T12:37:11.138Z",
+      "kind": "progress",
+      "items": [
+        "TERRAIN-04",
+        "GAME-09"
+      ],
+      "summary": "Gelände- und Landschaftsreiter holen das Gelände direkt aus der Mod (Geländegedächtnis ab Mod 0.20.0, /v1/terrain, /v1/box), Regionsdateien nur noch als Notfallweg; Mod 0.20.0 Fabric+NeoForge im echten Spiel getestet",
+      "files": [
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/map/liveClient.ts",
+        "apps/web/src/views/mod/releases.json",
+        "apps/web/src/views/project/LandscapeTab.tsx",
+        "apps/web/src/views/project/TerrainSurveyPanel.tsx",
+        "apps/web/src/views/project/TerrainTab.tsx",
+        "apps/web/src/views/world/GameLinkBar.tsx",
+        "apps/web/src/views/world/gameTerrain.ts",
+        "apps/web/src/views/world/world.css",
+        "docs/architecture/team/LIVE_LINK.md",
+        "docs/architecture/welt/TERRAIN.md",
+        "docs/testing/TESTPLAN.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.20.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.20.0.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TerrainRecorder.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/BoxRead.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/TerrainMemory.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/TerrainMemoryTest.java",
+        "mods/bauplaner-bridge/modrinth/DESCRIPTION.md",
+        "mods/bauplaner-bridge/modrinth/gallery/11-terrain-memory.png",
+        "mods/bauplaner-bridge/modrinth/project.json",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/team/liveLink.ts",
+        "packages/domain/src/world/liveTerrain.ts",
+        "packages/domain/src/world/terrainSurvey.ts",
+        "scripts/mod/bridge_gametest.mjs",
+        "tests/e2e/modSimulator.mjs",
+        "tests/e2e/terrain-game.e2e.mjs",
+        "tests/unit/world/live-terrain.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "TERRAIN-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp im Spiel (S05)."
+        },
         {
           "id": "GAME-09",
           "status": "in_progress",

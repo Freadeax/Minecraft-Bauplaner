@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { groupBody,
   LIVE_DEFAULT_PORT, LIVE_FEATURE_PLAYERS, LIVE_TOKEN_HEADER, chunkColumns, chunkQuery, liveBaseUrl, liveCan, marksBody, originAllowed, planUploadQuery,
-  readLiveChunks, readLiveHello, readLivePairing, readLiveGameMarks, readLivePlayers, readLiveStatus, readLiveTeam, readLiveTeamPull, readServerClaim, readServerInfo, wantedChunks,
+  readLiveBox, readLiveChunks, readLiveHello, readLiveKnown, readLiveTerrain, readLivePairing, readLiveGameMarks, readLivePlayers, readLiveStatus, readLiveTeam, readLiveTeamPull, readServerClaim, readServerInfo, wantedChunks,
 } from '../../../../../packages/domain/src/index.js';
 import type { ControlMessage, ServerInfo, ServerPairing } from '../../../../../packages/domain/src/index.js';
+import type { LiveBox, LiveKnown, LiveTerrain } from '../../../../../packages/domain/src/index.js';
 import type { LiveChunkColumns, LiveGameMark, LiveHello, LivePlacement, LivePlayers, LiveStatus, LiveTeam, LiveTeamPull, TeamLinkState, TeamServerFile, WorldItem } from '../../../../../packages/domain/src/index.js';
 import { MODEL_MAX_FILE_BYTES } from '../../../../../packages/voxel/src/sizeLimits.js';
 
@@ -111,6 +112,15 @@ export const liveApi = {
   status: async (port: number, token: string): Promise<LiveStatus> => readLiveStatus(await call(port, '/v1/status', { token, timeoutMs: 4000 })),
   chunks: async (port: number, token: string, list: readonly (readonly [number, number])[]) =>
     readLiveChunks(await call(port, `/v1/chunks?c=${encodeURIComponent(chunkQuery(list))}`, { token, timeoutMs: 8000 })),
+  /** TERRAIN-04 (feature `terrain`): loaded or remembered chunks with biomes; without the feature `/v1/chunks` (loaded only). */
+  terrain: async (port: number, token: string, list: readonly (readonly [number, number])[], legacy = false): Promise<LiveTerrain> =>
+    readLiveTerrain(await call(port, `/v1/${legacy ? 'chunks' : 'terrain'}?c=${encodeURIComponent(chunkQuery(list))}`, { token, timeoutMs: 15000 }), legacy),
+  /** Which chunks of a chunk rectangle `x0,z0,x1,z1` the Geländegedächtnis holds. */
+  terrainKnown: async (port: number, token: string, area: string): Promise<LiveKnown> =>
+    readLiveKnown(await call(port, `/v1/terrain/known?a=${encodeURIComponent(area)}`, { token, timeoutMs: 6000 })),
+  /** TERRAIN-04 (feature `box`): every block of a world box (query from `boxQuery`). */
+  box: async (port: number, token: string, box: string): Promise<LiveBox> =>
+    readLiveBox(await call(port, `/v1/box?b=${encodeURIComponent(box)}`, { token, timeoutMs: 90000 })),
   plan: async (port: number, token: string, fileName: string, placement: LivePlacement, bytes: Uint8Array, timeoutMs = 20000): Promise<string> => {
     const r = await call(port, `/v1/plan?${planUploadQuery(fileName, placement)}`, { method: 'POST', token, body: bytes as Uint8Array<ArrayBuffer>, headers: { 'Content-Type': 'application/octet-stream' }, timeoutMs });
     return r && typeof r === 'object' && typeof (r as { message?: unknown }).message === 'string' ? (r as { message: string }).message : 'Plan im Spiel platziert.';

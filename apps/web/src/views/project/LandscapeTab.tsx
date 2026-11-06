@@ -14,7 +14,11 @@ import { faceColors } from '../../colors';
 import { errorText, formatNumber } from '../../app/ui';
 import { Viewer } from '../../Viewer';
 import { loadDesign, loadDesignBase, storeDesign } from '../world/designs';
-import { areaAround, areaLabel, useSurvey } from '../world/surveys';
+import { areaAround, areaLabel, storeSurvey, useSurvey } from '../world/surveys';
+import { useLiveGame } from '../map/liveClient';
+import { gameDimension, gameTerrainLevel, takeGameSurvey } from '../world/gameTerrain';
+import { GameLinkBar } from '../world/GameLinkBar';
+import { biomeLabel, biomeShares, paintByBiome } from '../../../../../packages/domain/src/index.js';
 import { CANVAS_MODE_LABEL, DesignCanvas } from './landscape/DesignCanvas';
 import type { CanvasMode, ScatterDot } from './landscape/DesignCanvas';
 import { ScatterPanel } from './landscape/ScatterPanel';
@@ -299,6 +303,26 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
     setWork({ design: designFromSurvey(projectSurvey, { kind: 'survey', sha256: project.terrain.sha256 }), base: projectSurvey, savedVersion: -1, refSha: null });
     bump(); setStatsVersion(v => v + 1); setNote('Gestaltung auf der Geländeaufnahme begonnen. Noch nicht gespeichert.');
   };
+  // TERRAIN-04: the terrain straight from the game, stored as the project's Geländeaufnahme, then designed on.
+  const game = useLiveGame();
+  const [gameBusy, setGameBusy] = useState('');
+  const startFromGame = async () => {
+    const dim = placement?.dimension;
+    if (!dim) return;
+    setGameBusy('Gelände kommt aus dem Spiel …');
+    try {
+      const r = await takeGameSurvey(game, area, dim, (d, t) => setGameBusy(`Gelände kommt aus dem Spiel … ${d} / ${t} Chunks`));
+      if (!r.live && !r.remembered) { setNote(`Die Mod kennt hier noch kein Gelände. Geh oder flieg im Spiel einmal zum Bauplatz (${areaLabel(area)}), dann erneut.`); return; }
+      const reference = await storeSurvey(repo, r.survey, project.name);
+      const err = session.execute({ kind: 'terrain.set', terrain: reference, label: project.terrain ? 'Geländeaufnahme erneuert' : 'Geländeaufnahme gespeichert' });
+      if (err) { setNote(err); return; }
+      undoStack.current = []; redoStack.current = [];
+      setWork({ design: designFromSurvey(r.survey, { kind: 'survey', sha256: reference.sha256 }), base: r.survey, savedVersion: -1, refSha: null });
+      bump(); setStatsVersion(v => v + 1);
+      setNote(`Gelände aus dem Spiel übernommen (${r.live + r.remembered} Chunks${r.missing ? `, ${r.missing} noch nie gesehen` : ''}) und als Geländeaufnahme gespeichert. Gestaltung begonnen, noch nicht gespeichert.`);
+    } catch (e) { setNote(`Nicht übernommen: ${errorText(e)}`); }
+    finally { setGameBusy(''); }
+  };
   const startFlat = () => {
     const lim = heightLimits(placement?.dimension ?? 'minecraft:overworld');
     const y = Math.max(lim[0], Math.min(lim[1], Math.trunc(flatY)));
@@ -443,6 +467,7 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
     <header className="landscape-head"><div><span className="panel-kicker">LANDSCHAFT GESTALTEN</span><h2>Gelände formen und bemalen</h2>
       <p className="muted">Hügel und Mulden formen, Oberflächen wie Biome bemalen, Teiche und Bäche füllen, Wege mit sanfter Steigung legen und Bauplätze einebnen. Geplant wird auf einer Kopie: in der Welt ändert sich nichts, bis du die Blöcke baust.</p></div></header>
     {loadError && <div className="notice warning" role="alert">{loadError}</div>}
+    {note && <div className="notice" role="status">{note}</div>}
     {ref && !loadError && <p role="status">Gestaltung wird geladen …</p>}
     {!ref && <div className="landscape-start">
       <section aria-label="Auf der Geländeaufnahme">
@@ -451,7 +476,17 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
           <p>{areaLabel(project.terrain.area)} · {dimensionLabel(project.terrain.dimension)}{project.terrain.groundRange && <> · Boden Y {project.terrain.groundRange[0]} … {project.terrain.groundRange[1]}</>}</p>
           {surveyError && <p className="notice warning" role="alert">{surveyError}</p>}
           <button className="primary" disabled={!projectSurvey} onClick={startFromSurvey}>Gestaltung beginnen</button>
-        </> : <p className="muted">Noch keine Geländeaufnahme. Nimm sie im Reiter <a href={`#/projekt/${project.id}/gelaende`}>Gelände</a> aus deinen Regionsdateien auf, dann gestaltest du dein echtes Gelände.</p>}
+        </> : <p className="muted">Noch keine Geländeaufnahme. Hol sie unten direkt aus dem Spiel (oder im Reiter <a href={`#/projekt/${project.id}/gelaende`}>Gelände</a>), dann gestaltest du dein echtes Gelände.</p>}
+      </section>
+      <section aria-label="Gelände aus dem Spiel" data-testid="landscape-from-game">
+        <h3>Gelände aus dem Spiel</h3>
+        {placement ? <>
+          <p>{areaLabel(area)} · {dimensionLabel(placement.dimension)} · ohne Dateien, mit Biomen ab Mod 0.20.0</p>
+          <GameLinkBar game={game} purpose="Die Mod liefert das Gelände des Bauplatzes." />
+          {gameTerrainLevel(game) !== 'none' && <button className="primary" disabled={!!gameBusy || game.phase !== 'connected' || (gameDimension(game) !== null && gameDimension(game) !== placement.dimension)}
+            onClick={() => void startFromGame()}>{project.terrain ? 'Neu aus dem Spiel holen und gestalten' : 'Aus dem Spiel holen und gestalten'}</button>}
+          {gameBusy && <p role="status">{gameBusy}</p>}
+        </> : <p className="muted">Lege zuerst auf der <a href={`#/karte?projekt=${encodeURIComponent(project.id)}`}>Weltkarte</a> fest, wo das Projekt in deiner Welt steht.</p>}
       </section>
       <section aria-label="Auf ebenem Grund">
         <h3>Auf ebenem Grund</h3>
@@ -581,6 +616,11 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
           <label>Sonst <select value={rules.rest} onChange={e => setRules({ ...rules, rest: e.target.value })}>{SURFACE_STYLES.filter(s => !s.path).map(s => <option key={s.id} value={s.id}>{s.label}</option>)}</select></label>
           <button className="secondary" onClick={() => runArea('Automatisch bemalen', x => `${formatNumber(autoPaint(x, { steep: rules.steep, snowY: rules.snowY.trim() ? Number(rules.snowY) : null, beach: rules.beach, rest: rules.rest }))} Spalten automatisch bemalt.`)}>Automatisch bemalen</button>
         </details>
+        {work.base.biomes && <details className="landscape-area" data-testid="landscape-biomes">
+          <summary>Nach Biomen bemalen</summary>
+          <p className="muted small">Die Mod hat die Biome des Bauplatzes mitgeliefert: {biomeShares(work.base).slice(0, 5).map(b => `${biomeLabel(b.id)} (${formatNumber(b.columns)})`).join(', ')}. Jede Spalte bekommt den passenden Stil (Wald, Wüste, Schnee, Strand …). Wege und Wasser bleiben.</p>
+          <button className="secondary" onClick={() => runArea('Nach Biomen bemalen', x => `${formatNumber(paintByBiome(x, work.base))} Spalten nach Biomen bemalt.`)}>Nach Biomen bemalen</button>
+        </details>}
         <details className="landscape-area">
           <summary>Bauplätze einebnen</summary>
           {footprint ? <>

@@ -7215,3 +7215,55 @@ Modrinth-Galerie: Bild Gruppen und gesperrte Flächen (0.19.0)
 - `mods/bauplaner-bridge/modrinth/gallery/10-groups-locked.png`
 - `mods/bauplaner-bridge/modrinth/project.json`
 
+## 2026-11-06T12:37:11.138Z · progress
+
+**Aufgaben:** TERRAIN-04, GAME-09
+
+Gelände- und Landschaftsreiter holen das Gelände direkt aus der Mod (Geländegedächtnis ab Mod 0.20.0, /v1/terrain, /v1/box), Regionsdateien nur noch als Notfallweg; Mod 0.20.0 Fabric+NeoForge im echten Spiel getestet
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TERRAIN-04 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp im Spiel (S05). |
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/map/liveClient.ts`
+- `apps/web/src/views/mod/releases.json`
+- `apps/web/src/views/project/LandscapeTab.tsx`
+- `apps/web/src/views/project/TerrainSurveyPanel.tsx`
+- `apps/web/src/views/project/TerrainTab.tsx`
+- `apps/web/src/views/world/GameLinkBar.tsx`
+- `apps/web/src/views/world/gameTerrain.ts`
+- `apps/web/src/views/world/world.css`
+- `docs/architecture/team/LIVE_LINK.md`
+- `docs/architecture/welt/TERRAIN.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.20.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.20.0.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TerrainRecorder.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/BoxRead.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/TerrainMemory.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/TerrainMemoryTest.java`
+- `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
+- `mods/bauplaner-bridge/modrinth/gallery/11-terrain-memory.png`
+- `mods/bauplaner-bridge/modrinth/project.json`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/team/liveLink.ts`
+- `packages/domain/src/world/liveTerrain.ts`
+- `packages/domain/src/world/terrainSurvey.ts`
+- `scripts/mod/bridge_gametest.mjs`
+- `tests/e2e/modSimulator.mjs`
+- `tests/e2e/terrain-game.e2e.mjs`
+- `tests/unit/world/live-terrain.test.mjs`
+

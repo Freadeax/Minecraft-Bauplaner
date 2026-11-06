@@ -34,7 +34,7 @@ class CommandCatalogTest {
         }
         // Every client top-level command of the mod is reachable (no hidden feature).
         for (String path : List.of("fortschritt", "fehler", "packliste", "geruest", "markieren", "markierungen", "umschalten", "roentgen", "texturen", "material", "hierher", "drehen", "spiegeln", "verschieben", "ebene",
-                "abschnitt", "platzierhilfe", "leistung", "entfernen", "diagnose", "team", "verbinden", "ebenen", "plaene", "plan", "anker hier", "scan", "status", "abbrechen", "gruppe", "gruppe alle", "gruppe aus", "gruppe an"))
+                "abschnitt", "platzierhilfe", "leistung", "entfernen", "diagnose", "team", "verbinden", "ebenen", "plaene", "plan", "anker hier", "scan", "status", "abbrechen", "gruppe", "gruppe alle", "gruppe aus", "gruppe an", "gelaende", "gelaende an", "gelaende aus", "gelaende vergessen"))
             assertTrue(CommandCatalog.all().stream().anyMatch(e -> e.side() == Side.CLIENT && e.path().equals(path)), path);
         // Plugin commands as agreed with the plugin (TeamModule.COMMANDS, StorageModule.SUBCOMMANDS).
         for (String path : List.of("team", "abschnitte", "nehmen", "abgeben", "fertig", "zeigen", "notiz", "notizen", "geliefert hand", "sammle", "zuweisen", "pruefen", "rolle",

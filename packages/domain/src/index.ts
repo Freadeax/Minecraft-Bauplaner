@@ -78,8 +78,11 @@ export type { FrozenPin, UpdateKind, UpdateRecord, UpdateState, PatchPolicy, Upd
 export { anchorOf, anchorFromScan, sameAnchor, worldPos, cellLookup, stepRuns, stepRunsIn, runLabel, runCoords, stepText, packSteps, stockMap, packText, DEFAULT_PACE, PACE_LIMITS, checkPace, paceOf, stepWork, planSessions, progressByDay, sessionText, reworkList, REWORK_ACTION, gameCounts } from './building/buildRun.js';
 export type { BuildAnchor, CellLookup, RunKind, StepRun, PackLine, PackSlot, PackBox, PackPlan, PaceSetting, BuildSession, SessionPlan, DayProgress, ReworkItem, ReworkGroup, GameCounts } from './building/buildRun.js';
 export { SURVEY_SCHEMA_VERSION, SURVEY_UNKNOWN, SURVEY_MAX_SIDE, SURVEY_MAX_COLUMNS, SURVEY_MEDIA_TYPE, EARTHWORK_NOTE, checkSurveyArea, checkTerrainReference, createSurvey, encodeSurvey, decodeSurvey,
-  surveyStats, surveyFile, columnAt, surveyCovers, estimateEarthwork, columnBases, surveyDisplayCells } from './world/terrainSurvey.js';
-export type { SurveyArea, TerrainSurvey, ProjectTerrainReference, SurveyColumnsInput, SurveyColumn, ColumnBase, EarthworkEstimate, SurveyDisplay } from './world/terrainSurvey.js';
+  surveyStats, surveyFile, columnAt, surveyCovers, estimateEarthwork, columnBases, surveyDisplayCells, biomeAt, biomeShares } from './world/terrainSurvey.js';
+export type { SurveyArea, TerrainSurvey, ProjectTerrainReference, SurveyColumnsInput, SurveyColumn, ColumnBase, EarthworkEstimate, SurveyDisplay, SurveySource, SurveyBiomes } from './world/terrainSurvey.js';
+export { LIVE_BOX_MAX_CELLS, LIVE_KNOWN_MAX_CHUNKS, readLiveTerrain, areaChunks, chunkBatches, readLiveKnown, knownQuery, terrainCoverage, surveyFromLiveTerrain, boxQuery, readLiveBox,
+  styleForBiome, BIOME_LABEL, biomeLabel, paintByBiome } from './world/liveTerrain.js';
+export type { LiveTerrainChunk, LiveTerrain, LiveKnown, TerrainCoverage, LiveBox } from './world/liveTerrain.js';
 export { DESIGN_SCHEMA_VERSION, DESIGN_MEDIA_TYPE, NO_WATER, SURFACE_STYLES, BRUSH_LABEL, DEFAULT_AUTO_PAINT, DESIGN_MAX_CELLS, DESIGN_NOTE, styleById, fillerFor, columnHash, valueNoise,
   checkTerrainDesignReference, heightLimits, flatSurvey, designFromSurvey, cloneDesign, encodeDesign, decodeDesign, designFile, designMatchesBase, brushWeight, slopeAt, paintColumn,
   applyBrush, strokePoints, floodWater, pathLine, layPath, autoPaint, gradeFootprints, resetToBase, compareDesign, designPayload, designedSurvey,
@@ -112,7 +115,7 @@ export { measureSummary, measureText, lineColumns, pathProfile, routeOverTerrain
 export type { MeasureSummary, PathProfile, RouteOptions, RouteResult } from './world/worldRoute.js';
 export { LIVE_PROTOCOL, LIVE_DEFAULT_PORT, LIVE_TOKEN_HEADER, LIVE_MAX_CHUNKS_PER_REQUEST, LIVE_MAX_RUNS, LIVE_MAX_MARKS, LIVE_MAX_PLAN_BYTES, LIVE_ALLOWED_ORIGINS, LIVE_PLAN_EXPORT, readLiveHello, readLivePairing,
   readLiveStatus, readLiveChunks, classifyRuns, chunkColumns, wantedChunks, chunkQuery, liveSurvey, HOLOGRAM_MATCH_LABEL, hologramProject, compareHologram, liveShare, playerBlock,
-  originFromPlayer, livePlacementOf, planUploadQuery, marksBody, marksForMod, readLivePlayers, liveBaseUrl, originAllowed, liveCan, LIVE_FEATURE_SCAN, LIVE_FEATURE_MARKS2, LIVE_FEATURE_PLAYERS, LIVE_FEATURE_LABELS, LIVE_PROTOCOLS, LIVE_FEATURE_BIGPLANS, LIVE_LEGACY_PLAN_BYTES, checkPlanForMod, LIVE_FEATURE_MARKS3, LIVE_FEATURE_GROUPS, groupBody, GAME_MARKS_LAYER, readLiveGameMarks, gameMarksToItems } from './team/liveLink.js';
+  originFromPlayer, livePlacementOf, planUploadQuery, marksBody, marksForMod, readLivePlayers, liveBaseUrl, originAllowed, liveCan, LIVE_FEATURE_SCAN, LIVE_FEATURE_MARKS2, LIVE_FEATURE_PLAYERS, LIVE_FEATURE_LABELS, LIVE_PROTOCOLS, LIVE_FEATURE_BIGPLANS, LIVE_LEGACY_PLAN_BYTES, checkPlanForMod, LIVE_FEATURE_MARKS3, LIVE_FEATURE_GROUPS, LIVE_FEATURE_TERRAIN, LIVE_FEATURE_BOX, groupBody, GAME_MARKS_LAYER, readLiveGameMarks, gameMarksToItems } from './team/liveLink.js';
 export type { LiveHello, LivePlayer, LiveWorld, LiveCounts, LivePlacement, LiveHologram, LiveStatus, LiveChunk, LiveChunks, LiveColumn, LiveChunkColumns, HologramMatch, LiveOtherPlayer, LivePlayers, PlanSendCheck, LiveGameMark } from './team/liveLink.js';
 export { removeItemsOp, selectionBounds, selectionPivot, itemsInRect, rotateColumn, mirrorColumn, rotateItem, mirrorItem, updateItemsOp, duplicateItems,
   pathVertexAt, movePathVertex, insertPathVertex, removePathVertex, reversePath, splitPath, joinPaths, groundHeight, alignToGround, setLayerOp,

@@ -171,6 +171,24 @@ async function live(file, loader, plan, logFile) {
   assert.deepEqual(chunks.missing, [[4000, 4000]], 'ferner Chunk als nicht geladen gemeldet');
   const columns = chunkColumns(chunks)[0].columns.filter(Boolean);
   assert.ok(columns.length >= 200, `Oberfläche gelesen (${columns.length} Spalten)`);
+  // TERRAIN-04 (mod 0.20.0): terrain with biomes, memory, block box – read with the website's readers.
+  if (raw.terrain) {
+    const { readLiveTerrain, readLiveKnown, readLiveBox, surveyFromLiveTerrain } = await import('../../dist/domain/src/index.js');
+    assert.equal(raw.terrain.status, 200, 'GET /v1/terrain');
+    const t = readLiveTerrain(raw.terrain.body);
+    assert.equal(t.chunks.length, 1, 'Bauplatz-Chunk aus dem Spiel');
+    assert.equal(t.chunks[0].live, true);
+    assert.ok(t.chunks[0].biomes.every(b => /^minecraft:/.test(b)), 'Biome je Spalte');
+    assert.deepEqual(t.missing, [[4000, 4000]]);
+    const s = surveyFromLiveTerrain({ minX: t.chunks[0].x * 16, minZ: t.chunks[0].z * 16, width: 16, length: 16 }, t.dimension, t.chunks);
+    assert.ok(s.biomes && s.source === 'mod', 'Geländeaufnahme mit Biomen');
+    const k = readLiveKnown(raw.terrainKnown.body);
+    assert.ok(k.chunks.some(([x, z]) => x === t.chunks[0].x && z === t.chunks[0].z), 'Chunk im Geländegedächtnis');
+    const box = readLiveBox(raw.box.body);
+    assert.equal(box.data.length, 8 * 7 * 8);
+    assert.equal(box.unloaded, 0, 'Bauplatz geladen');
+    assert.ok(box.palette.some(x => !x.startsWith('minecraft:air')), 'Blöcke im Bereich');
+  }
   // LINK-03 pairing by click (the J menu button clicked with the mouse in the real game).
   if (raw.ask) {
     const { readServerInfo } = await import('../../dist/domain/src/index.js');
