@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T13:09:28.727Z",
+  "updatedAt": "2026-11-06T13:37:29.153Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -8393,7 +8393,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T12:58:19.470Z",
+      "updatedAt": "2026-11-06T13:37:29.153Z",
       "area": "MODRINTH",
       "thread": "Mod auf Modrinth veröffentlichen",
       "philipp": [],
@@ -23075,6 +23075,24 @@
           "done": 5,
           "total": 6,
           "next": "Abnahme LINK-12 und LINK-13 durch Philipp auf seinem Server; Weltplan/Karten im eigenen Thread."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T13:37:29.153Z",
+      "kind": "progress",
+      "items": [
+        "GAME-09"
+      ],
+      "summary": "0.21.0 auf Modrinth (Fabric, NeoForge, Paper) mit Offenlegung der Raumübergabe ans Plugin",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 4,
+          "total": 5,
+          "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
         }
       ]
     }
