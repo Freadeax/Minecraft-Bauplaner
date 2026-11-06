@@ -7109,3 +7109,64 @@ Gruppen und Sperren: Weltplan-Schema 3 (group, locked), Weltbuilder (zuweisen, e
 | MAP-04 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme durch Philipp (S06): Langdruck-Menü auf dem Touch-Gerät, Gruppen und Sperren auf dem iPad (Testfall KARTE-09). |
 | GAME-07 | 🧩 Implementiert · Abnahme offen | 10/11 | Philipp prüft 0.19.0 im echten Spiel: gesperrter Bauplatz grau, Hologramm nur in einer Gruppe (Testfall MOD-21); danach Stufe 7. |
 
+## 2026-11-06T10:25:37.203Z · progress
+
+**Aufgaben:** MAP-04, GAME-07
+
+Dateizuordnung zu Gruppen und Sperren (Mod 0.19.0) nachgetragen (der vorige Eintrag entstand nach dem Rebase ohne Dateiliste); keine inhaltliche Änderung.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-04 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme durch Philipp (S06): Langdruck-Menü auf dem Touch-Gerät, Gruppen und Sperren auf dem iPad (Testfall KARTE-09). |
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 10/11 | Philipp prüft 0.19.0 im echten Spiel: gesperrter Bauplatz grau, Hologramm nur in einer Gruppe (Testfall MOD-21); danach Stufe 7. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/styles/map.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/map/Builder.tsx`
+- `apps/web/src/views/map/LiveGamePanel.tsx`
+- `apps/web/src/views/map/OverviewMap.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/map/liveClient.ts`
+- `apps/web/src/views/mod/releases.json`
+- `docs/TESTING.md`
+- `docs/architecture/mod/MOD_HOLOGRAM.md`
+- `docs/architecture/team/LIVE_LINK.md`
+- `docs/architecture/welt/WORLD_BUILDER.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.19.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.19.0.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Hologram.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramHud.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramRenderer.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/MarksRenderer.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlacementAssist.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Filter.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/LiveCheck.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/MarkAreas.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WorldMarks.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/MarkAreasTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
+- `mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/LiveLinkScenario.java`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/team/liveLink.ts`
+- `packages/domain/src/world/worldPlan.ts`
+- `packages/domain/src/world/worldPlanEdit.ts`
+- `scripts/mod/bridge_gametest.mjs`
+- `tests/e2e/map-depth.e2e.mjs`
+- `tests/e2e/modSimulator.mjs`
+- `tests/e2e/world-groups.e2e.mjs`
+- `tests/unit/team/livelink.test.mjs`
+- `tests/unit/world/worldgroups.test.mjs`
+- `tests/unit/world/worldplan.test.mjs`
+

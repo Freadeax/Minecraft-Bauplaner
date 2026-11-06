@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T10:23:30.536Z",
+  "updatedAt": "2026-11-06T10:25:37.203Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -22506,6 +22506,80 @@
       ],
       "summary": "Gruppen und Sperren: Weltplan-Schema 3 (group, locked), Weltbuilder (zuweisen, ein-/ausblenden, sperren, Gruppe wählen), Mod 0.19.0 zeigt gesperrte Flächen grau und beschränkt das Hologramm auf eine Gruppe (/bauplaner gruppe, POST /v1/group); echte Spieltests Fabric und NeoForge 26.3 grün, Abnahme KARTE-09/MOD-21 offen",
       "files": [],
+      "snapshot": [
+        {
+          "id": "MAP-04",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme durch Philipp (S06): Langdruck-Menü auf dem Touch-Gerät, Gruppen und Sperren auf dem iPad (Testfall KARTE-09)."
+        },
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 10,
+          "total": 11,
+          "next": "Philipp prüft 0.19.0 im echten Spiel: gesperrter Bauplatz grau, Hologramm nur in einer Gruppe (Testfall MOD-21); danach Stufe 7."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T10:25:37.203Z",
+      "kind": "progress",
+      "items": [
+        "MAP-04",
+        "GAME-07"
+      ],
+      "summary": "Dateizuordnung zu Gruppen und Sperren (Mod 0.19.0) nachgetragen (der vorige Eintrag entstand nach dem Rebase ohne Dateiliste); keine inhaltliche Änderung.",
+      "files": [
+        "apps/web/src/styles/map.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/map/Builder.tsx",
+        "apps/web/src/views/map/LiveGamePanel.tsx",
+        "apps/web/src/views/map/OverviewMap.tsx",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "apps/web/src/views/map/liveClient.ts",
+        "apps/web/src/views/mod/releases.json",
+        "docs/TESTING.md",
+        "docs/architecture/mod/MOD_HOLOGRAM.md",
+        "docs/architecture/team/LIVE_LINK.md",
+        "docs/architecture/welt/WORLD_BUILDER.md",
+        "docs/testing/TESTPLAN.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.19.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.19.0.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Hologram.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramHud.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramRenderer.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/MarksRenderer.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlacementAssist.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Filter.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/LiveCheck.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/MarkAreas.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WorldMarks.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/MarkAreasTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/LiveLinkScenario.java",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/team/liveLink.ts",
+        "packages/domain/src/world/worldPlan.ts",
+        "packages/domain/src/world/worldPlanEdit.ts",
+        "scripts/mod/bridge_gametest.mjs",
+        "tests/e2e/map-depth.e2e.mjs",
+        "tests/e2e/modSimulator.mjs",
+        "tests/e2e/world-groups.e2e.mjs",
+        "tests/unit/team/livelink.test.mjs",
+        "tests/unit/world/worldgroups.test.mjs",
+        "tests/unit/world/worldplan.test.mjs"
+      ],
       "snapshot": [
         {
           "id": "MAP-04",
