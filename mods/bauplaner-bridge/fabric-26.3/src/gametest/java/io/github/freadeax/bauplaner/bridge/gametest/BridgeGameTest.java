@@ -67,7 +67,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
 
                 try {
                     hologram(context, world, io, root, anchor);
-                    liveLink(context, io, anchor);
+                    liveLink(context, world, io, anchor);
                     guides(context, world, io, anchor);
                 } catch (Throwable t) {
                     // Modpack runs can hang on shutdown before the failure is reported: log it right away.
@@ -353,7 +353,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
      * answer goes to live.json and is checked by scripts/mod/bridge_gametest.mjs verify. The game thread
      * only runs while the test waits, so requests run on their own thread and the test waits in ticks.
      */
-    private static void liveLink(ClientGameTestContext context, Path io, int[] anchor) throws IOException {
+    private static void liveLink(ClientGameTestContext context, TestSingleplayerContext world, Path io, int[] anchor) throws IOException {
         // Philipp's first try (0.5.0): only the port command. Since 0.5.1 it starts the service and shows a code.
         chat(context, "/bauplaner verbinden port 47615");
         String code = pairingCode();
@@ -394,6 +394,23 @@ public final class BridgeGameTest implements FabricClientGameTest {
         context.waitTicks(40);
         out.append(",\"section\":").append(request(context, http, base + "/v1/section", "POST", "{\"section\":2}", token, "https://freadeax.github.io"));
         out.append(",\"after\":").append(request(context, http, base + "/v1/status", "GET", null, token, "https://freadeax.github.io"));
+        // Gallery picture for 0.19.0 (every run): the website plan on open ground (10 × 4 at anchor + 20), all sections,
+        // the wall half (x ≥ 4) inside a locked site – grey – beside the tower in normal ghost colours; no HUD or chat.
+        String half = "{\"dimension\":\"minecraft:overworld\",\"items\":[{\"kind\":\"site\",\"id\":\"site_lager\",\"name\":\"Lagerhof\",\"note\":\"\",\"dimension\":\"minecraft:overworld\",\"minX\":"
+                + (anchor[0] + 24) + ",\"minZ\":" + (anchor[2] - 3) + ",\"width\":10,\"length\":10,\"y\":null,\"projectId\":null,\"group\":\"Lager\",\"locked\":true}]}";
+        out.append(",\"galleryMarks\":").append(request(context, http, base + "/v1/marks", "POST", half, token, "https://freadeax.github.io"));
+        out.append(",\"gallerySection\":").append(request(context, http, base + "/v1/section", "POST", "{\"section\":0}", token, "https://freadeax.github.io"));
+        var before = context.computeOnClient(mc -> mc.player.position());
+        world.getServer().runCommand("tp @a " + (anchor[0] + 25.0) + " " + (anchor[1] + 2) + " " + (anchor[2] + 15.5) + " 180 -3");
+        world.getConnection().waitForChunksRender();
+        context.setScreen(() -> null);
+        context.runOnClient(mc -> mc.gui.hud.getChat().clearMessages(false));
+        context.runOnClient(mc -> { if (!mc.gui.hud.isHidden()) mc.gui.hud.toggle(); });
+        context.waitTicks(20);
+        copy(context.takeScreenshot("bauplaner-gruppe-galerie"), io.resolve("gruppe-galerie.png"));
+        context.runOnClient(mc -> { if (mc.gui.hud.isHidden()) mc.gui.hud.toggle(); });
+        world.getServer().runCommand("tp @a " + before.x + " " + before.y + " " + before.z);
+        out.append(",\"gallerySectionBack\":").append(request(context, http, base + "/v1/section", "POST", "{\"section\":2}", token, "https://freadeax.github.io"));
         // GAME-07-S11 (0.19.0): a locked site of group „Markt“ over the whole plan – the hologram turns grey there and
         // the website limits it to the group; afterwards the original marks come back for the later steps.
         String grouped = "{\"dimension\":\"minecraft:overworld\",\"items\":[{\"kind\":\"site\",\"id\":\"site_markt\",\"name\":\"Marktplatz\",\"note\":\"\",\"dimension\":\"minecraft:overworld\",\"minX\":"

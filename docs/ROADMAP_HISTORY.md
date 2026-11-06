@@ -7184,3 +7184,19 @@ Dateizuordnung zu Gruppen und Sperren (Mod 0.19.0) nachgetragen (der vorige Eint
 
 - `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
 
+## 2026-11-06T10:43:17.217Z · progress
+
+**Aufgaben:** GAME-07
+
+Spieltest Fabric nimmt bei jedem Lauf ein Galeriebild für Gruppen und Sperren auf (Turm normal, gesperrte Mauer grau, ohne HUD); Spieltest grün
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 10/11 | Philipp prüft 0.19.0 im echten Spiel: gesperrter Bauplatz grau, Hologramm nur in einer Gruppe (Testfall MOD-21); danach Stufe 7. |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `scripts/mod/bridge_gametest.mjs`
+

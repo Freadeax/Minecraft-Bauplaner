@@ -267,6 +267,7 @@ async function live(file, loader, plan, logFile) {
   // GAME-07-S11 (0.19.0): groups and locks of Weltplan schema 3 reach the hologram.
   if (hello.features.includes('groups')) {
     assert.equal(raw.groupMarks.status, 200, JSON.stringify(raw.groupMarks.body));
+    if (raw.galleryMarks) for (const k of ['galleryMarks', 'gallerySection', 'gallerySectionBack']) assert.equal(raw[k].status, 200, `${k}: ${JSON.stringify(raw[k].body)}`);
     assert.equal(raw.group.status, 200, JSON.stringify(raw.group.body));
     assert.equal(raw.groupUnknown.status, 400, 'unbekannte Gruppe abgelehnt');
     const grouped = readLiveStatus(raw.groupStatus.body);
