@@ -7054,3 +7054,17 @@ Dateizuordnung zu Mod 0.18.0 nachgetragen (der vorige Eintrag entstand nach dem 
 - `tests/unit/mod/install-guide.test.mjs`
 - `tests/unit/team/server-link.test.mjs`
 
+## 2026-11-06T09:59:21.385Z · progress
+
+**Aufgaben:** GAME-09
+
+0.18.0 auf Modrinth (Fabric, NeoForge, Paper); Beschreibung um Bauhilfen Symmetrie/Kurven und Lagerspalte ergänzt
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
+
+**Geänderte Dateien:**
+
+- `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
+

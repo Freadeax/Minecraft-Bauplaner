@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T09:55:18.242Z",
+  "updatedAt": "2026-11-06T09:59:21.385Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -8259,7 +8259,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T12:25:51.250Z",
+      "updatedAt": "2026-11-06T09:59:21.385Z",
       "area": "MODRINTH",
       "thread": "Mod auf Modrinth veröffentlichen",
       "philipp": [],
@@ -22414,6 +22414,26 @@
           "done": 1,
           "total": 4,
           "next": "Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T09:59:21.385Z",
+      "kind": "progress",
+      "items": [
+        "GAME-09"
+      ],
+      "summary": "0.18.0 auf Modrinth (Fabric, NeoForge, Paper); Beschreibung um Bauhilfen Symmetrie/Kurven und Lagerspalte ergänzt",
+      "files": [
+        "mods/bauplaner-bridge/modrinth/DESCRIPTION.md"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 4,
+          "total": 5,
+          "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
         }
       ]
     }
