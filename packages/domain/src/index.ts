@@ -181,3 +181,5 @@ export { projectLinks, projectCycle, projectAfterProblem, projectLevels, project
 export type { OrderProject, ProjectLink, PredecessorState, ProjectStartCheck, ProjectRemoval } from './planning/projectOrder.js';
 export { WORLD_SHARE_SCHEMA, WORLD_SHARE_FORMAT, MAP_LIST_FORMAT, WORLD_SHARE_MAX_BYTES, buildWorldShareDoc, readWorldShareDoc, worldItemKey, sameItems, mergeWorldItems, mergeShapes, buildMapListDoc, readMapListDoc, mergeMapLists } from './world/worldShare.js';
 export type { WorldShareDoc, WorldMerge, MapListDoc } from './world/worldShare.js';
+export { FURNACE_LINE_BUILDINGS, FURNACE_TARGET_HOURS, MAX_FURNACE_MODULES, FURNACE_SECTION_NAME, furnaceBuildingOf, furnaceLineOptions, furnaceLineOperation } from './materials/furnaceLine.js';
+export type { FurnaceBuilding, FurnaceLineOption, FurnaceLineInput, FurnaceLinePlacement } from './materials/furnaceLine.js';

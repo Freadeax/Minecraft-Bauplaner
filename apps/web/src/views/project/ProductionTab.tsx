@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
 import {
   addFarm, analyzeProduction, COVER_WAY_LABEL, detectFarms, dimensionOf, FARM_GROUPS, FARM_MODE_LABEL, FARM_RANGE_LABEL, FARM_STATE_LABEL, FARM_TYPES, farmCostOf, farmsOnMap, farmType,
   logHarvest, MAX_UNITS, newWorldItemId, paceOf, planProgramWithMaterial, productionOf, productionText, programOf, removeFarm, removeHarvest, setProductionSettings, siteOf, siteOperation,
   splitGathering, updateFarm, worldDimensionOf, teamChests, suggestChests, SUGGESTION_TARGET_DAYS, MIN_SAVED_HOURS,
+  FURNACE_LINE_BUILDINGS, FURNACE_TARGET_HOURS, furnaceBuildingOf, furnaceLineOperation, furnaceLineOptions,
 } from '../../../../../packages/domain/src/index.js';
 import type {
-  AfkSpot, FarmCost, FarmDimension, FarmPlace, FarmState, FarmStatus, FarmSuggestion, GatherAssignment, ProductionCoverageLine, ProductionReport, SitePlan, WorldItem,
+  AfkSpot, FarmCost, FurnaceBuilding, Operation, Project, SiteOverview, AssetVersion, FarmDimension, FarmPlace, FarmState, FarmStatus, FarmSuggestion, GatherAssignment, ProductionCoverageLine, ProductionReport, SitePlan, WorldItem,
 } from '../../../../../packages/domain/src/index.js';
 import { useApp } from '../../app/context';
 import { download, errorText, formatNumber, localToday } from '../../app/ui';
@@ -41,6 +43,8 @@ export function ProductionTab({ session }: { session: ProjectSession }) {
   const { project, resolution, computation } = session;
   const site = siteOf(project), production = productionOf(site);
   const [message, setMessage] = useState('');
+  // Result of „Ofenstraße einplanen“ with its own undo (the tab has no undo button; the details fold closes on recompute).
+  const [placed, setPlaced] = useState('');
   const save: Save = (next, label) => { try { setMessage(session.execute(siteOperation(typeof next === 'function' ? next() : next, label))); } catch (e) { setMessage(errorText(e)); } };
   const overview = computation?.site.plan ?? null, guide = computation?.guide ?? null, progress = computation?.site.progress ?? null;
 
@@ -56,6 +60,13 @@ export function ProductionTab({ session }: { session: ProjectSession }) {
     }
     return costs;
   }, [library]);
+  // Furnace buildings of the catalogue (PROD-03-Folge): Ofenstraße and the chainable module, latest version each.
+  const furnaceBuildings = useMemo(() => FURNACE_LINE_BUILDINGS.flatMap(id => {
+    const asset = library.assets.find(a => a.id === id), v = asset ? library.versions.get(asset.versionIds[asset.versionIds.length - 1]!) : undefined;
+    if (!asset || !v) return [];
+    try { const b = furnaceBuildingOf({ assetId: id, versionId: v.id, name: asset.name, payload: v.payload }); return b ? [b] : []; } catch { return []; }
+  }), [library]);
+  const besideX = isResolved(resolution) && resolution.world ? resolution.world.bounds.maxExclusive[0] + 1 : 0;
   const report = useMemo(() => overview ? analyzeProduction({ site, overview, pace: paceOf(site), farmCosts, ...(schedule && { schedule }) }) : null, [site, overview, farmCosts, schedule]);
   const detected = useMemo(() => {
     if (!guide || !progress) return [];
@@ -95,6 +106,8 @@ export function ProductionTab({ session }: { session: ProjectSession }) {
         <small>{schedule ? (t.late ? 'Abschnitte, deren Material nach dem geplanten Baubeginn fertig wird' : programOf(site).waitForMaterial ? 'Die Planung wartet auf das Material' : 'Material rechtzeitig laut Planung') : 'Ohne Bauabschnitte kein Zeitplan'}</small></div>
     </header>
     {message && <div className="notice warning" role="alert">{message}<button onClick={() => setMessage('')}>OK</button></div>}
+    {placed && <div className="notice prod-placed" role="status" aria-label="Ofenstraße eingeplant">{placed} <a href={`#/projekt/${project.id}/planung`}>Zur Planung</a>
+      <button type="button" className="secondary" onClick={() => { session.undo(); setPlaced(''); }}>Rückgängig</button><button type="button" onClick={() => setPlaced('')}>OK</button></div>}
     {/* UX-01-S06: Farmen, Deckung und Bereitschaft zuerst; Einstellungen und Detailrechnungen eingeklappt. */}
     <More className="prod-settings-more" title="Zeitbudget und Server" hint={`${num(production.gatherHoursPerDay)} h Sammelzeit je Spieltag · nur ändern, wenn du anders spielst`}>
       <Settings production={production} site={site} save={save} />
@@ -106,7 +119,7 @@ export function ProductionTab({ session }: { session: ProjectSession }) {
     <Suggestions suggestions={report.suggestions} site={site} save={save} missing={t.missing} />
     <Jobs assignments={assignments} projectId={project.id} />
     <More className="prod-more" title="Öfen, Lager, AFK-Platz und Produktionsblatt" hint="Detailrechnungen und Teilen als Text">
-      <Furnaces report={report} />
+      <Furnaces report={report} furnaceLine={<FurnaceLine report={report} project={project} overview={overview} buildings={furnaceBuildings} besideX={besideX} versions={library.versions} run={(op, done) => { try { const error = session.execute(op); if (error) setMessage(error); else setPlaced(done); } catch (e) { setMessage(errorText(e)); } }} />} />
       <Logistics report={report} boxes={paceOf(site).boxesPerSession} />
       <Afk report={report} site={site} save={save} sitePlace={sitePlace} onMap={addToMap} />
       <section className="site-block" aria-label="Teilen und Hinweise">
@@ -320,7 +333,7 @@ function Suggestions({ suggestions, site, save, missing }: { suggestions: readon
   </section>;
 }
 
-function Furnaces({ report }: { report: ProductionReport }) {
+function Furnaces({ report, furnaceLine }: { report: ProductionReport; furnaceLine: ReactNode }) {
   const f = report.furnaces;
   if (!f.smelts) return null;
   return <section className="site-block" aria-label="Öfen und Brennstoff">
@@ -336,7 +349,44 @@ function Furnaces({ report }: { report: ProductionReport }) {
           <small className="muted">Reicht für alle Vorgänge nach {daysText(f.farmFuelDays)}. Seetang netto gerechnet (Trocknen kostet selbst Brennstoff).</small></>
           : <small className="muted">Keine laufende Brennstofffarm. Seetang (getrocknete Blöcke), Bambus oder eine Lavafarm ersparen den Kohleabbau.</small>}</div>
     </div>
+    {furnaceLine}
   </section>;
+}
+
+/**
+ * „Ofenstraße einplanen“ (PROD-03-Folge): picks a target time, compares the catalogue furnace buildings and puts
+ * the chosen number of copies beside the build – own section before the first smelting section, the program waits
+ * for it. One undoable step (furnaceLine.ts).
+ */
+function FurnaceLine({ report, project, overview, buildings, besideX, versions, run }: {
+  report: ProductionReport; project: Project; overview: SiteOverview; buildings: readonly FurnaceBuilding[]; besideX: number;
+  versions: ReadonlyMap<string, AssetVersion>; run(op: Operation, done: string): void;
+}) {
+  const [target, setTarget] = useState<number>(2);
+  const options = furnaceLineOptions(report.furnaces, buildings, target);
+  if (!options.length) return null;
+  const ids = new Set(buildings.map(b => b.versionId));
+  const present = project.instances.filter(i => ids.has(i.assetVersionId)).reduce((n, i) => n + (buildings.find(b => b.versionId === i.assetVersionId)?.furnaces ?? 0), 0);
+  const sections = new Map(siteOf(project).sections.map(s => [s.id, s.name]));
+  const place = (o: typeof options[number]) => {
+    const placed = furnaceLineOperation({ project, overview, option: o, besideX, ...(versions.get(o.building.versionId) && { version: versions.get(o.building.versionId)! }) });
+    const waits = placed.waiting.map(id => `„${sections.get(id) ?? id}“`);
+    run(placed.operation, `${o.copies}× ${o.building.name} eingeplant: Abschnitt „Ofenstraße“ an Stelle ${placed.index + 1} der Bau-Reihenfolge${waits.length ? `; in der Planung warten ${waits.join(', ')} darauf` : ''}${placed.links ? `; ${placed.links} Verbindungen zwischen den Modulen` : ''}.`);
+  };
+  const firstSmelting = overview.sections.find(s => s.id && s.smelts > 0);
+  return <div className="prod-furnace-line" role="group" aria-label="Ofenstraße einplanen">
+    <h4>Ofenstraße einplanen</h4>
+    <label className="prod-field">Alle Schmelzvorgänge fertig in
+      <select aria-label="Zielzeit der Öfen" value={target} onChange={e => setTarget(Number(e.target.value))}>
+        {FURNACE_TARGET_HOURS.map(h => <option key={h} value={h}>{h} h</option>)}</select></label>
+    {present > 0 && <p className="muted">Im Projekt stehen schon {present} Öfen aus Ofenstraßen oder Modulen.</p>}
+    <ul className="prod-list">{options.map(o => <li key={o.building.assetId}>
+      <strong>{o.copies}× {o.building.name}</strong> = {o.furnaces} Öfen, fertig in {hoursText(o.hours)} · {formatNumber(o.blocks)} Blöcke, rund {hoursText(o.gatherHours)} Sammeln
+      {!o.meetsTarget && <small className="bad"> – mehr als {o.copies} lohnen sich nicht, Ziel nicht erreicht</small>}
+      {' '}<button onClick={() => place(o)} aria-label={`${o.copies}× ${o.building.name} ins Projekt legen`}>Ins Projekt legen</button>
+      {' '}<a className="link-button" href={`#/bibliothek/gebaeude/${o.building.assetId}`}>Bauplan</a></li>)}</ul>
+    <small className="muted">Legt die Öfen neben den Bau, als eigenen Bauabschnitt „Ofenstraße“{firstSmelting ? ` vor „${sections.get(firstSmelting.id) ?? firstSmelting.name}“` : ''}; mit Planung warten alle Abschnitte mit Schmelzitems darauf. Ein Rückgängig nimmt alles zurück.</small>
+  </div>;
 }
 
 function Logistics({ report, boxes }: { report: ProductionReport; boxes: number }) {

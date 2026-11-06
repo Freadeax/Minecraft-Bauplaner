@@ -8226,3 +8226,30 @@ Block 4 Mehrspieler und Server automatisch abnehmen: Prüfstand scripts/mod/lib/
 - `scripts/mod/test_multiplayer.sh`
 - `scripts/mod/test_multiplayer_client.sh`
 
+## 2026-11-06T21:50:29.150Z · progress
+
+**Aufgaben:** PROD-03, PROJ-01, PROJ-02, PROJ-04, QA-04
+
+Block 7: Ofenstraße aus dem Katalog in Baustelle und Planung (PROD-03-S04); Szenariotests PROJ-09/12/13/21, acht Fälle automatisch geprüft (6 voll, 2 teil)
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PROD-03 | 🧩 Implementiert · Abnahme offen | 4/4 | Abnahme PROJ-12/13; Ofenstraße im Spiel prüfen (Trichterwege der Module). |
+| PROJ-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel. |
+| PROJ-02 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05, PROJ-16…18). |
+| PROJ-04 | 🧩 Implementiert · Abnahme offen | 2/3 | Abnahme PROJ-21 durch Philipp. |
+| QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/styles/production.css`
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/views/project/ProductionTab.tsx`
+- `docs/TESTING.md`
+- `docs/architecture/planer/PRODUCTION.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/materials/furnaceLine.ts`
+- `tests/e2e/scenario-project.e2e.mjs`
+- `tests/unit/materials/furnace-line.test.mjs`
+

@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T21:44:54.861Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T21:50:29.150Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -109,7 +109,7 @@ Abgeschlossen oder zurückgestellt: LIB-01 (geprüft), GEN-01 (geprüft), WORLD-
 | [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Projekt, Produktion und Weltkarte vertiefen“ | Versionsupdates auf echten Geräten (QA-02). |
 | [PROD-01](#prod-01) | Produktionsdaten | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Projekt, Produktion und Weltkarte vertiefen“ | Reiter „Produktion“ abnehmen (PROJ-12). |
 | [PROD-02](#prod-02) | Deckung und Engpässe | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Projekt, Produktion und Weltkarte vertiefen“ | Engpässe und Zeitplanvergleich prüfen (PROJ-13). |
-| [PROD-03](#prod-03) | Verarbeitung und Logistik | 🧩 Implementiert · Abnahme offen 3/3 | P2 | „Projekt, Produktion und Weltkarte vertiefen“ | — |
+| [PROD-03](#prod-03) | Verarbeitung und Logistik | 🧩 Implementiert · Abnahme offen 4/4 | P2 | „Projekt, Produktion und Weltkarte vertiefen“ | — |
 | [PROD-04](#prod-04) | Anbindung der Produktion | 🧩 Implementiert · Abnahme offen 4/5 | P2 | „Mehrspieler und Server automatisch abnehmen“ | — |
 | [PROD-05](#prod-05) | Erträge aus geprüften Lagerkisten | 🧩 Implementiert · Abnahme offen 5/5 | P2 | „Mehrspieler und Server automatisch abnehmen“ | — |
 
@@ -419,7 +419,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **COOP-07 · Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05).
 - **PROD-01 · Produktionsdaten: Katalog von 34 Farmarten mit Richtwerten je Einheit, Bedingungen, Reichweite, Verbrauch und Bauplan; Farmliste je Projekt (Anzahl, Zustand, Ort, Bauteil, Kartenpunkt) und Ertragsbuch, das ins Baustellen-Lager bucht und gemessene Raten liefert** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme PROJ-12; später Erträge aus geprüften Lagerkisten (COOP-05) ins Ertragsbuch.
 - **PROD-02 · Deckung und Engpässe: Restbedarf des Sammelplans gegen laufende Farmen und Handarbeit (gemeinsame Warteschlange, gieriger Ausgleich), Engpass, Materialbereitschaft je Abschnitt in Spieltagen, „Lohnt sich eine Farm?“ mit Amortisation aus Bauplan-Kosten** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme PROJ-13.
-- **PROD-03 · Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module** — 🧩 Implementiert · Abnahme offen, 3/3 Teilschritte. Nächster Schritt: Später: Ofenstraße aus dem Katalog direkt vorschlagen und in die Planung legen.
+- **PROD-03 · Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Abnahme PROJ-12/13; Ofenstraße im Spiel prüfen (Trichterwege der Module).
 - **PROD-04 · Anbindung der Produktion: Farmen aus Projekt-Bauteilen mit Baufortschritt, Farmpunkte der Weltkarte übernehmen und eintragen, bester AFK-Platz nach Simulationsdistanz, Materialbereitschaft gegen Zeitplan der Planung, Sammelaufträge je Bauleute (TEAM-03-S02), Produktionsblatt als Text** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme PROJ-13; danach Farmerträge aus Mod/Plugin.
 - **PROD-05 · Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen.
 - **LINK-01 · Plugin richtet sich selbst ein und lässt sich per Klick koppeln (link.json, Server-ID, Kopplung nur OP/Bauleitung über den Teamkanal)** — ✅ Im beschriebenen Umfang geprüft, 4/4 Teilschritte. Nächster Schritt: Regressionen mit test_bridge_paper_link.sh und test_multiplayer.sh.
@@ -588,7 +588,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GAME-09](#game-09) | Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch | 🚧 In Arbeit | 4/5 | GAME-07, GAME-04 | ausstehend | ausstehend |
 | [PROD-01](#prod-01) | Produktionsdaten: Katalog von 34 Farmarten mit Richtwerten je Einheit, Bedingungen, Reichweite, Verbrauch und Bauplan; Farmliste je Projekt (Anzahl, Zustand, Ort, Bauteil, Kartenpunkt) und Ertragsbuch, das ins Baustellen-Lager bucht und gemessene Raten liefert | 🧩 Implementiert · Abnahme offen | 3/4 | BUILD-01 | ausstehend | ausstehend |
 | [PROD-02](#prod-02) | Deckung und Engpässe: Restbedarf des Sammelplans gegen laufende Farmen und Handarbeit (gemeinsame Warteschlange, gieriger Ausgleich), Engpass, Materialbereitschaft je Abschnitt in Spieltagen, „Lohnt sich eine Farm?“ mit Amortisation aus Bauplan-Kosten | 🧩 Implementiert · Abnahme offen | 3/4 | PROD-01, PROJ-01 | ausstehend | ausstehend |
-| [PROD-03](#prod-03) | Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module | 🧩 Implementiert · Abnahme offen | 3/3 | PROD-01 | ausstehend | ausstehend |
+| [PROD-03](#prod-03) | Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module | 🧩 Implementiert · Abnahme offen | 4/4 | PROD-01 | ausstehend | ausstehend |
 | [PROD-04](#prod-04) | Anbindung der Produktion: Farmen aus Projekt-Bauteilen mit Baufortschritt, Farmpunkte der Weltkarte übernehmen und eintragen, bester AFK-Platz nach Simulationsdistanz, Materialbereitschaft gegen Zeitplan der Planung, Sammelaufträge je Bauleute (TEAM-03-S02), Produktionsblatt als Text | 🧩 Implementiert · Abnahme offen | 4/5 | PROD-02, MAP-06, PROJ-01 | ausstehend | ausstehend |
 | [PROJ-02](#proj-02) | Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute | 🧩 Implementiert · Abnahme offen | 4/5 | PROJ-01, PROD-01 | ausstehend | ausstehend |
 | [PROJ-03](#proj-03) | Planung Runde 3: Abwesenheiten je Bauleute nach Datum, mehrere Basispläne mit Namen und Vergleich, „abwesend bis“ aus dem Team in die Planung | 🧩 Implementiert · Abnahme offen | 3/4 | PROJ-02, COOP-06 | ausstehend | ausstehend |
@@ -2756,7 +2756,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### QA-04
 
-**Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Große Testphase vorbereiten und betreuen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-06T21:44:54.861Z
+**Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Große Testphase vorbereiten und betreuen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-06T21:50:29.150Z
 
 - [x] QA-04-S01: Testplan (eine Quelle: testplan.ts → TESTPLAN.md) mit Kern-/vertieften Fällen für alle Planer-Bereiche und die Mod.
 - [x] QA-04-S02: Seite #/testphase: Checklisten mit Protokoll im Browser, Protokoll-Export, Fehlerbericht mit automatischer Diagnose (Umgebung, Fehlerprotokoll, Konsole, Seiten) und GitHub-Issue-Vorbelegung.
@@ -2970,7 +2970,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROJ-01
 
-**Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projektmodul vertiefen“) · Zuständiger Thread: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projektmodul vertiefen“) · Zuständiger Thread: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-06T21:50:29.150Z
 
 - [x] PROJ-01-S01: Datensatz project.site.program (Bauleute, Meilensteine, Abhängigkeiten azyklisch, Zuweisungen, Start, Bautage je Woche) mit Prüfung, Rückgängig über site.set, Sicherung und Datencheck.
 - [x] PROJ-01-S02: Zeitplan: Spur je Bauleute, gemeinsames Tempo bei geteilten Abschnitten, Abhängigkeiten, kritischer Pfad, Kalender mit Bautagen je Woche, Meilensteinstatus und Bedarf je Meilenstein/Bauleute.
@@ -3180,21 +3180,22 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROD-03
 
-**Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-06T21:50:29.150Z
 
 - [x] PROD-03-S01: SectionPlan.smelts/cookTicks aus dem Rezeptbaum.
 - [x] PROD-03-S02: Ofen- und Brennstoffplan inkl. Netto-Seetang.
 - [x] PROD-03-S03: Lager je Abschnitt und Logistik je automatischer Farm.
+- [x] PROD-03-S04: Ofenstraße einplanen: Zielzeit wählen, Ofenstraße oder kettenbare Schmelzofen-Module aus dem Katalog vergleichen (Öfen aus dem Bauplan gezählt, Bauaufwand wie die Farmvorschläge), mit einem Klick neben den Bau legen – eigener Bauabschnitt vor dem ersten Abschnitt mit Schmelzitems, Planung lässt diese Abschnitte darauf warten, Module verbunden, ein Rückgängig.
 
 **Abnahme:** Brennstoff aus Farmen ist netto gerechnet. Farm-Logistik warnt, wenn die Doppeltruhe innerhalb eines Spieltags voll ist.
 
-**Nächste Aktion:** Später: Ofenstraße aus dem Katalog direkt vorschlagen und in die Planung legen.
+**Nächste Aktion:** Abnahme PROJ-12/13; Ofenstraße im Spiel prüfen (Trichterwege der Module).
 
 **Prüfstand:** Einheits- und Browsertests grün; Abnahme durch Philipp in der Testphase offen (PROJ-12/13).
 
-**Nachweise:** [tests/unit/materials/production.test.mjs](../tests/unit/materials/production.test.mjs) — 10 Fälle: Katalog, Datensatz/Rückgängig/Sicherung, Ertragsbuch, Reichweiten/AFK, Deckung/Engpass/Bereitschaft, Vorschläge, Öfen/Lager/Logistik, Verbrauch, Anbindung, Integration mit planSite.; [tests/e2e/production.e2e.mjs](../tests/e2e/production.e2e.mjs) — Reiter „Produktion“ in Chromium (1400/390 px): Farm, Ernte ins Lager, gemessene Rate, Ort, AFK-Platz, Neuladen, kein Querscrollen.; [docs/architecture/planer/PRODUCTION.md](architecture/planer/PRODUCTION.md) — Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen.
+**Nachweise:** [tests/unit/materials/production.test.mjs](../tests/unit/materials/production.test.mjs) — 10 Fälle: Katalog, Datensatz/Rückgängig/Sicherung, Ertragsbuch, Reichweiten/AFK, Deckung/Engpass/Bereitschaft, Vorschläge, Öfen/Lager/Logistik, Verbrauch, Anbindung, Integration mit planSite.; [tests/e2e/production.e2e.mjs](../tests/e2e/production.e2e.mjs) — Reiter „Produktion“ in Chromium (1400/390 px): Farm, Ernte ins Lager, gemessene Rate, Ort, AFK-Platz, Neuladen, kein Querscrollen.; [docs/architecture/planer/PRODUCTION.md](architecture/planer/PRODUCTION.md) — Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen.; [tests/unit/materials/furnace-line.test.mjs](../tests/unit/materials/furnace-line.test.mjs) — Öfen je Katalogbau gezählt (Ofenstraße 6, Modul 3), Optionen je Zielzeit, Deckel 16, Batch: Kopien nebeneinander ohne Konflikt, Abschnitt vor dem ersten Schmelzabschnitt, Abhängigkeiten nur mit Planung, Modulverbindungen gültig, ein Rückgängig.; [tests/e2e/scenario-project.e2e.mjs](../tests/e2e/scenario-project.e2e.mjs) — Szenarien PROJ-09 (Großprojekt), PROJ-12 mit Ofenstraße, PROJ-13, PROJ-21 mit Löschen und Bauplatz in Chromium.
 
-**Dateiumfang:** `packages/domain/src/materials/productionPlan.ts`, `packages/domain/src/building/site.ts`, `apps/web/src/views/project/ProductionTab.tsx`. **Abhängigkeiten:** PROD-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/materials/productionPlan.ts`, `packages/domain/src/building/site.ts`, `apps/web/src/views/project/ProductionTab.tsx`, `packages/domain/src/materials/furnaceLine.ts`, `tests/unit/materials/furnace-line.test.mjs`, `tests/e2e/scenario-project.e2e.mjs`, `apps/web/src/styles/production.css`. **Abhängigkeiten:** PROD-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -3452,7 +3453,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROJ-02
 
-**Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projektmodul vertiefen“) · Zuständiger Thread: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projektmodul vertiefen“) · Zuständiger Thread: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-06T21:50:29.150Z
 
 - [x] PROJ-02-S01: Zeitplan ab heute bei Startdatum in der Vergangenheit; Bautage zwischen Daten nach Bautagen je Woche (buildingDaysBetween).
 - [x] PROJ-02-S02: Planung ↔ Produktion: waitForMaterial, planProgramWithMaterial (Bereitschaft → frühester Beginn, materialWait), Produktion vergleicht mit demselben Zeitplan.
@@ -3499,7 +3500,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROJ-04
 
-**Reihenfolge zwischen Projekten: „erst nach“ anderen Projekten, frühester Start aus dem Basisplan der Vorgänger, Kreise abweisen, Pfeile auf der Weltkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Reihenfolge zwischen Projekten: „erst nach“ anderen Projekten, frühester Start aus dem Basisplan der Vorgänger, Kreise abweisen, Pfeile auf der Weltkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-06T21:50:29.150Z
 
 - [x] PROJ-04-S01: program.after (Vorgängerprojekte mit Grund) mit Prüfung; projectOrder.ts: Verknüpfungen, Kreise, Stufen, Nachfolger, frühester Start aus dem aktiven Basisplan.
 - [x] PROJ-04-S02: Planung „Reihenfolge der Projekte“ (erst nach, Kreis-Hinweis, Start mit einem Klick korrigieren, Danach kommen) und Weltkarte (Pfeile, Detail).

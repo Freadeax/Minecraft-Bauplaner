@@ -39,3 +39,8 @@
   .prod-farm-ctrl{width:100%}.prod-add select{max-width:100%;flex:1 1 100%}.prod-harvest input{width:90px}.prod-place input{width:70px}}
 .prod-farm-ctrl select,.prod-harvest select,.prod-place select,.prod-add select{width:auto;flex:0 1 auto}
 .prod-harvest strong{flex:0 0 auto}
+
+/* PROD-03-Folge: Ofenstraße einplanen */
+.prod-furnace-line { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); display: grid; gap: 6px; }
+.prod-furnace-line h4 { margin: 0; }
+.prod-furnace-line li button { margin-left: 4px; }

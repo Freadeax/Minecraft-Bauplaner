@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T21:44:54.861Z",
+  "updatedAt": "2026-11-06T21:50:29.150Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -7897,7 +7897,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T21:44:54.861Z",
+      "updatedAt": "2026-11-06T21:50:29.150Z",
       "area": "QA",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -8704,7 +8704,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T21:50:29.150Z",
       "area": "PROJEKT",
       "thread": "Projekt, Produktion und Weltkarte vertiefen",
       "philipp": [
@@ -9444,7 +9444,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T21:50:29.150Z",
       "area": "PROJEKT",
       "thread": "Projekt, Produktion und Weltkarte vertiefen",
       "philipp": [],
@@ -9457,7 +9457,11 @@
       "scope": [
         "packages/domain/src/materials/productionPlan.ts",
         "packages/domain/src/building/site.ts",
-        "apps/web/src/views/project/ProductionTab.tsx"
+        "apps/web/src/views/project/ProductionTab.tsx",
+        "packages/domain/src/materials/furnaceLine.ts",
+        "tests/unit/materials/furnace-line.test.mjs",
+        "tests/e2e/scenario-project.e2e.mjs",
+        "apps/web/src/styles/production.css"
       ],
       "steps": [
         {
@@ -9474,13 +9478,18 @@
           "id": "PROD-03-S03",
           "title": "Lager je Abschnitt und Logistik je automatischer Farm.",
           "done": true
+        },
+        {
+          "id": "PROD-03-S04",
+          "title": "Ofenstraße einplanen: Zielzeit wählen, Ofenstraße oder kettenbare Schmelzofen-Module aus dem Katalog vergleichen (Öfen aus dem Bauplan gezählt, Bauaufwand wie die Farmvorschläge), mit einem Klick neben den Bau legen – eigener Bauabschnitt vor dem ersten Abschnitt mit Schmelzitems, Planung lässt diese Abschnitte darauf warten, Module verbunden, ein Rückgängig.",
+          "done": true
         }
       ],
       "acceptance": [
         "Brennstoff aus Farmen ist netto gerechnet.",
         "Farm-Logistik warnt, wenn die Doppeltruhe innerhalb eines Spieltags voll ist."
       ],
-      "next": "Später: Ofenstraße aus dem Katalog direkt vorschlagen und in die Planung legen.",
+      "next": "Abnahme PROJ-12/13; Ofenstraße im Spiel prüfen (Trichterwege der Module).",
       "evidence": [
         {
           "path": "tests/unit/materials/production.test.mjs",
@@ -9493,6 +9502,14 @@
         {
           "path": "docs/architecture/planer/PRODUCTION.md",
           "note": "Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen."
+        },
+        {
+          "path": "tests/unit/materials/furnace-line.test.mjs",
+          "note": "Öfen je Katalogbau gezählt (Ofenstraße 6, Modul 3), Optionen je Zielzeit, Deckel 16, Batch: Kopien nebeneinander ohne Konflikt, Abschnitt vor dem ersten Schmelzabschnitt, Abhängigkeiten nur mit Planung, Modulverbindungen gültig, ein Rückgängig."
+        },
+        {
+          "path": "tests/e2e/scenario-project.e2e.mjs",
+          "note": "Szenarien PROJ-09 (Großprojekt), PROJ-12 mit Ofenstraße, PROJ-13, PROJ-21 mit Löschen und Bauplatz in Chromium."
         }
       ]
     },
@@ -10525,7 +10542,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T21:50:29.150Z",
       "area": "PROJEKT",
       "thread": "Projekt, Produktion und Weltkarte vertiefen",
       "philipp": [
@@ -10685,7 +10702,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T21:50:29.150Z",
       "area": "PROJEKT",
       "thread": "Projekt, Produktion und Weltkarte vertiefen",
       "philipp": [
@@ -25600,6 +25617,67 @@
           "done": 4,
           "total": 5,
           "next": "Philipp testet die .jar aus /mnt/project-files/mod/ auf server.lmnt-gaming.net und meldet Ergebnis/Fehler (Anleitung ANLEITUNG_SPIELTEST.md)."
+        },
+        {
+          "id": "QA-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T21:50:29.150Z",
+      "kind": "progress",
+      "items": [
+        "PROD-03",
+        "PROJ-01",
+        "PROJ-02",
+        "PROJ-04",
+        "QA-04"
+      ],
+      "summary": "Block 7: Ofenstraße aus dem Katalog in Baustelle und Planung (PROD-03-S04); Szenariotests PROJ-09/12/13/21, acht Fälle automatisch geprüft (6 voll, 2 teil)",
+      "files": [
+        "apps/web/src/styles/production.css",
+        "apps/web/src/testing/autochecks.ts",
+        "apps/web/src/views/project/ProductionTab.tsx",
+        "docs/TESTING.md",
+        "docs/architecture/planer/PRODUCTION.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/materials/furnaceLine.ts",
+        "tests/e2e/scenario-project.e2e.mjs",
+        "tests/unit/materials/furnace-line.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PROD-03",
+          "status": "implemented",
+          "done": 4,
+          "total": 4,
+          "next": "Abnahme PROJ-12/13; Ofenstraße im Spiel prüfen (Trichterwege der Module)."
+        },
+        {
+          "id": "PROJ-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel."
+        },
+        {
+          "id": "PROJ-02",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05, PROJ-16…18)."
+        },
+        {
+          "id": "PROJ-04",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Abnahme PROJ-21 durch Philipp."
         },
         {
           "id": "QA-04",

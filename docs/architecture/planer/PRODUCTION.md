@@ -56,6 +56,15 @@ Farmen füllen über Trichter meist eine feste Truhe. Ist diese Truhe auf dem Se
 - **Rangfolge der Rate:** Sammeltruhe (≥ 1 h Laufzeit) vor Ertragsbuch (≥ 1 h) vor Richtwert (`FarmRate.source`: `Lagerkiste` · `gemessen` · `Richtwert`). Unter einer Stunde nennt der Farmzustand die bisherige Laufzeit als Hinweis; eine verknüpfte, inzwischen entfernte Truhe ebenfalls.
 - **Nichts doppelt:** Die Truhe wird nur gelesen. Sie bucht weder ins Ertragsbuch noch ins Baustellen-Lager – der Bestand kommt wie bisher über „Bestand ins Baustellen-Lager übernehmen“ im Reiter Team.
 
+## Ofenstraße einplanen (PROD-03-S04, 06.11.2026)
+
+`packages/domain/src/materials/furnaceLine.ts`, im Reiter unter „Öfen und Brennstoff“:
+
+- Ofenbauten aus dem Katalog: `bld_technik_ofenstrasse` (6 Öfen) und das kettenbare `bld_schmelz_modul` (3 Öfen). Die Ofenzahl kommt aus `computeMaterials` des Bauplans, Blöcke und Sammelstunden aus `farmCostOf` (wie bei den Farmvorschlägen).
+- `furnaceLineOptions(FurnacePlan, Bauten, Zielzeit)`: Kopien = ⌈Ofenstunden / Zielzeit / Öfen je Bau⌉, höchstens 16; sortiert nach „Ziel erreicht“, dann wenigsten Blöcken.
+- `furnaceLineOperation`: **ein** Rückgängig-Schritt (`batch`) – Kopien in einer Reihe neben dem Bau (x = Ende des Baus + 1, wie Bibliothek und Editor), benachbarte Module über ihre Anschlüsse verbunden, eigener Bauabschnitt „Ofenstraße“ vor dem ersten Abschnitt mit Schmelzitems; hat das Projekt eine Planung, wartet jeder Abschnitt mit Schmelzitems darauf (Abhängigkeit „braucht geschmolzene Items“).
+- Die Oberfläche zeigt das Ergebnis oben im Reiter mit „Rückgängig“ (der Reiter hat sonst keinen Rückgängig-Knopf) und einem Link zur Planung.
+
 ## Anbindung
 
 | Modul | Richtung | Was passiert |
