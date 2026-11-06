@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-05T12:25:51.250Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T09:06:53.011Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-05T12:25:51.250Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 7 |
 | 🚧 In Arbeit | 6 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 88 |
+| 🧩 Implementiert · Abnahme offen | 89 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -27,7 +27,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 |---|---:|---:|---:|---:|
 | [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 23 | 2 | 23 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 3 | 10 | 4 |
-| [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 11 | 2 | 8 | 1 |
+| [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 13 | 1 | 13 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 11 | 0 | 9 | 0 |
@@ -96,10 +96,11 @@ Abgeschlossen oder zurückgestellt: LIB-01 (geprüft), GEN-01 (geprüft), WORLD-
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
 | [BUILD-06](#build-06) | Bauführung im Spiel | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Bauführung mit Mod-Aufnahme auf deinem Server; Druck- und Handyansicht. |
-| [PROJ-01](#proj-01) | Projektplanung für große Projekte | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Projektmodul vertiefen“ · 1 verwaist | Reiter „Planung“ abnehmen (PROJ-09…11). |
-| [PROJ-02](#proj-02) | Projektplanung vertieft | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Projektmodul vertiefen“ · 1 verwaist | Basisplan, Material abwarten und Anteil der Bautage im Reiter „Planung“ abnehmen (PROJ-16…18). |
+| [PROJ-01](#proj-01) | Projektplanung für große Projekte | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Projektmodul vertiefen“ | Reiter „Planung“ abnehmen (PROJ-09…11). |
+| [PROJ-02](#proj-02) | Projektplanung vertieft | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Projektmodul vertiefen“ | Basisplan, Material abwarten und Anteil der Bautage im Reiter „Planung“ abnehmen (PROJ-16…18). |
 | [PROJ-03](#proj-03) | Planung Runde 3 | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Module und Systeme komplex ausarbeiten“ | Im Reiter „Planung“ eine Abwesenheit eintragen und zwei Basispläne vergleichen (PROJ-20). |
 | [PROJ-04](#proj-04) | Reihenfolge zwischen Projekten | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Module und Systeme komplex ausarbeiten“ | Zwei Projekte nacheinander planen (erst Lager, dann Burg) und den Starthinweis prüfen (PROJ-21). |
+| [PROJ-05](#proj-05) | Bauleute-Konto und Bauleute aus dem Spiel | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Projekte untereinander verknüpfen“ | Team übernehmen, Konto je Bauleute und Bauzettel prüfen, am besten mit einem Mitspieler im Team-Raum (PROJ-23). |
 | [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Versionsupdates auf echten Geräten (QA-02). |
 | [PROD-01](#prod-01) | Produktionsdaten | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Produktion und Anbindung im Planer ausbauen“ | Reiter „Produktion“ abnehmen (PROJ-12). |
 | [PROD-02](#prod-02) | Deckung und Engpässe | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Produktion und Anbindung im Planer ausbauen“ | Engpässe und Zeitplanvergleich prüfen (PROJ-13). |
@@ -333,6 +334,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **PROJ-02** · Basisplan, Material abwarten und Anteil der Bautage im Reiter „Planung“ abnehmen (PROJ-16…18).
 - **PROJ-03** · Im Reiter „Planung“ eine Abwesenheit eintragen und zwei Basispläne vergleichen (PROJ-20).
 - **PROJ-04** · Zwei Projekte nacheinander planen (erst Lager, dann Burg) und den Starthinweis prüfen (PROJ-21).
+- **PROJ-05** · Team übernehmen, Konto je Bauleute und Bauzettel prüfen, am besten mit einem Mitspieler im Team-Raum (PROJ-23).
 - **CORE-04** · Projekt mit Nachfolger und Bauplatz löschen; Blockeditor mit Änderungen verlassen; Truhe mit verzaubertem Schwert umsortieren (CORE-04-S05).
 
 ### Entscheiden oder Rückfrage beantworten
@@ -355,8 +357,6 @@ Arbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thr
 | [MAP-04](#map-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Benannte Gruppen und Sperren mit Schemaerweiterung, abgestimmt mit der Mod (siehe GAME-07-S07). |
 | [PERF-04](#perf-04) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | GPU-Upload großer Szenen in Stücken. |
 | [PERF-05](#perf-05) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | S07 Analyse von Mod und Paper-Plugin (O-8), große Dateien aufteilen – Thread „Gesamtsystem auf Performance und Stabilität optimieren“ ist beendet. |
-| [PROJ-01](#proj-01) | Projektmodul | P1 | 🧩 Implementiert · Abnahme offen | Abhängigkeiten zwischen Projekten auf der Weltkarte; Bauleute aus dem Spiel; Lagerbuchungen je Bauleute. |
-| [PROJ-02](#proj-02) | Projektmodul | P1 | 🧩 Implementiert · Abnahme offen | Abhängigkeiten zwischen Projekten auf der Weltkarte. |
 
 ## Eingänge ohne eigenes Paket
 
@@ -568,6 +568,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [PROJ-02](#proj-02) | Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute | 🧩 Implementiert · Abnahme offen | 4/5 | PROJ-01, PROD-01 | ausstehend | ausstehend |
 | [PROJ-03](#proj-03) | Planung Runde 3: Abwesenheiten je Bauleute nach Datum, mehrere Basispläne mit Namen und Vergleich, „abwesend bis“ aus dem Team in die Planung | 🧩 Implementiert · Abnahme offen | 3/4 | PROJ-02, COOP-06 | ausstehend | ausstehend |
 | [PROJ-04](#proj-04) | Reihenfolge zwischen Projekten: „erst nach“ anderen Projekten, frühester Start aus dem Basisplan der Vorgänger, Kreise abweisen, Pfeile auf der Weltkarte | 🧩 Implementiert · Abnahme offen | 2/3 | PROJ-03, MAP-04 | ausstehend | ausstehend |
+| [PROJ-05](#proj-05) | Bauleute-Konto und Bauleute aus dem Spiel: Lagerbuchungen, Sammelzusagen und Saldo je Bauleute, Mitspieler aus dem Team und live aus dem Team-Raum in der Planung | 🧩 Implementiert · Abnahme offen | 2/3 | PROJ-01, PROJ-03 | ausstehend | ausstehend |
 | [EDIT-06](#edit-06) | Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten | 🧩 Implementiert · Abnahme offen | 4/5 | EDIT-01, EDIT-02, EDIT-03, EDIT-05, ENTITY-01 | ausstehend | ausstehend |
 | [STRUCT-01](#struct-01) | Dateistruktur sauber neu ordnen: Fachordner im Kern und in der Oberfläche, Skripte, Tests und Doku nach Bereich, Ordnerkarte docs/STRUKTUR.md | 🧩 Implementiert · Abnahme offen | 4/4 | — | ausstehend | ausstehend |
 | [CORE-04](#core-04) | Planer-Kernmodule prüfen und überarbeiten: Verbindungen zwischen Projekt, Planung, Werkstatt, Import/Export und Speicher sauber, gefundene Fehler behoben | 🧩 Implementiert · Abnahme offen | 4/5 | ARCH-02, PROJ-04, EDIT-06 | ausstehend | ausstehend |
@@ -2835,7 +2836,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROJ-01
 
-**Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projektmodul vertiefen“) · Zuständiger Thread: „Projektmodul vertiefen“ · Aktualisiert: 2026-11-05T11:03:24.121Z
+**Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projektmodul vertiefen“) · Zuständiger Thread: „Projektmodul vertiefen“ · Aktualisiert: 2026-11-06T09:06:53.011Z
 
 - [x] PROJ-01-S01: Datensatz project.site.program (Bauleute, Meilensteine, Abhängigkeiten azyklisch, Zuweisungen, Start, Bautage je Woche) mit Prüfung, Rückgängig über site.set, Sicherung und Datencheck.
 - [x] PROJ-01-S02: Zeitplan: Spur je Bauleute, gemeinsames Tempo bei geteilten Abschnitten, Abhängigkeiten, kritischer Pfad, Kalender mit Bautagen je Woche, Meilensteinstatus und Bedarf je Meilenstein/Bauleute.
@@ -2848,8 +2849,6 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nächste Aktion:** Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel.
 
 **Nur Philipp:** Im Planer abnehmen: Reiter „Planung“ abnehmen (PROJ-09…11).
-
-**Verwaist (ohne Bearbeiter):** Abhängigkeiten zwischen Projekten auf der Weltkarte; Bauleute aus dem Spiel; Lagerbuchungen je Bauleute.
 
 **Prüfstand:** Einheits- und Browsertests grün; Abnahme durch Philipp offen (S05).
 
@@ -3294,7 +3293,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROJ-02
 
-**Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projektmodul vertiefen“) · Zuständiger Thread: „Projektmodul vertiefen“ · Aktualisiert: 2026-11-05T11:03:24.121Z
+**Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projektmodul vertiefen“) · Zuständiger Thread: „Projektmodul vertiefen“ · Aktualisiert: 2026-11-06T09:06:53.011Z
 
 - [x] PROJ-02-S01: Zeitplan ab heute bei Startdatum in der Vergangenheit; Bautage zwischen Daten nach Bautagen je Woche (buildingDaysBetween).
 - [x] PROJ-02-S02: Planung ↔ Produktion: waitForMaterial, planProgramWithMaterial (Bereitschaft → frühester Beginn, materialWait), Produktion vergleicht mit demselben Zeitplan.
@@ -3307,8 +3306,6 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nächste Aktion:** Abnahme durch Philipp (S05, PROJ-16…18).
 
 **Nur Philipp:** Im Planer abnehmen: Basisplan, Material abwarten und Anteil der Bautage im Reiter „Planung“ abnehmen (PROJ-16…18).
-
-**Verwaist (ohne Bearbeiter):** Abhängigkeiten zwischen Projekten auf der Weltkarte.
 
 **Prüfstand:** Einheits- und Browsertests grün; Abnahme durch Philipp offen (S05).
 
@@ -3360,6 +3357,28 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/unit/planning/project-order.test.mjs](../tests/unit/planning/project-order.test.mjs) — 3 Fälle: anlegen/prüfen/entfernen, Kreise/Stufen/Nachfolger, frühester Start aus Basisplan (offen, fertig, gelöscht).; [tests/e2e/project-order.e2e.mjs](../tests/e2e/project-order.e2e.mjs) — Chromium: Basisplan in A, B erst nach A, Start korrigieren, Kreis abgewiesen, Weltkarte nennt die Reihenfolge, entfernen.
 
 **Dateiumfang:** `packages/domain/src/planning/program.ts`, `packages/domain/src/planning/projectOrder.ts`, `apps/web/src/views/project/ProjectOrder.tsx`, `apps/web/src/views/project/PlanningTab.tsx`, `apps/web/src/views/map/OverviewMap.tsx`, `apps/web/src/views/map/WorldMapView.tsx`, `tests/unit/planning/project-order.test.mjs`, `tests/e2e/project-order.e2e.mjs`, `docs/architecture/planer/PROGRAM.md`. **Abhängigkeiten:** PROJ-03, MAP-04. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### PROJ-05
+
+**Bauleute-Konto und Bauleute aus dem Spiel: Lagerbuchungen, Sammelzusagen und Saldo je Bauleute, Mitspieler aus dem Team und live aus dem Team-Raum in der Planung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projekte untereinander verknüpfen“) · Zuständiger Thread: „Projekte untereinander verknüpfen“ · Aktualisiert: 2026-11-06T09:06:53.011Z
+
+- [x] PROJ-05-S01: builderAccounts: je Bauleute Restbedarf der Abschnitte gegen eigene und fremde Sammelzusagen, eingebracht (Beiträge, Einlagerungen), entnommen, Saldo; „Noch ohne Sammelzusage“ je Item; Kandidaten (Teammitglieder ohne Planung) und fremde Spieler im Team-Raum.
+- [x] PROJ-05-S02: Planung: Live-Abzeichen (im Spiel/Planer, abwesend), aufklappbares Konto mit Tabelle, Bauzettel mit Zusagen und Lagerbuchungen, Kasten „Bauleute aus dem Spiel“ mit „Team übernehmen“ und Rückgängig.
+- [ ] PROJ-05-S03: Abnahme PROJ-23 durch Philipp (mit Mitspielern oder zwei Browsern).
+
+**Abnahme:** Konto und Kandidaten sind nur abgeleitet: nichts Neues wird gespeichert, die Übernahme ist ein Rückgängig-Schritt. Ohne Team zeigt das Konto nur den Bedarf; der Serverschlüssel zählt nie als Bauleute. Kein Querscrollen bei 390 px.
+
+**Nächste Aktion:** Abnahme PROJ-23 durch Philipp.
+
+**Nur Philipp:** Im Planer abnehmen: Team übernehmen, Konto je Bauleute und Bauzettel prüfen, am besten mit einem Mitspieler im Team-Raum (PROJ-23).
+
+**Prüfstand:** Einheits- und Browsertests grün; Abnahme PROJ-23 offen.
+
+**Nachweise:** [tests/unit/planning/builder-account.test.mjs](../tests/unit/planning/builder-account.test.mjs) — 3 Fälle: ohne Team nur Bedarf; Zusagen eigene/andere, Lieferung, Saldo, Live (Spiel vor Planer, Server ausgenommen), Kandidat und fremder Spieler, Übernahme, Bauzettel; „ohne Zusage“ einmal je Item.; [tests/e2e/builder-account.e2e.mjs](../tests/e2e/builder-account.e2e.mjs) — Chromium 1400/390 px: Team gründen, Lieferung und Sammelzusage, Kandidat in der Planung, Team übernehmen, Rückgängig, Konto mit Saldo +32, kein Querscrollen.
+
+**Dateiumfang:** `packages/domain/src/planning/builderAccount.ts`, `apps/web/src/views/project/PlanningTab.tsx`, `apps/web/src/styles/planning.css`, `apps/web/src/testing/testplan.ts`, `tests/unit/planning/builder-account.test.mjs`, `tests/e2e/builder-account.e2e.mjs`, `docs/architecture/planer/PROGRAM.md`. **Abhängigkeiten:** PROJ-01, PROJ-03. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

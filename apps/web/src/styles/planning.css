@@ -44,3 +44,11 @@
 .prog-baselines { display: grid; gap: 0.5rem; }
 .prog-baselines .prog-settings-row input { max-width: 16rem; }
 .prog-baseline-table td small { display: block; color: var(--muted); }
+/* PROJ-05 Bauleute-Konto und Bauleute aus dem Spiel */
+.prog-account{margin-top:2px}.prog-account summary{cursor:pointer;font-size:12px;color:var(--muted)}.prog-account summary strong{color:var(--text)}
+.prog-account-table td,.prog-account-table th{font-size:12px}.prog-account-table tr.warn td:first-child{font-weight:600}
+.prog-account-empty{font-size:12px}
+.prog-team ul{margin:6px 0;padding-left:18px}.prog-team li{margin:3px 0}.prog-team .badge{margin-left:6px}
+.prog-unclaimed{margin-top:8px}.prog-unclaimed small{color:var(--muted)}
+.prog-builder-head .badge{font-size:11px}
+.prog-builder>*{min-width:0}.prog-account .table-wrap{max-width:100%;overflow-x:auto}

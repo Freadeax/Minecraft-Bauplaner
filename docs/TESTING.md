@@ -1033,3 +1033,10 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Echter Spieltest Fabric 26.3 (`scripts/mod/test_bridge_ingame.sh`, BAUPLANER_KEEP) bestanden; daraus neue Galeriebilder (Hologramm, Materialliste, Befehle & Status, Team-Befehle, Team-HUD, „Planer zulassen“). Icon jetzt ein Ausschnitt einer echten Spielaufnahme (Geisterblöcke mit Shader) statt der gezeichneten Würfelgrafik.
 - Echte Modrinth-API: `sync` setzte Beschreibung (Stand 0.17.0), Offenlegungen (API v3 `PATCH /project/{id}/disclosures` mit `set`/`remove`), Icon (Vergleich über SHA-1 im raw_icon_url) und Galerie (4 alte Bilder entfernt, 6 neue, Reihenfolge und Hervorhebung); zweiter Lauf: alles „aktuell“, nichts doppelt. `release` ruft danach immer `sync` auf.
 - Befund nebenbei: Im Planmenü überlappen bei 854×480 „Befehle & Status“/„Fertig“ die Zeile „Abschnitt: alle“ (kleines Fenster/hohe GUI-Größe).
+
+## PROJ-05 · Bauleute-Konto und Bauleute aus dem Spiel · 06.11.2026 · Claude
+
+- Grundlage: main 4aaac11 plus dieses Paket.
+- `npm run check` grün (924 Tests: 923 bestanden, 1 übersprungen), neu `tests/unit/planning/builder-account.test.mjs` 3/3 (ohne Team nur Bedarf; eigene und fremde Sammelzusagen, Lieferung, Saldo, Live-Anwesenheit mit Spiel vor Planer und ohne Serverschlüssel, Kandidat und fremder Spieler, Übernahme und Bauzettel; „ohne Zusage“ einmal je Item).
+- Browser (Chromium 1243 als 1248 verlinkt): voller Lauf 78 Dateien, 181/181 grün, darin neu `tests/e2e/builder-account.e2e.mjs` 2/2 (1400/390 px, Port 4371: Team gründen, Lieferung 32 oak_log, Sammelzusage 10 cobblestone, Kandidat in der Planung, „Team übernehmen“, Rückgängig, Konto mit „zugesagt 10“, „eingebracht 32“, „Saldo +32“, kein Querscrollen).
+- Nicht automatisch geprüft: echte Live-Anwesenheit eines Mitspielers mit Mod im Team-Raum (im Einheitstest mit Anwesenheitsdaten belegt); Abnahme PROJ-23 offen.

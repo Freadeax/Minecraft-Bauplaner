@@ -6884,3 +6884,29 @@ Titelbild (hervorgehobenes Galeriebild aus echter Spielaufnahme mit Projekttitel
 - `mods/bauplaner-bridge/modrinth/project.json`
 - `tests/unit/mod/modrinth.test.mjs`
 
+## 2026-11-06T09:06:53.011Z · progress
+
+**Aufgaben:** PROJ-05, PROJ-01, PROJ-02
+
+PROJ-05: Bauleute-Konto (Sammelzusagen, eingebracht, entnommen, Saldo, ohne Zusage) und Bauleute aus dem Spiel (Kandidaten aus dem Team, live im Team-Raum, Team übernehmen mit Rückgängig) in der Planung; Waisen von PROJ-01/02 erledigt (Projektabhängigkeiten auf der Weltkarte seit PROJ-04).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PROJ-05 | 🧩 Implementiert · Abnahme offen | 2/3 | Abnahme PROJ-23 durch Philipp. |
+| PROJ-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel. |
+| PROJ-02 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05, PROJ-16…18). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/styles/planning.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/project/PlanningTab.tsx`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/planer/PROGRAM.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/planning/builderAccount.ts`
+- `tests/e2e/builder-account.e2e.mjs`
+- `tests/unit/planning/builder-account.test.mjs`
+

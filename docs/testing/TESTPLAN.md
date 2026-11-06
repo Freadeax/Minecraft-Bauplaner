@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/checks/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 146 Fälle in 13 Bereichen, davon 63 Kernfälle.
+Umfang: 147 Fälle in 13 Bereichen, davon 63 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -73,6 +73,7 @@ Das Herzstück: Bauteile anordnen, Material planen, Bauanleitung und Export.
 | PROJ-20 | Planung: Abwesenheit und frühere Basispläne | vertieft | 1. Tab „Planung“: Startdatum setzen, Bauleute anlegen, alle Abschnitte zuweisen, Basisplan mit Namen festhalten.<br>2. Bei den Bauleuten „Abwesend von/bis“ für die ersten Tage mit Grund eintragen, „+ Abwesend“.<br>3. Einen zweiten Basisplan mit anderem Namen festhalten, in „Frühere Basispläne“ den ersten „Vergleichen“; im Reiter Team bei einem Mitglied „abwesend bis“ setzen und „In die Projektplanung übernehmen“. | Der erste Abschnitt beginnt nach der Abwesenheit, die Zuweisung nennt „davon N Bautage abwesend“, die Karte zeigt „+N Bautage“ gegen den ersten Plan; der zweite Basisplan steht bei ± 0, der frühere bleibt mit seinem Verzug in der Liste; die Abwesenheit aus dem Team erscheint bei den Bauleuten; alles bleibt nach dem Neuladen. (Abnahme PROJ-03) |
 | PROJ-21 | Planung: Reihenfolge zwischen Projekten | vertieft | 1. Projekt A (z. B. Lager): in „Planung“ Startdatum setzen und „Basisplan festhalten“.<br>2. Projekt B (z. B. Burg): Startdatum vor dem Ende von A setzen, unter „Reihenfolge der Projekte“ „erst nach“ A mit Grund wählen und „+ Erst nach“.<br>3. Den Hinweis mit „Start auf … setzen“ beheben; in A versuchen, B als vorheriges Projekt einzutragen; beide auf der Weltkarte platzieren und B auswählen. | B zeigt „fertig bis <Ende von A>“ und meldet den zu frühen Start mit dem frühesten Tag; ein Klick setzt den Start auf den Tag nach dem Ende von A und der Hinweis verschwindet; A nennt „Danach kommen: B“ und lehnt B als Vorgänger wegen eines Kreises ab; die Weltkarte zeigt einen gestrichelten Pfeil von A nach B und bei B „Erst nach A“. (Abnahme PROJ-04) |
 | PROJ-22 | Kernmodule: Löschen, Entwurf, Truhe | vertieft | 1. Projekt B „erst nach“ A eintragen und A auf der Weltkarte einem Bauplatz zuordnen, dann A in der Projektzentrale löschen.<br>2. In der Werkstatt einen Block ändern und ohne Speichern auf „Bibliothek“ klicken; einmal „Abbrechen“, dann speichern.<br>3. In einer Truhe ein verzaubertes Schwert auf einen anderen Platz legen und speichern; Schild mit farbiger Zeile nur wachsen. | Die Rückfrage nennt B und den Bauplatz; danach wartet B auf nichts mehr und der Bauplatz ist frei. Das Verlassen fragt nach und „Abbrechen“ behält den Entwurf. Das Schwert bleibt verzaubert, die farbige Zeile bleibt farbig. (Abnahme CORE-04) |
+| PROJ-23 | Planung: Bauleute aus dem Team und Konto je Bauleute | vertieft | 1. Reiter Team: Team gründen (oder beitreten), unter „Beiträge und Sammeln“ eine Lieferung melden und „Ich sammle“ für ein Item eintragen.<br>2. Reiter Planung: unter „Bauleute aus dem Spiel“ „Team übernehmen“, dann den Bauleuten Abschnitte zuweisen.<br>3. Bei den Bauleuten „Konto“ aufklappen und „Bauzettel kopieren“; wenn ein Mitspieler mit der Mod im Team-Raum ist, auf das Abzeichen „im Spiel“ achten. | Mitglieder, die noch nicht in der Planung sind, stehen unter „Noch nicht in der Planung“ und werden mit einem Klick Bauleute (mit „Rückgängig“); das Konto zeigt je Item „fehlt“, „zugesagt“, „ohne Zusage“, „eingebracht“, „entnommen“ und den Saldo; „Noch ohne Sammelzusage“ listet, was niemand bringt; der Bauzettel enthält Zusagen und Lagerbuchungen. (Abnahme PROJ-05) |
 | PROJ-19 | Gelände und Wege: Rampe, Treppen, Brücke | vertieft | 1. Tab „Landschaft“: Gestaltung beginnen, mit „Rampe“ (M) eine Zufahrt zu einem höheren Platz legen, mit „Aufschütten“ (U) eine Mulde füllen.<br>2. Werkzeug „Weg“: Stufen „Treppen“, Belag Steinweg, einen Weg die Rampe hinauf legen; einen zweiten Weg mit „Über Wasser: Brücke mit Geländer“ über einen Bach legen (oder einen Weg aus der Weltkarte übernehmen).<br>3. „Als Bauteil ins Projekt übernehmen“, als .litematic exportieren und im Spiel ansehen. | Jeder Höhenwechsel des Wegs hat eine Treppe, die bergauf zeigt (über die ganze Breite); die Brücke liegt einen Block über dem Wasser, das Wasser bleibt, Zäune oder Mauern stehen an den Seiten und hängen zusammen; Materialliste zählt Treppen, Planken und Zäune. (Abnahme TERRAIN-03) |
 
 ## WERK · Werkstatt (Blockeditor) (Planer)
@@ -296,7 +297,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | VIEW-02 | START-06, DATEI-01 |
 | WORLD-IMPORT-01 | KARTE-04 |
 
-### Mit Minecraft (Mod oder Spiel) (37 Pakete)
+### Mit Minecraft (Mod oder Spiel) (38 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -334,6 +335,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | MAT-03 | PROJ-14 |
 | MAT-04 | PROJ-14 |
 | NBT-01 | DATEI-07 |
+| PROJ-05 | PROJ-23 |
 | QA-04 | SYS-01, SYS-02, LIVE-06 |
 | SIZE-01 | DATEI-05, WERK-07, MOD-15, LIVE-09 |
 | TERRAIN-03 | PROJ-19, PROJ-06, BIB-19 |

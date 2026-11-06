@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T12:25:51.250Z",
+  "updatedAt": "2026-11-06T09:06:53.011Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -8027,7 +8027,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T09:06:53.011Z",
       "area": "PROJEKT",
       "thread": "Projektmodul vertiefen",
       "philipp": [
@@ -8036,9 +8036,7 @@
           "text": "Reiter „Planung“ abnehmen (PROJ-09…11)."
         }
       ],
-      "orphans": [
-        "Abhängigkeiten zwischen Projekten auf der Weltkarte; Bauleute aus dem Spiel; Lagerbuchungen je Bauleute."
-      ]
+      "orphans": []
     },
     {
       "id": "GAME-09",
@@ -9713,7 +9711,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T09:06:53.011Z",
       "area": "PROJEKT",
       "thread": "Projektmodul vertiefen",
       "philipp": [
@@ -9722,9 +9720,7 @@
           "text": "Basisplan, Material abwarten und Anteil der Bautage im Reiter „Planung“ abnehmen (PROJ-16…18)."
         }
       ],
-      "orphans": [
-        "Abhängigkeiten zwischen Projekten auf der Weltkarte."
-      ]
+      "orphans": []
     },
     {
       "id": "PROJ-03",
@@ -9882,6 +9878,80 @@
         {
           "kind": "planer",
           "text": "Zwei Projekte nacheinander planen (erst Lager, dann Burg) und den Starthinweis prüfen (PROJ-21)."
+        }
+      ],
+      "orphans": []
+    },
+    {
+      "id": "PROJ-05",
+      "title": "Bauleute-Konto und Bauleute aus dem Spiel: Lagerbuchungen, Sammelzusagen und Saldo je Bauleute, Mitspieler aus dem Team und live aus dem Team-Raum in der Planung",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Projekte untereinander verknüpfen“)",
+      "dependencies": [
+        "PROJ-01",
+        "PROJ-03"
+      ],
+      "scope": [
+        "packages/domain/src/planning/builderAccount.ts",
+        "apps/web/src/views/project/PlanningTab.tsx",
+        "apps/web/src/styles/planning.css",
+        "apps/web/src/testing/testplan.ts",
+        "tests/unit/planning/builder-account.test.mjs",
+        "tests/e2e/builder-account.e2e.mjs",
+        "docs/architecture/planer/PROGRAM.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "PROJ-05-S01",
+          "title": "builderAccounts: je Bauleute Restbedarf der Abschnitte gegen eigene und fremde Sammelzusagen, eingebracht (Beiträge, Einlagerungen), entnommen, Saldo; „Noch ohne Sammelzusage“ je Item; Kandidaten (Teammitglieder ohne Planung) und fremde Spieler im Team-Raum.",
+          "done": true
+        },
+        {
+          "id": "PROJ-05-S02",
+          "title": "Planung: Live-Abzeichen (im Spiel/Planer, abwesend), aufklappbares Konto mit Tabelle, Bauzettel mit Zusagen und Lagerbuchungen, Kasten „Bauleute aus dem Spiel“ mit „Team übernehmen“ und Rückgängig.",
+          "done": true
+        },
+        {
+          "id": "PROJ-05-S03",
+          "title": "Abnahme PROJ-23 durch Philipp (mit Mitspielern oder zwei Browsern).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Konto und Kandidaten sind nur abgeleitet: nichts Neues wird gespeichert, die Übernahme ist ein Rückgängig-Schritt.",
+        "Ohne Team zeigt das Konto nur den Bedarf; der Serverschlüssel zählt nie als Bauleute.",
+        "Kein Querscrollen bei 390 px."
+      ],
+      "next": "Abnahme PROJ-23 durch Philipp.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/unit/planning/builder-account.test.mjs",
+          "note": "3 Fälle: ohne Team nur Bedarf; Zusagen eigene/andere, Lieferung, Saldo, Live (Spiel vor Planer, Server ausgenommen), Kandidat und fremder Spieler, Übernahme, Bauzettel; „ohne Zusage“ einmal je Item."
+        },
+        {
+          "path": "tests/e2e/builder-account.e2e.mjs",
+          "note": "Chromium 1400/390 px: Team gründen, Lieferung und Sammelzusage, Kandidat in der Planung, Team übernehmen, Rückgängig, Konto mit Saldo +32, kein Querscrollen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Einheits- und Browsertests grün; Abnahme PROJ-23 offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-06T09:06:53.011Z",
+      "area": "PROJEKT",
+      "thread": "Projekte untereinander verknüpfen",
+      "philipp": [
+        {
+          "kind": "planer",
+          "text": "Team übernehmen, Konto je Bauleute und Bauzettel prüfen, am besten mit einem Mitspieler im Team-Raum (PROJ-23)."
         }
       ],
       "orphans": []
@@ -21884,6 +21954,52 @@
           "done": 4,
           "total": 5,
           "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T09:06:53.011Z",
+      "kind": "progress",
+      "items": [
+        "PROJ-05",
+        "PROJ-01",
+        "PROJ-02"
+      ],
+      "summary": "PROJ-05: Bauleute-Konto (Sammelzusagen, eingebracht, entnommen, Saldo, ohne Zusage) und Bauleute aus dem Spiel (Kandidaten aus dem Team, live im Team-Raum, Team übernehmen mit Rückgängig) in der Planung; Waisen von PROJ-01/02 erledigt (Projektabhängigkeiten auf der Weltkarte seit PROJ-04).",
+      "files": [
+        "apps/web/src/styles/planning.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/project/PlanningTab.tsx",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/planer/PROGRAM.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/planning/builderAccount.ts",
+        "tests/e2e/builder-account.e2e.mjs",
+        "tests/unit/planning/builder-account.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PROJ-05",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Abnahme PROJ-23 durch Philipp."
+        },
+        {
+          "id": "PROJ-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel."
+        },
+        {
+          "id": "PROJ-02",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05, PROJ-16…18)."
         }
       ]
     }

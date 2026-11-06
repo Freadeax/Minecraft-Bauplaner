@@ -98,8 +98,17 @@ Weiter optional in `project.site.program`, ältere Projekte bleiben unverändert
 - **Oberfläche:** Planung → „Reihenfolge der Projekte“ (Auswahl, Grund, Liste mit Endtermin, „Danach kommen“); Weltkarte: gestrichelte Pfeile vom Vorgänger zum Nachfolger (`PlanLayer.order`, Farbe `--map-order`) und im Detail „Erst nach … / Danach …“.
 - Tests: `tests/unit/planning/project-order.test.mjs`, `tests/e2e/project-order.e2e.mjs`; Abnahme PROJ-21.
 
+## Runde 5 PROJ-05: Bauleute-Konto und Bauleute aus dem Spiel (06.11.2026)
+
+- **Fachkern** (`packages/domain/src/planning/builderAccount.ts`, nur abgeleitet, nichts gespeichert): `builderAccounts(plan, teamView | null, presence?)` verbindet je Bauleute den Restbedarf der zugewiesenen Abschnitte (`plan.builders[].items`, nach dem Lager der Baustelle) mit dem Teamprotokoll: eigene Sammelzusagen (`gather.claim`), Zusagen anderer für dasselbe Item, „ohne Zusage“ (fehlt − alle Zusagen, nie unter 0), eingebracht (Beiträge + Einlagerungen in Teamkisten), entnommen und Saldo. Item-IDs ohne Namensraum gelten als `minecraft:`. Mitglieds-ID = Bauleute-ID (wie bei `teamIntoProgram`), darum genügt der Vergleich der IDs.
+- **Bauleute aus dem Spiel:** `candidates` sind Teammitglieder (auch über die Mod beigetretene) ohne Eintrag in der Planung, Gäste ohne Abschnitt ausgenommen; `strangers` sind Spieler, die der Team-Raum live im Spiel meldet, die aber weder Bauleute noch Mitglied sind. `live` je Bauleute nimmt die Anwesenheit aus dem Team-Raum (Spiel vor Planer, neueste zuerst; der Serverschlüssel zählt nie als Bauleute).
+- **„Noch ohne Sammelzusage“:** je Item einmal, mit dem größten offenen Rest über die Bauleute (gemeinsame Abschnitte zählen nicht doppelt) und den Bauleuten, die es brauchen.
+- **Oberfläche:** Planung → Bauleute: Abzeichen „● im Spiel als … · Abschnitt“ / „im Planer“ / „abwesend bis“, aufklappbares „Konto“ mit Tabelle je Item und Saldo; „Bauzettel kopieren“ hängt Zusagen und Lagerbuchungen an (`accountText`). Darunter „Bauleute aus dem Spiel“: „Team übernehmen (N)“ (dieselbe Übernahme wie im Reiter Team, mit „Rückgängig“ direkt daneben), Kandidaten mit Live-Punkt, fremde Spieler im Raum und die Liste ohne Zusage.
+- Die Abhängigkeiten zwischen Projekten auf der Weltkarte (Folgeidee aus PROJ-01/02) sind mit PROJ-04 erledigt.
+- Tests: `tests/unit/planning/builder-account.test.mjs`, `tests/e2e/builder-account.e2e.mjs`; Abnahme PROJ-23.
+
 ## Grenzen
 
 - Bautage sind Projektionen aus Bautempo und Restbedarf – keine Messung, keine Sammel- oder Laufzeiten. Ein Abschnitt ist die kleinste Planungseinheit; ein großer Abschnitt mit einer Person bleibt lang.
 - Abhängigkeiten gelten erst als erfüllt, wenn alle Schritte des vorausgesetzten Abschnitts abgehakt sind (auch geprüfte Schritte aus dem Spiel zählen erst nach dem Abhaken).
-- Keine Teamsynchronisation: Bauleute sind Namen im lokalen Projekt; wer was abhakt, wird nicht festgehalten (TEAM-03). Abwesenheiten sind ganze Tage (keine halben). Lagerbuchungen je Bauleute und Abhängigkeiten zwischen verschiedenen Projekten auf der Weltkarte sind offen.
+- Keine Teamsynchronisation: Bauleute sind Namen im lokalen Projekt; wer was abhakt, wird nicht festgehalten (TEAM-03). Abwesenheiten sind ganze Tage (keine halben). Lagerbuchungen je Bauleute (PROJ-05) zählen nur, was im Teamprotokoll steht: Einlagerungen und Entnahmen braucht das Paper-Plugin oder die Mod (Kistenzählung), Zusagen und Lieferungen tragen die Spieler selbst ein.

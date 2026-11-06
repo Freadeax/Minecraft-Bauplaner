@@ -3,12 +3,14 @@ import {
   activateBaseline, addAbsence, addBuilder, addDependency, addMilestone, assignSection, builderText, clearBaseline, removeAbsence, removeBaseline, renameBaseline, moveMilestone, MILESTONE_STATUS_LABEL, paceOf, planProgramWithMaterial, programIssues, programOf, setBaseline,
   PROGRAM_PRESET_LABEL, programText, removeBuilder, removeDependency, removeMilestone, SECTION_STATE_LABEL, setProgramSettings, siteOf, siteOperation,
   suggestDependencies, suggestProgram, updateBuilder, updateMilestone, UNASSIGNED,
+  accountText, builderAccounts, setProgram, teamContextOf, teamIntoProgram, teamView,
 } from '../../../../../packages/domain/src/index.js';
-import type { Builder, BuilderLoad, DependencySuggestion, ProductionReport, ProgramPlan, ProgramPreset, ScheduledSection, SitePlan } from '../../../../../packages/domain/src/index.js';
+import type { AccountReport, BuilderAccount, Builder, BuilderLoad, DependencySuggestion, ProductionReport, ProgramPlan, ProgramPreset, ScheduledSection, SitePlan } from '../../../../../packages/domain/src/index.js';
 import { download, errorText, formatNumber, localToday } from '../../app/ui';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
 import { ProjectOrder } from './ProjectOrder';
+import { useRoomConnection } from './team/roomClient';
 import '../../styles/planning.css';
 
 const pct = (a: number, b: number): number => b ? Math.round(a / b * 100) : 0;
@@ -39,6 +41,10 @@ export function PlanningTab({ session }: { session: ProjectSession }) {
   const plan = scheduled?.plan ?? null, readiness = scheduled?.readiness ?? null;
   const suggestions = useMemo(() => guide ? suggestDependencies(site, project, guide) : [], [site, project, guide]);
   const issues = useMemo(() => programIssues(site), [site]);
+  const room = useRoomConnection();
+  const team = site.team;
+  const view = useMemo(() => team ? teamView(team, teamContextOf(site)) : null, [team, site]);
+  const accounts = useMemo(() => plan ? builderAccounts(plan, view, room.presence) : null, [plan, view, room.presence]);
 
   if (session.computationState !== 'ready') return <section className="planning" aria-label="Planung"><p role="status">{session.computationState === 'pending' ? 'Planung wird neu berechnet.' : session.computationState === 'cancelled' ? 'Planungsberechnung abgebrochen.' : 'Planung nicht verfügbar.'}</p></section>;
   if (!isResolved(resolution)) return <section className="planning" aria-label="Planung"><div className="notice warning" role="alert"><strong>Planung nicht verfügbar</strong><p>{resolution.error}</p></div></section>;
@@ -71,7 +77,8 @@ export function PlanningTab({ session }: { session: ProjectSession }) {
     <Milestones plan={plan} site={site} save={save} />
     <Dependencies site={site} plan={plan} suggestions={suggestions} save={save} />
     <ProjectOrder project={project} site={site} save={save} />
-    <Builders plan={plan} site={site} save={save} title={title} />
+    <Builders plan={plan} site={site} save={save} title={title} accounts={accounts} />
+    {accounts && (accounts.hasTeam || accounts.strangers.length > 0) && <TeamIntoPlanning site={site} view={view} report={accounts} save={save} projectId={project.id} undo={session.undo} />}
     <section className="site-block prog-settings" aria-label="Einstellungen">
       <div className="site-head"><h3>Einstellungen <small>Startdatum, Bautage je Woche, Material und Basisplan</small></h3>
         <button onClick={() => download(`Bauprogramm_${fileStem(title)}.txt`, programText(plan, site, title), 'text/plain')}>Bauprogramm als Text</button></div>
@@ -205,7 +212,7 @@ function Dependencies({ site, plan, suggestions, save }: { site: SitePlan; plan:
   </section>;
 }
 
-function Builders({ plan, site, save, title }: { plan: ProgramPlan; site: SitePlan; save: Save; title: string }) {
+function Builders({ plan, site, save, title, accounts }: { plan: ProgramPlan; site: SitePlan; save: Save; title: string; accounts: AccountReport | null }) {
   const program = programOf(site);
   const [name, setName] = useState(''), [pace, setPace] = useState('');
   const [copied, setCopied] = useState('');
@@ -214,7 +221,8 @@ function Builders({ plan, site, save, title }: { plan: ProgramPlan; site: SitePl
     save(assignSection(site, sectionId, on ? [...current, builderId] : current.filter(b => b !== builderId)), `${site.sections.find(s => s.id === sectionId)?.name}: ${on ? 'zugewiesen' : 'Zuweisung entfernt'}`);
   };
   const sheet = async (b: BuilderLoad) => {
-    const text = builderText(plan, site, b.id, title);
+    const account = accounts?.accounts.find(a => a.id === b.id);
+    const text = [builderText(plan, site, b.id, title), ...(account && accounts?.hasTeam ? accountText(account) : [])].join('\n');
     try { await navigator.clipboard.writeText(text); setCopied(b.id); setTimeout(() => setCopied(''), 2000); } catch { download(`Bauzettel_${fileStem(b.name)}.txt`, text, 'text/plain'); }
   };
   return <section className="site-block prog-builders" aria-label="Bauleute">
@@ -226,8 +234,8 @@ function Builders({ plan, site, save, title }: { plan: ProgramPlan; site: SitePl
       </form>
     </div>
     {!program.builders.length ? <p className="muted">Noch niemand eingetragen – der Zeitplan rechnet mit einem Spieler und dem Projekt-Bautempo.</p> : <>
-      <ul className="prog-builder-list">{plan.builders.map(b => <li key={b.id} className="prog-builder">
-        <div className="prog-builder-head"><strong>{b.name}</strong>
+      <ul className="prog-builder-list">{plan.builders.map(b => { const account = accounts?.accounts.find(a => a.id === b.id); return <li key={b.id} className="prog-builder" data-builder={b.id}>
+        <div className="prog-builder-head"><strong>{b.name}</strong>{account && <LiveBadge account={account} site={site} />}
           <label className="site-depth">Tempo <input type="number" className="site-stock" min={16} max={100000} defaultValue={b.blocksPerSession} key={`${b.id}:${b.blocksPerSession}`} aria-label={`Blöcke je Bautag von ${b.name}`}
             onBlur={e => { const n = Math.floor(Number(e.target.value)); if (n !== b.blocksPerSession) save(updateBuilder(site, b.id, { blocksPerSession: n >= 16 ? n : null }), `Bautempo von „${b.name}“`); }}
             onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }} /> Blöcke/Tag</label>
@@ -238,7 +246,8 @@ function Builders({ plan, site, save, title }: { plan: ProgramPlan; site: SitePl
           <button onClick={() => save(removeBuilder(site, b.id), `„${b.name}“ entfernt`)} aria-label={`${b.name} entfernen`}>✕</button></div>
         <Absences builder={program.builders.find(x => x.id === b.id)!} site={site} save={save} hasStart={!!program.start} />
         <small>{b.sectionIds.length} Abschnitt{b.sectionIds.length === 1 ? '' : 'e'} · {days(b.sessions)} · {formatNumber(b.blocksDone)} / {formatNumber(b.blocks)} Blöcke{b.nextId ? ` · als Nächstes „${site.sections.find(s => s.id === b.nextId)?.name}“` : ''}{b.gatherHours ? ` · ${b.gatherHours} h sammeln` : ''}{b.items.length ? ` · ${b.items.length} Items fehlen` : ''}</small>
-      </li>)}</ul>
+        {account && accounts?.hasTeam && <AccountDetails account={account} />}
+      </li>; })}</ul>
       <div className="table-wrap"><table className="materials-table prog-matrix" aria-label="Zuweisung">
         <thead><tr><th>Abschnitt</th>{plan.builders.map(b => <th key={b.id}>{b.name}</th>)}<th>Plan</th></tr></thead>
         <tbody>{plan.sections.map(s => <tr key={s.id} className={s.state === 'done' ? 'done' : ''}><td>{s.name}<small>{SECTION_STATE_LABEL[s.state]}{s.waitingFor.length ? ` · wartet auf ${s.waitingFor.map(id => site.sections.find(x => x.id === id)?.name).join(', ')}` : ''}</small></td>
@@ -248,6 +257,73 @@ function Builders({ plan, site, save, title }: { plan: ProgramPlan; site: SitePl
   </section>;
 }
 
+const short = (id: string): string => id.replace(/^minecraft:/, '');
+
+/** PROJ-05: live in the Team-Raum (game before planer) or away according to the team. */
+function LiveBadge({ account, site }: { account: BuilderAccount; site: SitePlan }) {
+  if (account.live) {
+    const section = account.live.section ? site.sections.find(s => s.id === account.live!.section)?.name : undefined;
+    return <span className={`badge ${account.live.where === 'spiel' ? 'done' : 'open'}`} data-live={account.live.where}
+      title="Live im Team-Raum">● {account.live.where === 'spiel' ? `im Spiel${account.live.player ? ` als ${account.live.player}` : ''}` : 'im Planer'}{section ? ` · ${section}` : ''}</span>;
+  }
+  if (account.away) return <span className="badge warn" title={account.away.note}>abwesend{account.away.until ? ` bis ${deDate(account.away.until)}` : ''}</span>;
+  return null;
+}
+
+/**
+ * PROJ-05: Bauleute-Konto. What this builder still needs for the assigned sections, what they promised
+ * to gather, what they brought into and took out of the team stores. Derived from the team log only.
+ */
+function AccountDetails({ account }: { account: BuilderAccount }) {
+  const t = account.totals;
+  if (!account.lines.length) return <small className="prog-account-empty">Konto: nichts offen, keine Buchungen.</small>;
+  return <details className="prog-account" data-account={account.id}>
+    <summary>Konto · {t.open ? <span className="warn-text">{formatNumber(t.open)} ohne Zusage</span> : t.missing ? 'alles zugesagt' : 'nichts offen'}
+      {' · '}zugesagt {formatNumber(t.claimed)} · eingebracht {formatNumber(t.brought)} · entnommen {formatNumber(t.taken)}
+      {' · '}Saldo <strong className={account.balance < 0 ? 'warn-text' : ''}>{account.balance > 0 ? '+' : ''}{formatNumber(account.balance)}</strong>
+      {account.placed ? ` · ${formatNumber(account.placed)} Blöcke gesetzt` : ''}</summary>
+    <div className="table-wrap"><table className="materials-table prog-account-table" aria-label={`Konto von ${account.name}`}>
+      <thead><tr><th>Item</th><th className="num">fehlt</th><th className="num">zugesagt</th><th className="num">andere</th><th className="num">ohne Zusage</th><th className="num">eingebracht</th><th className="num">entnommen</th></tr></thead>
+      <tbody>{account.lines.map(l => <tr key={l.itemId} className={l.open ? 'warn' : ''}><td>{short(l.itemId)}</td>
+        <td className="num">{l.missing ? formatNumber(l.missing) : '–'}</td><td className="num">{l.claimed ? formatNumber(l.claimed) : '–'}</td>
+        <td className="num">{l.claimedByOthers ? formatNumber(l.claimedByOthers) : '–'}</td><td className="num">{l.open ? <strong className="warn-text">{formatNumber(l.open)}</strong> : '–'}</td>
+        <td className="num">{l.brought ? formatNumber(l.brought) : '–'}</td><td className="num">{l.taken ? formatNumber(l.taken) : '–'}</td></tr>)}</tbody>
+    </table></div>
+    <small className="muted">„Fehlt“ zählt die offenen Abschnitte dieser Bauleute nach dem Lager der Baustelle; Zusagen, Einbringen und Entnahmen kommen aus dem Teamprotokoll (Sammelzusagen, Beiträge, Lagerkisten).</small>
+  </details>;
+}
+
+/**
+ * PROJ-05: Bauleute aus dem Spiel. Team members (also those who joined from the game) that are not in
+ * the planning yet, live players, and items nobody promised. One click takes the team into the plan.
+ */
+function TeamIntoPlanning({ site, view, report, save, projectId, undo }: { site: SitePlan; view: ReturnType<typeof teamView> | null; report: AccountReport; save: Save; projectId: string; undo(): void }) {
+  const program = programOf(site);
+  const [taken, setTaken] = useState('');
+  const sync = view ? teamIntoProgram(program, view, today()) : null;
+  const changes = sync ? sync.added + sync.linked + sync.assigned + sync.absences : 0;
+  const take = () => {
+    if (!sync) return;
+    save(setProgram(site, { ...program, builders: sync.builders, assignments: sync.assignments }),
+      `Team übernommen: ${sync.added} Bauleute neu, ${sync.linked} Minecraft-Namen, ${sync.assigned} Zuweisungen${sync.absences ? `, ${sync.absences} Abwesenheiten` : ''}`);
+    setTaken(`${sync.added} Bauleute neu, ${sync.linked} Minecraft-Namen ergänzt, ${sync.assigned} Zuweisungen geändert${sync.absences ? `, ${sync.absences} Abwesenheiten` : ''}`);
+  };
+  const teamHref = `#/projekt/${projectId}/team`;
+  return <section className="site-block prog-team" aria-label="Bauleute aus dem Team">
+    <div className="site-head"><h3>Bauleute aus dem Spiel <small>Mitspieler, Zusagen und Lager aus dem Team</small></h3>
+      {sync && <button onClick={take} disabled={!changes} className={changes ? 'primary' : ''}>{changes ? `Team übernehmen (${changes})` : 'Planung entspricht dem Team'}</button>}</div>
+    {taken && <p className="notice" role="status">Aus dem Team übernommen: {taken}. <button type="button" className="secondary" onClick={() => { undo(); setTaken(''); }}>Rückgängig</button></p>}
+    {report.candidates.length > 0 && <div className="notice" role="status"><strong>Noch nicht in der Planung</strong>
+      <ul className="prog-candidates">{report.candidates.map(c => <li key={c.id}>{c.name}{c.player ? ` (${c.player})` : ''}{c.live ? <span className="badge done">● live</span> : null}{c.sections ? <small> · {c.sections} Abschnitt{c.sections === 1 ? '' : 'e'} im Team</small> : null}</li>)}</ul>
+      <small>„Team übernehmen“ legt sie als Bauleute an, ergänzt Minecraft-Namen, übernimmt die Abschnitte aus dem Team und „abwesend bis“.</small></div>}
+    {report.strangers.length > 0 && <p className="muted" role="status">Im Spiel, aber nicht im Team: {report.strangers.map(s => s.player ?? s.member).join(', ')}. Sie erscheinen hier, sobald sie über die <a href={teamHref}>Einladung im Reiter Team</a> beitreten.</p>}
+    {report.unclaimed.length > 0 ? <div className="prog-unclaimed"><strong>Noch ohne Sammelzusage</strong>
+      <ul>{report.unclaimed.slice(0, 12).map(u => <li key={u.itemId}>{short(u.itemId)}: {formatNumber(u.open)} <small>für {u.builders.map(id => report.accounts.find(a => a.id === id)?.name ?? id).join(', ')}</small></li>)}</ul>
+      {report.unclaimed.length > 12 && <small>und {report.unclaimed.length - 12} weitere Sorten.</small>}
+      <small className="muted"> Zusagen gibt man im Reiter <a href={teamHref}>Team</a> unter „Beiträge und Sammeln“ ab.</small></div>
+      : report.hasTeam && report.accounts.some(a => a.totals.missing) ? <p className="muted">Für alle fehlenden Items gibt es eine Sammelzusage.</p> : null}
+  </section>;
+}
 
 /**
  * Basispläne (PROJ-02/PROJ-03): the active baseline and the earlier ones. A new baseline keeps the old
