@@ -142,7 +142,7 @@ export type { OwnGrossprojektInput, OwnGrossprojekt } from './catalog/ownGrosspr
 export { TEAM_SCHEMA_VERSION, MAX_TEAM_EVENTS, TEAM_ROLES, TEAM_ROLE_LABEL, TEAM_ROLE_TEXT, NOTE_TAGS, NOTE_TAG_LABEL, PLAYER_NAME, isKnownEvent, checkTeamEvent, compareEvents, checkTeam,
   createTeam, teamEvent, appendEvents, mergeTeam, SECTION_TEAM_STATUS_LABEL, canTeam, teamView, eventLabel, describeEvent, authorize, laterThan, teamAssignments,
   REPORT_CODE_PREFIX, MAX_REPORT_CODE, encodeReportCode, decodeReportCode, TEAM_PACKAGE_FORMAT, TEAM_PACKAGE_VERSION, buildTeamPackage, teamPackageFileName, readTeamPackage,
-  teamStatusText, TEAM_SERVER_FORMAT, teamServerFile, teamServerFileName, readTeamServerFile, programBuilders, teamContextOf, takeOverPlan, joinedOnly, STORE_PURPOSES, STORE_PROTECTIONS, teamIntoProgram, SERVER_ONLY_KINDS, whereInPlan, digestInfo, coveredByDigest, effectiveEvents, foldTeam } from './team/team.js';
+  teamStatusText, TEAM_SERVER_FORMAT, teamServerFile, teamServerFileName, headerFingerprint, readTeamServerFile, programBuilders, teamContextOf, takeOverPlan, joinedOnly, STORE_PURPOSES, STORE_PROTECTIONS, teamIntoProgram, SERVER_ONLY_KINDS, whereInPlan, digestInfo, coveredByDigest, effectiveEvents, foldTeam } from './team/team.js';
 export { compactTeam, compactBefore, digestProjection, DIGEST_PART_CHARS } from './team/teamDigest.js';
 export type { CompactionPlan, CompactionOptions } from './team/teamDigest.js';
 export { LIVE_FEATURE_TEAM, teamLinkState, TEAM_LINK_WAY_TEXT, readLiveTeam, readLiveTeamPull, teamLinkProblem, teamLinkText } from './team/teamLink.js';

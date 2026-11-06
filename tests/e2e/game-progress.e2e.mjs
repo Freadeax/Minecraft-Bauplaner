@@ -150,7 +150,7 @@ test('Baustand aus dem Spiel: holen, Ebenen, Abweichungen auf der Karte, abhaken
   await fail.waitFor();
   assert.match(await fail.innerText(), /dein Spiel auf diesem PC: im Spiel ist ein anderer Plan platziert/);
   assert.match(await fail.innerText(), /Server-Plugin: kein Server gekoppelt/);
-  assert.match(await fail.innerText(), /importieren/);
+  assert.match(await fail.innerText(), /Notfall: Aufnahme-Datei/);
   assert.deepEqual(errors, []);
   await context.close();
 });

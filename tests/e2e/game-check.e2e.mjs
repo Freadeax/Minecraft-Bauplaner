@@ -118,10 +118,10 @@ test('Bauen mobil: Abgleich bleibt bedienbar', async () => {
   await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   await p.getByRole('link', { name: 'Bauen' }).click();
-  const button = p.locator('.game-check .file-button');
+  const button = p.locator('.game-check .game-file-emergency > summary');
   await button.waitFor();
   const box = await button.boundingBox();
-  assert.ok(box.x >= 0 && box.x + box.width <= 390, 'import button fits the phone width');
+  assert.ok(box.x >= 0 && box.x + box.width <= 390, 'emergency import fits the phone width');
   assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= 390), 'no horizontal scroll');
   await p.close();
 });

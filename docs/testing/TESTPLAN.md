@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/checks/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 160 Fälle in 13 Bereichen, davon 67 Kernfälle.
+Umfang: 162 Fälle in 13 Bereichen, davon 69 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -255,6 +255,8 @@ Planer, Mod und Paper-Plugin verbinden sich per Klick; der Server wird aus dem P
 | LINK-09 | Ausweichwege: Team-Raum weg, WebSocket gesperrt, Baustand über den besten Weg ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Mod 0.16.0, Team live, „Mein Spiel verbinden“, Plan im Spiel platziert.<br>2. Minecraft beenden, WLAN/Internet trennen, Minecraft neu starten und J → „Befehle & Status“ öffnen.<br>3. Ohne Internet einen Abschnitt bauen (Hologramm misst), dann Internet wieder verbinden.<br>4. Im Planer Reiter „Bauen“ → „⟳ Baustand holen (bester Weg)“. | Ohne Internet zeigt die Mod den Teamstand weiter („zeigt den Stand von …“, „1 Meldung wartet“); nach dem Wiederverbinden meldet der Chat „gemerkte Messung … nachgereicht“ und der Planer zeigt den Abschnitt „laut Spiel“. Der Planer holt den Baustand über „dein Spiel auf diesem PC“ und nennt den Weg; ohne Mod nimmt er den Team-Raum oder den Server und sagt, warum. |
 | LINK-10 | Viele Meldungen auf einmal und Verbindungsabbruch: nichts geht verloren ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Mod 0.17.0, Team live, „Mein Spiel verbinden“, Plan im Spiel platziert, Planer im Reiter „Team“ offen.<br>2. Internet am PC mit Minecraft trennen und in zwei, drei Abschnitten bauen sowie eine markierte Team-Kiste öffnen und schließen.<br>3. Internet wieder verbinden und warten, bis J → „Befehle & Status“ „live über den Team-Raum“ zeigt.<br>4. Mit freiwilligem Server-Plugin: im Planer eine Servereinstellung ändern, während im Spiel gebaut wird. | Nach dem Wiederverbinden stehen alle gemessenen Abschnitte und die Kiste „laut Spiel“ im Planer, jede genau einmal; „Meldungen warten“ geht auf 0. Das Plugin bleibt dabei mit dem Team-Raum verbunden (kein „Verbindung verloren“ in der Serverkonsole). |
 | LINK-11 | Plan direkt aus dem Reiter „Bauen“ auf den Server (LINK-02 S04) ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | vertieft | 1. Server gekoppelt (Mod auf dem Server oder Team-Raum). Im Projekt Reiter „Bauen“ → „⇪ Plan auf den Server legen“.<br>2. Einmal mit einem Projekt, das auf der Weltkarte steht, einmal mit einem, das nur als Hologramm im Spiel platziert ist, einmal ohne beides. | Meldung nennt Server, Revision und den Anker samt Herkunft („Position von der Weltkarte“ / „Position deines Hologramms im Spiel“); ohne Position steht ein Hinweis auf /bp anker hier. Danach klappt „⇩ Auf dem Server aufnehmen“ ohne Datei und ohne Befehl. |
+| LINK-12 | Server bekommt die Team-Infos von selbst über das Internet (Mod 0.21.0) ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Paper-Server mit Bauplaner-Plugin 0.21.0, noch mit keinem Team-Raum verbunden. Im Planer als Bauleitung: Reiter „Team“ → „Team live“ eingeschaltet, Abschnitte angelegt.<br>2. „Mein Spiel verbinden“ klicken, Minecraft mit Mod 0.21.0 starten und als OP auf den Server gehen; falls gefragt J → „Teambau erlauben“.<br>3. Im Planer unter „Team live“ die Zeile „Server-Plugin“ ansehen, im Spiel `/bp team raum` eingeben und in einem fremden Abschnitt einen Block setzen.<br>4. Im Planer einen Abschnitt umbenennen oder das Projekt auf der Weltkarte verschieben, nach ein paar Sekunden im Spiel `/bp team abschnitte`. | Im Chat steht „Server-Plugin: Mit dem Team-Raum … verbunden“, ohne dass etwas heruntergeladen, kopiert oder eingetippt wurde. Der Planer zeigt „Server-Plugin: ● im Team-Raum“, `/bp team raum` nennt den Raum, der Abschnittsschutz und die geprüften Lagerkisten greifen. Die Änderung aus Schritt 4 kommt ohne neue Freigabe auf dem Server an. Ein Spieler ohne OP kann den Raum nicht übergeben. |
+| LINK-13 | Dateiwege nur noch als Notfall ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Im Reiter „Team“ nach unten scrollen; im Reiter „Bauen“ den Abgleich ansehen; Seite „Spiel“ lesen.<br>2. Den Block „Notfall ohne Internet“ und „Notfall: Aufnahme-Datei“ aufklappen. | Kein Hauptweg verlangt Herunterladen, Kopieren oder Einfügen: Teampaket, Meldecode, Serverdatei, Server-Link und Aufnahme-Datei stehen nur zugeklappt unter „Notfall“. Die Texte nennen „Team live“, „Mein Spiel verbinden“ und „⟳ Baustand holen“ als normalen Weg. |
 | LINK-04 | Vom iPad ohne Mod steuern ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | vertieft | 1. Am PC (#/mod, gekoppelt, Server mit Raum verbunden): „Weiteres Gerät freigeben (z. B. iPad)“ → Link erstellen.<br>2. Link auf dem iPad öffnen, eine Einstellung ändern.<br>3. Am PC das iPad wieder „entfernen“. | iPad zeigt „über den Team-Raum“ und ändert die Einstellung; nach dem Entfernen meldet es „nicht (mehr) gekoppelt“. |
 
 ## Abnahme je Roadmap-Paket
@@ -354,7 +356,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | TERRAIN-03 | PROJ-19, PROJ-06, BIB-19, BIB-20 |
 | TERRAIN-04 | PROJ-24, PROJ-25 |
 
-### Mit Paper-Server und Plugin (11 Pakete)
+### Mit Paper-Server und Plugin (12 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -368,4 +370,5 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | LINK-03 | LIVE-01, LINK-01 |
 | LINK-04 | LINK-01, LINK-02, LINK-03 |
 | LINK-06 | LINK-05, LINK-06 |
+| LINK-11 | LINK-12, LINK-13 |
 | PROD-05 | LAGER-10, PROJ-12 |

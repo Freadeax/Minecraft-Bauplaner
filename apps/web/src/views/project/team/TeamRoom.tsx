@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { goLive, inviteLink, leaveLive, readBackup, readTeamPackage, roomStatus, serverLink, siteOf, teamContextOf, teamView, whereInPlan } from '../../../../../../packages/domain/src/index.js';
+import { goLive, headerFingerprint, inviteLink, leaveLive, readBackup, readTeamPackage, roomStatus, serverLink, siteOf, teamContextOf, teamView, whereInPlan } from '../../../../../../packages/domain/src/index.js';
 import type { RoomTeam, TeamState, TeamView } from '../../../../../../packages/domain/src/index.js';
 import { useApp } from '../../../app/context';
 import { errorText } from '../../../app/ui';
 import { createRoom, getPlan, putHeader, putPlan, readRoomUrl, rotateKey, saveRoomUrl, useRoomConnection } from './roomClient';
 import type { ProjectSession } from '../session';
 import { roomHeader, takePlan, teamPackageText } from './teamTransfer';
-import { control, currentPairedServer, gameLeaveRoom, gameRoomState, gameToRoom, rememberRoom } from '../../mod/serverClient';
+import { control, currentPairedServer, gameLeaveRoom, gameRoomState, gameToRoom, reachableServer, rememberRoom } from '../../mod/serverClient';
 
 const UPLOADED_KEY = (room: string) => `bauplaner.teamraum.plan.${room}`;
+const HEADER_KEY = (room: string) => `bauplaner.teamraum.kopf.${room}`;
 const read = (k: string) => { try { return localStorage.getItem(k) ?? ''; } catch { return ''; } };
 const write = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* private mode */ } };
 export const newDeviceId = () => `dev_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
@@ -49,8 +50,10 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
     const text = await teamPackageText(session.project, t, { member: me?.id ?? t.founder, name: me?.name ?? 'Bauleitung' }, true, { repo, library });
     const sha = await putPlan(t.live, text);
     const release = teamView(t, teamContextOf(siteOf(session.project))).release;
-    await putHeader(t.live, roomHeader(session, t, { sha, at: new Date().toISOString(), bytes: text.length,
-      ...(release && { revisionNumber: release.revisionNumber, revisionId: release.revisionId }) }));
+    const h = roomHeader(session, t, { sha, at: new Date().toISOString(), bytes: text.length,
+      ...(release && { revisionNumber: release.revisionNumber, revisionId: release.revisionId }) });
+    await putHeader(t.live, h);
+    write(HEADER_KEY(t.live.room), headerFingerprint(h));
     write(UPLOADED_KEY(t.live.room), release?.revisionId ?? sha);
     if (!quiet) onMessage(`Planstand${release ? ` ${release.revisionNumber}` : ''} liegt im Team-Raum. Alle mit dem Link bekommen ihn ohne Datei.`);
   };
@@ -77,6 +80,37 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
     uploading.current = releaseId;
     void uploadPlan(team as RoomTeam, true).then(() => onMessage(`Planstand ${view.release?.revisionNumber} automatisch in den Team-Raum gestellt.`)).catch(e => { uploading.current = ''; onMessage(errorText(e)); });
   }, [releaseId, room.connected, live?.adminKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // LINK-11: sections, boxes, need and world placement reach the server without a release and without a file.
+  // The Bauleitung's planner puts the header again (with the current plan snapshot) whenever that part changes.
+  const header = useMemo(() => { if (!live?.adminKey) return null; try { return roomHeader(session, team); } catch { return null; } },
+    [live?.adminKey, session.project, session.computation, team]); // eslint-disable-line react-hooks/exhaustive-deps
+  const fingerprint = header ? headerFingerprint(header) : '';
+  useEffect(() => {
+    if (!live?.adminKey || !room.connected || !header || !room.planSha) return;
+    if (read(HEADER_KEY(live.room)) === fingerprint) return;
+    const timer = window.setTimeout(() => {
+      void putHeader(live, { ...header, plan: { sha: room.planSha, at: new Date().toISOString(), bytes: 0, ...(room.planNumber !== undefined && { revisionNumber: room.planNumber }), ...(room.planRevision && { revisionId: room.planRevision }) } })
+        .then(() => write(HEADER_KEY(live.room), fingerprint)).catch(() => undefined);
+    }, 4000);
+    return () => window.clearTimeout(timer);
+  }, [fingerprint, room.connected, room.planSha, live?.adminKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // LINK-11: the server plugin joins the room by itself – through a paired server (mod or another room) once per
+  // visit, otherwise through the Bauleitung's own game on the server (gameToRoom with the server key, link.room).
+  const serverHere = room.presence.some(p => p.where === 'server');
+  const autoServer = useRef('');
+  useEffect(() => {
+    if (!leads || !live?.serverKey || !room.connected || serverHere || autoServer.current === live.room) return;
+    autoServer.current = live.room;
+    const link = serverLink(pageBase(), live, live.serverKey);
+    void reachableServer().then(async s => {
+      if (!s) return;
+      const answer = await s.send('room', { link });
+      if (s.via === 'mod') rememberRoom(s.pairing.serverId, { url: live.url, room: live.room, key: live.key });
+      onMessage(`„${s.pairing.name}“ hat sich selbst mit dem Team-Raum verbunden${typeof answer.text === 'string' ? `: ${answer.text}` : '.'}`);
+    }).catch(() => { autoServer.current = ''; });
+  }, [leads, live?.serverKey, live?.room, room.connected, serverHere]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Helpers: the release came live, the matching plan is in the room – take it over with one click.
   const planMissing = !!releaseId && !session.project.revisions.some(r => r.id === releaseId);
@@ -144,9 +178,13 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
       <p>Die Bauleitung hat einen neuen Plan freigegeben. Dein bisheriger Stand bleibt als Kopie erhalten.</p>
       <button className="primary" disabled={busy || !planReady} onClick={() => void takeOver()}>{planReady ? 'Planstand übernehmen' : 'Planstand kommt gleich …'}</button></div>}
     {game && <p className={`team-game-room ${gameLine(game, live.room).warn ? 'warn' : ''}`} data-testid="game-room" role="status">{gameLine(game, live.room).text} <button className="link-button" onClick={askGame}>Neu prüfen</button></p>}
+    <p className={`team-server-room ${serverHere ? 'on' : ''}`} data-testid="server-room" role="status">{serverHere
+      ? 'Server-Plugin: ● im Team-Raum – bekommt Abschnitte, Lagerkisten und Abschnittsschutz live aus Planer und Mods.'
+      : leads ? 'Server-Plugin (freiwillig): noch nicht im Raum. Es verbindet sich von selbst, sobald du nach „Mein Spiel verbinden“ als Bauleitung (OP) auf dem Server mit Bauplaner-Plugin bist – oder sofort, wenn der Server gekoppelt ist. Nichts herunterladen, nichts einfügen.'
+      : 'Server-Plugin (freiwillig): nicht im Raum. Die Bauleitung verbindet es mit ihrem Spiel.'}</p>
     <div className="team-buttons">
       <button className="primary" disabled={busy || !me} title={me ? 'Die Bauplaner-Mod in deinem Minecraft spricht dann selbst mit diesem Raum: Abschnitte, Meldungen und Notizen live im Spiel – ohne Plugin und ohne Datei auf dem Server.' : 'Zuerst oben „Ich bin“ wählen.'}
-        onClick={() => void run(async () => { onMessage(await gameToRoom({ url: live.url, room: live.room, key: live.key }, { id: me!.id, name: me!.name }, team.name)); askGame(); })}>Mein Spiel verbinden</button>
+        onClick={() => void run(async () => { onMessage(await gameToRoom({ url: live.url, room: live.room, key: live.key }, { id: me!.id, name: me!.name }, team.name, leads && live.adminKey ? live.serverKey : undefined)); askGame(); })}>Mein Spiel verbinden</button>
       <button disabled={busy} className="secondary" title="Die Mod in deinem Minecraft trennt sich vom Team-Raum." onClick={() => void run(async () => { onMessage(await gameLeaveRoom()); askGame(); })}>Spiel trennen</button>
       <button disabled={busy} onClick={() => setShown(shown === 'invite' ? '' : 'invite')}>Einladungslink</button>
       {server && <button disabled={busy} title="Der gekoppelte Server verbindet sich selbst mit diesem Raum (LINK-04). Ohne Kopplung: Link für den Server." onClick={() => void run(async () => {
@@ -157,7 +195,6 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
         rememberRoom(paired.pairing.serverId, { url: live.url, room: live.room, key: live.key });
         onMessage(typeof answer.text === 'string' ? `„${paired.pairing.name}“: ${answer.text}` : 'Server verbunden.');
       })}>Server mit dem Raum verbinden</button>}
-      {server && <button disabled={busy} className="secondary" onClick={() => setShown(shown === 'server' ? '' : 'server')}>Link für den Server</button>}
       {live.adminKey && <button disabled={busy} onClick={() => void run(() => uploadPlan(team as RoomTeam))}>Plan in den Raum stellen</button>}
       <button disabled={busy} onClick={() => { saveLive(leaveLive(team as RoomTeam) as RoomTeam); onMessage('Live-Verbindung in diesem Browser getrennt. Der Team-Raum und die anderen bleiben unberührt.'); }}>Live trennen</button>
       {live.adminKey && <button disabled={busy} className="secondary" onClick={() => void renew('member')}>Einladung erneuern</button>}
@@ -169,6 +206,9 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
       <textarea readOnly rows={2} value={shown === 'invite' ? invite : server} aria-label={shown === 'invite' ? 'Einladungslink' : 'Link für den Server'} onFocus={e => e.currentTarget.select()} />
       <button onClick={() => void copyText(shown === 'invite' ? invite : server).then(ok => onMessage(ok ? 'Link kopiert.' : 'Kopieren nicht möglich – bitte den Link markieren und kopieren.'))}>Kopieren</button>
     </div>}
+    {server && <details className="team-emergency"><summary>Notfall: Server ohne Mod verbinden</summary>
+      <p className="muted">Nur wenn weder die Mod noch eine Kopplung gehen: Link für den Server anzeigen und auf dem Server <code>/bauplaner team verbinden &lt;Link&gt;</code> eingeben.</p>
+      <button disabled={busy} className="secondary" onClick={() => setShown(shown === 'server' ? '' : 'server')}>Link für den Server</button></details>}
   </div>;
 }
 

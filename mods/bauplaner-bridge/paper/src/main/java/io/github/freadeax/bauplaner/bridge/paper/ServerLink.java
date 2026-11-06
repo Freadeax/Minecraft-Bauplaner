@@ -78,16 +78,17 @@ final class ServerLink implements Listener {
         return plain.isEmpty() || plain.equalsIgnoreCase("A Minecraft Server") ? "Minecraft-Server" : plain;
     }
 
+    private boolean hasRoom() { return plugin.teamModule() != null && plugin.teamModule().anyRoom(); }
+
     static boolean mayClaim(Player p) { return p.isOp() || p.hasPermission("bauplaner.team.leitung"); }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
-        if (paired() || !mayClaim(p) || !hinted.add(p.getUniqueId())) return;
+        if (hasRoom() || !mayClaim(p) || !hinted.add(p.getUniqueId())) return;
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (!p.isOnline() || paired()) return;
-            p.sendMessage(PREFIX + "Dieser Server ist noch nicht mit dem Bauplaner gekoppelt. Im Planer auf der Seite "
-                    + ChatColor.YELLOW + "Spiel" + ChatColor.RESET + " „Server koppeln“ klicken (vorher hier J → „Teambau erlauben“). Du musst nichts eintippen.");
+            if (!p.isOnline() || hasRoom()) return;
+            p.sendMessage(PREFIX + "Dieser Server hat noch keinen Team-Raum. Als Bauleitung: im Planer „Team live“ → „Mein Spiel verbinden“ klicken und hier J → „Teambau erlauben“ – die Mod verbindet den Server dann selbst über das Internet. Nichts herunterladen, nichts eintippen.");
         }, 60L);
     }
 
@@ -102,6 +103,7 @@ final class ServerLink implements Listener {
             return switch (type) {
                 case "link.info" -> CompletableFuture.completedFuture(info(p));
                 case "link.claim" -> CompletableFuture.completedFuture(claim(p, LinkCore.str(o, "device")));
+                case "link.room" -> handOver(p, LinkCore.str(o, "link"));
                 case "link.ctl" -> control(LinkCore.str(o, "owner"), o.has("seq") && o.get("seq").isJsonPrimitive() ? o.get("seq").getAsLong() : -1,
                         LinkCore.str(o, "body"), LinkCore.str(o, "sig"), p.getName());
                 default -> CompletableFuture.completedFuture(error("Unbekannte Nachricht " + type));
@@ -122,6 +124,25 @@ final class ServerLink implements Listener {
         a.addProperty("minecraft", PaperCompat.gameVersion());
         a.addProperty("protocol", 1);
         return a;
+    }
+
+    /**
+     * LINK-11: the Bauleitung's mod hands over the team room (server link with the server key) – the plugin connects
+     * itself over the internet, no file and no command. Only OP or {@code bauplaner.team.leitung}, like pairing.
+     */
+    CompletableFuture<JsonObject> handOver(Player p, String link) {
+        if (p == null || !mayClaim(p)) return CompletableFuture.completedFuture(error("Den Team-Raum übergeben darf nur ein Operator (OP) oder wer das Recht bauplaner.team.leitung hat."));
+        if (link == null || link.isBlank()) return CompletableFuture.completedFuture(error("Server-Link fehlt."));
+        TeamModule tm = plugin.teamModule();
+        if (tm.roomHas(link)) {
+            JsonObject a = new JsonObject();
+            a.addProperty("ok", true); a.addProperty("same", true); a.addProperty("text", "Der Server ist schon mit diesem Team-Raum verbunden.");
+            return CompletableFuture.completedFuture(a);
+        }
+        plugin.getLogger().info(p.getName() + " übergibt dem Server einen Team-Raum (über die Bauplaner-Mod).");
+        JsonObject b = new JsonObject();
+        b.addProperty("link", link);
+        return room(b);
     }
 
     JsonObject claim(Player p, String device) {

@@ -163,3 +163,15 @@ test('room: without a server file (LINK-07) – player positions in the presence
   assert.equal(core.scans()[0].id, `scan_more${String(LIMITS.scansKept + 1).padStart(3, '0')}`, 'neueste zuerst');
   assert.throws(() => core.getScan('scan_000001'), e => e.code === 'aufnahme-fehlt', 'älteste verdrängt');
 });
+
+// LINK-11: the Bauleitung's planner puts the header again only when what the plugin needs changes.
+test('headerFingerprint ignores createdAt, members and plan, follows sections and place', async () => {
+  const { headerFingerprint } = await import('../../../dist/domain/src/index.js');
+  const base = { teamId: 'team_a', name: 'Burg', projectName: 'Burg', dimension: 'minecraft:overworld', createdAt: '2026-11-06T10:00:00.000Z', members: [],
+    sections: [{ id: 's1', name: 'Fundament', boxes: [[0, 64, 0, 4, 64, 4]] }] };
+  const same = headerFingerprint(base);
+  assert.equal(headerFingerprint({ ...base, createdAt: '2026-11-06T11:00:00.000Z', members: [{ id: 'm', name: 'Anna', role: 'helfer' }], plan: { sha: 'x' } }), same);
+  assert.notEqual(headerFingerprint({ ...base, sections: [{ id: 's1', name: 'Fundament', boxes: [[10, 64, 0, 14, 64, 4]] }] }), same, 'moved on the world map');
+  assert.notEqual(headerFingerprint({ ...base, sections: [...base.sections, { id: 's2', name: 'Dach', boxes: [] }] }), same, 'new section');
+  assert.notEqual(headerFingerprint({ ...base, need: [['minecraft:stone', 3]] }), same);
+});

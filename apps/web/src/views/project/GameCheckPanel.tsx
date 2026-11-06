@@ -275,11 +275,13 @@ export function GameCheckPanel(p: Props) {
         {t ? <>
           <div className="build-bar game" role="progressbar" aria-label="Gesetzte Blöcke laut Spielaufnahme" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}><span style={{ width: `${pct}%` }} /></div>
           <small>{formatNumber(t.blocksOk)} von {formatNumber(t.blocks)} Blöcken korrekt ({pct} %)</small>
-        </> : <small>Noch keine Aufnahme. {hasServerPairing() ? 'Mit „Auf dem Server aufnehmen“ liest der gekoppelte Server den Bau per Klick.' : <>Mit einem auf der Seite <a href="#/mod">„Spiel“</a> gekoppelten Server geht die Aufnahme per Klick; sonst schreibt die Mod sie mit <code>/bauplaner scan</code> in den Ordner <code>bauplaner/scans</code>.</>}</small>}
+        </> : <small>Noch keine Aufnahme. {hasServerPairing() ? 'Mit „Auf dem Server aufnehmen“ liest der gekoppelte Server den Bau per Klick.' : <>Mit „Team live“ holt der Planer den Baustand über das Internet aus deinem Spiel oder den Spielen im Team-Raum; mit einem auf der Seite <a href="#/mod">„Spiel“</a> gekoppelten Server per Klick.</>}</small>}
       </div>
-      <label className="file-button">{busy ? 'Liest …' : p.scan ? 'Neue Aufnahme importieren' : 'Spielaufnahme importieren (.schem)'}
-        <input type="file" accept=".schem,application/octet-stream" disabled={busy} onChange={e => { void load(e.target.files?.[0]); e.target.value = ''; }} />
-      </label>
+      {/* LINK-11: the file is only the emergency way; the best way comes over the internet (game, Team-Raum, plugin). */}
+      <details className="game-file-emergency team-emergency"><summary>Notfall: Aufnahme-Datei</summary>
+        <label className="file-button">{busy ? 'Liest …' : p.scan ? 'Neue Aufnahme importieren' : 'Spielaufnahme importieren (.schem)'}
+          <input type="file" accept=".schem,application/octet-stream" disabled={busy} onChange={e => { void load(e.target.files?.[0]); e.target.value = ''; }} />
+        </label></details>
       {p.scan && <button className="file-button" disabled={busy} onClick={p.onClear}>Aufnahme ausblenden</button>}
     </div>
     {routes.some(r => r.available) && <div className="button-row game-best-scan" data-testid="scan-routes">

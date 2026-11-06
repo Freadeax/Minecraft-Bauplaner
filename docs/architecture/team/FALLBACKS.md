@@ -11,7 +11,7 @@ Grundregel bleibt **Client zuerst**: so viel wie möglich im Spiel und im Planer
 Planer (PC) ─┤                                        ├─ Mod (Client) ── bauplaner:team (freiwillig) ── Paper-Plugin
              └── Team-Raum (https/wss, TEAM_LIVE) ─────┘                                                    │
 Planer (iPad) ──── Team-Raum ───────────────────────────────────────────── RoomLink (Serverschlüssel) ─────┘
-Datei (.schem/.bauteam.json/Meldecode) ─ geht immer, ohne jede Verbindung
+Datei (.schem/.bauteam.json/Meldecode) ─ nur Notfall ohne Internet, im Planer zugeklappt (LINK-11)
 ```
 
 Jede Funktion hat eine feste Reihenfolge. Fällt ein Weg aus, nimmt die Seite den nächsten und **sagt, welcher gerade gilt**. Nichts geht verloren: Aktionen und Messungen tragen ihre endgültige ID und warten, bis ein Weg offen ist (gleiche ID = keine Doppelbuchung).

@@ -331,7 +331,7 @@ final class TeamModule implements Listener {
             }
         }
         if (!COMMANDS.contains(sub)) return help(s, label);
-        if (teams.isEmpty()) return fail(s, "Auf diesem Server ist noch kein Team angelegt. Die Bauleitung legt es im Planer auf den Server (Seite „Spiel“ → „Server“ → „Team auf den Server“), ohne Befehl.");
+        if (teams.isEmpty()) return fail(s, "Auf diesem Server ist noch kein Team. Die Bauleitung schaltet es im Planer live („Team live“ → „Mein Spiel verbinden“) und kommt mit der Mod auf den Server – das Plugin holt sich das Team dann selbst über das Internet.");
         TeamLog team = teamOf(a);
         TeamLog.View v = view(team);
         Optional<String> me = memberOf(team, a);
@@ -489,7 +489,8 @@ final class TeamModule implements Listener {
         say(s, "notiz <frage|problem|material|info> <text> · notizen · geliefert <item|hand> [menge] · sammle <item> <menge>");
         say(s, "Lager: lager hilfe · lager info · lager bedarf [nr] · nachweis [an|aus] · beitrag [alle] · Baumeister: lager markieren [name] · lager siegeln · lager schutz <stufe>");
         say(s, "Übergabe: uebergeben <nr> <spieler> [notiz] · annehmen [nr] · ablehnen [nr] · abwesend [bis JJJJ-MM-TT] [notiz] · zurueck");
-        say(s, "Baumeister: zuweisen <nr> <spieler> · pruefen <nr> ok|nacharbeit [notiz] · Bauleitung: rolle <spieler> <rolle> · team laden · team export · team wahl <name> · team verbinden <link> · team trennen · team raum");
+        say(s, "Baumeister: zuweisen <nr> <spieler> · pruefen <nr> ok|nacharbeit [notiz] · Bauleitung: rolle <spieler> <rolle> · team wahl <name> · team trennen · team raum");
+        say(s, ChatColor.GRAY + "Team-Raum: verbindet sich selbst, wenn die Bauleitung mit der Mod beitritt (vorher im Planer „Mein Spiel verbinden“). Notfall ohne Internet: team laden · team export · team verbinden <link>");
         return true;
     }
 
@@ -777,6 +778,8 @@ final class TeamModule implements Listener {
 
     List<String> roomStatus() { return room.status(); }
     java.util.concurrent.CompletableFuture<String> roomConnect(String link) { return room.connect(link); }
+    boolean roomHas(String link) { return room.has(link); }
+    boolean anyRoom() { return room.any(); }
     String roomDisconnect(String teamId) { return room.disconnect(teamId); }
 
     private boolean tallySwitch(CommandSender s, Actor a, TeamLog team, TeamLog.View v, String[] args, String label) {

@@ -119,3 +119,33 @@ Tests: `RoomClientTest` (Faltung, Raumprüfung, Speichern; mit `BAUPLANER_ROOM` 
 ### 9.2 Ausweichwege (Mod 0.16.0, FALLBACK-01)
 
 Raum offline, WebSocket gesperrt, Neustart ohne Internet: Die Mod speichert den Teamstand (`raum-stand.json`), gleicht ohne WebSocket über HTTP ab und merkt Messungen bis zum nächsten Kontakt. Der Planer holt den Baustand über den besten verfügbaren Weg (eigenes Spiel → Team-Raum → Server-Plugin → Datei). Alles dazu in [FALLBACKS](FALLBACKS.md).
+
+## 10. Alles über das Internet (LINK-11, Mod/Plugin 0.21.0)
+
+Anlass: Philipp, 06.11.2026: „Der Server muss die Team-Info von dem Mod und Seite erhalten! Wir benutzen keine Daten runterladen und dann irgendwo einfügen! Alle Systeme müssen über das Internet kommunizieren.“
+
+**Regel:** Kein Hauptweg verlangt, eine Datei herunterzuladen, zu kopieren, hochzuladen oder einen Link einzufügen. Planer, Mod (Fabric/NeoForge 26.3) und Paper-Plugin sprechen über den Team-Raum (`services/team-room`), der Planer mit der eigenen Mod über 127.0.0.1. Kein Server auf Philipps PC, keine Portfreigabe. Dateiwege bleiben nur als zugeklappter **Notfall ohne Internet**.
+
+```
+Planer (Bauleitung) ── „Mein Spiel verbinden“ (Mitglieds- + Serverschlüssel) ─▶ Mod auf diesem PC
+Mod ── bauplaner:team (freiwillig je Server) ── link.room {link} ─▶ Paper-Plugin prüft OP/bauplaner.team.leitung
+Paper-Plugin ── wss + Serverschlüssel ─▶ Team-Raum ◀── Kopf (Abschnitte, Boxen, Bedarf) + Ereignisse ── Planer
+```
+
+- **Mod → Server:** `POST /v1/room` nimmt optional `serverKey` (nur wenn der Planer die Bauleitung mit Admin-Schlüssel ist und die Mod das Merkmal `roomserver` meldet). Gespeichert in `raum.json` wie der Schlüssel, nie in `GET /v1/room` (dort nur `serverHandover: true` bzw. der Text der letzten Übergabe). Sobald der Teamkanal live ist (`state` oder `none`), schickt `TeamSync.handOverRoom` einmal je Verbindung und Raum `link.room {link, teamName}`; nach „Mein Spiel verbinden“ sofort. Antwort im Chat; `same: true` bleibt still.
+- **Plugin:** `ServerLink.handOver` – nur OP oder `bauplaner.team.leitung` (wie Koppeln), sonst Fehlertext. Schon verbunden (gleiche Adresse, Raum, Schlüssel) → `same`. Sonst `RoomLink.connect` wie bei der Steuernachricht `room`: Kopf holen, Ereignisse abgleichen, live. Keine Kopplung nötig.
+- **Planer → Server ohne Freigabe:** Die Bauleitung stellt den Kopf neu in den Raum, sobald sich `headerFingerprint` (Abschnitte mit Boxen, Bedarf, Lage/Dimension, Höfe) ändert – 4 s gebündelt, mit dem aktuellen Planstand. Ist ein gekoppelter Server erreichbar (Mod oder anderer Raum), verbindet der Planer ihn einmal je Besuch selbst (`room`).
+- **Anzeige:** „Team live“ zeigt „Server-Plugin: ● im Team-Raum“ (Anwesenheit `server`) oder wie er von selbst dazukommt.
+
+| Früher (Datei/Einfügen) | Jetzt (Internet) | Notfall |
+|---|---|---|
+| Serverdatei herunterladen, nach `plugins/BauplanerBridge/team/` legen, `/bp team laden` | Mod übergibt den Raum, Kopf und Ereignisse aus dem Team-Raum | Block „Notfall ohne Internet“ |
+| Server-Link kopieren, `/bp team verbinden <Link>` | `link.room` durch die Mod oder `room` über die Kopplung | „Notfall: Server ohne Mod verbinden“ |
+| `/bp team export`, Datei im Planer einlesen | Ereignisse des Servers live im Raum | Notfall-Block |
+| Teampaket/Meldecode verschicken | Einladungslink, Team live | Notfall-Block, „Notfall: Teampaket-Datei“ in Projekte |
+| `/bauplaner scan`, Datei aus `scans/` importieren | „⟳ Baustand holen (bester Weg)“: Spiel, Team-Raum, Plugin | „Notfall: Aufnahme-Datei“ |
+| `.schem` in `bauplaner/plans/` kopieren | „▶ Ins Spiel senden“, „⇪ Plan auf den Server legen“ | – |
+| Weltplan mit Gruppen/Sperren, BlueMap/Dynmap-Marker, Kartenliste | eigener Thread „Weltplan und Karten über das Internet teilen“ (0.22.0) | – |
+
+Tests: `TeamTest.roomHandOverToThePlugin`, `RoomLinkTest`, `LiveLinkTest` (Merkmal), `tests/unit/team/team-room.test.mjs` (`headerFingerprint`), `tests/e2e/team-room.e2e.mjs` (Bauleitung gibt den Serverschlüssel, Helfer nie), `scripts/mod/test_bridge_paper_link.sh` mit `BAUPLANER_ROOM` (echter Paper: OP übergibt, Nicht-OP abgewiesen, zweite Übergabe ändert nichts). Abnahme: Testfälle LINK-12, LINK-13.
+

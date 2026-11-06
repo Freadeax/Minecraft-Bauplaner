@@ -105,3 +105,11 @@
 .team-compact-meter span.bad { background: var(--danger, #b3261e); }
 .team-compact-plan { margin: 0.5rem 0; padding-left: 1.2rem; font-size: 0.9rem; }
 .team-compact-last { font-size: 0.9rem; }
+
+/* LINK-11: file ways only as a closed emergency block; server plugin line in "Team live". */
+.team-emergency > summary { cursor: pointer; list-style-position: inside; }
+.team-emergency > summary small { color: var(--muted, #888); font-weight: normal; }
+.team-emergency:not([open]) { padding-block: .5rem; }
+details.team-emergency:not(.team-block) { margin-top: .6rem; }
+.team-server-room { margin: .4rem 0; font-size: .92em; color: var(--muted, #888); }
+.team-server-room.on { color: var(--ok, #2e8b57); }

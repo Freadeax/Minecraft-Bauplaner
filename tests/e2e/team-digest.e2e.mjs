@@ -46,6 +46,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await a.getByRole('button', { name: 'Team gründen' }).click();
     await a.getByText('Noch kein Planstand freigegeben').waitFor();
     await a.getByRole('region', { name: 'Abschnitte' }).getByRole('button', { name: 'Übernehmen' }).first().click();
+    await a.locator('details.team-exchange').evaluate(d => { d.open = true; });
     const [onlyTeam] = await Promise.all([a.waitForEvent('download'), a.getByRole('button', { name: 'Teampaket nur Teamstand' }).click()]);
     const pkg = await readTeamPackage(readFileSync(await onlyTeam.path(), 'utf8'));
     const me = pkg.team.founder, sec = pkg.team.events.find(e => e.kind === 'section.claim').section;

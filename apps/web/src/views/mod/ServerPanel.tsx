@@ -240,7 +240,7 @@ export function ServerPanel({ search }: { search?: string | undefined } = {}) {
 
       <dl className="map-facts">
         <div><dt>Teams</dt><dd>{status.teams.length ? status.teams.map(t => `${t.name} (${t.sections} Abschnitte, ${t.events} Ereignisse)`).join(' · ') : 'noch keins'} – ein Team kommt im Projekt im Reiter „Team“ mit „Planstand auf den Server legen“ auf den Server.</dd></div>
-        <div><dt>Team-Raum</dt><dd>{status.rooms.join(' · ') || 'nicht verbunden'} – verbinden im Projekt unter „Team live“ mit „Server mit dem Raum verbinden“.</dd></div>
+        <div><dt>Team-Raum</dt><dd>{status.rooms.join(' · ') || 'nicht verbunden'} – der Server verbindet sich selbst, sobald im Projekt unter „Team live“ die Bauleitung ihr Spiel verbunden hat und hier mit der Mod spielt (oder per „Server mit dem Raum verbinden“).</dd></div>
         <div><dt>Pläne</dt><dd>{status.plans.length ? status.plans.join(', ') : 'keine'}</dd></div>
         <div><dt>Gekoppelte Geräte</dt><dd>{status.owners.map(o => <span key={o.id} className="server-owner">{o.name}{o.id === active.owner ? ' (dieses Gerät)' : ''}{o.by ? `, gekoppelt von ${o.by}` : ''} <button className="text-button" disabled={busy} onClick={() => void forget(o.id)}>{o.id === active.owner ? 'trennen' : 'entfernen'}</button></span>)}</dd></div>
       </dl>

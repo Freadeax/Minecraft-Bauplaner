@@ -83,6 +83,9 @@ public final class TeamSync {
     private TeamState roomState;
     /** Own actions sent to the room and not yet answered: id → send time. */
     private final Map<String, Long> roomFlight = new ConcurrentHashMap<>();
+    /** LINK-11: server + room + key the team room was last handed to on this connection (null = not yet). */
+    private String handedTo;
+    private volatile String handoverText;
 
     /**
      * @param dir {@code <game dir>/bauplaner/team}
@@ -143,6 +146,7 @@ public final class TeamSync {
         fromServer = null;
         inFlight.clear();
         assembler.clear();
+        handedTo = null;
         outbox = new TeamOutbox(dir == null || key == null ? null : dir.resolve(safe(key) + ".ausgang.json"));
         link = transport == null ? Link.NONE : Link.NO_PLUGIN;
         check();
@@ -238,10 +242,11 @@ public final class TeamSync {
                         if (stateCount == 0) notify.accept("Teambau live: " + fromServer.summary() + ".");
                     }
                     stateCount++;
+                    handOverRoom();
                     // A fresh state answers everything that was sent before: resend what is still open.
                     for (TeamOutbox.Action a : outbox.pending()) if (!inFlight.containsKey(a.id())) sendAction(a);
                 }
-                case "none" -> { fromServer = null; link = Link.LIVE; lastError = m.get("text") instanceof String s ? s : "Kein Team auf diesem Server."; }
+                case "none" -> { fromServer = null; link = Link.LIVE; lastError = m.get("text") instanceof String s ? s : "Kein Team auf diesem Server."; handOverRoom(); }
                 case "store" -> { if (fromServer != null) fromServer = fromServer.withStore(TeamState.store(Json.obj(m.get("store"), "Lagerkiste"), fromServer.dimension())); }
                 case "ack" -> {
                     String id = Json.str(m.get("id"), "ID", 64);
@@ -336,6 +341,39 @@ public final class TeamSync {
 
     /** POST /v1/team/ack: the planner merged these events. */
     public int ackFromPlaner(List<String> ids) { ids.forEach(inFlight::remove); return outbox.remove(ids); }
+
+    // ------------------------------------------------------------------ team room → server plugin (LINK-11)
+
+    /**
+     * Hands the team room to the server plugin: when the planner gave this game the server key (Bauleitung) and the
+     * channel with the plugin is live, the mod sends {@code link.room {link}} once per server connection and room.
+     * The plugin checks OP / {@code bauplaner.team.leitung} and connects itself over the internet – nothing is
+     * downloaded or copied. Runs again after the planner connects another room ({@code POST /v1/room}).
+     */
+    public synchronized void handOverRoom() {
+        if (link != Link.LIVE || room == null) return;
+        var c = room.config();
+        if (c == null || c.serverLink() == null) return;
+        String mark = serverKey + "|" + c.url() + "|" + c.room() + "|" + Integer.toHexString(c.serverKey().hashCode());
+        if (mark.equals(handedTo)) return;
+        handedTo = mark;
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("link", c.serverLink());
+        if (c.teamName() != null) body.put("teamName", c.teamName());
+        request("link.room", body).orTimeout(30, java.util.concurrent.TimeUnit.SECONDS).whenComplete((a, ex) -> {
+            if (ex != null) {
+                synchronized (this) { if (mark.equals(handedTo)) handedTo = null; }
+                handoverText = "Server nicht übergeben: " + (ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage());
+                return;
+            }
+            if (a.get("error") instanceof String e) { handoverText = "Server nicht mit dem Team-Raum verbunden: " + e; notify.accept(handoverText); return; }
+            handoverText = a.get("text") instanceof String t ? t : "Server mit dem Team-Raum verbunden.";
+            if (!Boolean.TRUE.equals(a.get("same"))) notify.accept("Server-Plugin: " + handoverText);
+        });
+    }
+
+    /** Last answer of the plugin to the room handover (null when none happened). */
+    public String handoverText() { return handoverText; }
 
     // ------------------------------------------------------------------ relay website ↔ plugin
 

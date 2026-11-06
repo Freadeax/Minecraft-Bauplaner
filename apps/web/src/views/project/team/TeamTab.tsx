@@ -66,7 +66,8 @@ function Found({ site, projectName, projectId, onFound }: { site: SitePlan; proj
     <ul className="muted">
       <li><strong>Team live</strong>: Nach dem Gründen einen Einladungslink schicken; alle sehen Übernahmen, Meldungen und Notizen sofort, auch auf dem iPad. Ohne Konten.</li>
       <li>Im Spiel: Mit der Bauplaner-Mod sieht jeder seine Abschnitte im Hologramm und meldet Baustand und Kisten aus dem Spiel. Das Paper-Plugin ist freiwillig (Abschnittsschutz, geprüfte Lagerkisten).</li>
-      <li>Ohne Internet: Ihr tauscht ein <strong>Teampaket</strong> (Datei) oder einen kurzen <strong>Meldecode</strong> im Chat aus. Nichts geht verloren, egal in welcher Reihenfolge ihr einlest.</li>
+      <li>Server-Plugin (freiwillig): verbindet sich über das Internet selbst mit dem Team-Raum, sobald du als Bauleitung mit der Mod auf dem Server bist. Nichts herunterladen, nichts auf den Server kopieren.</li>
+      <li className="muted">Nur im Notfall ohne Internet gibt es unten Dateien und Meldecodes.</li>
       <li>Bauabschnitte legst du im Reiter <a href={`#/projekt/${projectId}/baustelle`}>Baustelle</a> an{site.sections.length ? ` (jetzt ${site.sections.length})` : ' – noch keine angelegt'}.</li>
     </ul>
     <div className="team-form">
@@ -122,7 +123,7 @@ function TeamPage({ session, site, team, message, setMessage, saveTeam, saveSite
       const s = siteOf(frozen.project);
       const event = teamEvent(me.id, { kind: 'plan.release', revisionId: frozen.revision.id, revisionNumber: frozen.revision.number, summary: summary.slice(0, 300) }, laterThan(team));
       session.replace({ ...frozen.project, site: { ...s, team: appendEvents(team, [event]) } });
-      setMessage(`Planstand ${frozen.revision.number} eingefroren und für alle freigegeben. Jetzt das Teampaket an alle schicken (unten „Austausch“).`);
+      setMessage(`Planstand ${frozen.revision.number} eingefroren und für alle freigegeben. ${(team as { live?: unknown }).live ? 'Er geht über den Team-Raum von selbst an alle Planer, Mods und den Server.' : 'Schalte das Team live, dann bekommen ihn alle ohne Datei (Notfall ohne Internet: unten).'}`);
     } catch (e) { setMessage(errorText(e)); }
   };
 

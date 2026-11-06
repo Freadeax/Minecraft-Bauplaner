@@ -60,6 +60,6 @@ export function planScanRoutes(input: ScanRouteInput): ScanRoute[] {
 /** One line for the result: which way worked and which were skipped or failed before. */
 export function scanRouteSummary(used: ScanRouteId | null, failures: readonly { readonly id: ScanRouteId; readonly why: string }[]): string {
   const before = failures.map(f => `${SCAN_ROUTE_LABEL[f.id]}: ${f.why}`).join(' · ');
-  if (!used) return `Kein Weg hat geklappt${before ? ` (${before})` : ''}. Ausweg: im Spiel /bauplaner scan und die Datei hier importieren.`;
+  if (!used) return `Kein Weg hat geklappt${before ? ` (${before})` : ''}. Prüfe, ob dein Spiel oder ein Mitspieler mit „Team live“ verbunden ist (Notfall ohne Internet: /bauplaner scan und „Notfall: Aufnahme-Datei“).`;
   return `Baustand über ${SCAN_ROUTE_LABEL[used]} geholt (${REACH[used]}).${before ? ` Vorher versucht: ${before}.` : ''}`;
 }

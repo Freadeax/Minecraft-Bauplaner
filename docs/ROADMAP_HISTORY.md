@@ -7292,3 +7292,64 @@ Browsertest map-depth erwartet die neuen fehlenden Mod-Merkmale (Geländegedäch
 
 - `tests/e2e/map-depth.e2e.mjs`
 
+## 2026-11-06T13:02:57.153Z · progress
+
+**Aufgaben:** LINK-11
+
+LINK-11: Alles über das Internet – Mod 0.21.0 übergibt den Team-Raum der Bauleitung selbst an das Paper-Plugin (link.room, nur OP/bauplaner.team.leitung), Planer hält den Raum-Kopf ohne Freigabe aktuell und verbindet gekoppelte Server selbst; Teampaket, Meldecode, Serverdatei, Server-Link und Aufnahme-Datei nur noch zugeklappt als Notfall. Geprüft: Einheitstests, Browsertests, echter Paper 1.21.11 mit Team-Raum, Spieltest Fabric und NeoForge 26.3. Offen: Abnahme LINK-12/13, Weltplan/Karten im eigenen Thread.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LINK-11 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme LINK-12 und LINK-13 durch Philipp auf seinem Server; Weltplan/Karten im eigenen Thread. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/styles/team.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/mod/ModView.tsx`
+- `apps/web/src/views/mod/ServerPanel.tsx`
+- `apps/web/src/views/mod/releases.json`
+- `apps/web/src/views/mod/serverClient.ts`
+- `apps/web/src/views/project/GameCheckPanel.tsx`
+- `apps/web/src/views/project/team/TeamExchange.tsx`
+- `apps/web/src/views/project/team/TeamOpen.tsx`
+- `apps/web/src/views/project/team/TeamPlan.tsx`
+- `apps/web/src/views/project/team/TeamRoom.tsx`
+- `apps/web/src/views/project/team/TeamTab.tsx`
+- `docs/architecture/team/AUTO_LINK.md`
+- `docs/architecture/team/FALLBACKS.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.21.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.21.0.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.21.0.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/TeamTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
+- `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
+- `mods/bauplaner-bridge/modrinth/project.json`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamChannel.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
+- `mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/RoomLinkTest.java`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/team/liveLink.ts`
+- `packages/domain/src/team/team.ts`
+- `packages/domain/src/world/scanRoutes.ts`
+- `scripts/mod/bridge_paperlink.mjs`
+- `tests/e2e/game-check.e2e.mjs`
+- `tests/e2e/game-progress.e2e.mjs`
+- `tests/e2e/map-depth.e2e.mjs`
+- `tests/e2e/mod-download.e2e.mjs`
+- `tests/e2e/production.e2e.mjs`
+- `tests/e2e/team-digest.e2e.mjs`
+- `tests/e2e/team-room.e2e.mjs`
+- `tests/e2e/team.e2e.mjs`
+- `tests/unit/team/team-room.test.mjs`
+- `tests/unit/world/scan-routes.test.mjs`
+

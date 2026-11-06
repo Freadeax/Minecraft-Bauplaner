@@ -221,7 +221,7 @@ test('Neue Mod (Protokoll 2): Mitspieler, Zonen und Ebenen gehen ins Spiel', asy
 
   const game = await connect(p, NEW_MOD, newMod);
   await game.getByText(/Protokoll 2/).waitFor();
-  assert.match(await game.locator('.live-features').innerText(), /^Mod kann: Baustand aus dem Spiel, Zonen, Ebenen und neue Punktarten im Spiel, Mitspieler auf der Karte, große Pläne bis 16,7 Mio. Zellen, Teambau im Spiel \(Abschnitte, Meldungen, Server-Plugin\), Markierungen aus dem Spiel übernehmen · fehlt: Gruppen und Sperren im Hologramm, Gelände aus dem Geländegedächtnis \(ohne Regionsdateien\), Blockgenaue Geländeprüfung aus dem Spiel \(neuere Mod\)$/);
+  assert.match(await game.locator('.live-features').innerText(), /^Mod kann: Baustand aus dem Spiel, Zonen, Ebenen und neue Punktarten im Spiel, Mitspieler auf der Karte, große Pläne bis 16,7 Mio. Zellen, Teambau im Spiel \(Abschnitte, Meldungen, Server-Plugin\), Markierungen aus dem Spiel übernehmen · fehlt: Gruppen und Sperren im Hologramm, Gelände aus dem Geländegedächtnis \(ohne Regionsdateien\), Blockgenaue Geländeprüfung aus dem Spiel, Server-Plugin von selbst mit dem Team-Raum verbinden \(neuere Mod\)$/);
   await p.getByTestId('live-others').waitFor();
   assert.match(await p.getByTestId('live-others').innerText(), /Mitspieler in Sichtweite: Anna \(X 52 · Z -15\)/);
   assert.equal(await game.getByText(/bleiben nur auf der Karte/).count(), 0);

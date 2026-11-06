@@ -15,7 +15,7 @@ Stand: 2026-11-06T13:09:28.727Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 6 |
 | 🚧 In Arbeit | 7 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 91 |
+| 🧩 Implementiert · Abnahme offen | 92 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -30,7 +30,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 13 | 0 | 13 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
-| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 11 | 0 | 9 | 0 |
+| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 12 | 0 | 10 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 4 | 0 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
 | [Performance und Stabilität](#bereich-perf) | 5 | 0 | 2 | 3 |
@@ -153,6 +153,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [LINK-03](#link-03) | Mod | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Verbindung ohne Server-Datei neu bauen“ | Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“. |
 | [LINK-07](#link-07) | Ohne Server-Datei | 🚧 In Arbeit 5/6 | P1 | „Verbindung ohne Server-Datei neu bauen“ | — |
 | [LINK-10](#link-10) | Anbindung geprüft und gehärtet | 🧩 Implementiert · Abnahme offen 6/6 | P1 | „Anbindung von Mod, Team-Raum und Planer prüfen“ | Abnahme LINK-10: offline in mehreren Abschnitten bauen, wieder verbinden – alle Messungen genau einmal im Planer; mit Plugin bleibt die Raumverbindung stehen. |
+| [LINK-11](#link-11) | Alles über das Internet | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Alle Systeme online verbinden“ | Abnahme LINK-12: als Bauleitung „Mein Spiel verbinden“, mit der Mod auf den Server – der Server verbindet sich selbst mit dem Team-Raum, Abschnittsschutz greift.<br>Abnahme LINK-13: alle Dateiwege nur noch zugeklappt unter „Notfall“. |
 | [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2 | 🧩 Implementiert · Abnahme offen 5/5 | P2 | „Teambau und Befehle in der Mod ausbauen“ | Mitspieler-Pfeile auf der Live-Karte mit einem zweiten Spieler. |
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0 | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Teambau und Befehle in der Mod ausbauen“ | Befehlsseite im J-Menü zusammen mit dem Plugin auf deinem Server (MOD-16). |
 | [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher | 🚧 In Arbeit 1/4 | P2 | „Mod-Werkzeuge und Planer-Anbindung erweitern“ | — |
@@ -299,6 +300,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **EDIT-06** · Truhe und Schild mit Inhalt im Spiel laden (WERK-09).
 - **FALLBACK-01** · Abnahme LINK-09: mit Team live kurz das Internet trennen, Minecraft neu starten, Teamstand und „Baustand holen (bester Weg)“ prüfen.
 - **LINK-10** · Abnahme LINK-10: offline in mehreren Abschnitten bauen, wieder verbinden – alle Messungen genau einmal im Planer; mit Plugin bleibt die Raumverbindung stehen.
+- **LINK-11** · Abnahme LINK-12: als Bauleitung „Mein Spiel verbinden“, mit der Mod auf den Server – der Server verbindet sich selbst mit dem Team-Raum, Abschnittsschutz greift.
 
 ### Auf echten Geräten und Browsern
 
@@ -344,6 +346,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **PROJ-03** · Im Reiter „Planung“ eine Abwesenheit eintragen und zwei Basispläne vergleichen (PROJ-20).
 - **PROJ-04** · Zwei Projekte nacheinander planen (erst Lager, dann Burg) und den Starthinweis prüfen (PROJ-21).
 - **PROJ-05** · Team übernehmen, Konto je Bauleute und Bauzettel prüfen, am besten mit einem Mitspieler im Team-Raum (PROJ-23).
+- **LINK-11** · Abnahme LINK-13: alle Dateiwege nur noch zugeklappt unter „Notfall“.
 - **CORE-04** · Projekt mit Nachfolger und Bauplatz löschen; Blockeditor mit Änderungen verlassen; Truhe mit verzaubertem Schwert umsortieren (CORE-04-S05).
 
 ### Entscheiden oder Rückfrage beantworten
@@ -619,6 +622,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LINK-07](#link-07) | Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten | 🚧 In Arbeit | 5/6 | LINK-06, COOP-07 | ausstehend | ausstehend |
 | [FALLBACK-01](#fallback-01) | Ausweichwege über alle Verbindungen: Teamstand offline in der Mod, HTTP statt WebSocket, offline gemerkte Messungen, Baustand über den besten Weg (Spiel → Team-Raum → Server → Datei) | 🚧 In Arbeit | 4/5 | LINK-07, COOP-10 | ausstehend | ausstehend |
 | [LINK-10](#link-10) | Anbindung geprüft und gehärtet: Sendungen über den WebSocket nacheinander (Mod und Plugin), Messungen bis zur Bestätigung gemerkt, Team-Raum mit Ping ohne Aufwecken und sauberem Schließen, Planer ohne gestapelte Abfrage-Schleifen | 🧩 Implementiert · Abnahme offen | 6/6 | FALLBACK-01, LINK-07 | ausstehend | ausstehend |
+| [LINK-11](#link-11) | Alles über das Internet: Server-Plugin bekommt die Team-Infos von Mod und Planer selbst über den Team-Raum, Dateiwege nur noch als versteckter Notfall (Mod/Plugin 0.21.0) | 🧩 Implementiert · Abnahme offen | 5/6 | LINK-10, COOP-07 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -3518,6 +3522,31 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/WsQueueTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/WsQueueTest.java) — Ersatz-Socket mit JDK-Verhalten: Reihenfolge, 8 Threads × 25 Rahmen ohne Verlust, Fehler einmal, Rückstau (05.11.2026).; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java) — Verlorene Antwort: Messung bleibt gemerkt, geht erneut raus, einmal im Raum (05.11.2026).; [tests/unit/team/team-room.test.mjs](../tests/unit/team/team-room.test.mjs) — Anwesenheit „Server“ nur mit Serverschlüssel (05.11.2026).
 
 **Dateiumfang:** `apps/web/src/views/project/team/roomClient.ts`, `apps/web/src/views/mod/releases.json`, `docs/architecture/team/FALLBACKS.md`, `docs/architecture/team/TEAM_LIVE.md`, `downloads/mod/bauplaner-bridge-fabric-26.3-0.17.0.jar`, `downloads/mod/bauplaner-bridge-neoforge-26.3-0.17.0.jar`, `downloads/mod/bauplaner-bridge-paper-0.17.0.jar`, `mods/bauplaner-bridge/CHANGELOG.md`, `mods/bauplaner-bridge/VERSION`, `mods/bauplaner-bridge/paper/build.gradle`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WsQueue.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/WsQueueTest.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`, `services/team-room/src/core.js`, `services/team-room/src/index.js`, `tests/unit/team/team-room.test.mjs`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `packages/domain/src/team/liveLink.ts`, `tests/unit/team/livelink.test.mjs`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`, `downloads/mod/bauplaner-bridge-fabric-26.3-0.17.1.jar`, `downloads/mod/bauplaner-bridge-neoforge-26.3-0.17.1.jar`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java`, `mods/bauplaner-bridge/modrinth/project.json`, `downloads/mod/bauplaner-bridge-fabric-26.3-0.17.2.jar`, `downloads/mod/bauplaner-bridge-neoforge-26.3-0.17.2.jar`. **Abhängigkeiten:** FALLBACK-01, LINK-07. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### LINK-11
+
+**Alles über das Internet: Server-Plugin bekommt die Team-Infos von Mod und Planer selbst über den Team-Raum, Dateiwege nur noch als versteckter Notfall (Mod/Plugin 0.21.0)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Alle Systeme online verbinden“) · Zuständiger Thread: „Alle Systeme online verbinden“ · Aktualisiert: 2026-11-06T13:02:57.153Z
+
+- [x] LINK-11-S01: Bestandsaufnahme: alle Stellen, an denen Dateien exportiert, kopiert oder eingefügt werden mussten (Teampaket, Meldecode, Serverdatei, Server-Link, Aufnahme-Datei, Plan-Ordner der Mod, Weltplan-/Kartenmarker) – AUTO_LINK §10.
+- [x] LINK-11-S02: Mod 0.21.0: „Mein Spiel verbinden“ gibt der Bauleitung auch den Serverschlüssel (Merkmal roomserver); auf einem Server mit Plugin übergibt die Mod den Team-Raum selbst (link.room über bauplaner:team, einmal je Verbindung und Raum).
+- [x] LINK-11-S03: Plugin 0.21.0: link.room nur für OP/bauplaner.team.leitung, verbindet sich über das Internet mit dem Raum (Kopf mit Abschnitten, Boxen, Bedarf; Ereignisse live); Hinweise und Hilfe nennen den Online-Weg, Datei-Befehle nur noch als Notfall.
+- [x] LINK-11-S04: Planer: Bauleitung stellt den Kopf bei jeder Änderung von Abschnitten, Lage und Bedarf von selbst neu in den Raum (ohne Freigabe); gekoppelte Server werden automatisch verbunden; Zeile „Server-Plugin“ in „Team live“.
+- [x] LINK-11-S05: Planer: Teampaket, Meldecode, Serverdatei, Server-Link und Aufnahme-Datei nur noch zugeklappt unter „Notfall“; Texte auf Seite „Spiel“, Reiter „Team“ und „Bauen“ nennen den Online-Weg.
+- [ ] LINK-11-S06: Weltplan mit Gruppen/Sperren und BlueMap/Dynmap-Marker über den Team-Raum: eigener Thread „Weltplan und Karten über das Internet teilen“ (Mod/Plugin 0.22.0).
+
+**Abnahme:** Der Server bekommt Team-Infos (Abschnitte, Lagerkisten, Abschnittsschutz) ohne Herunterladen, Hochladen, Kopieren oder Befehl. Kein Hauptweg im Planer verlangt eine Datei; Dateiwege stehen nur zugeklappt als Notfall.
+
+**Nächste Aktion:** Abnahme LINK-12 und LINK-13 durch Philipp auf seinem Server; Weltplan/Karten im eigenen Thread.
+
+**Nur Philipp:** Im Spiel an deinem PC: Abnahme LINK-12: als Bauleitung „Mein Spiel verbinden“, mit der Mod auf den Server – der Server verbindet sich selbst mit dem Team-Raum, Abschnittsschutz greift. Im Planer abnehmen: Abnahme LINK-13: alle Dateiwege nur noch zugeklappt unter „Notfall“.
+
+**Prüfstand:** Einheitstests (TeamTest, RoomLinkTest, LiveLinkTest, team-room), Browsertests team-room/team/game-check, echter Paper 1.21.11 mit lokalem Team-Raum (link.room) grün; Abnahme durch Philipp offen.
+
+**Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/TeamTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/TeamTest.java) — roomHandOverToThePlugin: Helfer ohne Übergabe, Bauleitung einmal je Verbindung, „same“ still, Nicht-OP gemeldet, Schlüssel nie in publicFields (06.11.2026).; [mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/RoomLinkTest.java](../mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/RoomLinkTest.java) — Link der Mod wird vom Plugin gelesen; nur https/127.0.0.1, nie ohne Serverschlüssel.; [scripts/mod/bridge_paperlink.mjs](../scripts/mod/bridge_paperlink.mjs) — Echter Paper 1.21.11 + Team-Raum (wrangler dev): link.room vom OP verbindet, Nicht-OP abgewiesen, zweite Übergabe ändert nichts (06.11.2026).; [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — Bauleitung gibt der Mod den Serverschlüssel, Helfer nie; Server-Link nur im Notfall-Block.; [tests/unit/team/team-room.test.mjs](../tests/unit/team/team-room.test.mjs) — headerFingerprint folgt Abschnitten/Lage, nicht Zeit/Mitgliedern.
+
+**Dateiumfang:** `apps/web/src/views/project/team/TeamRoom.tsx`, `apps/web/src/views/project/team/TeamExchange.tsx`, `apps/web/src/views/project/team/TeamTab.tsx`, `apps/web/src/views/project/team/TeamOpen.tsx`, `apps/web/src/views/project/team/TeamPlan.tsx`, `apps/web/src/views/project/GameCheckPanel.tsx`, `apps/web/src/views/mod/serverClient.ts`, `apps/web/src/views/mod/ModView.tsx`, `apps/web/src/views/mod/ServerPanel.tsx`, `apps/web/src/styles/team.css`, `packages/domain/src/team/team.ts`, `packages/domain/src/index.ts`, `packages/domain/src/world/scanRoutes.ts`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamChannel.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`, `docs/architecture/team/AUTO_LINK.md`, `docs/architecture/team/FALLBACKS.md`, `downloads/mod/bauplaner-bridge-fabric-26.3-0.21.0.jar`, `downloads/mod/bauplaner-bridge-neoforge-26.3-0.21.0.jar`, `downloads/mod/bauplaner-bridge-paper-0.21.0.jar`, `apps/web/src/views/mod/releases.json`, `mods/bauplaner-bridge/CHANGELOG.md`, `mods/bauplaner-bridge/VERSION`, `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`, `mods/bauplaner-bridge/modrinth/project.json`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `packages/domain/src/team/liveLink.ts`. **Abhängigkeiten:** LINK-10, COOP-07. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

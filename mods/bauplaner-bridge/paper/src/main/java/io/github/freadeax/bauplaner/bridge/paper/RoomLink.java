@@ -169,6 +169,16 @@ final class RoomLink implements TeamUplink {
         }).exceptionally(ex -> "Verbindung nicht möglich: " + reason(ex));
     }
 
+    /** LINK-11: whether this room (address, id, key) is already connected – a repeated hand-over from a mod changes nothing. */
+    boolean has(String link) {
+        Optional<Link> l = parse(link.trim());
+        if (l.isEmpty()) return false;
+        for (Room r : rooms.values()) if (!r.stopped && r.base.equals(l.get().base()) && r.rid.equals(l.get().rid()) && r.key.equals(l.get().key())) return true;
+        return false;
+    }
+
+    boolean any() { return !rooms.isEmpty(); }
+
     String disconnect(String teamId) {
         Room r = teamId != null ? rooms.remove(teamId) : rooms.isEmpty() ? null : rooms.remove(rooms.keySet().iterator().next());
         if (r == null) return "Kein Team-Raum verbunden.";
@@ -179,7 +189,7 @@ final class RoomLink implements TeamUplink {
 
     List<String> status() {
         List<String> out = new ArrayList<>();
-        if (rooms.isEmpty()) out.add("Kein Team-Raum verbunden (/bp team verbinden <link>).");
+        if (rooms.isEmpty()) out.add("Kein Team-Raum verbunden. Die Bauleitung verbindet ihn ohne Befehl: im Planer „Team live“ → „Mein Spiel verbinden“, dann mit der Mod hier beitreten.");
         for (Room r : rooms.values()) {
             TeamLog t = teams.team(r.teamId);
             out.add((t != null ? t.name : r.teamId) + ": " + r.status + (r.outbox.isEmpty() ? "" : " · " + r.outbox.size() + " Ereignisse warten") + " · " + host(r.base));

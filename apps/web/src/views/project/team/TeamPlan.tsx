@@ -368,7 +368,7 @@ export function TeamRightsArea(p: TeamPlanProps) {
             <button disabled={!heir} onClick={() => { if (me && heir && window.confirm(`${name(heir)} wird Bauleitung, du wirst Baumeister. Fortfahren?`) &&
               actMany([{ kind: 'member.role', member: heir, role: 'leitung' }, { kind: 'member.role', member: me.id, role: 'meister' }], `Bauleitung an ${name(heir)} übergeben`)) setHeir(''); }}>Übergeben</button>
             <button className="secondary" disabled={!heir} onClick={() => { if (heir && actMany([{ kind: 'member.role', member: heir, role: 'leitung' }], `${name(heir)} ist zusätzlich Bauleitung`)) setHeir(''); }}>Zusätzlich Bauleitung</button></div>
-          <small className="muted">Damit die anderen es erfahren: danach Teampaket oder Meldecode schicken. Mit Paper-Plugin gilt zusätzlich die Berechtigung <code>bauplaner.team.leitung</code>.</small>
+          <small className="muted">Mit Team live erfahren es alle sofort, auch Mods und Server-Plugin. Mit Paper-Plugin gilt zusätzlich die Berechtigung <code>bauplaner.team.leitung</code>.</small>
         </> : <p className="muted">Nur die Bauleitung kann die Bauleitung übergeben. Aktuell: {view.members.filter(m => m.role === 'leitung').map(m => m.name).join(', ')}.</p>}
       </div>
     </div>

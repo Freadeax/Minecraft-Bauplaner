@@ -2,6 +2,21 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.21.0 – 2026-11-06
+
+**The server gets the team over the internet / Der Server bekommt das Team über das Internet**
+
+- New: when the team lead connects the game with the team room in the planner (“Team live” → “Connect my game”), the mod hands the room over to the optional server plugin by itself as soon as the lead (operator or `bauplaner.team.leitung`) joins the server. The plugin then gets sections, boxes, needed items, storage chests and section protection straight from the team room – nothing to download, upload or type.
+- The planner keeps the room up to date on its own: changed sections, world placement or needs reach the server without a new release.
+- Helpers never get the server key; the hand-over happens once per connection and room, a repeated one changes nothing.
+- Server plugin: hints and help name the online way; team files (`team laden`, `team export`, `team verbinden <link>`) remain only as an emergency way without internet.
+- New feature `roomserver` for the planner. Older planners and plugins keep working unchanged.
+
+- Neu: Verbindet die Bauleitung im Planer ihr Spiel mit dem Team-Raum („Team live“ → „Mein Spiel verbinden“), übergibt die Mod den Raum selbst an das freiwillige Server-Plugin, sobald die Bauleitung (OP oder `bauplaner.team.leitung`) auf den Server kommt. Das Plugin holt Abschnitte, Boxen, Bedarf, Lagerkisten und Abschnittsschutz dann direkt aus dem Team-Raum – nichts herunterladen, hochladen oder eintippen.
+- Der Planer hält den Raum selbst aktuell: geänderte Abschnitte, Lage auf der Weltkarte oder Bedarf kommen ohne neue Freigabe auf dem Server an.
+- Helfer bekommen nie den Serverschlüssel; die Übergabe passiert einmal je Verbindung und Raum, eine wiederholte ändert nichts.
+- Server-Plugin: Hinweise und Hilfe nennen den Online-Weg; Teamdateien (`team laden`, `team export`, `team verbinden <link>`) bleiben nur als Notfall ohne Internet.
+- Neue Fähigkeit `roomserver` für den Planer. Ältere Planer und Plugins arbeiten unverändert weiter.
 ## 0.20.0 – 2026-11-06
 
 **Terrain straight from the game / Gelände direkt aus dem Spiel**

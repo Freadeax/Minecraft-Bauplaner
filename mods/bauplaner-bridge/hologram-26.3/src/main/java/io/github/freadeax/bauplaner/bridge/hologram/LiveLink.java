@@ -678,6 +678,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
         out.put("mode", room.mode());
         if (room.syncedAt() > 0) out.put("syncedAt", java.time.Instant.ofEpochMilli(room.syncedAt()).toString());
         out.put("pendingReports", room.pendingReports());
+        if (t.sync().handoverText() != null) out.put("serverHandover", t.sync().handoverText());
         out.put("events", room.events());
         List<Object> here = new ArrayList<>();
         for (var p : room.presence()) { Map<String, Object> m = new LinkedHashMap<>(); m.put("member", p.member()); m.put("where", p.where()); if (p.section() != null) m.put("section", p.section()); here.add(m); }
@@ -708,6 +709,8 @@ public final class LiveLink implements LiveLinkServer.Handler {
         Minecraft mc = Minecraft.getInstance();
         mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] Der Planer hat dein Spiel mit dem Team-Raum" + (c.teamName() != null ? " „" + c.teamName() + "“" : "")
                 + " verbunden – Teambau ohne Server-Datei. Trennen: im Planer unter „Team live“ → „Spiel trennen“.")));
+        // LINK-11: with the Bauleitung's server key the server plugin (if any) joins the room right away.
+        if (c.serverKey() != null) mc.execute(() -> t.sync().handOverRoom());
         return Json.write(Map.of("ok", true, "text", "Spiel mit dem Team-Raum verbunden."));
     }
 

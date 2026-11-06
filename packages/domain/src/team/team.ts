@@ -1420,6 +1420,16 @@ export function teamServerFile(input: {
   };
 }
 
+/**
+ * LINK-11: what of a room header the server plugin needs (plan, sections with boxes and need, place, farms) as one
+ * comparable text. Members and events come live; createdAt and the plan snapshot do not count. The Bauleitung's
+ * planner puts the header again only when this changes, so the server follows sections and world placement
+ * without a release and without a file.
+ */
+export function headerFingerprint(h: Pick<TeamServerFile, 'teamId' | 'name' | 'projectName' | 'dimension' | 'sections'> & { readonly need?: unknown; readonly farms?: unknown }): string {
+  return JSON.stringify([h.teamId, h.name, h.projectName, h.dimension, h.sections, h.need ?? null, h.farms ?? null]);
+}
+
 export const teamServerFileName = (team: Pick<TeamState, 'name' | 'teamId'>) =>
   `${team.name.replace(/[^A-Za-z0-9ÄÖÜäöüß_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'team'}-${team.teamId.replace(/^team_/, '').slice(0, 8)}.team.json`;
 

@@ -41,13 +41,27 @@ import java.util.function.Consumer;
  */
 public final class RoomClient {
     /** Where the room is and who this player is in the team. */
-    public record Config(String url, String room, String key, String member, String memberName, String teamName, String device) {
+    /**
+     * @param serverKey LINK-11: only for the Bauleitung – the room's server key, handed to the server plugin over the team
+     *                  channel ({@code link.room}) so the server joins the room by itself. Stored like the key, never shown.
+     */
+    public record Config(String url, String room, String key, String member, String memberName, String teamName, String device, String serverKey) {
+        public Config(String url, String room, String key, String member, String memberName, String teamName, String device) {
+            this(url, room, key, member, memberName, teamName, device, null);
+        }
         public Map<String, Object> publicFields() {
             Map<String, Object> m = new LinkedHashMap<>();
             m.put("url", url); m.put("room", room); m.put("member", member);
             if (memberName != null) m.put("memberName", memberName);
             if (teamName != null) m.put("teamName", teamName);
+            if (serverKey != null) m.put("serverHandover", true);
             return m;
+        }
+        /** The server link the plugin reads ({@code RoomLink.parse}): {@code …?raum=URL&id=RID&s=KEY}; null without server key. */
+        public String serverLink() {
+            if (serverKey == null) return null;
+            java.util.function.Function<String, String> enc = v -> java.net.URLEncoder.encode(v, StandardCharsets.UTF_8);
+            return url + "/#/team/beitreten?raum=" + enc.apply(url) + "&id=" + enc.apply(room) + "&s=" + enc.apply(serverKey);
         }
     }
 
@@ -155,7 +169,8 @@ public final class RoomClient {
         String memberName = m.get("memberName") instanceof String s ? s.substring(0, Math.min(60, s.length())) : null;
         String teamName = m.get("teamName") instanceof String s ? s.substring(0, Math.min(80, s.length())) : null;
         String device = m.get("device") instanceof String s ? s.substring(0, Math.min(64, s.length())) : "Minecraft";
-        return new Config(url, room, key, member, memberName, teamName, device);
+        String serverKey = m.get("serverKey") instanceof String s && !s.isBlank() ? Json.str(s, "Serverschlüssel", 200) : null;
+        return new Config(url, room, key, member, memberName, teamName, device, serverKey);
     }
 
     public synchronized Config config() { return config; }
@@ -168,6 +183,7 @@ public final class RoomClient {
             Files.createDirectories(file.getParent());
             Map<String, Object> m = new LinkedHashMap<>(c.publicFields());
             m.put("key", c.key()); m.put("device", c.device());
+            if (c.serverKey() != null) m.put("serverKey", c.serverKey());
             Path tmp = file.resolveSibling(file.getFileName() + ".tmp");
             Files.writeString(tmp, Json.write(m), StandardCharsets.UTF_8);
             Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);

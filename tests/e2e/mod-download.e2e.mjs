@@ -93,7 +93,7 @@ for (const viewport of [{ width: 1400, height: 900 }, { width: 390, height: 844 
       assert.equal(await p.getByLabel('Server-Software').inputValue(), 'paper');
       assert.equal(await link.getAttribute('href'), `/Minecraft-Bauplaner/downloads/mod/${paper.file}`);
       await p.getByRole('heading', { name: 'Auf dem Server installieren und benutzen' }).waitFor();
-      assert.ok(await p.getByText('plugins/BauplanerBridge/plans/').first().isVisible());
+      assert.ok(await p.getByText(/holt sich das Plugin über das Internet aus dem Team-Raum/).first().isVisible());
       const older = paper.minecraftVersions.find(v => v !== paper.minecraft);
       await p.getByLabel('Minecraft-Version').selectOption(older);
       assert.match(p.url(), new RegExp(`#/mod\\?minecraft=${older.replaceAll('.', '\\.')}&loader=paper&version=`));

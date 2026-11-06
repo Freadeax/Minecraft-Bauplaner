@@ -73,7 +73,7 @@ export function TeamExchange({ session, team, view, onMessage }: { session: Proj
     void show('Einladung', [`Hallo! Wir bauen „${project.name}“${team.server ? ` auf ${team.server}` : ''} gemeinsam.`, '',
       '1) Nur spielen: auf dem Server /bauplaner team eingeben – dort siehst du freie Abschnitte, /bauplaner nehmen <nr> übernimmt einen, /bauplaner fertig meldet ihn.',
       `2) Mit Hologramm im Spiel: Mod von ${url}#/mod installieren, ${url}#/mod öffnen, „Mit dem Spiel verbinden“ klicken und im Spiel J → „Planer zulassen“.`,
-      `3) Mit Planer: ${url} öffnen, Projekte → „Teampaket öffnen“ und die Datei wählen, die ich dir schicke. Dann im Reiter „Team“ deinen Namen wählen.`, '',
+      '3) Mit Planer: den Einladungslink öffnen, den ich dir schicke (Team live). Dann im Reiter „Team“ deinen Namen wählen.', '',
       'Rollen: Helfer übernehmen Abschnitte und melden sie fertig, Baumeister prüfen, die Bauleitung gibt Planstände frei.'].join('\n'));
   };
 
@@ -160,8 +160,11 @@ export function TeamExchange({ session, team, view, onMessage }: { session: Proj
   const newIssues = preview ? [...preview.after.conflicts.filter(c => !preview.before.conflicts.some(b => b.text === c.text)).map(c => c.text),
     ...preview.after.rejected.filter(r => !preview.before.rejected.some(b => b.event.id === r.event.id)).map(r => `nicht übernommen: ${r.reason}`)] : [];
 
-  return <div role="region" className="team-block team-exchange" aria-label="Austausch">
-    <h3>Austausch <small>ohne Server und Konten – der Planer verschickt nichts selbst</small></h3>
+  // LINK-11 (Philipp 06.11.: „Wir benutzen keine Daten runterladen und dann irgendwo einfügen“): everything here is the
+  // emergency way without internet. Normal is the Team-Raum (TeamRoom), which also feeds mods and the server plugin.
+  return <details role="region" className="team-block team-exchange team-emergency" aria-label="Notfall ohne Internet">
+    <summary><strong>Notfall ohne Internet</strong> <small>Dateien und Meldecode – nur wenn der Team-Raum nicht erreichbar ist</small></summary>
+    <p className="muted">Normal läuft alles über „Team live“: Planer, Mods und Server-Plugin bekommen jeden Schritt über das Internet. Diese Wege brauchst du nur, wenn das nicht geht.</p>
     {team && <div className="team-exchange-grid">
       <div><h4>Weitergeben</h4>
         <div className="team-buttons">
@@ -172,7 +175,7 @@ export function TeamExchange({ session, team, view, onMessage }: { session: Proj
           <button disabled={busy} className="secondary" onClick={invitation}>Einladung</button>
         </div>
         <small className="muted">Teampaket mit Plan: für neue Mitspieler und nach einer Freigabe. Meldecode: deine Meldungen als eine Zeile für den Chat.</small>
-        <h4>Server (Paper-Plugin)</h4>
+        <h4>Server ohne Team-Raum</h4>
         <div className="team-buttons"><button disabled={busy} className="secondary" onClick={() => void serverFile()}>Serverdatei herunterladen</button></div>
         <small className="muted">Nach <code>plugins/BauplanerBridge/team/</code> legen, <code>/bauplaner team laden</code>. Was Spieler im Spiel melden, holst du mit <code>/bauplaner team export</code> und liest die Datei hier ein.</small>
       </div>
@@ -203,5 +206,5 @@ export function TeamExchange({ session, team, view, onMessage }: { session: Proj
       <div className="team-buttons"><button disabled={busy || (!preview.merge.added.length && !(preview.plan && takePlan))} onClick={() => void apply()}>Übernehmen</button>
         <button className="secondary" onClick={() => setPreview(null)}>Verwerfen</button></div>
     </div>}
-  </div>;
+  </details>;
 }

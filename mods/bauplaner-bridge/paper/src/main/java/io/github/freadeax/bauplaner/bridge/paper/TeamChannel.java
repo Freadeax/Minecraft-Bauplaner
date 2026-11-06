@@ -123,7 +123,7 @@ final class TeamChannel implements PluginMessageListener, Listener {
                 case "act" -> act(player, o);
                 case "pull" -> pull(player, o);
                 case "push" -> push(player, o);
-                case "link.info", "link.claim", "link.ctl" -> linkMessage(player, t, o);
+                case "link.info", "link.claim", "link.ctl", "link.room" -> linkMessage(player, t, o);
                 default -> error(player, "Unbekannte Nachricht " + t);
             }
         } catch (RuntimeException e) {

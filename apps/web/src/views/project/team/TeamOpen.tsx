@@ -25,7 +25,7 @@ export function TeamOpen({ onMessage, onDone }: { onMessage(m: string): void; on
     finally { setBusy(false); if (input.current) input.current.value = ''; }
   };
   return <>
-    <button className="secondary" disabled={busy} onClick={() => input.current?.click()} title="Projekt eines Teams aus dem Teampaket der Bauleitung anlegen">Teampaket öffnen</button>
+    <button className="text-button" disabled={busy} onClick={() => input.current?.click()} title="Normal tritt man einem Team über den Einladungslink bei – ohne Datei. Nur im Notfall ohne Internet: Projekt eines Teams aus einer Teampaket-Datei der Bauleitung anlegen.">Notfall: Teampaket-Datei</button>
     <input ref={input} type="file" accept=".json,application/json" hidden aria-label="Teampaket wählen" onChange={e => { const f = e.target.files?.[0]; if (f) void open(f); }} />
   </>;
 }

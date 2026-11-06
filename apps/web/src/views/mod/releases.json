@@ -844,6 +844,53 @@
       "releasedAt": "2026-11-06",
       "sourceCommit": "20640ef197a8c1af3ac4049a53957280e74c059d",
       "tested": "Echter NeoForge-26.3-Client: Spieltest Hologramm, Verbindung, Gelände"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.21.0.jar",
+      "modVersion": "0.21.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 582732,
+      "sha256": "a02445b9bf7ef2c3666a6a7305405d216a84a64ef6cbfa82974e3ec794b0dddc",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "ac0f970bd5f212a9280f095d06a6535dcfc3a800",
+      "tested": "Minecraft 26.3 fabric: echter Spieltest bestanden 06.11.2026 (0.21.0: Team-Raum, Gelände, Hologramm; Raum-Übergabe ans Plugin per TeamTest und echtem Paper 1.21.11)"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.21.0.jar",
+      "modVersion": "0.21.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 578542,
+      "sha256": "1082af91cdd361c669aa4a3c4eea1a936b642a48c364691dd83f951e7f7c3eb6",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "ac0f970bd5f212a9280f095d06a6535dcfc3a800",
+      "tested": "Minecraft 26.3 neoforge: echter Spieltest bestanden 06.11.2026 (0.21.0)"
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.21.0.jar",
+      "modVersion": "0.21.0",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 256989,
+      "sha256": "3c1c561e0ba663378e53aac99c6cba138a694e390b1bf03a993466fc962230e3",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "ac0f970bd5f212a9280f095d06a6535dcfc3a800",
+      "tested": "Paper 1.21.11: echter Server mit Team-Raum (wrangler dev) – Raum-Übergabe durch die Mod (link.room), Nicht-OP abgewiesen, Kopplung, Steuerung über den Raum (06.11.2026)"
     }
   ]
 }

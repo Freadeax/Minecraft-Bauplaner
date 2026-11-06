@@ -32,5 +32,5 @@ test('FALLBACK-01: Mod nach hello – zu alt, anderer Plan, kein Plan, passender
 
 test('FALLBACK-01: Zusammenfassung nennt den Weg und was vorher nicht ging', () => {
   assert.match(scanRouteSummary('room', [{ id: 'mod', why: 'Minecraft läuft nicht' }]), /über Spiele im Team-Raum .*Vorher versucht: dein Spiel auf diesem PC: Minecraft läuft nicht/);
-  assert.match(scanRouteSummary(null, [{ id: 'server', why: 'offline' }]), /Kein Weg hat geklappt.*importieren/);
+  assert.match(scanRouteSummary(null, [{ id: 'server', why: 'offline' }]), /Kein Weg hat geklappt.*Team live.*Notfall/);
 });

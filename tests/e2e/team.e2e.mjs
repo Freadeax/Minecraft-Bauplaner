@@ -64,6 +64,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await a.getByText('Planstand 1 gilt').waitFor();
     await section(a, 'Dach').getByRole('button', { name: 'Übernehmen' }).click();
     await section(a, 'Dach').getByText('in Arbeit').waitFor();
+    await a.locator('details.team-exchange').evaluate(d => { d.open = true; });
     const [pkgDownload] = await Promise.all([a.waitForEvent('download'), a.getByRole('button', { name: 'Teampaket mit Plan' }).click()]);
     assert.match(pkgDownload.suggestedFilename(), /\.bauteam\.json$/);
     const pkgPath = await pkgDownload.path();
@@ -94,6 +95,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await notes.getByPlaceholder(/Notiz/).fill('Wie breit wird das Tor, @Philipp?');
     await notes.getByRole('button', { name: 'Schreiben' }).click();
     await notes.getByText('Wie breit wird das Tor').waitFor();
+    await b.locator('details.team-exchange').evaluate(d => { d.open = true; });
     await b.getByRole('button', { name: 'Meldecode kopieren' }).click();
     const code = await shownText(b);
     assert.match(code, /^BPT1:[A-Za-z0-9]+:[A-Za-z0-9_-]+:[a-f0-9]{8}$/);
@@ -101,6 +103,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     // ---- Bauleitung, meanwhile offline: also takes "Rohbau" (later than Anna) → conflict after reading the code.
     await section(a, 'Rohbau').getByRole('button', { name: 'Übernehmen' }).click();
     await section(a, 'Rohbau').locator('.team-owner', { hasText: 'Philipp' }).waitFor();
+    await a.locator('details.team-exchange').evaluate(d => { d.open = true; });
     await a.getByLabel('Meldecode').fill(code);
     await a.getByRole('button', { name: 'Prüfen' }).click();
     const preview = a.getByRole('region', { name: 'Vorschau Einlesen' });
@@ -119,6 +122,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await a.waitForTimeout(400);
     await a.reload();
     await section(a, 'Fundament').getByText('bestätigt').waitFor();
+    await a.locator('details.team-exchange').evaluate(d => { d.open = true; });
     const [onlyTeam] = await Promise.all([a.waitForEvent('download'), a.getByRole('button', { name: 'Teampaket nur Teamstand' }).click()]);
 
     // ---- COOP-04: the server plugin's export brings Baunachweis and storage chests (built here like the plugin writes it).
@@ -163,6 +167,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await proof.locator('.team-proof-members tr', { hasText: 'Philipp' }).getByText('40', { exact: true }).waitFor();
 
     // ---- Helfer reads the team-only package: confirmation and new role arrive, nothing of her own is lost.
+    await b.locator('details.team-exchange').evaluate(d => { d.open = true; });
     await b.getByRole('button', { name: 'Datei wählen …' }).click({ trial: true });
     await b.locator('.team-exchange input[type=file]').setInputFiles(await onlyTeam.path());
     const pb = b.getByRole('region', { name: 'Vorschau Einlesen' });

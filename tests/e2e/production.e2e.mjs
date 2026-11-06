@@ -121,6 +121,7 @@ test('Produktion: Sammeltruhe aus dem Team-Lager liefert die echte Rate (1400px)
   await nav.getByRole('link', { name: 'Team' }).click();
   await p.getByPlaceholder('Dein Name').fill('Philipp');
   await p.getByRole('button', { name: 'Team gründen' }).click();
+  await p.locator('details.team-exchange').evaluate(d => { d.open = true; });
   const [dl] = await Promise.all([p.waitForEvent('download'), p.getByRole('button', { name: 'Teampaket nur Teamstand' }).click()]);
   const pkg = await readTeamPackage(readFileSync(await dl.path(), 'utf8'));
   const later = n => new Date(Date.parse(pkg.team.events.at(-1).at) + n * 60_000).toISOString();

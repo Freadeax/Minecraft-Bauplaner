@@ -149,6 +149,7 @@
       "interactions": [
         "While the game runs, a small service answers on 127.0.0.1 (port 47615 by default, reachable only from this PC) so the Bauplaner website in your browser can find the game. It answers only the website itself (freadeax.github.io or its mirror bauplaner.pages.dev) and local development pages. Plans, map markers and build state are exchanged only after you click “Allow planner” in the game (J menu).",
         "With a team room connected in the planner: an outgoing WebSocket or HTTPS connection to that room.",
+        "Team lead only, on a server with the optional Bauplaner plugin and team building allowed there: the mod sends the team room address and the room's server key once over the plugin channel bauplaner:team, so the plugin connects itself to the room. Helpers never get this key.",
         "/bauplaner diagnose copies a diagnosis report to the clipboard.",
         "Plans, settings, the team room address and reports are stored in the game folder under bauplaner/.",
         "Terrain memory: the surface of chunks you have seen (heights, top blocks, biomes) is stored on this PC under bauplaner/gelaende/ so the planner can use your building site's terrain; /bauplaner gelaende aus switches it off, /bauplaner gelaende vergessen deletes it. It is never sent to the Minecraft server."

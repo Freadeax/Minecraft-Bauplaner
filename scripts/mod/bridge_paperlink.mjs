@@ -142,7 +142,7 @@ try {
   // 3. The operator joins: one hint in the chat, then pairing with one click (no command).
   const boss = await player('Bauleiterin');
   await new Promise(r => setTimeout(r, 4000));
-  assert.ok(boss.chat.some(c => c.includes('noch nicht mit dem Bauplaner gekoppelt')), `Hinweis für den OP im Chat: ${boss.chat.join(' | ').slice(0, 400)}`);
+  assert.ok(boss.chat.some(c => c.includes('noch keinen Team-Raum')), `Hinweis für den OP im Chat: ${boss.chat.join(' | ').slice(0, 400)}`);
   const info = await boss.ask('link.info');
   assert.equal(info.canClaim, true); assert.equal(info.paired, false);
   const claim = await boss.ask('link.claim', { device: 'Planer · Chrome · Windows' });
@@ -239,6 +239,15 @@ try {
     const put = await fetch(`${roomBase}/v1/rooms/${created.room}/header`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${created.adminKey}` }, body: JSON.stringify({ ...teamFile, events: [] }) });
     assert.equal(put.status, 200);
     const link = `https://freadeax.github.io/Minecraft-Bauplaner/#/team/beitreten?raum=${encodeURIComponent(roomBase)}&id=${created.room}&s=${encodeURIComponent(created.serverKey)}`;
+    // LINK-11: the Bauleitung's mod hands the room over by itself (link.room) – no pairing, no command, no file.
+    const stranger = await player('Gast2');
+    assert.match((await stranger.ask('link.room', { link })).error, /nur ein Operator/, 'Nicht-OP darf keinen Raum übergeben');
+    await stranger.quit();
+    const handed = await boss.ask('link.room', { link, teamName: 'Burg am See' });
+    assert.ok(!handed.error, handed.error);
+    assert.match(handed.text, /Mit dem Team-Raum von „Burg am See“ verbunden/);
+    assert.equal((await boss.ask('link.room', { link })).same, true, 'zweite Übergabe ändert nichts');
+    await waitFor(/Bauleiterin übergibt dem Server einen Team-Raum/, 5);
     const connected = await boss.ask('link.ctl', signed(pair, 'room', { link }));
     assert.ok(!connected.error, connected.error);
     assert.ok(!log.includes(created.serverKey), 'Serverschlüssel steht nie im Log');
@@ -262,7 +271,7 @@ try {
     assert.equal((await viaRoom(signed(pair, 'status'), 'falscher-schluessel')).status, 401);
     assert.equal((await viaRoom({ owner: 'x' })).status, 400);
     await waitFor(/Einstellungen aus dem Planer[^\n]*lager\.modus/, 5);
-    roomWay = ', Steuerung über den Team-Raum (Status, Einstellung, Wiederholung abgewiesen)';
+    roomWay = ', Raum-Übergabe durch die Mod (link.room, Nicht-OP abgewiesen), Steuerung über den Team-Raum (Status, Einstellung, Wiederholung abgewiesen)';
   }
   await boss.quit();
   await stop();

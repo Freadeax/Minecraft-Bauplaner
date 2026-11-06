@@ -10,7 +10,9 @@ import io.github.freadeax.bauplaner.mod.team.TeamPlan;
 import io.github.freadeax.bauplaner.mod.team.TeamState;
 import io.github.freadeax.bauplaner.mod.team.TeamSync;
 import io.github.freadeax.bauplaner.mod.team.TeamWire;
+import io.github.freadeax.bauplaner.mod.room.RoomClient;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -224,5 +226,57 @@ class TeamTest {
         third.join("server/fremd", new Fake());
         third.receive(frame("{\"v\":1,\"t\":\"state\",\"state\":" + STATE + "}"));
         assertNull(third.state());
+    }
+    /** LINK-11: the Bauleitung's game hands the team room to the server plugin – once per server connection and room. */
+    @Test
+    void roomHandOverToThePlugin(@TempDir Path dir) throws Exception {
+        List<String> chat = new ArrayList<>();
+        long[] now = { 1_000 };
+        Files.writeString(dir.resolve("erlaubt.properties"), "server/test=ja\n");
+        TeamSync sync = new TeamSync(dir, "0.21.0", () -> now[0], chat::add);
+        RoomClient room = new RoomClient(dir.resolve("raum.json"), x -> { });
+        Map<String, Object> cfg = new LinkedHashMap<>(Map.of("url", "http://127.0.0.1:9", "room", "r_test1234", "key", "k_member", "member", "b_anna", "teamName", "Burg"));
+        // A helper's game (no server key) never hands anything over.
+        room.use(RoomClient.parse(cfg));
+        sync.room(room);
+        assertNull(room.config().serverLink());
+        Fake net = new Fake();
+        net.channel = true;
+        sync.join("server/test", net);
+        sync.receive(frame("{\"v\":1,\"t\":\"state\",\"state\":" + STATE + "}"));
+        assertTrue(net.sent.stream().noneMatch(m -> "link.room".equals(m.get("t"))));
+        // Bauleitung: stored with the key, never shown in GET /v1/room.
+        cfg.put("serverKey", "s_server/+key");
+        room.use(RoomClient.parse(cfg));
+        assertTrue(Files.readString(dir.resolve("raum.json")).contains("s_server/+key"));
+        assertFalse(Json.write(room.config().publicFields()).contains("s_server"));
+        assertEquals(true, room.config().publicFields().get("serverHandover"));
+        assertEquals("s_server/+key", new RoomClient(dir.resolve("raum.json"), x -> { }).config().serverKey());
+        sync.handOverRoom();
+        Map<String, Object> hand = net.sent.get(net.sent.size() - 1);
+        assertEquals("link.room", hand.get("t"));
+        assertEquals("http://127.0.0.1:9/#/team/beitreten?raum=http%3A%2F%2F127.0.0.1%3A9&id=r_test1234&s=s_server%2F%2Bkey", hand.get("link"));
+        sync.receive(frame("{\"v\":1,\"t\":\"answer\",\"req\":\"" + hand.get("req") + "\",\"ok\":true,\"text\":\"Mit dem Team-Raum von „Burg“ verbunden.\"}"));
+        assertTrue(chat.get(chat.size() - 1).startsWith("Server-Plugin: Mit dem Team-Raum"));
+        // Same connection and room: not again, not even after the next state.
+        int sent = net.sent.size();
+        sync.receive(frame("{\"v\":1,\"t\":\"state\",\"state\":" + STATE + "}"));
+        sync.handOverRoom();
+        assertEquals(sent, net.sent.size());
+        // Rejoin: handed over again; "same" stays quiet; a refusal (not OP) is shown.
+        sync.join("server/test", net);
+        sync.receive(frame("{\"v\":1,\"t\":\"state\",\"state\":" + STATE + "}"));
+        Map<String, Object> again = net.sent.get(net.sent.size() - 1);
+        assertEquals("link.room", again.get("t"));
+        int lines = chat.size();
+        sync.receive(frame("{\"v\":1,\"t\":\"answer\",\"req\":\"" + again.get("req") + "\",\"ok\":true,\"same\":true,\"text\":\"schon verbunden\"}"));
+        assertEquals(lines, chat.size());
+        sync.join("server/test", net);
+        sync.receive(frame("{\"v\":1,\"t\":\"none\",\"text\":\"Kein Team.\"}"));
+        Map<String, Object> third = net.sent.get(net.sent.size() - 1);
+        assertEquals("link.room", third.get("t"), "auch ohne Team auf dem Server");
+        sync.receive(frame("{\"v\":1,\"t\":\"answer\",\"req\":\"" + third.get("req") + "\",\"error\":\"Den Team-Raum übergeben darf nur ein Operator (OP).\"}"));
+        assertTrue(chat.get(chat.size() - 1).contains("nur ein Operator"));
+        room.forget();
     }
 }

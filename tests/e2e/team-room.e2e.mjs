@@ -29,7 +29,7 @@ before(async () => {
     try { if ((await fetch(BASE)).ok) break; } catch {}
     await new Promise(r => setTimeout(r, 200));
   }
-  mod = await startModSimulator(MOD_PORT, { protocol: 2, features: ['scan', 'marks2', 'players', 'bigplans', 'team', 'pairask', 'server', 'marks3', 'room'] });
+  mod = await startModSimulator(MOD_PORT, { protocol: 2, features: ['scan', 'marks2', 'players', 'bigplans', 'team', 'pairask', 'server', 'marks3', 'room', 'roomserver'] });
   mod.state.tokens.add(MOD_TOKEN);
   browser = await chromium.launch();
 });
@@ -202,6 +202,9 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await liveBlock(a).locator('[data-state=live]').waitFor();
     const link = await liveBlock(a).getByLabel('Einladungslink').inputValue();
     assert.match(link, new RegExp(`#/team/beitreten\\?raum=${encodeURIComponent(ROOM).replace(/\./g, '\\.')}&id=r_[\\w-]+&k=[\\w-]+$`));
+    // LINK-11: the server link is only the emergency way (closed block); normal is the hand-over through the mod.
+    await liveBlock(a).getByTestId('server-room').filter({ hasText: 'verbindet sich von selbst' }).waitFor();
+    await liveBlock(a).locator('details.team-emergency > summary').click();
     await liveBlock(a).getByRole('button', { name: 'Link für den Server' }).click();
     const serverLink = await liveBlock(a).getByLabel('Link für den Server').inputValue();
     assert.match(serverLink, /&s=[\w-]+$/);
@@ -235,6 +238,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await liveBlock(b).getByTestId('game-room').filter({ hasText: 'über HTTP (Ausweichweg) · 2 Meldungen warten' }).waitFor();
     mod.state.room = { ...mod.state.room, mode: 'ws', pendingReports: 0 };
     assert.equal(handed.url, ROOM); assert.equal(handed.room, roomId); assert.equal(handed.key, q.get('k'), 'Mitgliedsschlüssel, nie der Admin- oder Serverschlüssel');
+    assert.equal(handed.serverKey, undefined, 'a helper never gets the server key');
     assert.equal(handed.memberName, 'Anna'); assert.match(handed.member, /^bld_/);
 
     // ---- Bauleitung sees it live, without reading anything in.
@@ -267,6 +271,15 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await teamTab(a);
     await section(a, 'Dach').getByRole('button', { name: 'Übernehmen' }).click();
     await section(b, 'Dach').locator('.team-owner', { hasText: 'Philipp' }).waitFor();
+
+    // ---- LINK-11: the Bauleitung's game also gets the server key, so the mod hands the room to the server plugin itself.
+    const annaRoom = mod.state.room;
+    await a.evaluate(([port, token]) => localStorage.setItem('bauplaner.spielverbindung', JSON.stringify({ port, token, auto: false })), [MOD_PORT, MOD_TOKEN]);
+    await liveBlock(a).getByRole('button', { name: 'Mein Spiel verbinden' }).click();
+    await a.getByText(/verbindet die Mod den Server von selbst mit dem Team-Raum/).first().waitFor();
+    assert.equal(mod.state.room.serverKey, new URLSearchParams(serverLink.split('?')[1]).get('s'), 'Bauleitung: server key for the hand-over');
+    assert.equal(mod.state.room.key, q.get('k'));
+    mod.state.room = annaRoom;
 
     // ---- Server measures (plugin with server key); a helper key cannot fake it.
     const logged = await room.events();
