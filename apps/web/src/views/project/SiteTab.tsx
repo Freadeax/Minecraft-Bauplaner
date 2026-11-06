@@ -8,6 +8,7 @@ import { useApp } from '../../app/context';
 import { download, errorText, formatNumber } from '../../app/ui';
 import { isResolved } from './session';
 import { latestBySection, SnapshotBadge, SnapshotsPanel, useSnapshotComparisons } from './SnapshotsPanel';
+import { More } from '../../app/More';
 import type { ProjectSession } from './session';
 import '../../styles/site.css';
 
@@ -73,15 +74,20 @@ export function SiteTab({ session }: { session: ProjectSession }) {
     <Sections site={site} plan={plan.sections} guide={guide} progress={progress} project={project} issues={issues} selected={selected.id} onSelect={setFocus} save={save}
       frozen={latestBySection(site, comparisons)}
       onPrune={orphans ? () => save(pruneSite(site, project), 'Entfernte Bauteile aus dem Plan gelöst') : null} />
-    <SnapshotsPanel site={site} project={project} comparisons={comparisons} execute={op => session.execute(op)} />
+    {/* UX-01-S06: Hauptsache Abschnitte und Sammelplan; Stände und Freiraum sind Experten-Werkzeuge und stehen eingeklappt. */}
+    <More className="site-snapshots-more" title="Abschnittsstände" hint={comparisons.length ? `${comparisons.length} eingefroren` : 'Stände einfrieren und vergleichen'} open={comparisons.length > 0}>
+      <SnapshotsPanel site={site} project={project} comparisons={comparisons} execute={op => session.execute(op)} />
+    </More>
     <GatherPlan section={selected} site={site} save={save} fileStem={project.name.replace(/[^\p{L}\p{N}_-]+/gu, '_')} />
-    <Reservations site={site} reservations={reservations} save={save} onSelectInstance={id => session.select(id)} projectId={project.id}
-      onLinkDocked={() => {
-        try {
-          const ops = unlinkedMates(project, library.versions).map(m => linkOperation(project, library.versions, m.a, m.b));
-          if (ops.length) setMessage(session.execute({ kind: 'batch', label: `${ops.length} angedockte Anschlüsse verbunden`, operations: ops }));
-        } catch (e) { setMessage(errorText(e)); }
-      }} />
+    <More className="site-reservations-more" title="Freiraum an Anschlüssen" hint={blocked.length ? `${blocked.length} verbaut – bitte prüfen` : 'alles frei · Platz für spätere Anbauten'} open={blocked.length > 0}>
+      <Reservations site={site} reservations={reservations} save={save} onSelectInstance={id => session.select(id)} projectId={project.id}
+        onLinkDocked={() => {
+          try {
+            const ops = unlinkedMates(project, library.versions).map(m => linkOperation(project, library.versions, m.a, m.b));
+            if (ops.length) setMessage(session.execute({ kind: 'batch', label: `${ops.length} angedockte Anschlüsse verbunden`, operations: ops }));
+          } catch (e) { setMessage(errorText(e)); }
+        }} />
+    </More>
     <ul className="materials-notes">{plan.notes.map(n => <li key={n}>{n}</li>)}</ul>
   </section>;
 }

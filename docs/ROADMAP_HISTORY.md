@@ -7509,3 +7509,28 @@ Bedienung vereinfacht: Hauptnavigation auf Projekte, Bibliothek, Weltkarte, Spie
 - `tests/e2e/stability.e2e.mjs`
 - `tests/e2e/start.mjs`
 
+## 2026-11-06T15:13:31.442Z · progress
+
+**Aufgaben:** UX-01
+
+Werkstatt, Baustelle und Produktion vereinfacht: Kreativ-Werkzeuge, Abschnittsstände, Freiraum an Anschlüssen, Zeitbudget sowie Öfen/Lager/AFK-Platz/Produktionsblatt eingeklappt (Stände und verbauter Freiraum öffnen sich selbst). Prüfung: voller Browserlauf 190/190, npm run check; Abnahme START-13 offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| UX-01 | 🚧 In Arbeit | 6/6 | Philipps Abnahme START-10..13 im Browser und auf dem iPad. Optik übernimmt „Planer-Oberfläche schön neu gestalten“. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/editor/BlockEditor.tsx`
+- `apps/web/src/editor/editor.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/project/ProductionTab.tsx`
+- `apps/web/src/views/project/SiteTab.tsx`
+- `docs/TESTING.md`
+- `docs/architecture/planer/UI.md`
+- `docs/testing/TESTPLAN.md`
+- `tests/e2e/production.e2e.mjs`
+- `tests/e2e/site.e2e.mjs`
+- `tests/e2e/workshop-creative.e2e.mjs`
+- `tests/e2e/workshop-tools.e2e.mjs`
+

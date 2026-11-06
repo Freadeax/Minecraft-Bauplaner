@@ -82,6 +82,7 @@ test('Kreativwerkzeuge: Symmetrie, Kurve, Natur, Oberfläche, Farbverlauf und Bi
   const errors = watch(p);
   await p.goto(`${BASE}#/werkstatt/neu`);
   await p.getByRole('heading', { name: 'Neues Bauteil bauen' }).waitFor();
+  await p.locator('details.creative-more').evaluate(d => { d.open = true; }); // UX-01: Kreativ-Werkzeuge eingeklappt
 
   // Symmetry: mirror east/west around the cell column under the grid centre; one click sets two blocks.
   const g = await gridGeometry(p), cx = Math.floor(g.centre[0]);
@@ -158,6 +159,7 @@ test('Kreativwerkzeuge auf dem Handy (390 px): ohne waagrechtes Scrollen', async
   const errors = watch(p);
   await p.goto(`${BASE}#/werkstatt/neu`);
   await p.getByRole('heading', { name: 'Neues Bauteil bauen' }).waitFor();
+  await p.locator('details.creative-more').evaluate(d => { d.open = true; }); // UX-01: Kreativ-Werkzeuge eingeklappt
   await p.getByRole('button', { name: /4× drehen/ }).click();
   await p.getByRole('radio', { name: /Kurve/ }).click();
   await p.getByRole('region', { name: 'Farbpaletten' }).waitFor();

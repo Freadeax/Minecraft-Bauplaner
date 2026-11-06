@@ -74,6 +74,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await cane.getByLabel('Z-Koordinate').fill('-40');
     await cane.getByRole('button', { name: 'Ort speichern' }).click();
     await cane.getByText(/Oberwelt 120 \/ 64 \/ -40/).first().waitFor();
+    await prod.locator('details.prod-more').evaluate(d => { d.open = true; }); // UX-01: Detailrechnungen eingeklappt
     const afk = prod.getByRole('region', { name: 'AFK-Platz' });
     await afk.getByRole('button', { name: 'Als AFK-Platz übernehmen' }).click();
     await afk.getByText(/Gewählt: Oberwelt 120/).waitFor();
@@ -87,6 +88,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await p.reload();
     await prod.locator('.prod-farm').nth(1).waitFor({ timeout: 90_000 });
     assert.equal(await prod.locator('.prod-farm').count(), 2);
+    await prod.locator('details.prod-more').evaluate(d => { d.open = true; });
     await prod.getByRole('region', { name: 'AFK-Platz' }).getByText(/Gewählt/).waitFor();
     const overflow = await p.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     assert.ok(overflow <= 1, `no horizontal scroll (${overflow}px)`);

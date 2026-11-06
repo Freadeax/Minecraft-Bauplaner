@@ -27,6 +27,7 @@ import { useDraft } from './useDraft';
 import { EntityPanel } from './EntityPanel';
 import type { DraftModel } from './useDraft';
 import { HelixControls, INITIAL_HELIX, INITIAL_MAGIC, INITIAL_TORUS, MagicControls, RegionTools, TorusControls } from './RegionPanel';
+import { More } from '../app/More';
 import type { HelixState, MagicState, TorusState } from './RegionPanel';
 
 export type Tool = 'stift' | 'abbauen' | 'pipette' | 'fuellen' | 'drehen' | 'zustand' | 'auswahl' | 'linie' | 'quader' | 'zylinder' | 'kugel' | 'einfuegen' | 'bogen' | 'pyramide' | 'kegel' | 'kurve'
@@ -698,13 +699,16 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
           </> : <p className="muted">Mit „Auswahl“ oder Shift+Ziehen einen Bereich aufziehen, mit „Zauberauswahl“ (W) zusammenhängende Blöcke wählen. Höhe danach über „Y von/bis“.</p>}
         </section>
 
-        <StencilPanel profileId={draft.profileId} onClip={takeClip} onMessage={setMessage} selectionClip={() => selBox ? (mask ? copyRegion(draft, mask) : copyBox(draft, selBox)) : null} />
-        <NaturePanel draft={draft} box={selBox} pattern={activePattern} run={mask ? (e, ok) => run(clipEdit(e, mask), ok) : run} onMessage={setMessage} />
-        <ColorPanel brush={brush} onBrush={setBrush} onGradient={stops => {
-          setPattern(p => fromPattern({ kind: 'gradient', stops, axis: p.gradientAxis, blend: p.blend, seed: p.seed }, p));
-          setMessage(`Farbverlauf mit ${stops.length} Stufen als Muster übernommen (wirkt auf Setzen, Formen und Füllen).`);
-        }} />
-        <ImagePanel onClip={takeClip} onMessage={setMessage} />
+        {/* UX-01-S06: Schablonen, Natur, Farben und Bild sind Kreativ-Extras; Auswahl, Ersetzen und Block bleiben sichtbar. */}
+        <More className="creative-more" title="Kreativ-Werkzeuge" hint="Schablonen, Natur, Farbverläufe, Bild → Blöcke">
+          <StencilPanel profileId={draft.profileId} onClip={takeClip} onMessage={setMessage} selectionClip={() => selBox ? (mask ? copyRegion(draft, mask) : copyBox(draft, selBox)) : null} />
+          <NaturePanel draft={draft} box={selBox} pattern={activePattern} run={mask ? (e, ok) => run(clipEdit(e, mask), ok) : run} onMessage={setMessage} />
+          <ColorPanel brush={brush} onBrush={setBrush} onGradient={stops => {
+            setPattern(p => fromPattern({ kind: 'gradient', stops, axis: p.gradientAxis, blend: p.blend, seed: p.seed }, p));
+            setMessage(`Farbverlauf mit ${stops.length} Stufen als Muster übernommen (wirkt auf Setzen, Formen und Füllen).`);
+          }} />
+          <ImagePanel onClip={takeClip} onMessage={setMessage} />
+        </More>
 
         <section className="panel-lite" aria-label="Ersetzen">
           <span className="panel-kicker">ERSETZEN</span>

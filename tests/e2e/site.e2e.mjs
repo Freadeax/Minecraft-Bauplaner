@@ -64,6 +64,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     assert.match(download.suggestedFilename(), /-sammelplan-Fundament\.csv$/);
 
     // Reservations: the burg keeps its outer joints free, linked ones hidden by default.
+    await site.locator('details.site-reservations-more').evaluate(d => { d.open = true; }); // UX-01: eingeklappt
     const res = site.getByRole('region', { name: 'Freiraum an Anschlüssen' });
     await res.locator('.badge.res-free').first().waitFor();
     assert.equal(await res.locator('.badge.res-blocked').count(), 0);

@@ -13,6 +13,7 @@ import { useWorldPlan } from '../map/useWorldPlan';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
 import '../../styles/site.css';
+import { More } from '../../app/More';
 import '../../styles/production.css';
 
 const short = (id: string): string => id.replace(/^minecraft:/, '');
@@ -94,22 +95,27 @@ export function ProductionTab({ session }: { session: ProjectSession }) {
         <small>{schedule ? (t.late ? 'Abschnitte, deren Material nach dem geplanten Baubeginn fertig wird' : programOf(site).waitForMaterial ? 'Die Planung wartet auf das Material' : 'Material rechtzeitig laut Planung') : 'Ohne Bauabschnitte kein Zeitplan'}</small></div>
     </header>
     {message && <div className="notice warning" role="alert">{message}<button onClick={() => setMessage('')}>OK</button></div>}
-    <Settings production={production} site={site} save={save} />
+    {/* UX-01-S06: Farmen, Deckung und Bereitschaft zuerst; Einstellungen und Detailrechnungen eingeklappt. */}
+    <More className="prod-settings-more" title="Zeitbudget und Server" hint={`${num(production.gatherHoursPerDay)} h Sammelzeit je Spieltag · nur ändern, wenn du anders spielst`}>
+      <Settings production={production} site={site} save={save} />
+    </More>
     <Farms report={report} site={site} save={save} sitePlace={sitePlace} onMap={addToMap} />
     <Found detected={detected} mapFarms={mapFarms} site={site} save={save} sitePlace={sitePlace} projectId={project.id} />
     <Coverage report={report} />
     <Readiness report={report} projectId={project.id} hasProgram={!!site.program} />
     <Suggestions suggestions={report.suggestions} site={site} save={save} missing={t.missing} />
-    <Furnaces report={report} />
-    <Logistics report={report} boxes={paceOf(site).boxesPerSession} />
-    <Afk report={report} site={site} save={save} sitePlace={sitePlace} onMap={addToMap} />
     <Jobs assignments={assignments} projectId={project.id} />
-    <section className="site-block" aria-label="Teilen und Hinweise">
-      <div className="site-head"><h3>Produktionsblatt <small>alles oben als Text – zum Teilen, Drucken oder für Mitspieler</small></h3>
-        <button className="materials-csv" onClick={() => download(`${fileStem(project.name)}-produktion.txt`, productionText(report, project.name, assignments), 'text/plain;charset=utf-8')}>⤓ Als Text</button>
-        <button className="materials-csv" onClick={() => { void navigator.clipboard?.writeText(productionText(report, project.name, assignments)).then(() => setMessage('Produktionsblatt kopiert.'), () => setMessage('Kopieren nicht erlaubt – bitte „Als Text“ nutzen.')); }}>Kopieren</button></div>
-      <ul className="materials-notes">{report.notes.map(n => <li key={n}>{n}</li>)}</ul>
-    </section>
+    <More className="prod-more" title="Öfen, Lager, AFK-Platz und Produktionsblatt" hint="Detailrechnungen und Teilen als Text">
+      <Furnaces report={report} />
+      <Logistics report={report} boxes={paceOf(site).boxesPerSession} />
+      <Afk report={report} site={site} save={save} sitePlace={sitePlace} onMap={addToMap} />
+      <section className="site-block" aria-label="Teilen und Hinweise">
+        <div className="site-head"><h3>Produktionsblatt <small>alles oben als Text – zum Teilen, Drucken oder für Mitspieler</small></h3>
+          <button className="materials-csv" onClick={() => download(`${fileStem(project.name)}-produktion.txt`, productionText(report, project.name, assignments), 'text/plain;charset=utf-8')}>⤓ Als Text</button>
+          <button className="materials-csv" onClick={() => { void navigator.clipboard?.writeText(productionText(report, project.name, assignments)).then(() => setMessage('Produktionsblatt kopiert.'), () => setMessage('Kopieren nicht erlaubt – bitte „Als Text“ nutzen.')); }}>Kopieren</button></div>
+        <ul className="materials-notes">{report.notes.map(n => <li key={n}>{n}</li>)}</ul>
+      </section>
+    </More>
   </section>;
 }
 

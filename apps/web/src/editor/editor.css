@@ -124,3 +124,6 @@ span.color-chip{cursor:default;width:16px;height:14px}
 .content-editor .sign-lines input { font-family: inherit; text-align: center; }
 .content-editor .content-problem { color: var(--danger, #d35f5f); margin: 0; }
 .editor-3d .scene[data-build='on'], .editor-3d .canvas-host[data-build='on'] { cursor: crosshair; }
+
+/* UX-01-S06: Kreativ-Werkzeuge eingeklappt; aufgeklappt stehen sie wie die übrigen Felder untereinander bzw. im Raster. */
+.editor-side>details.creative-more{margin:0;grid-column:1/-1}.creative-more>.more-body{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));padding:0 10px 10px}

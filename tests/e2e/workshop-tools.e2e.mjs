@@ -67,6 +67,7 @@ test('Werkstatt vertieft: Muster-Pinsel, Bogen, Schablone mit Vorschau, Tastenk�
   const errors = watch(p);
   await p.goto(`${BASE}#/werkstatt/neu`);
   await p.getByRole('heading', { name: 'Neues Bauteil bauen' }).waitFor();
+  await p.locator('details.creative-more').evaluate(d => { d.open = true; }); // UX-01: Kreativ-Werkzeuge eingeklappt
 
   // Mixed wall: preset „Alte Steinmauer“, 9×1 wall 4 high via the line tool with height (36 cells, three block types).
   await p.getByRole('radio', { name: /Linie/ }).click();
@@ -147,6 +148,7 @@ test('Werkstatt-Werkzeuge auf dem Handy (390 px): Musterfeld und Schablonen ohne
   const errors = watch(p);
   await p.goto(`${BASE}#/werkstatt/neu`);
   await p.getByRole('heading', { name: 'Neues Bauteil bauen' }).waitFor();
+  await p.locator('details.creative-more').evaluate(d => { d.open = true; }); // UX-01: Kreativ-Werkzeuge eingeklappt
   await p.getByRole('radio', { name: /Mischung/ }).click();
   await p.getByRole('button', { name: '+ Pinsel' }).click();
   await p.getByRole('button', { name: /Tasten/ }).click();

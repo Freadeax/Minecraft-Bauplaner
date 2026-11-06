@@ -1080,3 +1080,4 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Angepasst, weil „Speicher & Sicherung“ jetzt eingeklappt ist (Helfer `openStorage` in `tests/e2e/start.mjs`): `backup-reminder`, `collections`, `persistence`, `stability`; `shell.e2e.mjs` zählt 5 Hauptlinks.
 - Voller Browserlauf vor dem Rebase in fünf Teilen: alles grün bis auf `offline.e2e.mjs` „alte Programmdateien fallen weg“ – schlägt auf unverändertem main (de68c45) genauso fehl, nicht von UX-01 verursacht.
 - Nicht automatisch geprüft: iPad/Safari und Verständlichkeit (Abnahme START-10..12 offen).
+- Nachtrag UX-01-S06 (Werkstatt, Baustelle, Produktion eingeklappt): voller Browserlauf in fünf Teilen 190/190 grün (auch `offline.e2e.mjs` diesmal grün); angepasst `site`, `production`, `workshop-creative`, `workshop-tools` (öffnen die eingeklappten Bereiche vor der Nutzung). Abnahme START-13 offen.

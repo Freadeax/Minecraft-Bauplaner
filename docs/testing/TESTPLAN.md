@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/checks/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 170 Fälle in 13 Bereichen, davon 72 Kernfälle.
+Umfang: 171 Fälle in 13 Bereichen, davon 73 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -24,6 +24,7 @@ Erster Eindruck, Projekte anlegen und Daten sichern. Am besten in einem frischen
 | START-10 | Einfache Bedienung: vier Hauptmenüpunkte ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Oben in der Leiste nachzählen: Projekte, Bibliothek, Weltkarte, Spiel und Anleitung.<br>2. Unten in der Fußzeile „Datei ansehen“ und „Weltimport aus Datei“ finden; mit Strg+K nach „Betrachter“ suchen.<br>3. Auf der Startseite „Speicher & Sicherung“ und beim neuen Projekt „Weitere Wege“ auf- und zuklappen. | Oben stehen genau vier Bereiche und die Anleitung. Datei-Wege sind nur noch über Fußzeile, Schnellsuche und eingeklappte Bereiche erreichbar und funktionieren dort wie vorher. Nichts fehlt. |
 | START-11 | Projekt in vier Schritten ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Beispielprojekt „Burgmauer“ öffnen.<br>2. Die Reiterleiste ansehen: 1 Gestalten, 2 Bauen, 3 Organisieren, 4 Teilen.<br>3. Jeden Reiter einmal anklicken und den kurzen Satz unter der Leiste lesen. | Alle zwölf Reiter sind in ihren Schritten da, der aktive Schritt ist hervorgehoben und unter der Leiste steht in einem Satz, wofür der Reiter da ist. Bibliothek: Unterseiten in „Finden“, „Nach Maß“, „Größer planen“. |
 | START-12 | Einfache Bedienung auf dem iPad ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | vertieft | 1. Planer auf dem iPad öffnen, ein Projekt öffnen.<br>2. Die Reiterleiste waagerecht wischen.<br>3. Auf „Spiel“ die drei Schritte lesen und „Ausführliche Anleitung“ und „Mehr wissen“ aufklappen; auf der Weltkarte „Schritt für Schritt“ öffnen. | Die Leiste lässt sich wischen, der aktive Reiter bleibt sichtbar, alle aufklappbaren Bereiche öffnen sich mit dem Finger, keine Seite ist breiter als der Bildschirm. |
+| START-13 | Werkstatt, Baustelle und Produktion aufgeräumt ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/werkstatt/neu)) | kern | 1. Unter Bibliothek „✎ Neues Bauteil bauen“ öffnen: Setzen, Ebene, Auswahl, Ersetzen und Blockpalette sind sichtbar; „Kreativ-Werkzeuge“ aufklappen.<br>2. Im Beispielprojekt „Baustelle“: Abschnitte und Sammelplan oben, „Abschnittsstände“ und „Freiraum an Anschlüssen“ aufklappen.<br>3. Im Reiter „Produktion“: Farmen, Deckung, Bereitschaft oben, „Zeitbudget und Server“ und „Öfen, Lager, AFK-Platz und Produktionsblatt“ aufklappen. | Jede Seite zeigt zuerst das, was man meistens braucht. Alle eingeklappten Werkzeuge sind nach dem Aufklappen vollständig da und funktionieren wie vorher. Nach „Einfrieren“ eines Abschnitts klappen die Abschnittsstände von selbst auf. |
 
 ## BIB · Bibliothek (Planer)
 
@@ -315,7 +316,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | TERRAIN-01 | KARTE-04, PROJ-06 |
 | TERRAIN-02 | PROJ-06 |
 | UPDATE-01 | PROJ-07 |
-| UX-01 | START-10, START-11, START-12 |
+| UX-01 | START-10, START-11, START-12, START-13 |
 | VIEW-01 | DATEI-01, GERAET-04 |
 | VIEW-02 | START-06, DATEI-01 |
 | WORLD-IMPORT-01 | KARTE-04 |

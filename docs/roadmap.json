@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T14:33:48.068Z",
+  "updatedAt": "2026-11-06T15:13:31.442Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -1335,7 +1335,15 @@
         "tests/e2e/backup-reminder.e2e.mjs",
         "tests/e2e/start.mjs",
         "tests/e2e/stability.e2e.mjs",
-        "docs/ROADMAP.md"
+        "docs/ROADMAP.md",
+        "apps/web/src/views/project/SiteTab.tsx",
+        "apps/web/src/views/project/ProductionTab.tsx",
+        "apps/web/src/editor/BlockEditor.tsx",
+        "apps/web/src/editor/editor.css",
+        "tests/e2e/site.e2e.mjs",
+        "tests/e2e/production.e2e.mjs",
+        "tests/e2e/workshop-creative.e2e.mjs",
+        "tests/e2e/workshop-tools.e2e.mjs"
       ],
       "legacyIds": [],
       "steps": [
@@ -1366,14 +1374,14 @@
         },
         {
           "id": "UX-01-S06",
-          "title": "Weitere Vereinfachung nach Philipps Rückmeldung (Werkstatt, Baustelle, Produktion).",
-          "done": false
+          "title": "Werkstatt, Baustelle und Produktion: Hauptaktion zuerst; eingeklappt Kreativ-Werkzeuge (Schablonen, Natur, Farben, Bild), Abschnittsstände und Freiraum an Anschlüssen (öffnen sich selbst bei Ständen bzw. verbautem Freiraum), Zeitbudget sowie Öfen/Lager/AFK-Platz/Produktionsblatt.",
+          "done": true
         }
       ],
       "acceptance": [
         "Ein neuer Nutzer findet von der Startseite in höchstens zwei Klicks zu jedem Hauptablauf; jede Seite zeigt eine Hauptaktion zuerst; Datei-Wege sind als Notfall eingeklappt; keine Funktion entfällt; bestehende Browsertests bleiben grün."
       ],
-      "next": "Philipps Abnahme START-10..12 im Browser und auf dem iPad; danach Werkstatt, Baustelle und Produktion auf Experten-Optionen prüfen. Optik übernimmt „Planer-Oberfläche schön neu gestalten“.",
+      "next": "Philipps Abnahme START-10..13 im Browser und auf dem iPad. Optik übernimmt „Planer-Oberfläche schön neu gestalten“.",
       "blockers": [],
       "evidence": [
         {
@@ -1389,13 +1397,13 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T14:33:48.068Z",
+      "updatedAt": "2026-11-06T15:13:31.442Z",
       "area": "PLANER",
       "thread": null,
       "philipp": [
         {
           "kind": "planer",
-          "text": "Testphase START-10..12: vier Hauptbereiche, Projektschritte mit Kurzsatz, eingeklappte Experten- und Datei-Wege im Browser prüfen."
+          "text": "Testphase START-10..13: vier Hauptbereiche, Projektschritte mit Kurzsatz, eingeklappte Experten- und Datei-Wege im Browser prüfen."
         },
         {
           "kind": "geraet",
@@ -23571,6 +23579,37 @@
           "done": 5,
           "total": 6,
           "next": "Philipps Abnahme START-10..12 im Browser und auf dem iPad; danach Werkstatt, Baustelle und Produktion auf Experten-Optionen prüfen. Optik übernimmt „Planer-Oberfläche schön neu gestalten“."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T15:13:31.442Z",
+      "kind": "progress",
+      "items": [
+        "UX-01"
+      ],
+      "summary": "Werkstatt, Baustelle und Produktion vereinfacht: Kreativ-Werkzeuge, Abschnittsstände, Freiraum an Anschlüssen, Zeitbudget sowie Öfen/Lager/AFK-Platz/Produktionsblatt eingeklappt (Stände und verbauter Freiraum öffnen sich selbst). Prüfung: voller Browserlauf 190/190, npm run check; Abnahme START-13 offen.",
+      "files": [
+        "apps/web/src/editor/BlockEditor.tsx",
+        "apps/web/src/editor/editor.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/project/ProductionTab.tsx",
+        "apps/web/src/views/project/SiteTab.tsx",
+        "docs/TESTING.md",
+        "docs/architecture/planer/UI.md",
+        "docs/testing/TESTPLAN.md",
+        "tests/e2e/production.e2e.mjs",
+        "tests/e2e/site.e2e.mjs",
+        "tests/e2e/workshop-creative.e2e.mjs",
+        "tests/e2e/workshop-tools.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "UX-01",
+          "status": "in_progress",
+          "done": 6,
+          "total": 6,
+          "next": "Philipps Abnahme START-10..13 im Browser und auf dem iPad. Optik übernimmt „Planer-Oberfläche schön neu gestalten“."
         }
       ]
     }
