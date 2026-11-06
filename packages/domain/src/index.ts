@@ -103,7 +103,7 @@ export { fitAnlageToTerrain, findTerrainSpot, placementColumns, TERRAIN_MODE_LAB
 export type { TerrainMode, AnlageTerrainInput, UnitTerrain, AnlageTerrainFit, TerrainSpot } from './base/anlagenTerrain.js';
 export { checkPlacement, settlePayload, payloadLookup, needText, changedKeys, PLACEMENT_LABEL } from './core/placement.js';
 export type { PlacementKind, PlacementIssue, PlacementAid, PlacementReport, PlacementOptions, SettleResult } from './core/placement.js';
-export { gameReady, hangLanterns, MAX_CHAIN } from './catalog/build/gameReady.js';
+export { gameReady, hangLanterns, sealBasins, dryCorals, MAX_CHAIN } from './catalog/build/gameReady.js';
 export { packVersion, unpackVersion, unpackVersionOrDamaged, unpackVersionLazily, lazyCellsStatus, setLazyCellBudget, cellCount, packVersionForFile, unpackVersionFromFile, isPackedVersionRecord, cellStorageEstimate, rememberPackedCells } from './data/versionStorage.js';
 export type { StoredPayload, PackedVersionRecord, PackedVersionFileRecord, StoredVersionRecord } from './data/versionStorage.js';
 export { buildPlanGraph, whereUsed, projectEdges, assetEdges, versionEdges, collectionEdges, templateEdges, projectVersionIds, PLAN_ROLE_LABEL, PLAN_KIND_LABEL } from './data/planGraph.js';

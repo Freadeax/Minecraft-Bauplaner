@@ -28,7 +28,7 @@ function tuerklingel() {
   for (let x = 0; x < 9; x++) for (let z = 0; z < 6; z++) p.set(x, 0, z, x === 4 ? 'gravel' : 'grass_block', x === 4 ? {} : grass());
   for (let x = 0; x < 9; x++) if (x < 3 || x > 5) p.set(x, 1, 2, 'oak_fence');
   p.set(4, 1, 2, 'oak_fence_gate', { facing: 'south', in_wall: F, open: F, powered: F });
-  p.set(3, 1, 2, 'gold_block'); p.set(3, 2, 2, 'note_block'); p.air(3, 3, 2);
+  p.set(3, 1, 2, 'gold_block'); p.set(3, 2, 2, 'note_block', { instrument: 'bell', note: '0', powered: F }); p.air(3, 3, 2);
   p.set(3, 2, 3, 'stone_button', button('south'));
   p.fill(5, 1, 2, 5, 2, 2, 'stone_bricks'); p.set(5, 3, 2, 'lantern', lantern());
   p.set(6, 2, 2, 'barrel', barrel('south'));
@@ -132,10 +132,10 @@ function notenMelodie() {
   const p = new Plot([13, 3, 3]);
   p.fill(0, 0, 0, 12, 0, 2, 'smooth_stone');
   p.set(0, 1, 1, 'lever', lever('east', 'floor'));
-  MELODY.forEach((_note, i) => {
+  MELODY.forEach((note, i) => {
     const x = 1 + 2 * i;
     p.set(x, 1, 1, 'repeater', repeater('west', 2));
-    p.set(x + 1, 0, 1, 'clay'); p.set(x + 1, 1, 1, 'note_block'); p.air(x + 1, 2, 1);
+    p.set(x + 1, 0, 1, 'clay'); p.set(x + 1, 1, 1, 'note_block', { instrument: 'flute', note: String(note), powered: F }); p.air(x + 1, 2, 1);
   });
   for (let x = 0; x <= 12; x++) for (const z of [0, 2]) p.set(x, 1, z, 'smooth_stone_slab', slab());
   return p.payload();

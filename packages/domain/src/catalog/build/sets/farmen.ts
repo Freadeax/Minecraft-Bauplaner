@@ -131,7 +131,7 @@ function eisenfarm() {
   p.set(4, 0, 4, 'hopper', hopper('south')); p.set(4, 0, 5, 'hopper', hopper('south')); p.set(4, 0, 6, 'chest', chest('north'));
   p.ring(1, 1, 7, 7, 1, 'glass'); p.ring(1, 1, 7, 7, 2, 'glass');
   p.fill(2, 1, 2, 6, 1, 6, 'water', water()); p.set(4, 1, 4, 'water', water());
-  p.fill(2, 3, 2, 6, 3, 6, 'stone_bricks'); p.fill(3, 3, 3, 5, 3, 5, null);
+  p.fill(2, 3, 2, 6, 3, 6, 'stone_bricks'); // die Lava sitzt in einer Mulde aus Steinziegeln und läuft nicht ins Wasser
   // Das Schild steht auf einem Trichter (oben volle Fläche) und hält die Lava; der Trichter sammelt mit.
   p.set(4, 1, 4, 'hopper', hopper('down')); p.set(4, 3, 4, 'lava', lava()); p.set(4, 2, 4, 'oak_sign', { rotation: '0', waterlogged: F });
   // Dorfbewohner-Kammer

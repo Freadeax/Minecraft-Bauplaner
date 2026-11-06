@@ -30,7 +30,8 @@ test('catalogue covers the required vanilla families with unique minecraft IDs',
     'oak_hanging_sign', 'white_banner', 'black_wall_banner', 'player_head', 'creeper_wall_head', 'chest', 'stone_slab', 'water', 'crafter'])
     assert.ok(stateRuleFor(`minecraft:${id}`), id);
   assert.ok(seen.size > 500, `${seen.size} IDs`);
-  assert.equal(stateRuleFor('minecraft:note_block'), undefined);
+  assert.equal(stateRuleFor('minecraft:trial_spawner'), undefined);
+  assert.ok(stateRuleFor('minecraft:note_block'), 'Notenblock (Instrument, Note) dreht unverändert mit');
   assert.match(STATE_CATALOG_PROFILE, /1\.21/);
   assert.match(STATE_CATALOG_PROFILE, /26\.3/);
 });
@@ -172,7 +173,7 @@ test('independent geometric models: facing, rotation, stairs, doors, chests, rai
 
 test('unknown, mismatching and unrepresentable states stay unresolved and unchanged', () => {
   const cases = [
-    [mc('note_block', { instrument: 'harp', note: '0', powered: 'false' }), 'unknown-block'],
+    [mc('trial_spawner', { ominous: 'false', trial_spawner_state: 'inactive' }), 'unknown-block'],
     [{ id: 'example:machine', properties: { facing: 'north' } }, 'unknown-block'],
     [{ id: 'example:plain', properties: {} }, 'unknown-block'],
     [mc('oak_stairs', { facing: 'north', shape: 'straight' }), 'schema-mismatch'],

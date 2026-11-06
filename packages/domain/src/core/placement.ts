@@ -151,11 +151,13 @@ export function checkPlacement(payload: VoxelPayload, options: PlacementOptions 
 
 /** Properties the settled state sets differently (missing planned values count as the game default). */
 export function changedKeys(from: BlockState, to: BlockState): string[] {
+  if (from.id !== to.id) return ['id']; // e.g. dirt path under a solid block turns into dirt
   const d = blockFacts(from.id)?.defaults ?? {};
   return Object.keys(to.properties).filter(k => (from.properties[k] ?? d[k]) !== to.properties[k]);
 }
 function connectionNote(from: BlockState, to: BlockState): string {
   const diff = changedKeys(from, to);
+  if (diff[0] === 'id') return `Im Spiel wird daraus ${to.id.replace('minecraft:', '')}.`;
   return `Im Spiel: ${diff.map(k => `${k}=${to.properties[k]}`).join(', ')} (geplant: ${diff.map(k => `${k}=${from.properties[k] ?? blockFacts(from.id)?.defaults[k]}`).join(', ')}).`;
 }
 

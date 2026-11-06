@@ -134,7 +134,7 @@ function feenring() {
   for (let x = 0; x <= 12; x++) for (let z = 0; z <= 12; z++) {
     if (!p.get(x, 0, z) || p.get(x, 1, z)) continue;
     const d = Math.sqrt(dist2(x, z, 6, 6));
-    if (d >= 4.3 && d <= 5.3) p.set(x, 1, z, (x + z) % 2 ? 'red_mushroom' : 'brown_mushroom');
+    if (d >= 4.3 && d <= 5.3) { p.set(x, 0, z, 'mycelium', { snowy: 'false' }); p.set(x, 1, z, (x + z) % 2 ? 'red_mushroom' : 'brown_mushroom'); } // Pilze halten im Licht nur auf Myzel/Podsol
     else if (d >= 2.5 && d < 4.3 && noise(x, 1, z) < 0.45) p.set(x, 1, z, 'glow_lichen', lichen());
   }
   p.set(6, 1, 6, 'flowering_azalea');
@@ -167,9 +167,9 @@ function portalruine() {
 
 function hexenhuette() {
   const p = new Plot([13, 15, 13]);
-  p.disc(6, 6, 0, 6, 'mud'); p.disc(6, 6, 1, 6, 'water', water());
+  p.disc(6, 6, 0, 6, 'mud'); p.disc(6, 6, 1, 6, 'mud'); p.disc(6, 6, 1, 5, 'water', water()); // Schlammufer hält den Teich
   for (const [x, z] of [[2, 10], [1, 9], [2, 9], [10, 2], [11, 3]] as const) { p.set(x, 1, z, 'grass_block', grass()); p.set(x, 2, z, 'blue_orchid'); }
-  for (const [x, z] of [[2, 3], [10, 10], [11, 7], [1, 5]] as const) p.set(x, 2, z, 'lily_pad');
+  for (const [x, z] of [[2, 3], [8, 10], [11, 7], [1, 5]] as const) p.set(x, 2, z, 'lily_pad');
   // stilts and floor with porch
   for (const [x, z] of [[3, 2], [9, 2], [3, 9], [9, 9], [6, 2]] as const) p.fill(x, 0, z, x, 3, z, 'mangrove_log', axis('y'));
   p.fill(3, 4, 2, 9, 4, 9, 'spruce_planks');

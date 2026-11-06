@@ -252,7 +252,7 @@ function stelzenhaus() {
     p.fill(x, 0, z, x, 3, z, 'mangrove_log', axis('y'));
     for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) putFree(p, x + dx, 1, z + dz, 'mangrove_roots');
   }
-  for (const [x, z] of [[3, 4], [6, 0], [7, 6]] as const) p.set(x, 1, z, 'water', water());
+  for (const [x, z] of [[3, 4], [6, 0], [7, 6]] as const) p.set(x, 0, z, 'water', water()); // Pfützen im Schlamm, nicht darauf (sonst läuft das Wasser über den Boden)
   for (let x = 1; x <= 9; x++) for (let z = 1; z <= 9; z++) p.set(x, 4, z, 'mangrove_planks');
   house(p, l, { at: { x0: 2, z0: 3, x1: 8, z1: 8 }, y0: 4, storeys: [{ h: 3, kind: 'fachwerk' }], postEvery: 3, windowEvery: 3,
     roof: { kind: 'sattel', ridge: 'x', overhang: 1 }, door: { side: 'north' }, flowerBoxes: false, seed: 23 });

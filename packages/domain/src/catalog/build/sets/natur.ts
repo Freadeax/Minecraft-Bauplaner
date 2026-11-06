@@ -35,7 +35,7 @@ function wasserfall() {
     if (pool(x, z)) { p.set(x, 0, z, 'water', water()); continue; }
     p.set(x, 0, z, 'grass_block', grass());
   }
-  const faceOf = (x: number) => fall(x) ? 4 : 3 + (noise(x, 0, 0) > 0.5 ? 1 : 0);
+  const faceOf = (x: number) => fall(x) || fall(x - 1) || fall(x + 1) ? 4 : 3 + (noise(x, 0, 0) > 0.5 ? 1 : 0); // neben dem Fall steht die Wand bündig, sonst läuft die Bachrinne seitlich aus
   const rockTop = (x: number, z: number) => Math.round(11 + 1.6 * stableSin(x * 0.6) + noise(x, 1, z) * 1.5 - (z === faceOf(x) ? 1 + noise(x, 2, z) * 2 : 0));
   // the brook runs in a level channel cut below both banks
   let channel = 99;
@@ -52,7 +52,7 @@ function wasserfall() {
       else { p.set(x, top, z, 'grass_block', grass()); if (noise(x, top + 1, z) > 0.75) p.set(x, top + 1, z, 'fern'); }
     }
     if (fall(x)) { const t = topOf(p, x, face, 16); for (let y = 1; y <= t; y++) p.set(x, y, face + 1, 'water', water()); }
-    else if (noise(x, 5, face) > 0.4) {
+    else if (noise(x, 5, face) > 0.4 && !fall(x - 1) && !fall(x + 1)) { // neben dem Fall spült das Wasser Ranken weg
       const t = topOf(p, x, face, 16), len = 2 + Math.floor(noise(x, 6, face) * 4);
       for (let y = t - 1; y >= Math.max(2, t - len); y--) p.set(x, y, face + 1, 'vine', vine('north'));
     }
@@ -89,7 +89,7 @@ function felsbogen() {
 }
 
 function vulkan() {
-  const S = 17, c = 8, p = new Plot([S, 13, S]);
+  const S = 17, c = 8, RUN = 3, p = new Plot([S, 13, S + RUN]); // RUN: Auslauf, in dem der Lavastrom am Fuß endet
   const H = 11, top = new Map<string, number>();
   for (let y = 0; y <= H; y++) {
     const r = 8.2 - y * 0.58;
@@ -114,7 +114,7 @@ function vulkan() {
     p.set(c, t, z, 'lava', lava());
     for (const dx of [-1, 1]) { const tt = top.get(`${c + dx},${z}`); if (tt !== undefined && tt >= 1) p.set(c + dx, tt, z, noise(c + dx, tt, z) > 0.5 ? 'obsidian' : 'magma_block'); }
   }
-  for (let x = 0; x < S; x++) for (let z = 0; z < S; z++) if (!p.has(x, 0, z)) p.set(x, 0, z, noise(x, 0, z) > 0.6 ? 'coarse_dirt' : 'gravel');
+  for (let x = 0; x < S; x++) for (let z = 0; z < S + RUN; z++) if (!p.has(x, 0, z)) p.set(x, 0, z, noise(x, 0, z) > 0.6 ? 'coarse_dirt' : 'gravel');
   return p.payload();
 }
 
@@ -205,7 +205,7 @@ function riesenfichte() {
   for (let x = 0; x < S; x++) for (let z = 0; z < S; z++) {
     if (p.has(x, 1, z) || is(p, x, 0, z, 'coarse_dirt')) continue;
     const n = noise(x, 1, z);
-    if (n > 0.86) tallPlant(p, x, 1, z, 'large_fern'); else if (n > 0.7) p.set(x, 1, z, 'fern'); else if (n > 0.66) p.set(x, 1, z, 'brown_mushroom');
+    if (n > 0.86) tallPlant(p, x, 1, z, 'large_fern'); else if (n > 0.7) p.set(x, 1, z, 'fern'); else if (n > 0.66) { p.set(x, 0, z, 'podzol', grass()); p.set(x, 1, z, 'brown_mushroom'); }
   }
   return p.payload();
 }

@@ -268,6 +268,8 @@ const RULES: readonly StateRule[] = [
     schema: { powered: BOOL }, apply: same },
   { family: 'ausrichtungsfrei: Wägeplatten', ids: ids('light_weighted_pressure_plate','heavy_weighted_pressure_plate'), schema: { power: range(0,15) }, apply: same },
   { family: 'ausrichtungsfrei: leuchtend', ids: ids('redstone_torch','redstone_lamp','redstone_ore','deepslate_redstone_ore'), schema: { lit: BOOL }, apply: same },
+  { family: 'ausrichtungsfrei: Notenblock', ids: ids('note_block'),
+    schema: { instrument: ['harp','basedrum','snare','hat','bass','flute','bell','guitar','chime','xylophone','iron_xylophone','cow_bell','didgeridoo','bit','banjo','pling','trumpet','trumpet_exposed','trumpet_oxidized','trumpet_weathered','zombie','skeleton','creeper','dragon','wither_skeleton','piglin','custom_head'], note: range(0,24), powered: BOOL }, apply: same },
   { family: 'ausrichtungsfrei: TNT', ids: ids('tnt'), schema: { unstable: BOOL }, apply: same },
   { family: 'ausrichtungsfrei: Kessel', ids: ids('water_cauldron','powder_snow_cauldron'), schema: { level: range(1,3) }, apply: same },
   { family: 'ausrichtungsfrei: Zielblock', ids: ids('target'), schema: { power: range(0,15) }, apply: same },

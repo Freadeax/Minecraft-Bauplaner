@@ -231,7 +231,7 @@ function lagerhaus() {
   // Hoist beam with chain and barrel above the gate.
   p.set(6, 8, 0, 'spruce_fence'); p.set(6, 8, 1, 'spruce_planks');
   p.set(6, 7, 0, 'iron_chain', { axis: 'y', waterlogged: F }); p.set(6, 6, 0, 'barrel', barrel('up'));
-  for (let x = 2; x <= 10; x++) { p.set(x, 1, 8, 'chest', chest('north', x % 2 ? 'left' : 'right')); p.set(x, 2, 8, 'barrel', barrel('north')); }
+  for (let x = 2; x <= 10; x++) { p.set(x, 1, 8, 'chest', chest('north', x % 2 ? 'right' : 'left')); p.set(x, 2, 8, 'barrel', barrel('north')); }
   p.set(10, 1, 8, 'barrel', barrel('north'));
   for (let z = 3; z <= 7; z++) { p.set(2, 1, z, 'barrel', barrel('east')); p.set(10, 1, z, 'barrel', barrel('west')); }
   p.set(6, 1, 5, 'crafting_table'); hangLantern(p, l, 6, 4, 5);

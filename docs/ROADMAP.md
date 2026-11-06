@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T01:02:09.889Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T01:04:09.413Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -216,7 +216,7 @@ Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF
 | [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | 🧩 Implementiert · Abnahme offen 3/3 | P0 | „Exporte im echten Spiel automatisch prüfen“ | — |
 | [PROFILE-01](#profile-01) | Ein verbindliches Java-Versionsprofil | 🧩 Implementiert · Abnahme offen 3/3 | P0 | „Exporte im echten Spiel automatisch prüfen“ | — |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3 | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Einen Bau mit Spielprüfung ohne Hinweise nachbauen und Verbindungen vergleichen (S07). |
-| [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Geänderte Gebäude (Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen (S06). |
+| [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Geänderte Gebäude (Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen (S06). |
 | [CORE-04](#core-04) | Planer-Kernmodule prüfen und überarbeiten | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Planer-Kernmodule prüfen und überarbeiten“ | Projekt mit Nachfolger und Bauplatz löschen; Blockeditor mit Änderungen verlassen; Truhe mit verzaubertem Schwert umsortieren (CORE-04-S05). |
 | [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Exporte im echten Spiel automatisch prüfen“ | — |
 | [ENTITY-01](#entity-01) | Gemälde, Rahmen, Rüstungsständer und Blockinhalte | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Exporte im echten Spiel automatisch prüfen“ | Export mit Gemälden, Rahmen und Rüstungsständern im Spiel laden (S06). |
@@ -536,7 +536,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server: Offline-Speicher (Service Worker) und kostenlose zweite Adresse auf Cloudflare Pages | 🚧 In Arbeit | 3/3 | PERF-05 | ausstehend | ausstehend |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen | 5/6 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material | 🧩 Implementiert · Abnahme offen | 6/7 | VIEW-02, BUILD-01, MAT-01 | ausstehend | ausstehend |
-| [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel | 🧩 Implementiert · Abnahme offen | 5/6 | BLOCK-01, LIB-04, UPDATE-01 | ausstehend | ausstehend |
+| [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel | 🧩 Implementiert · Abnahme offen | 6/7 | BLOCK-01, LIB-04, UPDATE-01 | ausstehend | ausstehend |
 | [GFX-01](#gfx-01) | Grafik vertiefen: Minecraft-Licht, Eckschatten, Sonne mit Schatten, Nacht, Spawnprüfung, sortiertes Glas und 32³-Abschnitte für große Modelle | 🧩 Implementiert · Abnahme offen | 5/6 | VIEW-02 | ausstehend | ausstehend |
 | [GFX-02](#gfx-02) | Darstellung und Leistung, Runde 2: Biomfarben, leuchtende Blockentities (Leuchtfeuer-Strahl, Endportal, Magma), GPU-Upload großer Szenen in Stücken | 🧩 Implementiert · Abnahme offen | 3/4 | GFX-01, VIEW-02, PERF-04 | ausstehend | ausstehend |
 | [GFX-03](#gfx-03) | Große Szenen flüssig bedienen: Glas und Wasser je Bild sortiert, schnelles und richtiges Anklicken, Sichtfeld zuerst hochladen | 🧩 Implementiert · Abnahme offen | 3/4 | GFX-02, PERF-04 | ausstehend | ausstehend |
@@ -1473,7 +1473,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### BLOCK-01
 
-**Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Echte Minecraft-Blocklogik einbauen“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Echte Minecraft-Blocklogik einbauen“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T01:04:09.413Z
 
 - [x] BLOCK-01-S01: Blockfakten aus dem echten 26.3-Server (Berichte + Prüfprogramm): alle 1286 Blöcke, 35.723 Zustände, Stützflächen, Halt, Items, Stapelgrößen, Tags.
 - [x] BLOCK-01-S02: Verbindungen wie im Spiel (Zäune, Mauern hoch/niedrig/Pfosten, Scheiben/Gitter, Treppenformen, Tore, Schneegras, Pilzblöcke); 3.060 Spielvektoren gleich.
@@ -1499,7 +1499,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### BLOCK-02
 
-**Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Schwebende Blöcke im Katalog reparieren“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Schwebende Blöcke im Katalog reparieren“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T01:04:09.413Z
 
 - [x] BLOCK-02-S01: Gemeinsame Bauregel gameReady(): Laternen ohne Halt hängen an iron_chain bis zur nächsten Decke, danach alle Verbindungen wie im Spiel (settlePayload); gilt für jedes Katalog-Gebäude und jeden Generator.
 - [x] BLOCK-02-S02: Alte Block-ID chain durch iron_chain ersetzt (in 26.3 gibt es chain nicht mehr): 152 Katalog- und alle Generator-Ketten.
@@ -1507,18 +1507,19 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 - [x] BLOCK-02-S04: Generatoren erzeugen nur gültige Bauten (Kirche, Hafen, Torhaus, Windmühle, Brücke, Treppenhaus, Brunnen; Version jeweils erhöht, Dorfplatz-Anlage v2).
 - [x] BLOCK-02-S05: Dauerhafte Prüfung tests/catalog-game.test.mjs (checkPlacement mit ownSpace) über alle Gebäude und Generator-Fälle; Kakao-Regel nachgetragen.
 - [ ] BLOCK-02-S06: Abnahme im echten Spiel: einige geänderte Gebäude per Litematic setzen, nichts bricht ab.
+- [x] BLOCK-02-S07: Spielprüfstand im echten Paper-26.3-Server (scripts/mod/test_game_placement.sh, Test-Plugin PlacementProbe): alle Katalog-Gebäude und Generator-Fälle gesetzt, jede Zelle vom Spiel aktualisiert; 47 Gebäude und der Brunnen-Generator behoben, neue Regeln Doppeltruhe, Trampelpfad/Ackerboden, Redstone-Staub, dichte Becken, Korallen.
 
 **Abnahme:** Spielprüfung mit ownSpace meldet für jedes Katalog-Gebäude und jeden geprüften Generator-Fall 0 Fehler (ohne Halt, fällt, Hälfte, Verbindung, ungültiger Zustand, unbekannte Blöcke).
 
-**Nächste Aktion:** Abnahme im Spiel (S06): geänderte Gebäude (z. B. Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen.
+**Nächste Aktion:** S06 Stichprobe durch Philipp im eigenen Spiel (Gestaltung, Begehbarkeit); Gelände, Großprojekte und Basisplaner auf demselben Prüfstand.
 
 **Nur Philipp:** Im Spiel an deinem PC: Geänderte Gebäude (Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen (S06).
 
 **Prüfstand:** Node-Prüfungen bestanden; Abnahme im echten Spiel steht aus.
 
-**Nachweise:** [tests/unit/catalog/catalog-game.test.mjs](../tests/unit/catalog/catalog-game.test.mjs) — Alle Gebäude und Generator-Fälle ohne Halt-, Verbindungs- und ID-Fehler; hangLanterns, ownSpace, Kakao.; [docs/architecture/formate/BLOCK_LOGIC.md](architecture/formate/BLOCK_LOGIC.md) — Abschnitt „Spielgerechter Katalog (BLOCK-02)“.
+**Nachweise:** [tests/unit/catalog/catalog-game.test.mjs](../tests/unit/catalog/catalog-game.test.mjs) — Alle Gebäude und Generator-Fälle ohne Halt-, Verbindungs- und ID-Fehler; hangLanterns, ownSpace, Kakao.; [docs/architecture/formate/BLOCK_LOGIC.md](architecture/formate/BLOCK_LOGIC.md) — Abschnitt „Spielgerechter Katalog (BLOCK-02)“.; [scripts/mod/test_game_placement.sh](../scripts/mod/test_game_placement.sh) — 06.11.2026: 559 Pläne, 878.974 Blöcke im echten Paper 26.3 ohne Abweichung (BIB-06/12/14 teilweise automatisch geprüft).
 
-**Dateiumfang:** `packages/domain/src/build/`, `packages/domain/src/catalog/buildings.ts`, `packages/domain/src/generators/`, `packages/domain/src/core/placement.ts`, `packages/voxel/src/blocklogic/support.ts`, `packages/domain/src/materials/materials.ts`, `packages/domain/src/building/guide.ts`, `tests/unit/catalog/catalog-game.test.mjs`. **Abhängigkeiten:** BLOCK-01, LIB-04, UPDATE-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/build/`, `packages/domain/src/building/guide.ts`, `packages/domain/src/catalog/buildings.ts`, `packages/domain/src/core/placement.ts`, `packages/domain/src/generators/`, `packages/domain/src/materials/materials.ts`, `packages/voxel/src/blocklogic/connect.ts`, `packages/voxel/src/blocklogic/support.ts`, `scripts/mod/game_placement.mjs`, `scripts/mod/probe/PlacementProbe.java`, `scripts/mod/test_game_placement.sh`, `tests/unit/catalog/catalog-game.test.mjs`, `tests/unit/catalog/game-rules.test.mjs`. **Abhängigkeiten:** BLOCK-01, LIB-04, UPDATE-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -1996,7 +1997,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GEN-02
 
-**Weitere Generatoren und Dachdetails** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Neue Gebäudegeneratoren ergänzen“ · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Weitere Generatoren und Dachdetails** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Neue Gebäudegeneratoren ergänzen“ · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T01:04:09.413Z
 
 - [x] GEN-02-S01: Treppenhaus, Kirche und Hafen als getrennte Generatoren spezifizieren.
 - [x] GEN-02-S02: Dachtreppen-Eckformen und Anschlüsse profilgenau erzeugen.
@@ -2559,7 +2560,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LIB-05
 
-**Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Bibliothek im Stil der Vorlagen neu gestalten“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Bibliothek im Stil der Vorlagen neu gestalten“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T01:04:09.413Z
 
 - [x] LIB-05-S01: 31 Vorlagen (4 brauchbare der 5 hochgeladenen, 27 freie von minemev.com) vermessen: Detailblöcke, umgedrehte Treppen, Fassadenrelief, Fenster, Dächer; Regeln in BAUSTIL.md. Dateien nur als Studienmaterial, nicht im Repository.
 - [x] LIB-05-S02: Baukasten build/style.ts: Mischungen, Looks, Fenster mit Läden/Sturz/Blumenkasten, Tür, Dächer mit Überstand/Traufkasten/Ortgang und Quergiebeln, house(), ladderUp, hangLantern; designMetrics.
@@ -2790,7 +2791,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GEN-03
 
-**Kolosseum aus Philipps Bauplan: Arena-Generator, Bauset Antike und Großprojekt Kolosseum-Viertel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projekt aus ChatGPT-Verlauf ausarbeiten“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Kolosseum aus Philipps Bauplan: Arena-Generator, Bauset Antike und Großprojekt Kolosseum-Viertel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projekt aus ChatGPT-Verlauf ausarbeiten“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T01:04:09.413Z
 
 - [x] GEN-03-S01: Bauplan aus Philipps ChatGPT-Verlauf übernehmen (81 × 61, vier Etagen à 8, Ellipsen-Ringe, Arena, 8 Sitzreihen, 4 Tore, Hypogäum Y 55–63, Materialien).
 - [x] GEN-03-S02: Generator „Arena“ (ovale Ringe nach Tiefe, Bögen nach Bogenlänge, Wandelgang mit Treppen, zwei Ränge auf Gewölben, Tore mit Wegeanschluss weg_5, Hypogäum, Velarium) mit sechs Vorlagen.

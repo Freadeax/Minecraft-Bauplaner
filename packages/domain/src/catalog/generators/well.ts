@@ -9,7 +9,7 @@ import type { Generator } from './types.js';
  * lamps at the corners. Water source blocks are part of the plan.
  */
 export const WELL_GENERATOR: Generator = {
-  id: 'brunnen', name: 'Brunnen', version: 3,
+  id: 'brunnen', name: 'Brunnen', version: 4,
   description: 'Ziehbrunnen mit Dach und Kette oder runder Springbrunnen mit bis zu drei Schalen, auf Wunsch mit gepflastertem Platz und Laternen.',
   params: [
     { key: 'form', label: 'Bauart', group: 'Maße', type: 'choice', default: 'springbrunnen', options: [{ value: 'ziehbrunnen', label: 'Ziehbrunnen' }, { value: 'springbrunnen', label: 'Springbrunnen' }] },

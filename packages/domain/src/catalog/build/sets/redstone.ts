@@ -1,4 +1,4 @@
-import { Plot, axis, button, chest, comparator, furnace, hopper, lamp, lantern, lever, poweredRail, rail, redstoneWallTorch, repeater, slab, stairs, water, wire } from '../plot.js';
+import { Plot, axis, button, chest, comparator, door, furnace, hopper, lamp, lantern, lever, poweredRail, rail, redstoneWallTorch, repeater, slab, stairs, water, wire } from '../plot.js';
 import { WIKI, joint } from '../spec.js';
 import type { BuildingSpec } from '../spec.js';
 
@@ -106,7 +106,7 @@ function wasseraufzug() {
   p.fill(0, 0, 0, 6, 0, 3, 'stone_bricks');
   for (let y = 1; y <= 13; y++) { p.ring(2, 0, 4, 2, y, 'glass'); p.set(3, y, 1, 'water', water()); }
   p.set(3, 0, 1, 'soul_sand');
-  p.fill(2, 1, 0, 4, 2, 0, 'stone_bricks'); p.air(3, 1, 0); p.air(3, 2, 0); p.set(3, 1, 1, 'water', water()); p.set(3, 2, 1, 'water', water());
+  p.fill(2, 1, 0, 4, 2, 0, 'stone_bricks'); door(p, 3, 1, 0, 'oak', 'south'); // die Tür hält das Wasser im Schacht p.set(3, 1, 1, 'water', water()); p.set(3, 2, 1, 'water', water());
   p.fill(0, 14, 0, 6, 14, 3, 'stone_bricks'); p.air(3, 14, 1);
   p.set(3, 14, 2, 'stone_brick_slab', slab());
   for (const x of [1, 5]) p.set(x, 1, 1, 'lantern', lantern());

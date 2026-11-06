@@ -69,6 +69,27 @@ export const AUTO_CHECKS: readonly AutoCheck[] = [
     remaining: 'Freigabe-Link auf einem echten iPad öffnen und das Gerät am PC entfernen (Browsertest server-link.e2e emuliert iPad 820 px).',
     command: 'scripts/mod/test_multiplayer.sh && BAUPLANER_ROOM=http://127.0.0.1:8787 scripts/mod/test_bridge_paper_link.sh',
     evidence: '06.11.2026, Plugin 0.23.0: Paper 1.21.11 und 26.1.2, Team-Raum wrangler dev.',
+  },  // ── Block 2: Bibliothek und Generatoren im echten Server (Spielprüfstand, BLOCK-02-S07)
+  {
+    caseId: 'BIB-12', scope: 'teil',
+    covers: 'Jedes Katalog-Gebäude (alle 358, darunter alle Meisterstücke, Untergrundhallen und Interieur-Räume) wird Block für Block in einen echten Paper-26.3-Server gesetzt; danach aktualisiert das Spiel jede Zelle (Nachbarformen, Halt, geplante Ticks, Schwerkraft, Wasser). Nichts fällt ab oder schwebt, keine Laterne, Tür, Treppe, Leiter, Truhe oder Verbindung ändert sich, kein Wasser läuft aus, keine Drops.',
+    remaining: 'Im eigenen Spiel: zwei bis drei Gebäude per Litematica oder Mod-Hologramm aufstellen und ansehen, ob Innenräume begehbar und stimmig eingerichtet sind (Gestaltung kann nur ein Mensch beurteilen).',
+    command: 'scripts/mod/test_game_placement.sh catalog',
+    evidence: '06.11.2026, Paper 26.3 Build 244 (Java 25), Quellstand BLOCK-02-S07: 559 Pläne (358 Katalog-Gebäude, 201 Generator-Fälle), 878.974 Blöcke, 0 Abweichungen; der erste Lauf fand 47 Gebäude und den Brunnen-Generator, alle behoben.',
+  },
+  {
+    caseId: 'BIB-06', scope: 'teil',
+    covers: 'Jeder Generator (Haus, Turm, Mauer, Brücke, Dach, Treppenhaus, Kirche, Hafen, Torhaus, Windmühle, Brunnen, Arena) mit Standardwerten, allen Vorlagen, allen Stilen, drei Würfelwerten und beiden Bereichsenden im echten Paper-26.3-Server gesetzt und vom Spiel aktualisiert: keine schwebenden oder abfallenden Blöcke, keine anderen Verbindungen, kein auslaufendes Wasser.',
+    remaining: 'Bedienung im Browser: Maße und Stil ändern, als Bauteil und als Vorlage speichern und wieder öffnen.',
+    command: 'scripts/mod/test_game_placement.sh generators',
+    evidence: '06.11.2026, Paper 26.3 Build 244 (Java 25), Quellstand BLOCK-02-S07: 559 Pläne (358 Katalog-Gebäude, 201 Generator-Fälle), 878.974 Blöcke, 0 Abweichungen; der erste Lauf fand 47 Gebäude und den Brunnen-Generator, alle behoben.',
+  },
+  {
+    caseId: 'BIB-14', scope: 'teil',
+    covers: 'Der Arena-Generator mit den Vorlagen „Kolosseum“ und „Provinzarena“, allen Stilen und Bereichsenden steht im echten Paper-26.3-Server ohne einen abfallenden, schwebenden oder anders verbundenen Block (Statuen, Hypogäum-Treppen, Bögen, Ränge eingeschlossen); die Antike-Gebäude des Bausets ebenso.',
+    remaining: 'Kolosseum-Viertel als Projekt (Quartiere, Bauanleitung, Material) im Browser und ein Kolosseum in der eigenen Welt aufstellen; das ganze Viertel auf Gelände prüft der Gelände-Block.',
+    command: 'scripts/mod/test_game_placement.sh catalog generators',
+    evidence: '06.11.2026, Paper 26.3 Build 244 (Java 25), Quellstand BLOCK-02-S07: 559 Pläne (358 Katalog-Gebäude, 201 Generator-Fälle), 878.974 Blöcke, 0 Abweichungen; der erste Lauf fand 47 Gebäude und den Brunnen-Generator, alle behoben.',
   },
   // Block 7 „Projekt, Produktion und Weltkarte vertiefen“ (06.11.2026)
   { caseId: 'PROJ-03', scope: 'teil', covers: 'Bauabschnitte anlegen, Schritte abhaken, Neuladen, Druckansicht (Druckmedium) und Handy-Baumodus in Chromium.', remaining: 'Echter Drucker und echtes Telefon (GERAET-06).',

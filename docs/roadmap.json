@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T01:02:09.889Z",
+  "updatedAt": "2026-11-07T01:04:09.413Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -3031,7 +3031,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:04:09.413Z",
       "area": "KERN",
       "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
@@ -3056,13 +3056,18 @@
       ],
       "scope": [
         "packages/domain/src/build/",
-        "packages/domain/src/catalog/buildings.ts",
-        "packages/domain/src/generators/",
-        "packages/domain/src/core/placement.ts",
-        "packages/voxel/src/blocklogic/support.ts",
-        "packages/domain/src/materials/materials.ts",
         "packages/domain/src/building/guide.ts",
-        "tests/unit/catalog/catalog-game.test.mjs"
+        "packages/domain/src/catalog/buildings.ts",
+        "packages/domain/src/core/placement.ts",
+        "packages/domain/src/generators/",
+        "packages/domain/src/materials/materials.ts",
+        "packages/voxel/src/blocklogic/connect.ts",
+        "packages/voxel/src/blocklogic/support.ts",
+        "scripts/mod/game_placement.mjs",
+        "scripts/mod/probe/PlacementProbe.java",
+        "scripts/mod/test_game_placement.sh",
+        "tests/unit/catalog/catalog-game.test.mjs",
+        "tests/unit/catalog/game-rules.test.mjs"
       ],
       "legacyIds": [],
       "steps": [
@@ -3095,12 +3100,17 @@
           "id": "BLOCK-02-S06",
           "title": "Abnahme im echten Spiel: einige geänderte Gebäude per Litematic setzen, nichts bricht ab.",
           "done": false
+        },
+        {
+          "id": "BLOCK-02-S07",
+          "title": "Spielprüfstand im echten Paper-26.3-Server (scripts/mod/test_game_placement.sh, Test-Plugin PlacementProbe): alle Katalog-Gebäude und Generator-Fälle gesetzt, jede Zelle vom Spiel aktualisiert; 47 Gebäude und der Brunnen-Generator behoben, neue Regeln Doppeltruhe, Trampelpfad/Ackerboden, Redstone-Staub, dichte Becken, Korallen.",
+          "done": true
         }
       ],
       "acceptance": [
         "Spielprüfung mit ownSpace meldet für jedes Katalog-Gebäude und jeden geprüften Generator-Fall 0 Fehler (ohne Halt, fällt, Hälfte, Verbindung, ungültiger Zustand, unbekannte Blöcke)."
       ],
-      "next": "Abnahme im Spiel (S06): geänderte Gebäude (z. B. Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen.",
+      "next": "S06 Stichprobe durch Philipp im eigenen Spiel (Gestaltung, Begehbarkeit); Gelände, Großprojekte und Basisplaner auf demselben Prüfstand.",
       "blockers": [],
       "evidence": [
         {
@@ -3110,6 +3120,10 @@
         {
           "path": "docs/architecture/formate/BLOCK_LOGIC.md",
           "note": "Abschnitt „Spielgerechter Katalog (BLOCK-02)“."
+        },
+        {
+          "path": "scripts/mod/test_game_placement.sh",
+          "note": "06.11.2026: 559 Pläne, 878.974 Blöcke im echten Paper 26.3 ohne Abweichung (BIB-06/12/14 teilweise automatisch geprüft)."
         }
       ],
       "verification": {
@@ -3120,7 +3134,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:04:09.413Z",
       "area": "KERN",
       "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
@@ -5051,7 +5065,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:04:09.413Z",
       "area": "BIBLIOTHEK",
       "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
@@ -7101,7 +7115,7 @@
           "note": "Sieben neue Meisterstücke mit Einrichtung."
         }
       ],
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:04:09.413Z",
       "verification": {
         "state": "pending",
         "note": "Node-Prüfungen bestanden (baustil 9/9, catalog-game, catalog, generators); Sichtprüfung über isometrische Ansichten; Abnahme im echten Spiel steht aus."
@@ -8052,7 +8066,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:04:09.413Z",
       "area": "BIBLIOTHEK",
       "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
@@ -26308,6 +26322,82 @@
           "done": 6,
           "total": 7,
           "next": "Abnahme auf Philipps Rechner mit Olympus (S06); Firefox/Safari-Engine automatisch geprüft."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T01:04:09.413Z",
+      "kind": "progress",
+      "items": [
+        "BLOCK-02",
+        "BLOCK-01",
+        "LIB-05",
+        "GEN-02",
+        "GEN-03"
+      ],
+      "summary": "Spielprüfstand im echten Paper 26.3: 559 Katalog-/Generatorpläne ohne Abweichung; 47 Gebäude und Brunnen-Generator behoben, neue Regeln Doppeltruhe, Trampelpfad, Redstone-Staub, dichte Becken, Korallen. Grenze: Gestaltung bleibt Stichprobe im Spiel.",
+      "files": [
+        "apps/web/src/testing/autochecks.ts",
+        "docs/TESTING.md",
+        "docs/architecture/formate/BLOCK_LOGIC.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/catalog/build/gameReady.ts",
+        "packages/domain/src/catalog/build/sets/dorf.ts",
+        "packages/domain/src/catalog/build/sets/fantasy.ts",
+        "packages/domain/src/catalog/build/sets/farmen.ts",
+        "packages/domain/src/catalog/build/sets/grossbauten.ts",
+        "packages/domain/src/catalog/build/sets/natur.ts",
+        "packages/domain/src/catalog/build/sets/redstone.ts",
+        "packages/domain/src/catalog/build/sets/technik.ts",
+        "packages/domain/src/catalog/build/sets/wohnen.ts",
+        "packages/domain/src/catalog/generators/well.ts",
+        "packages/domain/src/core/placement.ts",
+        "packages/domain/src/index.ts",
+        "packages/voxel/src/blocklogic/connect.ts",
+        "packages/voxel/src/diff.ts",
+        "packages/voxel/src/states.ts",
+        "scripts/mod/game_placement.mjs",
+        "scripts/mod/probe/PlacementProbe.java",
+        "scripts/mod/test_game_placement.sh",
+        "tests/unit/catalog/game-rules.test.mjs",
+        "tests/unit/catalog/generators.test.mjs",
+        "tests/unit/core/states.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "BLOCK-02",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "S06 Stichprobe durch Philipp im eigenen Spiel (Gestaltung, Begehbarkeit); Gelände, Großprojekte und Basisplaner auf demselben Prüfstand."
+        },
+        {
+          "id": "BLOCK-01",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme im Spiel; PROFILE-01 kann die Berichtsfakten übernehmen. Die Katalogfehler aus der Spielprüfung behebt BLOCK-02."
+        },
+        {
+          "id": "LIB-05",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "LIB-05-S08: Abnahme neuer Gebäude im Spiel durch Philipp."
+        },
+        {
+          "id": "GEN-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Generierte Bauten (v. a. Treppenhaus, Torhaus-Wehrgang, Hafen) im Spiel abnehmen; Treppenhaus-Anbau an Haus als Anlage erwägen."
+        },
+        {
+          "id": "GEN-03",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Philipp baut das Kolosseum im Spiel nach (BIB-14, mit Statuen und Hypogäum-Treppen)."
         }
       ]
     }

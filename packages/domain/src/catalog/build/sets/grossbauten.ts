@@ -336,7 +336,7 @@ function marktplatz() {
   }
   // Fountain: basin ring, water, centre column with lanterns.
   p.disc(c, c, 0, 5, 'polished_andesite');
-  p.disc(c, c, 1, 5, 'stone_brick_wall', {}, true); p.disc(c, c, 1, 4, 'water', water());
+  p.disc(c, c, 1, 5, 'stone_brick_wall', {}); p.disc(c, c, 1, 4, 'water', water()); // voller Rand: keine Lücke zwischen Ring und Wasser
   for (let y = 1; y <= 5; y++) put(p, c, y, c, y === 5 ? 'chiseled_stone_bricks' : 'polished_andesite');
   for (const f of ['north', 'east', 'south', 'west'] as const) { const [dx, dz] = STEP[f]; put(p, c + dx, 5, c + dz, 'stone_brick_stairs', stairs(OPPOSITE[f], 'top')); }
   put(p, c, 6, c, 'lantern', lantern());

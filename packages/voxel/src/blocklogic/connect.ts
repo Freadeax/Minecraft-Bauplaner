@@ -31,7 +31,7 @@ export function isConnectionException(s: BlockState): boolean {
 }
 const gateAligned = (n: BlockState, dir: Dir): boolean => hasClass(id(n), 'FenceGateBlock') && axisOf((prop(n, 'facing') ?? 'north') as Dir) === axisOf(CLOCKWISE[dir]!);
 
-export type ConnectFamily = 'fence' | 'wall' | 'pane' | 'stairs' | 'gate' | 'snowy' | 'mushroom';
+export type ConnectFamily = 'fence' | 'wall' | 'pane' | 'stairs' | 'gate' | 'snowy' | 'mushroom' | 'chest' | 'path' | 'wire';
 /** Which connection rule a block follows, or null. */
 export function connectFamily(blockId: string): ConnectFamily | null {
   const i = namespacedId(blockId);
@@ -42,6 +42,9 @@ export function connectFamily(blockId: string): ConnectFamily | null {
   if (hasClass(i, 'FenceGateBlock')) return 'gate';
   if (hasClass(i, 'SnowyBlock')) return 'snowy';
   if (hasClass(i, 'HugeMushroomBlock')) return 'mushroom';
+  if (hasClass(i, 'ChestBlock')) return 'chest';
+  if (i === 'minecraft:redstone_wire') return 'wire';
+  if (hasClass(i, 'PathBlock') || hasClass(i, 'FarmlandBlock')) return 'path';
   return null;
 }
 
@@ -100,6 +103,42 @@ function stairsShape(state: BlockState, lookup: StateLookup, position: Vec3): st
   return 'straight';
 }
 
+/** Blocks that send a redstone signal (isSignalSource): redstone dust connects to them from every side. */
+const SIGNAL_SOURCE = /^minecraft:(lever|[a-z_]*_button|redstone_(wall_)?torch|redstone_block|comparator|daylight_detector|detector_rail|[a-z_]*_pressure_plate|tripwire_hook|trapped_chest|target|lectern|lightning_rod|[a-z_]*sculk_sensor|jukebox|creaking_heart)$/;
+const conductor = (s: BlockState | undefined): boolean => !isAir(s) && !!stateFacts(s!)?.occludes;
+/** RedStoneWireBlock.shouldConnectTo. */
+function dustConnectsTo(n: BlockState | undefined, dir: Dir | null): boolean {
+  if (isAir(n)) return false;
+  const i = id(n!), facing = prop(n!, 'facing') as Dir | undefined;
+  if (i === 'minecraft:redstone_wire') return true;
+  if (i === 'minecraft:repeater') return dir !== null && (facing === dir || facing === OPPOSITE[dir]);
+  if (i === 'minecraft:observer') return dir === facing;
+  return dir !== null && SIGNAL_SOURCE.test(i);
+}
+/** RedStoneWireBlock.getConnectingSide for one horizontal side. */
+function dustSide(position: Vec3, dir: Dir, lookup: StateLookup): 'up' | 'side' | 'none' {
+  const np = step(position, dir), n = lookup(np);
+  if (!conductor(lookup(step(position, 'up')))) {
+    const canHold = !isAir(n) && (sturdy(n, 'up') || id(n!) === 'minecraft:hopper');
+    if (canHold && dustConnectsTo(lookup(step(np, 'up')), null)) return sturdy(n, OPPOSITE[dir]) ? 'up' : 'side';
+  }
+  return !dustConnectsTo(n, dir) && (conductor(n) || !dustConnectsTo(lookup(step(np, 'down')), null)) ? 'none' : 'side';
+}
+/** RedStoneWireBlock.getConnectionState: connections from the neighbours; a single line continues straight, nothing connected = cross. */
+function settleWire(state: BlockState, position: Vec3, lookup: StateLookup): BlockState {
+  const p: Record<string, string> = { ...state.properties };
+  const wasDot = HORIZONTAL.every(d => (state.properties[d] ?? 'none') === 'none');
+  for (const d of HORIZONTAL) p[d] = dustSide(position, d, lookup);
+  const on = (d: Dir) => p[d] !== 'none';
+  if (wasDot && HORIZONTAL.every(d => !on(d))) return { id: state.id, properties: p };
+  const noNS = !on('north') && !on('south'), noEW = !on('east') && !on('west');
+  if (!on('west') && noNS) p.west = 'side';
+  if (!on('east') && noNS) p.east = 'side';
+  if (!on('north') && noEW) p.north = 'side';
+  if (!on('south') && noEW) p.south = 'side';
+  return { id: state.id, properties: p };
+}
+
 /**
  * The state the game produces for `state` at `position` from its neighbours, for blocks
  * whose connections are derived (see ConnectFamily). Other blocks are returned unchanged.
@@ -122,6 +161,35 @@ export function settleState(state: BlockState, position: Vec3, lookup: StateLook
       break;
     }
     case 'snowy': { const a = at('up'); p.snowy = String(!!a && inTag(id(a), 'snow')); break; }
+    case 'wire': return settleWire(state, position, lookup);
+    case 'chest': {
+      // ChestBlock.updateShape: a half of a double chest whose other half is not a chest of the same
+      // kind becomes single; a single chest joins a neighbour half that points at it (same facing).
+      const facing = (prop(state, 'facing') ?? 'north') as Dir, type = prop(state, 'type') ?? 'single';
+      const towards = (s: BlockState): Dir | null => {
+        const t = prop(s, 'type'), f = (prop(s, 'facing') ?? 'north') as Dir;
+        return t === 'left' ? CLOCKWISE[f]! : t === 'right' ? COUNTER_CLOCKWISE[f]! : null;
+      };
+      if (type === 'single') {
+        for (const d of HORIZONTAL) {
+          const n = at(d);
+          if (n && id(n) === id(state) && prop(n, 'type') !== 'single' && prop(n, 'facing') === facing && towards(n) === OPPOSITE[d]) {
+            p.type = prop(n, 'type') === 'left' ? 'right' : 'left';
+            break;
+          }
+        }
+      } else {
+        const d = towards(state)!, n = at(d);
+        if (!n || id(n) !== id(state)) p.type = 'single';
+      }
+      break;
+    }
+    case 'path': {
+      // Dirt path and farmland turn into dirt under a solid block (fence gates excepted).
+      const a = at('up');
+      if (a && !isAir(a) && stateFacts(a)?.solid && !hasClass(id(a), 'FenceGateBlock')) return { id: 'minecraft:dirt', properties: {} };
+      return state;
+    }
     case 'mushroom': for (const d of ['down', 'up', ...HORIZONTAL] as Dir[]) { const n = at(d); if (n && id(n) === id(state)) p[d] = 'false'; } break;
   }
   return { id: state.id, properties: p };

@@ -223,6 +223,9 @@ const DERIVED: Readonly<Record<ConnectFamily, ReadonlySet<string>>> = {
   gate: new Set(['in_wall']),
   snowy: new Set(['snowy']),
   mushroom: new Set(['down', 'up', 'north', 'east', 'south', 'west']),
+  chest: new Set(['type']),
+  path: new Set(),
+  wire: new Set(['north', 'east', 'south', 'west']),
 };
 function changedProperties(p: BlockState, q: BlockState): string[] {
   const keys = new Set([...Object.keys(p.properties), ...Object.keys(q.properties)]);

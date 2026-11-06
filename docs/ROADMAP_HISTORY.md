@@ -8587,3 +8587,45 @@ Block 5 Grafik in Firefox und Safari: Grafik-, Betrachter-, Textur- und Worker-B
 - `tests/e2e/background-jobs.e2e.mjs`
 - `tests/e2e/viewer.e2e.mjs`
 
+## 2026-11-07T01:04:09.413Z · progress
+
+**Aufgaben:** BLOCK-02, BLOCK-01, LIB-05, GEN-02, GEN-03
+
+Spielprüfstand im echten Paper 26.3: 559 Katalog-/Generatorpläne ohne Abweichung; 47 Gebäude und Brunnen-Generator behoben, neue Regeln Doppeltruhe, Trampelpfad, Redstone-Staub, dichte Becken, Korallen. Grenze: Gestaltung bleibt Stichprobe im Spiel.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| BLOCK-02 | 🧩 Implementiert · Abnahme offen | 6/7 | S06 Stichprobe durch Philipp im eigenen Spiel (Gestaltung, Begehbarkeit); Gelände, Großprojekte und Basisplaner auf demselben Prüfstand. |
+| BLOCK-01 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme im Spiel; PROFILE-01 kann die Berichtsfakten übernehmen. Die Katalogfehler aus der Spielprüfung behebt BLOCK-02. |
+| LIB-05 | 🧩 Implementiert · Abnahme offen | 7/8 | LIB-05-S08: Abnahme neuer Gebäude im Spiel durch Philipp. |
+| GEN-02 | 🧩 Implementiert · Abnahme offen | 5/5 | Generierte Bauten (v. a. Treppenhaus, Torhaus-Wehrgang, Hafen) im Spiel abnehmen; Treppenhaus-Anbau an Haus als Anlage erwägen. |
+| GEN-03 | 🧩 Implementiert · Abnahme offen | 5/6 | Philipp baut das Kolosseum im Spiel nach (BIB-14, mit Statuen und Hypogäum-Treppen). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/autochecks.ts`
+- `docs/TESTING.md`
+- `docs/architecture/formate/BLOCK_LOGIC.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/catalog/build/gameReady.ts`
+- `packages/domain/src/catalog/build/sets/dorf.ts`
+- `packages/domain/src/catalog/build/sets/fantasy.ts`
+- `packages/domain/src/catalog/build/sets/farmen.ts`
+- `packages/domain/src/catalog/build/sets/grossbauten.ts`
+- `packages/domain/src/catalog/build/sets/natur.ts`
+- `packages/domain/src/catalog/build/sets/redstone.ts`
+- `packages/domain/src/catalog/build/sets/technik.ts`
+- `packages/domain/src/catalog/build/sets/wohnen.ts`
+- `packages/domain/src/catalog/generators/well.ts`
+- `packages/domain/src/core/placement.ts`
+- `packages/domain/src/index.ts`
+- `packages/voxel/src/blocklogic/connect.ts`
+- `packages/voxel/src/diff.ts`
+- `packages/voxel/src/states.ts`
+- `scripts/mod/game_placement.mjs`
+- `scripts/mod/probe/PlacementProbe.java`
+- `scripts/mod/test_game_placement.sh`
+- `tests/unit/catalog/game-rules.test.mjs`
+- `tests/unit/catalog/generators.test.mjs`
+- `tests/unit/core/states.test.mjs`
+
