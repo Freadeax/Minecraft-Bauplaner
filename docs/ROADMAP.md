@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T12:58:19.470Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T13:09:28.727Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -1866,7 +1866,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TERRAIN-04
 
-**Gelände direkt aus der Mod: Geländegedächtnis, Übernahme ohne Dateien, blockgenaue Prüfung aus dem Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gelände direkt aus der Mod übernehmen“) · Zuständiger Thread: „Gelände direkt aus der Mod übernehmen“ · Aktualisiert: 2026-11-06T12:37:11.138Z
+**Gelände direkt aus der Mod: Geländegedächtnis, Übernahme ohne Dateien, blockgenaue Prüfung aus dem Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gelände direkt aus der Mod übernehmen“) · Zuständiger Thread: „Gelände direkt aus der Mod übernehmen“ · Aktualisiert: 2026-11-06T13:09:28.727Z
 
 - [x] TERRAIN-04-S01: Mod 0.20.0: Geländegedächtnis (gesehene Chunks mit Biom, je Welt/Server auf dem PC gespeichert), GET /v1/terrain, /v1/terrain/known, /bauplaner gelaende an|aus|vergessen.
 - [x] TERRAIN-04-S02: Mod 0.20.0: GET /v1/box liest einen Weltbereich blockgenau aus den geladenen Chunks (bis 2 Mio. Zellen, in Scheiben je Tick).

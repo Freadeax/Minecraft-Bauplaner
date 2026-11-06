@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T12:58:19.470Z",
+  "updatedAt": "2026-11-06T13:09:28.727Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -4616,7 +4616,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T12:37:11.138Z",
+      "updatedAt": "2026-11-06T13:09:28.727Z",
       "area": "PLANER",
       "thread": "Gelände direkt aus der Mod übernehmen",
       "philipp": [
@@ -22857,6 +22857,26 @@
           "done": 4,
           "total": 5,
           "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T13:09:28.727Z",
+      "kind": "progress",
+      "items": [
+        "TERRAIN-04"
+      ],
+      "summary": "Browsertest map-depth erwartet die neuen fehlenden Mod-Merkmale (Geländegedächtnis, blockgenaue Prüfung) bei älteren Mods",
+      "files": [
+        "tests/e2e/map-depth.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "TERRAIN-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp im Spiel (S05)."
         }
       ]
     }

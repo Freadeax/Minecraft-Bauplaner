@@ -7278,3 +7278,17 @@ Gelände- und Landschaftsreiter holen das Gelände direkt aus der Mod (Geländeg
 |---|---|---:|---|
 | GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
 
+## 2026-11-06T13:09:28.727Z · progress
+
+**Aufgaben:** TERRAIN-04
+
+Browsertest map-depth erwartet die neuen fehlenden Mod-Merkmale (Geländegedächtnis, blockgenaue Prüfung) bei älteren Mods
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TERRAIN-04 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp im Spiel (S05). |
+
+**Geänderte Dateien:**
+
+- `tests/e2e/map-depth.e2e.mjs`
+
