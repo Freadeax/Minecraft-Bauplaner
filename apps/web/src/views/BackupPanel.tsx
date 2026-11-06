@@ -21,7 +21,7 @@ export function BackupReminder({ status, onBackupAll, busy }: { status: BackupSt
     <p>{status.details[0]}</p>
     <p className="muted">{status.disclaimer}</p>
     <div className="button-row"><button className="primary" onClick={onBackupAll} disabled={busy}>Gesamtsicherung herunterladen</button>
-      <a className="button-link secondary" href="#sicherungsstand" onClick={e => { e.preventDefault(); document.getElementById('sicherungsstand')?.scrollIntoView({ block: 'start' }); }}>Details</a>
+      <a className="button-link secondary" href="#sicherungsstand" onClick={e => { e.preventDefault(); const el = document.getElementById('sicherungsstand'); el?.closest('details')?.setAttribute('open', ''); el?.scrollIntoView({ block: 'start' }); }}>Details</a>
       <button onClick={() => { snooze(); setHiddenUntil(snoozedUntil()); }}>Morgen erinnern</button></div>
   </section>;
 }

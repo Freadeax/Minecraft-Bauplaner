@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { href } from '../../app/router';
 import { projectTabs } from './tabs';
+import { projectTabGroups } from './tabNames';
 import { useProjectSession } from './session';
 import { useApp } from '../../app/context';
 import { Icon, tabIcon } from '../../app/icons';
@@ -14,6 +15,7 @@ import type { Project } from '../../../../../packages/domain/src/index.js';
 import type { Repository } from '../../app/repository';
 import '../../styles/backup.css';
 import './updates.css';
+import '../../styles/navGroups.css';
 
 const saveLabel = { saved: 'gespeichert', saving: 'speichert …', error: 'Speichern fehlgeschlagen', conflict: 'Konflikt mit anderem Tab' } as const;
 
@@ -51,8 +53,14 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
       </div>
       <span className={`save-state ${session.saveState}`} role="status" title={session.saveError}>
         {saveLabel[session.saveState]}{repo.kind === 'memory' && ' · nur diese Sitzung'}</span>
-      <nav className="tabs" aria-label="Projektbereiche" ref={tabBar}>{projectTabs.map(t =>
-        <a key={t.id} href={href({ view: 'project', projectId, tab: t.id })} aria-current={t.id === tab ? 'page' : undefined}><Icon name={tabIcon(t.id)} size={16} />{t.label}</a>)}</nav>
+      <nav className="tabs tab-groups" aria-label="Projektbereiche" ref={tabBar}>{projectTabGroups.map((g, i) =>
+        <div key={g.id} className="tab-group" role="group" aria-label={`Schritt ${i + 1}: ${g.label}`} title={g.hint} data-group={g.id}
+          data-active={active?.group === g.id ? '' : undefined}>
+          <span className="tab-group-label" aria-hidden="true"><b>{i + 1}</b>{g.label}</span>
+          {projectTabs.filter(t => t.group === g.id).map(t =>
+            <a key={t.id} href={href({ view: 'project', projectId, tab: t.id })} title={t.hint} aria-current={t.id === tab ? 'page' : undefined}><Icon name={tabIcon(t.id)} size={16} />{t.label}</a>)}
+        </div>)}</nav>
+      {active && <p className="tab-hint" data-tab-hint={active.id}>{active.hint}</p>}
     </header>
     {session.computationState !== 'ready' && <section className={`notice ${session.computationState === 'error' ? 'warning' : ''}`}
       aria-label="Projektberechnung" role={session.computationState === 'error' ? 'alert' : 'status'}>

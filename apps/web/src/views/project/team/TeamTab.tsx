@@ -13,6 +13,7 @@ import { TeamRoom } from './TeamRoom';
 import { TeamCompact } from './TeamCompact';
 import { TeamAreaNav, TeamIssues, TeamPlanning, TeamProgressArea, TeamRightsArea } from './TeamPlan';
 import type { TeamArea } from './TeamPlan';
+import { More } from '../../../app/More';
 import '../../../styles/team.css';
 
 const short = (id: string) => id.replace(/^minecraft:/, '');
@@ -63,13 +64,19 @@ function Found({ site, projectName, projectId, onFound }: { site: SitePlan; proj
   return <div className="team-block team-found">
     <h3>Gemeinsam bauen</h3>
     <p>Mehrere Spieler bauen an diesem Projekt: jeder übernimmt Bauabschnitte, meldet sie fertig, liefert Material und schreibt Notizen am Bau. Du wirst <strong>Bauleitung</strong>: nur du gibst Planstände frei und vergibst Rollen.</p>
-    <ul className="muted">
-      <li><strong>Team live</strong>: Nach dem Gründen einen Einladungslink schicken; alle sehen Übernahmen, Meldungen und Notizen sofort, auch auf dem iPad. Ohne Konten.</li>
-      <li>Im Spiel: Mit der Bauplaner-Mod sieht jeder seine Abschnitte im Hologramm und meldet Baustand und Kisten aus dem Spiel. Das Paper-Plugin ist freiwillig (Abschnittsschutz, geprüfte Lagerkisten).</li>
-      <li>Server-Plugin (freiwillig): verbindet sich über das Internet selbst mit dem Team-Raum, sobald du als Bauleitung mit der Mod auf dem Server bist. Nichts herunterladen, nichts auf den Server kopieren.</li>
-      <li className="muted">Nur im Notfall ohne Internet gibt es unten Dateien und Meldecodes.</li>
-      <li>Bauabschnitte legst du im Reiter <a href={`#/projekt/${projectId}/baustelle`}>Baustelle</a> an{site.sections.length ? ` (jetzt ${site.sections.length})` : ' – noch keine angelegt'}.</li>
-    </ul>
+    {/* UX-01: drei Schritte sichtbar, Hintergrund zu Mod und Plugin eingeklappt. */}
+    <ol className="team-quick">
+      <li>Team gründen – du wirst Bauleitung.</li>
+      <li>Einladungslink an deine Mitspieler schicken, ohne Konten.</li>
+      <li>Bauabschnitte im Reiter <a href={`#/projekt/${projectId}/baustelle`}>Baustelle</a> verteilen{site.sections.length ? ` (jetzt ${site.sections.length})` : ' – noch keine angelegt'}.</li>
+    </ol>
+    <More className="more-inline" title="Mehr zu Mod und Server" hint="Hologramm, Paper-Plugin, Notfall">
+      <ul className="muted">
+        <li>Im Spiel: Mit der Bauplaner-Mod sieht jeder seine Abschnitte im Hologramm und meldet Baustand und Kisten aus dem Spiel.</li>
+        <li>Server-Plugin (freiwillig, Abschnittsschutz und geprüfte Lagerkisten): verbindet sich über das Internet selbst mit dem Team-Raum, sobald du als Bauleitung mit der Mod auf dem Server bist. Nichts herunterladen, nichts auf den Server kopieren.</li>
+        <li>Nur im Notfall ohne Internet gibt es unten Dateien und Meldecodes.</li>
+      </ul>
+    </More>
     <div className="team-form">
       <label>Teamname<input value={name} maxLength={120} onChange={e => setName(e.target.value)} /></label>
       <label>Ich bin{ctx.builders.length ? <select value={who} onChange={e => setWho(e.target.value)}>

@@ -3,7 +3,7 @@ import type { Project } from '../../../../packages/domain/src/index.js';
 import { useApp } from './context';
 import { Icon, tabIcon } from './icons';
 import type { IconName } from './icons';
-import { mainNav } from './nav';
+import { fileTools, mainNav } from './nav';
 import { parseRoute } from './router';
 import { projectTabNames } from '../views/project/tabNames';
 
@@ -29,7 +29,7 @@ if (typeof window !== 'undefined') {
 interface Entry { readonly key: string; readonly group: string; readonly label: string; readonly hint: string; readonly href: string; readonly icon: IconName }
 
 const PAGES: readonly Omit<Entry, 'key' | 'group'>[] = [
-  ...mainNav.map(n => ({ label: n.label, hint: n.hint, href: n.href, icon: n.icon })),
+  ...[...mainNav, ...fileTools].map(n => ({ label: n.label, hint: n.hint, href: n.href, icon: n.icon })),
   { label: 'Ensembles', hint: 'Fertige Gebäudegruppen als Vorlage', href: '#/bibliothek/ensembles', icon: 'library' },
   { label: 'Generatoren', hint: 'Haus, Turm, Mauer, Brücke, Dach nach Maß', href: '#/bibliothek/generatoren', icon: 'library' },
   { label: 'Werkstatt', hint: 'Blockeditor: neues Bauteil Block für Block bauen', href: '#/werkstatt/neu', icon: 'editor' },
@@ -85,7 +85,7 @@ export function CommandPalette() {
     const all: Entry[] = [
       ...PAGES.map(p => ({ ...p, key: `seite:${p.href}`, group: 'Seiten' })),
       ...(route.view === 'project' ? projectTabNames.map(t => ({
-        key: `bereich:${t.id}`, group: 'Dieses Projekt', label: t.label, hint: current?.name ?? 'Projektbereich', icon: tabIcon(t.id),
+        key: `bereich:${t.id}`, group: 'Dieses Projekt', label: t.label, hint: `${current?.name ?? 'Projektbereich'} · ${t.hint}`, icon: tabIcon(t.id),
         href: `#/projekt/${encodeURIComponent(route.projectId)}${t.id === 'editor' ? '' : `/${t.id}`}`,
       })) : []),
       ...projects.map(p => ({ key: `projekt:${p.id}`, group: 'Projekte', label: p.name, hint: `${p.instances.length} Bauteile`, href: `#/projekt/${encodeURIComponent(p.id)}`, icon: 'projects' as const })),

@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/checks/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 167 Fälle in 13 Bereichen, davon 70 Kernfälle.
+Umfang: 170 Fälle in 13 Bereichen, davon 72 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -14,13 +14,16 @@ Erster Eindruck, Projekte anlegen und Daten sichern. Am besten in einem frischen
 |---|---|---|---|---|
 | START-01 | Erster Start ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Seite öffnen (am besten privates Fenster).<br>2. Warten, bis die Bibliothek geladen ist (Fortschrittsanzeige). | Startbildschirm mit Fortschritt, danach die Projektzentrale; keine Fehlermeldung, Seite friert nicht ein. |
 | START-02 | Projekt anlegen, umbenennen, löschen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. In der Projektzentrale ein neues Projekt anlegen.<br>2. Umbenennen.<br>3. Ein zweites Projekt anlegen und wieder löschen. | Namen bleiben nach dem Neuladen (F5) erhalten; das gelöschte Projekt ist weg, das andere unverändert. |
-| START-03 | Sichern und wiederherstellen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. „Alles sichern“ in der Projektzentrale.<br>2. Ein Projekt ändern oder löschen.<br>3. „Sicherung wiederherstellen …“ mit der gespeicherten Datei. | Die Sicherungsdatei lädt herunter; nach dem Wiederherstellen ist der gesicherte Stand wieder da. |
+| START-03 | Sichern und wiederherstellen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. In der Projektzentrale unten „Speicher & Sicherung“ aufklappen und „Alles sichern“ drücken.<br>2. Ein Projekt ändern oder löschen.<br>3. „Sicherung wiederherstellen …“ mit der gespeicherten Datei. | Die Sicherungsdatei lädt herunter; nach dem Wiederherstellen ist der gesicherte Stand wieder da. |
 | START-04 | Sicherungserinnerung ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | vertieft | 1. Mehrere Änderungen machen, ohne zu sichern.<br>2. Projektzentrale ansehen. | Ein Hinweis zeigt, wie alt die letzte Sicherung ist, und bietet „Sichern“ an. |
 | START-05 | Schnellsuche | kern | 1. Strg+K (Mac: ⌘K) drücken.<br>2. Nach einem Gebäude und nach „Werkstatt“ suchen und öffnen. | Die Suche öffnet sofort, Treffer führen zur richtigen Seite. |
 | START-06 | Farbschema und Texturen | vertieft | 1. Oben das Farbschema wechseln (hell/dunkel/automatisch).<br>2. Über den Texturen-Knopf ein eigenes Ressourcenpaket (.zip) laden, falls vorhanden. | Alle Seiten bleiben lesbar; mit Ressourcenpaket zeigen Blöcke Texturen, ohne Paket einfache Farben. |
 | START-07 | Handy und Tablet | vertieft | 1. Seite auf dem Handy öffnen.<br>2. Untere Leiste benutzen, ein Projekt und die Bibliothek öffnen. | Nichts ragt seitlich aus dem Bild, Knöpfe sind mit dem Finger treffbar. |
 | START-08 | Anleitung „Wie geh ich es an?“ ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/anleitung)) | kern | 1. Oben „Anleitung“ (bei schmalem Fenster das ?-Symbol) oder in der Projektzentrale „? Wie geh ich es an?“ öffnen.<br>2. Alle sechs Wege anklicken und die Bilder und Sätze lesen.<br>3. Im Weg „Erstes Projekt planen“ die Knöpfe der Schritte ausprobieren. | Jeder Schritt hat ein Bild und einen kurzen, verständlichen Satz; jeder Knopf führt genau an die genannte Stelle (bei vorhandenem Projekt in dieses Projekt). |
 | START-09 | Anleitung: Haken und Weg teilen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/anleitung?weg=mod)) | vertieft | 1. In einem Weg zwei Schritte als „erledigt“ abhaken.<br>2. Seite neu laden (F5).<br>3. Auf iPad oder Handy öffnen und durch die Wege blättern. | Die Haken und der Fortschrittsbalken bleiben nach dem Neuladen; auf dem Handy ragt nichts seitlich heraus, der erste offene Schritt ist hervorgehoben. |
+| START-10 | Einfache Bedienung: vier Hauptmenüpunkte ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Oben in der Leiste nachzählen: Projekte, Bibliothek, Weltkarte, Spiel und Anleitung.<br>2. Unten in der Fußzeile „Datei ansehen“ und „Weltimport aus Datei“ finden; mit Strg+K nach „Betrachter“ suchen.<br>3. Auf der Startseite „Speicher & Sicherung“ und beim neuen Projekt „Weitere Wege“ auf- und zuklappen. | Oben stehen genau vier Bereiche und die Anleitung. Datei-Wege sind nur noch über Fußzeile, Schnellsuche und eingeklappte Bereiche erreichbar und funktionieren dort wie vorher. Nichts fehlt. |
+| START-11 | Projekt in vier Schritten ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Beispielprojekt „Burgmauer“ öffnen.<br>2. Die Reiterleiste ansehen: 1 Gestalten, 2 Bauen, 3 Organisieren, 4 Teilen.<br>3. Jeden Reiter einmal anklicken und den kurzen Satz unter der Leiste lesen. | Alle zwölf Reiter sind in ihren Schritten da, der aktive Schritt ist hervorgehoben und unter der Leiste steht in einem Satz, wofür der Reiter da ist. Bibliothek: Unterseiten in „Finden“, „Nach Maß“, „Größer planen“. |
+| START-12 | Einfache Bedienung auf dem iPad ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | vertieft | 1. Planer auf dem iPad öffnen, ein Projekt öffnen.<br>2. Die Reiterleiste waagerecht wischen.<br>3. Auf „Spiel“ die drei Schritte lesen und „Ausführliche Anleitung“ und „Mehr wissen“ aufklappen; auf der Weltkarte „Schritt für Schritt“ öffnen. | Die Leiste lässt sich wischen, der aktive Reiter bleibt sichtbar, alle aufklappbaren Bereiche öffnen sich mit dem Finger, keine Seite ist breiter als der Bildschirm. |
 
 ## BIB · Bibliothek (Planer)
 
@@ -268,7 +271,7 @@ Planer, Mod und Paper-Plugin verbinden sich per Klick; der Server wird aus dem P
 
 Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan.ts), geordnet nach dem Ort, den die Abnahme braucht. Ein Paket gilt als abgenommen, wenn alle genannten Fälle ✓ sind; Ob ein Paket noch auf Abnahme wartet, steht in `docs/ROADMAP.md`.
 
-### Nur im Browser (43 Pakete)
+### Nur im Browser (44 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -312,6 +315,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | TERRAIN-01 | KARTE-04, PROJ-06 |
 | TERRAIN-02 | PROJ-06 |
 | UPDATE-01 | PROJ-07 |
+| UX-01 | START-10, START-11, START-12 |
 | VIEW-01 | DATEI-01, GERAET-04 |
 | VIEW-02 | START-06, DATEI-01 |
 | WORLD-IMPORT-01 | KARTE-04 |

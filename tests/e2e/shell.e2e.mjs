@@ -33,7 +33,9 @@ test('Desktop: Hauptnavigation, Seitentitel und Schnellsuche (Strg+K) mit Tastat
   try {
     await p.goto(BASE);
     const nav = p.getByRole('navigation', { name: 'Hauptnavigation', exact: true });
-    assert.equal(await nav.getByRole('link').count(), 7);
+    // UX-01: vier Hauptbereiche plus Anleitung (GUIDE-01); Datei-Wege (Betrachter, Weltimport) stehen in Fußzeile und Schnellsuche.
+    assert.equal(await nav.getByRole('link').count(), 5);
+    assert.equal(await p.getByRole('navigation', { name: 'Weitere Links' }).getByRole('link', { name: 'Datei ansehen' }).getAttribute('href'), '#/betrachter');
     // GUIDE-01: die Anleitung steht in der Hauptnavigation (bei knapper Breite als ?-Symbol).
     assert.equal(await nav.getByRole('link', { name: 'Anleitung' }).getAttribute('href'), '#/anleitung');
     // MAP-03: the game connection (mod download, pairing) has its own main entry.

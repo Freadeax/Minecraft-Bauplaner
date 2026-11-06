@@ -7,7 +7,7 @@ import { readFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { openSampleProject } from './start.mjs';
+import { openSampleProject, openStorage } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -114,6 +114,8 @@ test('Originaldatei, Sicherung und Wiederherstellung in leerem Browser', async (
   await p.goto(BASE);
   await p.getByRole('link', { name: sampleName }).waitFor();
 
+  // UX-01: Speicher & Sicherung ist auf der Startseite eingeklappt.
+  await openStorage(p);
   const full = await downloadBackup(p, p.getByRole('button', { name: 'Alles sichern' }));
   assert.match(full.name, /^bauplaner-alle-projekte-\d{4}-\d{2}-\d{2}\.bauplaner\.json$/);
   const json = JSON.parse(full.text);

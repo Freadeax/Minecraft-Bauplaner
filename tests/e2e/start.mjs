@@ -16,3 +16,8 @@ export async function openSampleProject(page, timeout = START_TIMEOUT) {
   await waitForStart(page, timeout);
   await page.getByRole('button', { name: SAMPLE }).click();
 }
+
+/** UX-01: klappt „Speicher & Sicherung“ in der Projektzentrale auf (bleibt offen, wenn schon offen). */
+export async function openStorage(page) {
+  await page.locator('details.storage-more').evaluate(d => { d.open = true; });
+}

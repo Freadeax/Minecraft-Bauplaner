@@ -6,6 +6,7 @@ import { spawn } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { openStorage } from './start.mjs';
 
 const { chromium } = createRequire(import.meta.url)('playwright');
 const PORT = 4247, BASE = `http://127.0.0.1:${PORT}/Minecraft-Bauplaner/`;
@@ -170,6 +171,8 @@ test('Vorlagen: eigenes Ensemble, Bearbeiten mit Verlauf, Wiederherstellen, Proj
   await p.locator('.picker-new').getByRole('button', { name: 'Anlegen' }).click();
   await status(p).filter({ hasText: 'Sammlung „Türme“ angelegt' }).waitFor();
   await p.goto(`${BASE}#/`);
+  // UX-01: Speicher & Sicherung ist auf der Startseite eingeklappt.
+  await openStorage(p);
   const [download] = await Promise.all([p.waitForEvent('download'), p.getByRole('button', { name: 'Alles sichern' }).click()]);
   const file = JSON.parse(await readFile(await download.path(), 'utf8'));
   assert.equal(file.formatVersion, 3); assert.equal(file.baseFormatVersion, 2); // packed container (STORE-03) around format 2

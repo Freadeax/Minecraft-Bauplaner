@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T14:23:13.593Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T14:33:48.068Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -13,7 +13,7 @@ Stand: 2026-11-06T14:23:13.593Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | Status | Pakete |
 |---|---:|
 | ⏳ Offen | 6 |
-| 🚧 In Arbeit | 7 |
+| 🚧 In Arbeit | 8 |
 | ⛔ Blockiert | 0 |
 | 🧩 Implementiert · Abnahme offen | 94 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
@@ -25,7 +25,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 
 | Bereich | Offen | Verwaist | Nur Philipp | Geprüft |
 |---|---:|---:|---:|---:|
-| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 25 | 1 | 25 | 2 |
+| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 26 | 2 | 26 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 0 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 14 | 0 | 14 | 0 |
@@ -65,6 +65,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [TERRAIN-02](#terrain-02) | Landschaft gestalten | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Abnahme in deiner eigenen Welt und auf Touch-Geräten (S05). |
 | [TERRAIN-03](#terrain-03) | Gelände und Wege im Projekt | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Gelände, Wege und Küste ausbauen“ | PROJ-19: Weg mit Treppen und Brücke als .litematic in deiner Welt ansehen.<br>BIB-20: Basis mit Wegenetz als Landschaftsweg auf einem echten Hang einfügen und im Spiel ansehen. |
 | [TERRAIN-04](#terrain-04) | Gelände direkt aus der Mod | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Gelände direkt aus der Mod übernehmen“ | Mod 0.20.0 installieren, einmal um den Bauplatz laufen, im Reiter „Gelände“ „Gelände aus dem Spiel übernehmen“ und „Gelände aus dem Spiel prüfen“ (S05). |
+| [UX-01](#ux-01) | Bedienung des Planers vereinfachen (Struktur und Abläufe) | 🚧 In Arbeit 5/6 | P1 | **verwaist** | Testphase START-10..12: vier Hauptbereiche, Projektschritte mit Kurzsatz, eingeklappte Experten- und Datei-Wege im Browser prüfen.<br>START-12 auf dem iPad: Projektreiter waagerecht wischen, eingeklappte Bereiche per Finger öffnen. |
 | [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Ansicht auf echter GPU und mit Touch prüfen, negative Koordinaten, alle Schnittachsen (S02). |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Mojang-Download und Blockformen in Firefox/Safari und auf echten Geräten (S06). |
 | [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Ausschnitt aus einer Kopie deiner Modpack-Welt übernehmen. |
@@ -309,6 +310,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 
 - **ARCH-02** · Datencheck unter #/system mit deinen über Monate gewachsenen Browserdaten (S05).
 - **QA-02** · Bereich „Geräte und Browser“ (GERAET-01 … 06) auf #/testphase auf deinem PC (Chrome/Edge und Firefox) und deinem Handy durchgehen und das Protokoll schicken (QA-02-S02).
+- **UX-01** · START-12 auf dem iPad: Projektreiter waagerecht wischen, eingeklappte Bereiche per Finger öffnen.
 - **PERF-04** · Olympus auf deinem Rechner, dazu Firefox/Safari (S06).
 - **VIEW-01** · Ansicht auf echter GPU und mit Touch prüfen, negative Koordinaten, alle Schnittachsen (S02).
 - **VIEW-02** · Mojang-Download und Blockformen in Firefox/Safari und auf echten Geräten (S06).
@@ -338,6 +340,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 
 ### Im Planer abnehmen
 
+- **UX-01** · Testphase START-10..12: vier Hauptbereiche, Projektschritte mit Kurzsatz, eingeklappte Experten- und Datei-Wege im Browser prüfen.
 - **EDIT-05** · Zauberstab, Stapeln, Extrudieren und Wendel in der Werkstatt abnehmen (S07).
 - **LIB-02** · Rückmeldung zur Bedienung der Sammlungen.
 - **LIB-03** · Eigene Ensembles und Generatorvorlagen ausprobieren.
@@ -366,6 +369,7 @@ Arbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thr
 |---|---|---|---|---|
 | [QA-04](#qa-04) | Testphase, Qualität und Betrieb | P0 | 🧩 Implementiert · Abnahme offen | Der Thread „Große Testphase vorbereiten und betreuen“ ist beendet; die rund 30 Pakete, bei denen nur Philipps Abnahme fehlt, haben keinen aktiven Thread für Diagnose und Fehlerbehebung. |
 | [EDIT-04](#edit-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Gelände-Werkzeuge auf dem Projektgelände (als eigener Thread angekündigt, nie gestartet). |
+| [UX-01](#ux-01) | Planer | P1 | 🚧 In Arbeit | Philipps Abnahme START-10..12 im Browser und auf dem iPad; danach Werkstatt, Baustelle und Produktion auf Experten-Optionen prüfen. Optik übernimmt „Planer-Oberfläche schön neu gestalten“. |
 
 ## Eingänge ohne eigenes Paket
 
@@ -426,6 +430,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **GFX-02 · Darstellung und Leistung, Runde 2: Biomfarben, leuchtende Blockentities (Leuchtfeuer-Strahl, Endportal, Magma), GPU-Upload großer Szenen in Stücken** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme auf echten GPUs, Firefox/Safari und Abgleich mit Spielbildern (S04, zusammen mit GFX-01-S06).
 - **EDIT-06 · Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: EDIT-06-S05: Philipp prüft das Bauen im 3D-Bild auf PC und iPad (WERK-08) und lädt eine Truhe/ein Schild mit Inhalt im Spiel (WERK-09).
 - **STRUCT-01 · Dateistruktur sauber neu ordnen: Fachordner im Kern und in der Oberfläche, Skripte, Tests und Doku nach Bereich, Ordnerkarte docs/STRUKTUR.md** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Durchsicht der Ordnerkarte durch Philipp; parallele Threads ziehen neue Dateien mit dem Codemod nach.
+- **UX-01 · Bedienung des Planers vereinfachen (Struktur und Abläufe)** — 🚧 In Arbeit, 5/6 Teilschritte. Nächster Schritt: Philipps Abnahme START-10..12 im Browser und auf dem iPad; danach Werkstatt, Baustelle und Produktion auf Experten-Optionen prüfen. Optik übernimmt „Planer-Oberfläche schön neu gestalten“.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -598,6 +603,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 | ID | Arbeitspaket | Status | Schritte | Abhängigkeiten | Main | Pages-Quelle |
 |---|---|---|---:|---|---|---|
+| [UX-01](#ux-01) | Bedienung des Planers vereinfachen (Struktur und Abläufe) | 🚧 In Arbeit | 5/6 | UI-02, GUIDE-01 | ausstehend | ausstehend |
 | [TEAM-01](#team-01) | Backendvertrag, Datenbank und Payloadspeicher | ⏳ Offen | 0/2 | ARCH-01, FORMAT-01, STORE-02, LICENSE-01 | ausstehend | ausstehend |
 | [AUTH-01](#auth-01) | Konten, Rechte und Übernahme lokaler Projekte | ⏳ Offen | 0/2 | TEAM-01 | ausstehend | ausstehend |
 | [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo | ⏳ Offen | 0/2 | AUTH-01, UPDATE-01 | ausstehend | ausstehend |
@@ -1002,6 +1008,31 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/e2e/shell.e2e.mjs](../tests/e2e/shell.e2e.mjs) — Vier echte Chromiumfälle: Hauptnavigation, Seitentitel, Schnellsuche mit Tastatur, Projektkopf/Bereichssprung (hell), Handy 390 px dunkel/hell ohne Überbreite, aktiver Bereich sichtbar, 3D zuerst.; [docs/architecture/planer/UI.md](architecture/planer/UI.md) — Abschnitt UI-02: Hülle, Navigationsliste, Schnellsuche, Projektkopf, Handyleiste, Lesbarkeit, Selektoren.
 
 **Dateiumfang:** `apps/web/src/app/CommandPalette.tsx`, `apps/web/src/app/Shell.tsx`, `apps/web/src/app/icons.tsx`, `apps/web/src/app/nav.ts`, `apps/web/src/main.tsx`, `apps/web/src/styles/shell.css`, `apps/web/src/styles/style.css`, `apps/web/src/views/project/ProjectView.tsx`, `docs/COMMUNICATION.md`, `docs/TESTING.md`, `docs/architecture/planer/UI.md`, `tests/e2e/shell.e2e.mjs`. **Abhängigkeiten:** UI-01, QA-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### UX-01
+
+**Bedienung des Planers vereinfachen (Struktur und Abläufe)** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude Thread „Bedienung des Planers vereinfachen“ · Zuständiger Thread: **verwaist** · Aktualisiert: 2026-11-06T14:33:48.068Z
+
+- [x] UX-01-S01: Hauptnavigation auf vier Bereiche (Projekte, Bibliothek, Weltkarte, Spiel); Datei-Wege Betrachter und Weltimport nur noch in Fußzeile und Schnellsuche.
+- [x] UX-01-S02: Zwölf Projektreiter in vier Schritten (Gestalten, Bauen, Organisieren, Teilen) mit einem Kurzsatz je Reiter; Ids, Beschriftungen und Routen unverändert.
+- [x] UX-01-S03: Bibliothek: zehn Unterseiten in drei Gruppen (Finden, Nach Maß, Größer planen); Datei-Import nicht mehr Hauptknopf.
+- [x] UX-01-S04: Eingeklappte Bereiche (More): Speicher & Sicherung, Datei-Notfallwege beim neuen Projekt, ausführliche Mod-Anleitung, Spielverbindung auf der Weltkarte, Mod/Plugin-Hintergrund im Team.
+- [x] UX-01-S05: Mod-Seite beginnt mit „So geht's in drei Schritten“; Team gründen in drei Schritten.
+- [ ] UX-01-S06: Weitere Vereinfachung nach Philipps Rückmeldung (Werkstatt, Baustelle, Produktion).
+
+**Abnahme:** Ein neuer Nutzer findet von der Startseite in höchstens zwei Klicks zu jedem Hauptablauf; jede Seite zeigt eine Hauptaktion zuerst; Datei-Wege sind als Notfall eingeklappt; keine Funktion entfällt; bestehende Browsertests bleiben grün.
+
+**Nächste Aktion:** Philipps Abnahme START-10..12 im Browser und auf dem iPad; danach Werkstatt, Baustelle und Produktion auf Experten-Optionen prüfen. Optik übernimmt „Planer-Oberfläche schön neu gestalten“.
+
+**Nur Philipp:** Im Planer abnehmen: Testphase START-10..12: vier Hauptbereiche, Projektschritte mit Kurzsatz, eingeklappte Experten- und Datei-Wege im Browser prüfen. Auf echten Geräten und Browsern: START-12 auf dem iPad: Projektreiter waagerecht wischen, eingeklappte Bereiche per Finger öffnen.
+
+**Prüfstand:** npm run check grün; simple-ui.e2e 2/2; volle Browserregression grün bis auf offline.e2e (schlägt auch auf main fehl). Abnahme START-10..12 durch Philipp offen.
+
+**Nachweise:** [tests/e2e/simple-ui.e2e.mjs](../tests/e2e/simple-ui.e2e.mjs) — Vier Hauptbereiche, Datei-Wege in Fußzeile, Projektschritte mit Kurzsatz, Bibliotheksgruppen, eingeklappte Sicherung (1400 und 390 px).
+
+**Dateiumfang:** `apps/web/src/app/nav.ts`, `apps/web/src/app/Shell.tsx`, `apps/web/src/app/CommandPalette.tsx`, `apps/web/src/app/More.tsx`, `apps/web/src/app/more.css`, `apps/web/src/styles/navGroups.css`, `apps/web/src/styles/map.css`, `apps/web/src/views/project/tabNames.ts`, `apps/web/src/views/project/tabs.ts`, `apps/web/src/views/project/ProjectView.tsx`, `apps/web/src/views/project/team/TeamTab.tsx`, `apps/web/src/views/ProjectsView.tsx`, `apps/web/src/views/BackupPanel.tsx`, `apps/web/src/views/LibraryView.tsx`, `apps/web/src/views/mod/ModView.tsx`, `apps/web/src/views/map/LiveGamePanel.tsx`, `apps/web/src/testing/testplan.ts`, `docs/architecture/planer/UI.md`, `tests/e2e/shell.e2e.mjs`, `tests/e2e/simple-ui.e2e.mjs`, `apps/web/src/styles/shell.css`, `docs/testing/TESTPLAN.md`, `tests/e2e/collections.e2e.mjs`, `tests/e2e/persistence.e2e.mjs`, `docs/TESTING.md`, `tests/e2e/backup-reminder.e2e.mjs`, `tests/e2e/start.mjs`, `tests/e2e/stability.e2e.mjs`, `docs/ROADMAP.md`. **Abhängigkeiten:** UI-02, GUIDE-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

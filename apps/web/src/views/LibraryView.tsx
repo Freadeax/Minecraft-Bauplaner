@@ -44,6 +44,7 @@ import { CollectionsPage } from './library/CollectionsPage';
 import { TemplatesPage } from './library/TemplatesPage';
 import { CollectionPicker } from './library/CollectionPicker';
 import './library/collections.css';
+import '../styles/navGroups.css';
 
 const size = (b: { min: readonly number[]; maxExclusive: readonly number[] }) => b.maxExclusive.map((n, i) => n - b.min[i]!).join(' × ');
 const SORTS = Object.keys(SORT_LABEL) as SortKey[];
@@ -320,23 +321,27 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
   const contributions = catalog.entries.filter(e => e.asset.demo && !e.asset.archived && isContributionId(e.asset.id)).length;
   const header = <header className="page-head library-head"><div><span className="eyebrow">BIBLIOTHEK</span><h1 className="page-title">Gebäude &amp; Bauteile</h1>
       <p className="muted">{catalog.entries.filter(e => e.asset.demo && !e.asset.archived).length} mitgelieferte Gebäudevorschläge{contributions ? ` (davon ${contributions} ${contributions === 1 ? 'Bibliotheksbeitrag' : 'Bibliotheksbeiträge'})` : ''} und deine eigenen Bauteile, mit Vorschau, berechneten Kennwerten und Bauplan.</p></div>
-    <div className="button-row"><button className="primary" disabled={busy} onClick={() => file.current?.click()}>＋ Schem / Litematic / JSON importieren</button>
+    <div className="button-row"><button className="secondary" disabled={busy} onClick={() => file.current?.click()} title="Eigene Schem-, Litematic- oder JSON-Datei als Bauteil übernehmen">＋ Schem / Litematic / JSON importieren</button>
       <input ref={file} className="file-input" type="file" aria-label="Bauteildatei" accept={IMPORT_ACCEPT}
         onChange={e => { const f = e.target.files?.[0]; if (f) void open(f); e.target.value = ''; }} />
       <a className="button" href="#/werkstatt/neu" title="Blockeditor: neues Bauteil Block für Block bauen">✎ Neues Bauteil bauen</a>
       </div>
     {job && <JobStatus title={job.title} progress={job.progress} onCancel={() => { abort.current?.abort(); abort.current = null; setBusy(false); setJob(null); say(job.title.includes('gespeichert') ? 'Speichern abgebrochen – nichts wurde gespeichert.' : 'Import abgebrochen.'); }} />}</header>
+  // UX-01: zehn Unterseiten in drei Gruppen – erst finden, dann nach Maß erzeugen, dann Größeres planen.
   const tabs = <nav className="lib-tabs" aria-label="Ansicht">
-    <a href={libHref('browse')} aria-current={page === 'browse' || page === 'building' ? 'page' : undefined}>Gebäude <small>{total}</small></a>
-    <a href={libHref('ensembles')} aria-current={page === 'ensembles' ? 'page' : undefined}>Ensembles <small>{ENSEMBLES.length}</small></a>
-    <a href={compare.ids.length ? libHref('compare', compare.ids.join(',')) : libHref('compare', '-')} aria-current={page === 'compare' ? 'page' : undefined}>Vergleich <small>{compare.ids.length}</small></a>
-    <a href={libHref('generators')} aria-current={page === 'generators' ? 'page' : undefined}>Generatoren <small>{GENERATORS.length}</small></a>
-    <a href={libHref('themes')} aria-current={page === 'themes' ? 'page' : undefined}>Bauwelten</a>
-    <a href={libHref('facilities')} aria-current={page === 'facilities' ? 'page' : undefined}>Anlagen <small>{ANLAGEN.length}</small></a>
-    <a href={libHref('base')} aria-current={page === 'base' ? 'page' : undefined}>Basisplaner</a>
-    <a href={libHref('grossprojekte')} aria-current={page === 'grossprojekte' ? 'page' : undefined}>Großprojekte <small>{GROSSPROJEKTE.length}</small></a>
-    <a href={libHref('collections')} aria-current={page === 'collections' ? 'page' : undefined}>Sammlungen <small>{userLib.collections.filter(c => !c.archived).length}</small></a>
-    <a href={libHref('templates')} aria-current={page === 'templates' ? 'page' : undefined}>Vorlagen <small>{userLib.templates.filter(t => !t.archived).length}</small></a>
+    <span className="lib-tab-group" role="group" aria-label="Finden" title="Fertige Gebäude suchen, merken und vergleichen"><span className="lib-tab-group-label" aria-hidden="true">Finden</span>
+      <a href={libHref('browse')} aria-current={page === 'browse' || page === 'building' ? 'page' : undefined}>Gebäude <small>{total}</small></a>
+      <a href={libHref('ensembles')} aria-current={page === 'ensembles' ? 'page' : undefined}>Ensembles <small>{ENSEMBLES.length}</small></a>
+      <a href={libHref('collections')} aria-current={page === 'collections' ? 'page' : undefined}>Sammlungen <small>{userLib.collections.filter(c => !c.archived).length}</small></a>
+      <a href={compare.ids.length ? libHref('compare', compare.ids.join(',')) : libHref('compare', '-')} aria-current={page === 'compare' ? 'page' : undefined}>Vergleich <small>{compare.ids.length}</small></a></span>
+    <span className="lib-tab-group" role="group" aria-label="Nach Maß" title="Bauwerke mit eigenen Maßen erzeugen"><span className="lib-tab-group-label" aria-hidden="true">Nach Maß</span>
+      <a href={libHref('generators')} aria-current={page === 'generators' ? 'page' : undefined}>Generatoren <small>{GENERATORS.length}</small></a>
+      <a href={libHref('templates')} aria-current={page === 'templates' ? 'page' : undefined}>Vorlagen <small>{userLib.templates.filter(t => !t.archived).length}</small></a></span>
+    <span className="lib-tab-group" role="group" aria-label="Größer planen" title="Ganze Basen, Anlagen und Großprojekte"><span className="lib-tab-group-label" aria-hidden="true">Größer planen</span>
+      <a href={libHref('grossprojekte')} aria-current={page === 'grossprojekte' ? 'page' : undefined}>Großprojekte <small>{GROSSPROJEKTE.length}</small></a>
+      <a href={libHref('base')} aria-current={page === 'base' ? 'page' : undefined}>Basisplaner</a>
+      <a href={libHref('facilities')} aria-current={page === 'facilities' ? 'page' : undefined}>Anlagen <small>{ANLAGEN.length}</small></a>
+      <a href={libHref('themes')} aria-current={page === 'themes' ? 'page' : undefined}>Bauwelten</a></span>
   </nav>;
   const notices = <>
     {message && <div className="notice" role="status">{message}{link && <a className="notice-link" href={link.href}>{link.label} →</a>}</div>}

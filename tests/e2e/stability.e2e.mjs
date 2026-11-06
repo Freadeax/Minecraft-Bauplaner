@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { openStorage } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -52,6 +53,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 400, height: 860
 test('Systemcheck: Auslieferung, Browser und Datencheck ohne Befund', async () => {
   const { p, errors, context } = await page();
   await p.goto(`${BASE}#/`);
+  await openStorage(p); // UX-01: Speicher & Sicherung ist eingeklappt
   await p.getByRole('link', { name: 'Datencheck' }).click();
   await p.getByRole('heading', { name: 'Läuft alles sauber?' }).waitFor();
   // Das Build-Manifest kommt per fetch nach; erst auf den Quellstand warten, dann lesen (nicht „Manifest wird geladen …“).

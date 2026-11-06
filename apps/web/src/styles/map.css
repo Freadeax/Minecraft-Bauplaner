@@ -188,3 +188,4 @@
 .world-share select{max-width:100%}
 .live-fallback{margin-top:8px}
 .live-fallback summary{font-size:12px}
+.live-help-steps{font-size:13px;margin:0 0 10px}.live-help-steps summary{cursor:pointer;color:var(--muted)}

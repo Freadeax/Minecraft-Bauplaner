@@ -60,13 +60,15 @@ export function LiveGamePanel({ game, actions }: { game: LiveGame; actions: Live
     {game.originProblem && <p className="notice warning" role="alert">{game.originProblem}</p>}
 
     {(game.phase === 'off' || game.phase === 'searching') && <div className="live-connect">
-      <p className="muted">Mit der Bauplaner-Mod (ab 0.5, nur auf deinem PC, der Server braucht nichts) siehst du deine Position, das Gelände um dich und den Baufortschritt des Hologramms live auf der Karte und schickst Pläne direkt ins Spiel.</p>
+      <p className="muted">Minecraft mit der <a href="#/mod">Bauplaner-Mod</a> starten, hier „Verbinden“ drücken und im Spiel <b>J</b> → „Planer zulassen“. Dann siehst du dich und das Gelände live und schickst Pläne direkt ins Spiel.</p>
+      {/* UX-01: die ausführlichen Schritte stehen eingeklappt, die Hauptaktion bleibt oben sichtbar. */}
+      <details className="live-help-steps"><summary>Schritt für Schritt</summary>
       <ol className="live-steps">
-        <li>Minecraft mit der Mod starten (<a href="#/mod">Mod herunterladen</a>) und eine Welt oder den Server betreten.</li>
+        <li>Minecraft mit der Mod starten (<a href="#/mod">Mod herunterladen</a>) und eine Welt oder den Server betreten. Der Server braucht nichts.</li>
         <li>Hier auf „Verbinden“ drücken. Fragt der Browser nach Zugriff auf Geräte im lokalen Netzwerk: „Zulassen“.</li>
         <li>Im Spiel <b>J</b> drücken und „Planer zulassen“ klicken (ab Mod 0.12, oben im Bild steht dann „J drücken“). Bei älteren Mods <code>/bauplaner verbinden</code> eingeben und den Code hier eintragen.</li>
         <li>Danach verbindet sich die Seite bei jedem Besuch von selbst.</li>
-      </ol>
+      </ol></details>
       <div className="button-row">
         {game.phase === 'searching'
           ? <><span className="live-wait" role="status">Suche die Mod auf diesem PC … läuft Minecraft mit der Bauplaner-Mod?</span>

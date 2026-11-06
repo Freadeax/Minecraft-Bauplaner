@@ -5,7 +5,7 @@ import { spawn } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { openSampleProject } from './start.mjs';
+import { openSampleProject, waitForStart, openStorage } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -36,12 +36,14 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     p.setDefaultTimeout(10_000);
     const errors = watch(p);
     await p.goto(BASE);
+    await waitForStart(p); await openStorage(p); // UX-01: Sicherung ist eingeklappt
     const status = p.getByRole('region', { name: 'Sicherungsstand' });
     await status.getByText('Noch nichts zu sichern.').waitFor();
     await openSampleProject(p);
     await p.waitForURL(/#\/projekt\//);
     await p.locator('.backup-chip[data-backup-state=never]').waitFor();
     await p.goto(BASE);
+    await waitForStart(p); await openStorage(p); // UX-01: Sicherung ist eingeklappt
 
     // Never backed up → due banner; the texts do not claim any copy outside the browser.
     const banner = p.getByRole('region', { name: 'Sicherungserinnerung' });
@@ -77,6 +79,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await p.waitForTimeout(400);
     await p.goto(BASE);
     await p.reload();
+    await waitForStart(p); await openStorage(p); // UX-01: Sicherung ist eingeklappt
     await status.locator('tr.cov-changed', { hasText: 'Burgmauer (Beispiel)' }).waitFor();
     await status.getByText(/1 Änderung seit der letzten Sicherung/).waitFor();
     await status.getByRole('button', { name: 'Sichern' }).first().click();

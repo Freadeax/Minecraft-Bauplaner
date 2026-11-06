@@ -7468,3 +7468,44 @@ Anleitung „Wie geh ich es an?“ (#/anleitung): sechs Wege nach Ziel, jeder Sc
 |---|---|---:|---|
 | GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
 
+## 2026-11-06T14:33:48.068Z · progress
+
+**Aufgaben:** UX-01
+
+Bedienung vereinfacht: Hauptnavigation auf Projekte, Bibliothek, Weltkarte, Spiel (+ Anleitung), Datei-Wege in Fußzeile/Schnellsuche; zwölf Projektreiter in vier Schritten mit Kurzsatz; Bibliothek in drei Gruppen; Sicherung, Datei-Notfallwege, ausführliche Mod-Anleitung, Spielverbindung und Team-Hintergrund eingeklappt; Mod-Seite und Team mit drei Schritten. Prüfung: npm run check, simple-ui.e2e 2/2, betroffene Browsertests 22/22; Abnahme START-10..12 offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| UX-01 | 🚧 In Arbeit | 5/6 | Philipps Abnahme START-10..12 im Browser und auf dem iPad; danach Werkstatt, Baustelle und Produktion auf Experten-Optionen prüfen. Optik übernimmt „Planer-Oberfläche schön neu gestalten“. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/CommandPalette.tsx`
+- `apps/web/src/app/More.tsx`
+- `apps/web/src/app/Shell.tsx`
+- `apps/web/src/app/more.css`
+- `apps/web/src/app/nav.ts`
+- `apps/web/src/styles/map.css`
+- `apps/web/src/styles/navGroups.css`
+- `apps/web/src/styles/shell.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/BackupPanel.tsx`
+- `apps/web/src/views/LibraryView.tsx`
+- `apps/web/src/views/ProjectsView.tsx`
+- `apps/web/src/views/map/LiveGamePanel.tsx`
+- `apps/web/src/views/mod/ModView.tsx`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `apps/web/src/views/project/tabNames.ts`
+- `apps/web/src/views/project/tabs.ts`
+- `apps/web/src/views/project/team/TeamTab.tsx`
+- `docs/TESTING.md`
+- `docs/architecture/planer/UI.md`
+- `docs/testing/TESTPLAN.md`
+- `tests/e2e/backup-reminder.e2e.mjs`
+- `tests/e2e/collections.e2e.mjs`
+- `tests/e2e/persistence.e2e.mjs`
+- `tests/e2e/shell.e2e.mjs`
+- `tests/e2e/simple-ui.e2e.mjs`
+- `tests/e2e/stability.e2e.mjs`
+- `tests/e2e/start.mjs`
+

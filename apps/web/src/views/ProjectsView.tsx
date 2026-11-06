@@ -10,6 +10,7 @@ import { Thumb } from '../thumbnail/Thumb';
 import { recordBackupReceipt, useBackupStatus } from '../app/backupStatus';
 import { BackupReminder, BackupStatusPanel } from './BackupPanel';
 import './project/updates.css';
+import { More } from '../app/More';
 import type { BackupFile } from '../../../../packages/domain/src/index.js';
 
 const mb = (n: number) => `${(n / 1_000_000).toLocaleString('de-DE', { maximumFractionDigits: 1 })} MB`;
@@ -172,8 +173,10 @@ export function ProjectsView() {
         <label>Name<input id="projekt-name" value={name} maxLength={120} onChange={e => setName(e.target.value)} placeholder="z. B. Hafenviertel" /></label>
         <button className="primary" type="submit">＋ Leeres Projekt anlegen</button>
         <button className="secondary" type="button" onClick={createSample}>Beispielprojekt „Burgmauer“</button>
-        <TeamOpen onMessage={setMessage} onDone={() => void load()} />
-        <a className="text-button" href="#/betrachter">Nur eine Datei ansehen →</a>
+        <More className="more-inline" title="Weitere Wege" hint="Dateien, nur im Notfall">
+          <TeamOpen onMessage={setMessage} onDone={() => void load()} />
+          <a className="text-button" href="#/betrachter">Nur eine Datei ansehen →</a>
+        </More>
       </form>
       {projects === null ? <p className="muted">Projekte werden geladen …</p> : projects.map(p => <article className="card project-card" key={p.id}>
         <a className="project-thumb" href={href({ view: 'project', projectId: p.id, tab: 'editor' })} tabIndex={-1} aria-hidden="true">
@@ -201,19 +204,21 @@ export function ProjectsView() {
           <div className="button-row"><button className="primary" disabled={missingMembers(e, byAsset).length > 0} onClick={() => void createFromEnsemble(e)}>Als Projekt anlegen</button>
             <a className="text-button" href={`#/bibliothek/ensembles/${e.id}`}>Ansehen →</a></div></div></article></li>)}</ul>
     </section>
-    <section className="storage-panel" aria-label="Speicher und Sicherung">
-      <div><span className="panel-kicker">SPEICHER & SICHERUNG</span>
-        <p className="muted">{repo.kind === 'indexeddb' ? 'IndexedDB in diesem Browser' : 'Sitzungsspeicher'}
-          {storage.usage !== undefined && ` · ${mb(storage.usage)} belegt${storage.quota ? ` von ${mb(storage.quota)}` : ''}`}
-          {storage.persisted !== undefined && (storage.persisted ? ' · vor Löschen geschützt' : ' · Browser darf bei Platzmangel löschen')}</p></div>
-      <div className="button-row">
-        {repo.kind === 'indexeddb' && storage.persisted === false && <button onClick={() => void persist()}>Dauerhaft speichern anfragen</button>}
-        <button onClick={() => void backup('all')} disabled={busy || !projects}>Alles sichern</button>
-        <label className="file-button">Sicherung wiederherstellen …<input ref={restoreInput} type="file" accept=".json,application/json" disabled={busy}
-          onChange={e => { const f = e.target.files?.[0]; if (f) void openBackup(f); }} /></label>
-        <a href="#/system">Datencheck</a>
-      </div>
-      <BackupStatusPanel state={backupState} busy={busy} onBackupProject={id => { const p = projects?.find(x => x.id === id); if (p) void backup('project', p); }} />
-    </section>
+    <More className="storage-more" title="Speicher & Sicherung" hint={backupState.status?.headline ?? 'Sicherungsdatei, Wiederherstellen, Datencheck'} open={backupState.status?.level === 'due'}>
+      <section className="storage-panel" aria-label="Speicher und Sicherung">
+        <div><span className="panel-kicker">SPEICHER & SICHERUNG</span>
+          <p className="muted">{repo.kind === 'indexeddb' ? 'IndexedDB in diesem Browser' : 'Sitzungsspeicher'}
+            {storage.usage !== undefined && ` · ${mb(storage.usage)} belegt${storage.quota ? ` von ${mb(storage.quota)}` : ''}`}
+            {storage.persisted !== undefined && (storage.persisted ? ' · vor Löschen geschützt' : ' · Browser darf bei Platzmangel löschen')}</p></div>
+        <div className="button-row">
+          {repo.kind === 'indexeddb' && storage.persisted === false && <button onClick={() => void persist()}>Dauerhaft speichern anfragen</button>}
+          <button onClick={() => void backup('all')} disabled={busy || !projects}>Alles sichern</button>
+          <label className="file-button">Sicherung wiederherstellen …<input ref={restoreInput} type="file" accept=".json,application/json" disabled={busy}
+            onChange={e => { const f = e.target.files?.[0]; if (f) void openBackup(f); }} /></label>
+          <a href="#/system">Datencheck</a>
+        </div>
+        <BackupStatusPanel state={backupState} busy={busy} onBackupProject={id => { const p = projects?.find(x => x.id === id); if (p) void backup('project', p); }} />
+      </section>
+    </More>
   </div>;
 }

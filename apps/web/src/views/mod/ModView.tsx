@@ -4,6 +4,7 @@ import releasesData from './releases.json';
 import { buildsFor, checkJarBytes, INSTALL_HINT, LOADER_LABEL, loadersFor, minecraftVersions, parseSelectionSearch, PLANNED_LOADERS, releasesFor, resolveSelection, selectionSearch, targetOf, versionsOf } from './releases';
 import type { ModRelease, Selection, Target } from './releases';
 import { formatNumber } from '../../app/ui';
+import { More } from '../../app/More';
 import { ServerPanel } from './ServerPanel';
 import { INSTALL_CHECKS, LAUNCHERS, LAUNCHER_LABEL, MODRINTH_PAGE, installGuide, stepParts } from './installGuide';
 import type { LauncherId } from './installGuide';
@@ -122,6 +123,15 @@ export function ModView({ search }: { search?: string | undefined }) {
       </button>}
     </div>
 
+    {!server && <section className="system-card system-wide mod-quick" aria-labelledby="mod-quick">
+      <h2 id="mod-quick">So geht's in drei Schritten</h2>
+      <ol className="mod-steps mod-quick-steps">
+        <li><b>Mod holen:</b> in der Modrinth App „Bauplaner Bridge“ suchen und installieren – oder unten die passende Datei laden.</li>
+        <li><b>Verbinden:</b> Minecraft starten, <b>J</b> drücken und „Planer zulassen“ klicken.</li>
+        <li><b>Plan ins Spiel:</b> auf der <a href="#/karte">Weltkarte</a> „▶ Ins Spiel senden“ – der Plan erscheint als Hologramm.</li>
+      </ol>
+    </section>}
+
     <ServerPanel search={search} />
 
     {!selection ? <div className="notice warning" role="alert">Noch keine Mod-Version bereitgestellt.</div> : <div className="system-grid">
@@ -177,7 +187,7 @@ export function ModView({ search }: { search?: string | undefined }) {
         <li><code>/bauplaner scan</code> liest die ganze Planbox, auch ohne dass jemand in der Nähe ist: vorhandene Chunks werden kurz nachgeladen, nie erzeugtes Gelände wird nicht erzeugt. Der Planer holt sie per Klick über die Mod oder den Team-Raum („⟳ Baustand holen“); die Datei in <code>plugins/BauplanerBridge/scans/</code> braucht nur der Notfall ohne Internet.</li>
       </ol>
       <p className="muted">Weitere Befehle: <code>/bauplaner status</code>, <code>/bauplaner abbrechen</code>, <code>/bauplaner plaene</code>, <code>/bauplaner scan geladen</code> (nur geladene Chunks). Rechte: <code>bauplaner.use</code> (alle), <code>bauplaner.nachladen</code> und <code>bauplaner.abbrechen.alle</code> (Operatoren). Einstellungen in <code>plugins/BauplanerBridge/config.yml</code>.</p>
-    </section> : <section className="system-card system-wide" aria-labelledby="mod-install">
+    </section> : <More title="Ausführliche Anleitung" hint="Plan setzen, Tasten im Spiel, Baustand vergleichen"><section className="system-card system-wide" aria-labelledby="mod-install">
       <h2 id="mod-install">In dein Profil installieren und benutzen</h2>
       <ol className="mod-steps">
         <li>{selection ? <>Mod in dein Profil bringen: Schritte für deinen Launcher stehen unten unter „Installieren mit deinem Launcher“. Kurz: <code>.jar</code> in den Ordner <code>mods</code> des {LOADER_LABEL[selection.loader] ?? selection.loader}-Profils legen.</> : INSTALL_HINT.fabric}</li>
@@ -187,11 +197,12 @@ export function ModView({ search }: { search?: string | undefined }) {
         <li>Für den Vergleich auf der Website: im Projekt unter „Bauen“ „⟳ Baustand holen (bester Weg)“ – die Mod liest den Bau und schickt ihn direkt an den Planer. Nur ohne Verbindung: <code>/bauplaner scan</code> und „Notfall: Aufnahme-Datei“.</li>
       </ol>
       <p className="muted">Läuft nur auf deinem Rechner, auch auf fremden Servern ohne Plugin. Alle Tasten unter Optionen → Steuerung → „Bauplaner“.</p>
-    </section>}
+    </section></More>}
 
     {!server && selection && build && <LauncherGuide loader={selection.loader} minecraft={selection.minecraft} file={build.file} />}
 
-    {!server && <section className="system-card system-wide" aria-labelledby="mod-live">
+    {!server && <More title="Mehr wissen" hint="Live-Karte im Detail und gemeinsames Bauen im Spiel">
+      <section className="system-card system-wide" aria-labelledby="mod-live">
       <h2 id="mod-live">Mit dem Spiel verbinden (Live-Karte, ab Mod 0.5)</h2>
       <p>Die Weltkarte zeigt dann deine Position, das Gelände um dich und den Baufortschritt des Hologramms live. Pläne schickst du mit einem Klick ins Spiel, ohne Dateien zu kopieren, und Bauplätze, Wege und Punkte aus dem Weltplan erscheinen im Spiel als Linien.</p>
       <ol className="mod-steps">
@@ -200,9 +211,9 @@ export function ModView({ search }: { search?: string | undefined }) {
         <li>Im Spiel <b>J</b> drücken und „Planer zulassen“ klicken (ab Mod 0.12; ältere Mods: <code>/bauplaner verbinden</code> und den Code eintragen).</li>
       </ol>
       <p className="muted">Die Verbindung läuft nur zwischen diesem Browser und deinem Minecraft auf demselben Computer (127.0.0.1), nichts geht an den Server, die Welt wird nie verändert. Nur diese Website darf die Mod abfragen. <code>/bauplaner verbinden status</code> zeigt den Stand, <code>/bauplaner verbinden aus</code> trennt alle Browser.</p>
-    </section>}
+      </section>
 
-    {!server && <section className="system-card system-wide" aria-labelledby="mod-team">
+      <section className="system-card system-wide" aria-labelledby="mod-team">
       <h2 id="mod-team">Gemeinsam bauen im Spiel (ab Mod 0.10.0)</h2>
       <p>Mit einem Team im Projekt (Reiter „Team“) zeigt das Hologramm die Bauabschnitte in der Farbe ihres Inhabers, rechts unten steht dein Auftrag mit Fortschritt. Übernehmen, fertig melden, Notizen und Lieferungen gehen direkt aus dem Spiel.</p>
       <ol className="mod-steps">
@@ -211,6 +222,7 @@ export function ModView({ search }: { search?: string | undefined }) {
         <li>Läuft auf dem Server das Bauplaner-Plugin, fragt das Spiel einmal: <b>J</b> → „Teambau erlauben“. Dann kommen die Meldungen aller Mitspieler live an und die Bauleitung kann den Planstand vom Planer aus auf den Server legen.</li>
       </ol>
       <p className="muted">Ohne „Teambau erlauben“ sendet die Mod nichts an den Server, auch wenn er das Plugin hat. Deine Meldungen warten dann im Ausgangskorb, bis der Planer sie beim nächsten Abgleich abholt (<code>/bauplaner team korb</code>). <code>/bauplaner team verbieten</code> schaltet den Kanal für diesen Server wieder ab. Ab Mod 0.11.0 gehen alle diese Befehle, auch die des Server-Plugins für Lager und Nachweis, per Klick: im Plan-Menü (J) unten links „Befehle &amp; Status“. Mit NeoForge nennt der Client beim Verbinden die Namen aller optionalen Kanäle seiner Mods, auch <code>bauplaner:team</code>. Das ist Teil der Verbindungsaushandlung von NeoForge, dabei wird kein Teampaket gesendet.</p>
-    </section>}
+      </section>
+    </More>}
   </div>;
 }

@@ -3,7 +3,7 @@ import { lazyPage } from '../../app/lazyPage';
 import type { ProjectSession } from './session';
 
 import { projectTabNames } from './tabNames';
-import type { ProjectTabId } from './tabNames';
+import type { ProjectTabGroupId, ProjectTabId } from './tabNames';
 
 /**
  * Registry of project sub-pages (#/projekt/<id>/<id>). Each feature block adds
@@ -13,6 +13,9 @@ import type { ProjectTabId } from './tabNames';
 export interface ProjectTab {
   readonly id: string;
   readonly label: string;
+  /** Schritt in der Reiterleiste (UX-01) und Kurzsatz unter der Leiste. */
+  readonly group: ProjectTabGroupId;
+  readonly hint: string;
   readonly component: TabComponent;
 }
 

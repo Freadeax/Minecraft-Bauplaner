@@ -1074,3 +1074,9 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Browser: neu `tests/e2e/anleitung.e2e.mjs` 2/2 (Einstieg aus der Projektzentrale, sechs Wege, Grafik je Schritt, ohne Projekt zur Projektzentrale, mit Beispielprojekt in dessen Reiter „Gelände“, Voraussetzung wechselt den Weg, Tastenkappe J, Haken nach Neuladen, Schnellsuche; Handy 390 px ohne Überhang). `shell.e2e.mjs` 5/5 mit siebtem Navigationseintrag: Kopfzeile 1920–761 px ohne Überbreite (Anleitung unter 1600 px als ?-Symbol).
 - Voller Browserlauf: 188 Tests, 187 grün; der Ausfall war der neue Test (Schnellsuche unter Last vor dem Öffnen getippt), wartet jetzt auf den Dialog, danach 3/3 grün.
 - Nicht automatisch geprüft: iPad/Safari, Verständlichkeit der Sätze (Abnahme START-08/09 offen).
+
+## UX-01 · Bedienung des Planers vereinfachen · 06.11.2026 · Claude
+- `npm run check` grün; neu `tests/e2e/simple-ui.e2e.mjs` 2/2 (1400 und 390 px: vier Hauptbereiche plus Anleitung, Datei-Wege in der Fußzeile, Sicherung und Datei-Notfallwege eingeklappt, zwölf Projektreiter in vier Schritten mit Kurzsatz, Bibliothek in drei Gruppen, Mod-Seite mit drei Schritten und eingeklapptem Hintergrund, keine Überbreite).
+- Angepasst, weil „Speicher & Sicherung“ jetzt eingeklappt ist (Helfer `openStorage` in `tests/e2e/start.mjs`): `backup-reminder`, `collections`, `persistence`, `stability`; `shell.e2e.mjs` zählt 5 Hauptlinks.
+- Voller Browserlauf vor dem Rebase in fünf Teilen: alles grün bis auf `offline.e2e.mjs` „alte Programmdateien fallen weg“ – schlägt auf unverändertem main (de68c45) genauso fehl, nicht von UX-01 verursacht.
+- Nicht automatisch geprüft: iPad/Safari und Verständlichkeit (Abnahme START-10..12 offen).

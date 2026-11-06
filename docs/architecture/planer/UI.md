@@ -60,3 +60,16 @@ Seite `#/anleitung[?weg=<id>&schritt=<n>]`, Hauptnavigation „Anleitung“ (unt
 - **Grafik:** `GuideArt.tsx` zeichnet je Szene ein kleines SVG mit Theme-Tokens (Planer-Fenster, Spielwelt mit pulsierenden Geisterblöcken, Launcher mit Startknopf) plus Symbol aus `icons.tsx` (`iconPath`). Bewegung nur ohne `prefers-reduced-motion`.
 - **Fortschritt:** Haken „erledigt“ in `localStorage` (`bauplaner.anleitung.erledigt`), nur Komfort, nicht in Sicherungen. Der erste offene Schritt ist markiert (`aria-current=step`).
 - **Neuer Schritt:** Eintrag in `GUIDE_PATHS` anhängen; neuer Weg zusätzlich in `GUIDE_ORDER`. Tests: `tests/unit/web/guide.test.mjs`, `tests/e2e/anleitung.e2e.mjs`, Testfälle START-08/09.
+
+## Einfache Bedienung (UX-01) · 06.11.2026
+
+Philipp: „Komplexität … also die Nutzerbedienung nicht das System dahinter vereinfachen“. Regeln für neue Oberflächen:
+
+- **Vier Hauptbereiche** in `app/nav.ts` (`mainNav`): Projekte, Bibliothek, Weltkarte, Spiel. Datei-Wege (Betrachter, Weltimport aus Regionsdateien) stehen in `fileTools` und erscheinen nur in Fußzeile und Schnellsuche (Regel „nur Internet“). Ein neuer Hauptbereich braucht einen guten Grund; Unterseiten gehören in einen bestehenden Bereich.
+- **Projektreiter in vier Schritten** (`views/project/tabNames.ts`): `projectTabGroups` Gestalten → Bauen → Organisieren → Teilen; jeder Reiter hat `group` und einen Kurzsatz `hint`, der unter der Leiste steht (`.tab-hint`) und in der Schnellsuche erscheint. Ids, Beschriftungen und Routen bleiben stabil. Neuer Reiter = Eintrag mit Gruppe und Satz.
+- **Bibliothek**: Unterseiten in drei Gruppen „Finden“, „Nach Maß“, „Größer planen“ (`.lib-tab-group`); der Datei-Import ist kein Hauptknopf mehr.
+- **Eingeklappt mit `<More title hint>`** (`app/More.tsx`): Experten-Optionen, Hintergrundwissen und Datei-Notfallwege. Jede Seite zeigt zuerst ihre Hauptaktion. Bisher: Speicher & Sicherung (öffnet sich selbst, wenn eine Sicherung fällig ist), „Weitere Wege“ beim neuen Projekt, ausführliche Mod-Anleitung und „Mehr wissen“ auf der Mod-Seite, „Mehr zu Mod und Server“ im Team, „Schritt für Schritt“ bei der Spielverbindung der Weltkarte.
+- **Kurze Einstiege**: Mod-Seite „So geht's in drei Schritten“, Team gründen in drei Schritten.
+- Optik (Farben, Abstände, Animation) gehört dem Design-System; diese Klassen nutzen nur Theme-Tokens.
+
+Prüfung: `tests/e2e/simple-ui.e2e.mjs` (1400 und 390 px), `tests/e2e/shell.e2e.mjs`; Testphase START-10..12.
