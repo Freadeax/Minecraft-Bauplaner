@@ -1,0 +1,36 @@
+/* UX-02: Schnitt, Geistermodus, Kameras und Hinweis der Ersatzansicht in der 3D-Ansicht. */
+.cut-panel { position: absolute; top: 48px; left: 8px; z-index: 3; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; max-width: calc(100% - 16px);
+  padding: 6px 8px; border: 1px solid #39505d; border-radius: 8px; background: #10222ef2; color: #c6d5db; font-size: 12px; }
+.cut-panel .seg { display: flex; border: 1px solid #39505d; border-radius: 5px; overflow: hidden; }
+.cut-panel button { background: #152c38; border: 1px solid #39505d; border-radius: 5px; font-size: 12px; padding: 5px 8px; color: #c6d5db; min-height: 30px; }
+.cut-panel .seg button { border: 0; border-radius: 0; min-width: 32px; }
+.cut-panel button[aria-pressed=true] { background: #2f504b; color: #8ff0c8; }
+.cut-panel input[type=range] { width: min(220px, 40vw); accent-color: #8ff0c8; }
+.cut-panel output { min-width: 64px; font-variant-numeric: tabular-nums; }
+.cut-note { color: #a5bac5; width: 100%; }
+.cut-panel :is(button, input):focus-visible { outline: 2px solid #8ff0c8; outline-offset: 2px; }
+/* Ersatzansicht ohne WebGL: unten links statt über der Werkzeugleiste, mit „Was tun?“. */
+.render-mode.software-note { top: auto; bottom: 8px; left: 8px; transform: none; white-space: normal; max-width: min(420px, calc(100% - 16px)); pointer-events: auto; display: grid; gap: 2px; }
+.render-mode.software-note .fix-help { margin: 0; font-size: 12px; }
+.render-mode.software-note .fix-help > summary { color: #8ff0c8; min-height: 28px; }
+.render-mode.software-note .fix-help > div { color: #dfe8eb; }
+.camera-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.camera-list li { display: flex; gap: 4px; }
+.camera-list li button:first-child { flex: 1; text-align: left; }
+.camera-panel button { background: #152c38; border: 1px solid #39505d; border-radius: 5px; color: #c6d5db; padding: 6px 8px; min-height: 32px; font-size: 12px; }
+.camera-remove { flex: none; width: 32px; }
+.camera-save { display: flex; gap: 6px; flex-wrap: wrap; }
+.camera-save input { flex: 1; min-width: 120px; min-height: 32px; }
+@media (max-width: 650px) { .cut-panel { top: auto; bottom: 48px; } .cut-panel button span { display: none; } }
+@media (pointer: coarse) { .cut-panel button, .camera-panel button { min-height: 40px; min-width: 40px; } }
+/* 2D-Schichtplan als Alternative zum 3D-Bild. */
+.plan2d { display: flex; flex-direction: column; gap: 8px; padding: 10px; min-height: 360px; color: #c6d5db; font-size: 13px; }
+.plan2d-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.plan2d-bar input[type=range] { width: min(260px, 50vw); accent-color: #8ff0c8; vertical-align: middle; }
+.plan2d-bar button { min-width: 36px; min-height: 36px; }
+.plan2d-scroll { overflow: auto; max-height: 70vh; }
+.plan2d canvas { display: block; image-rendering: pixelated; cursor: crosshair; }
+.plan2d canvas:focus-visible { outline: 2px solid #8ff0c8; outline-offset: 2px; }
+.plan2d-status { margin: 0; font-variant-numeric: tabular-nums; }
+/* Mit offener Schnittleiste rutschen die Kennzahlen darunter. */
+.scene:has(.cut-panel) .viewer-hud { top: 104px; }

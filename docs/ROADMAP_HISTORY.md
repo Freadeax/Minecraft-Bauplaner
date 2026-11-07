@@ -810,3 +810,53 @@ Auf main 49daa6f: Mod/Plugin 0.28.0 im Download, Fortschrittsnachweis vervollst�
 
 - `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
 
+## 2026-11-07T20:35:12.255Z · progress
+
+**Aufgaben:** UX-02
+
+Startseite mit drei Einstiegen (fortsetzen, Bauwerk wählen, Datei ansehen/importieren) und geführter Tour mit der Burgmauer; Projekt in drei Ansichten Entwerfen/Bauen/Verwalten mit Kurzlinks und neuer Übersicht (letzter Stand, Offenes, nächster Bauabschnitt); Editor und Blockwerkstatt mit einklappbaren Leisten, Vollbild, Inspektor in Abschnitten, 2D-Schichtplan; 3D-Ansicht mit freiem Schnitt, Geistermodus und gespeicherten Kameras; Ersatzansicht-Hinweis unten mit Hilfe; „Was tun?“ an Fehlern. npm run check grün, workspace.e2e 5/5, Browserregression 241/242 (team-room.e2e wackelt auch auf main).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| UX-02 | 🧩 Implementiert · Abnahme offen | 5/5 | Abnahme START-10/11 im Browser und GERAET-04 auf dem iPad (Philipp). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/FixHelp.tsx`
+- `apps/web/src/app/fixHelp.css`
+- `apps/web/src/app/fixHelpText.ts`
+- `apps/web/src/app/icons.tsx`
+- `apps/web/src/app/workspaceLayout.css`
+- `apps/web/src/app/workspaceLayout.tsx`
+- `apps/web/src/editor/BlockEditor.tsx`
+- `apps/web/src/schem/SchemView.tsx`
+- `apps/web/src/styles/navGroups.css`
+- `apps/web/src/styles/start.css`
+- `apps/web/src/styles/style.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/theme/design.css`
+- `apps/web/src/viewer/CameraMenu.tsx`
+- `apps/web/src/viewer/PlanView2D.tsx`
+- `apps/web/src/viewer/ThreeViewer.tsx`
+- `apps/web/src/viewer/sceneController.ts`
+- `apps/web/src/viewer/types.ts`
+- `apps/web/src/viewer/viewTools.css`
+- `apps/web/src/viewer/viewTools.ts`
+- `apps/web/src/views/LibraryView.tsx`
+- `apps/web/src/views/ProjectsView.tsx`
+- `apps/web/src/views/project/EditorTab.tsx`
+- `apps/web/src/views/project/InspectorSection.tsx`
+- `apps/web/src/views/project/OverviewTab.tsx`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `apps/web/src/views/project/Tour.tsx`
+- `apps/web/src/views/project/overview.css`
+- `apps/web/src/views/project/tabNames.ts`
+- `apps/web/src/views/project/tabs.ts`
+- `apps/web/src/views/project/tour.css`
+- `docs/TESTING.md`
+- `docs/architecture/planer/UI.md`
+- `docs/testing/TESTPLAN.md`
+- `tests/e2e/simple-ui.e2e.mjs`
+- `tests/e2e/workspace.e2e.mjs`
+- `tests/unit/web/view-tools.test.mjs`
+

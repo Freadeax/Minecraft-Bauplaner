@@ -1,0 +1,9 @@
+/* UX-02: „Was tun?“ direkt an Fehlermeldungen. */
+.fix-help { margin-top: 6px; font-size: 13px; }
+.fix-help > summary { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; color: var(--mint); font-weight: 600; list-style: none; }
+.fix-help > summary::-webkit-details-marker { display: none; }
+.fix-help > summary::before { content: '?'; display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; border: 1px solid currentColor; font-size: 11px; }
+.fix-help > summary:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; border-radius: 4px; }
+.fix-help > div { margin-top: 4px; padding: 8px 12px; border-left: 2px solid var(--mint); color: var(--text); }
+.fix-help ol { margin: 4px 0; padding-left: 18px; }
+.fix-help li + li { margin-top: 2px; }

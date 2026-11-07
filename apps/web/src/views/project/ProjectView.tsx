@@ -1,7 +1,9 @@
 import { Suspense, useEffect, useMemo, useRef } from 'react';
-import { href } from '../../app/router';
+import { href, navigate } from '../../app/router';
 import { projectTabs } from './tabs';
-import { projectTabGroups } from './tabNames';
+import { groupEntry, projectTabGroups, rememberTab } from './tabNames';
+import { Tour } from './Tour';
+import { FixHelp } from '../../app/FixHelp';
 import { useProjectSession } from './session';
 import type { ProjectSession } from './session';
 import { useApp } from '../../app/context';
@@ -54,6 +56,7 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
       return { ...p, site: { ...site, team: team as TeamState } };
     });
   }, mySection);
+  useEffect(() => { if (active) rememberTab(projectId, active.id); }, [projectId, active]);
   useDocumentTitle(session ? `${session.project.name}${active && active.id !== 'editor' ? ` · ${active.label}` : ''}` : 'Projekt');
   if (loadError) return <div className="page"><div className="notice warning" role="alert"><strong>Projekt nicht geladen</strong><p>{loadError}</p><a href="#/">Zur Projektzentrale</a></div></div>;
   if (!session) return <div className="loading" role="status">Projekt wird geladen …</div>;
@@ -67,14 +70,21 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
       </div>
       <span className={`save-state ${session.saveState}`} role="status" title={session.saveError || 'Gespeichert wird in diesem Browser (IndexedDB). Eine Kopie außerhalb gibt es nur als Sicherungsdatei.'}>
         {repo.kind === 'memory' && session.saveState === 'saved' ? 'nur in dieser Sitzung' : saveLabel[session.saveState]}</span>
-      <nav className="tabs tab-groups" aria-label="Projektbereiche" ref={tabBar}>{projectTabGroups.map((g, i) =>
-        <div key={g.id} className="tab-group" role="group" aria-label={`Schritt ${i + 1}: ${g.label}`} title={g.hint} data-group={g.id}
-          data-active={active?.group === g.id ? '' : undefined}>
-          <span className="tab-group-label" aria-hidden="true"><b>{i + 1}</b>{g.label}</span>
-          {projectTabs.filter(t => t.group === g.id).map(t =>
-            <a key={t.id} href={href({ view: 'project', projectId, tab: t.id })} title={t.hint} aria-current={t.id === tab ? 'page' : undefined}><Icon name={tabIcon(t.id)} size={16} />{t.label}</a>)}
-        </div>)}</nav>
-      {active && <p className="tab-hint" data-tab-hint={active.id}>{active.hint}</p>}
+      <nav className="tabs view-groups" aria-label="Projektbereiche" ref={tabBar}>{projectTabGroups.map(g => {
+        const on = active?.group === g.id;
+        return <div key={g.id} className="view-group" role="group" aria-label={`Ansicht ${g.label}`} data-group={g.id} data-active={on ? '' : undefined}>
+          <button type="button" className="view-switch" aria-pressed={on} title={g.hint}
+            onClick={() => navigate({ view: 'project', projectId, tab: groupEntry(projectId, g.id) })}>{g.label}</button>
+          <span className="view-tabs">{projectTabs.filter(t => t.group === g.id).map(t =>
+            <a key={t.id} href={href({ view: 'project', projectId, tab: t.id })} title={on ? t.hint : `${t.label}: ${t.hint}`} aria-current={t.id === tab ? 'page' : undefined}
+              data-tab={t.id}><Icon name={tabIcon(t.id)} size={16} /><span className="tab-label">{t.label}</span></a>)}</span>
+        </div>;
+      })}</nav>
+      {active && <p className="tab-hint" data-tab-hint={active.id}>{active.hint}
+        {/* Kurzlinks wiederholen Reiter der Leiste für Maus und Finger; für Screenreader und Tab-Taste genügt die Leiste. */}
+        {active.related.length > 0 && <span className="tab-related" aria-hidden="true"> Passt dazu: {active.related.map((id, i) => {
+          const r = projectTabs.find(t => t.id === id); return r && <span key={id}>{i > 0 && ' · '}<a href={href({ view: 'project', projectId, tab: id })} data-related={id} tabIndex={-1}>{r.label}</a></span>;
+        })}</span>}</p>}
     </header>
     {session.computationState !== 'ready' && <section className={`notice ${session.computationState === 'error' ? 'warning' : ''}`}
       aria-label="Projektberechnung" role={session.computationState === 'error' ? 'alert' : 'status'}>
@@ -82,13 +92,15 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
       {session.computationError && <p>{session.computationError}</p>}
       {session.computationState === 'pending' ? <button onClick={session.cancelComputation}>Berechnung abbrechen</button>
         : <button onClick={session.retryComputation}>Neu berechnen</button>}
+      {session.computationState !== 'pending' && <FixHelp topic={session.computationState === 'error' ? 'resolve' : 'computation'} />}
     </section>}
     {(session.saveState === 'conflict' || session.saveState === 'error') && <div className="notice warning" role="alert">
       <strong>{session.saveState === 'conflict' ? 'Gespeicherter Stand wurde zwischenzeitlich geändert.' : 'Speichern fehlgeschlagen.'}</strong>
       <p>{session.saveError} Deine letzte Änderung ist nur in diesem Tab sichtbar und nicht gespeichert.</p>
-      <button onClick={() => void session.reload()}>Gespeicherten Stand laden</button></div>}
+      <button onClick={() => void session.reload()}>Gespeicherten Stand laden</button><FixHelp topic="save" /></div>}
     {active ? <Suspense key={active.id} fallback={<div className="loading" role="status" data-page-loading="">Bereich wird geladen …</div>}><active.component session={session} /></Suspense> : <div className="notice" role="alert">Unbekannter Projektbereich „{tab}“.</div>}
     <TeamNews project={session.project} />
+    <Tour projectId={projectId} tab={tab} />
   </div></TeamRoomContext.Provider>;
 }
 

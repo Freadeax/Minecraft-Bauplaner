@@ -27,6 +27,8 @@ const PATHS = {
   guide: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM9.5 9.2a2.6 2.6 0 0 1 5 .8c0 1.8-2.5 2.2-2.5 3.8M12 17h.01',
   link: 'M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1',
   check: 'M4 12.5 9.5 18 20 6',
+  overview: 'M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z',
+  production: 'M3 21V11l5 3V11l5 3V8l8 4v9zM3 21h18M7 17h2M12 17h2M17 17h2',
   hologram: 'M12 3l8 4.5v9L12 21l-8-4.5v-9zM4 7.5l8 4.5 8-4.5M12 12v9M8 5.2v9M16 5.2v9',
 } as const;
 
@@ -42,6 +44,6 @@ export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
 
 /** Symbol je Projektbereich (tabs.ts); unbekannte Bereiche bekommen ein neutrales Blatt. */
 export function tabIcon(id: string): IconName {
-  const known: Record<string, IconName> = { editor: 'editor', bauen: 'build', export: 'export', material: 'material', baustelle: 'site', planung: 'site', karte: 'map', bloecke: 'building', gelaende: 'terrain', landschaft: 'terrain', updates: 'update', team: 'team' };
+  const known: Record<string, IconName> = { editor: 'editor', bauen: 'build', export: 'export', material: 'material', baustelle: 'site', planung: 'site', karte: 'map', bloecke: 'building', gelaende: 'terrain', landschaft: 'terrain', updates: 'update', team: 'team', uebersicht: 'overview', produktion: 'production' };
   return known[id] ?? 'page';
 }

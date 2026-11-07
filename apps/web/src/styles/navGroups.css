@@ -1,21 +1,28 @@
-/* UX-01: gruppierte Reiterleisten – Projekt (vier Schritte) und Bibliothek (drei Gruppen).
+/* UX-02: Projektreiter in drei Hauptansichten Entwerfen → Bauen → Verwalten. Die aktive Ansicht zeigt ihre
+   Reiter mit Namen, die anderen nur als Symbole (Name bleibt für Screenreader und als Tooltip).
    Nur Struktur und Abstände; Farben ausschließlich über Theme-Tokens. */
-.project-head .tab-groups { display: flex; flex-wrap: wrap; align-items: stretch; gap: 4px 0; }
-.tab-group { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; padding: 0 8px; }
-.tab-group + .tab-group { border-left: 1px solid var(--line); }
-.tab-group-label { display: inline-flex; align-items: center; gap: 6px; padding: 0 6px 0 2px; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
-.tab-group-label b { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--line); font-size: 10px; letter-spacing: 0; }
-.tab-group[data-active] .tab-group-label { color: var(--text); }
-.tab-group[data-active] .tab-group-label b { border-color: currentColor; }
-.project-head .tab-groups a { padding: 9px 12px; }
+.project-head .view-groups { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 0; }
+.view-group { display: flex; align-items: center; gap: 4px; padding: 0 8px; }
+.view-group + .view-group { border-left: 1px solid var(--line); }
+.view-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; }
+.view-switch { min-height: 36px; padding: 6px 12px; border-radius: var(--r-md, 8px); white-space: nowrap; cursor: pointer; }
+.view-switch:focus-visible, .view-tabs a:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+.project-head .view-groups a { padding: 9px 12px; }
+/* Andere Ansichten: nur Symbol, gut treffbar (≥ 40 px). */
+.view-group:not([data-active]) .view-tabs a { padding: 9px; min-width: 40px; justify-content: center; }
+.view-group:not([data-active]) .tab-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .tab-hint { grid-column: 1 / -1; margin: -4px 0 0; font-size: 13px; color: var(--muted); }
+.tab-related { margin-left: 6px; white-space: nowrap; }
+.tab-related a { color: var(--mint); text-decoration: underline; text-underline-offset: 2px; }
 
 @media (max-width: 760px) {
-  /* Handy/iPad hochkant: eine waagerecht scrollbare Zeile, Schritte bleiben als Trenner sichtbar. */
-  .project-head .tab-groups { flex-wrap: nowrap; }
-  .tab-group { flex-wrap: nowrap; padding: 0 4px; }
-  .tab-group-label { padding: 0 4px; }
+  /* Handy/iPad hochkant: jede Ansicht in eigener Zeile, Reiter brechen um – nichts verschwindet seitlich. */
+  .project-head .view-groups { flex-direction: column; align-items: stretch; overflow: visible; }
+  .view-group { flex-wrap: wrap; padding: 4px 2px; }
+  .view-group + .view-group { border-left: 0; border-top: 1px solid var(--line); }
+  .view-switch { min-width: 112px; text-align: left; }
   .tab-hint { font-size: 12px; margin: 0; }
+  .tab-related { display: block; margin: 2px 0 0; white-space: normal; }
 }
 
 /* Bibliothek: Unterseiten in Gruppen „Finden“, „Nach Maß“, „Größer planen“. */

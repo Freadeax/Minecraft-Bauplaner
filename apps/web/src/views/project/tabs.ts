@@ -13,9 +13,11 @@ import type { ProjectTabGroupId, ProjectTabId } from './tabNames';
 export interface ProjectTab {
   readonly id: string;
   readonly label: string;
-  /** Schritt in der Reiterleiste (UX-01) und Kurzsatz unter der Leiste. */
+  /** Hauptansicht in der Reiterleiste (UX-02) und Kurzsatz unter der Leiste. */
   readonly group: ProjectTabGroupId;
   readonly hint: string;
+  /** Reiter anderer Ansichten, die zu diesem Schritt passen (UX-02). */
+  readonly related: readonly string[];
   readonly component: TabComponent;
 }
 
@@ -34,6 +36,7 @@ const components: Record<ProjectTabId, TabComponent> = {
   landschaft: lazyPage(() => import('./LandscapeTab').then(m => m.LandscapeTab)),
   updates: lazyPage(() => import('./UpdatesTab').then(m => m.UpdatesTab)),
   team: lazyPage(() => import('./team/TeamTab').then(m => m.TeamTab)),
+  uebersicht: lazyPage(() => import('./OverviewTab').then(m => m.OverviewTab)),
 };
 
 export const projectTabs: readonly ProjectTab[] = projectTabNames.map(t => ({ ...t, component: components[t.id] }));

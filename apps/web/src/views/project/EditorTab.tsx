@@ -15,6 +15,10 @@ import { BlockInfo } from '../../viewer/BlockInfo';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
 import { EntityCard } from '../../viewer/ContentInfo';
+import { PlanView2D } from '../../viewer/PlanView2D';
+import { LayoutButtons, useWorkspaceLayout } from '../../app/workspaceLayout';
+import { FixHelp } from '../../app/FixHelp';
+import { InspectorSection } from './InspectorSection';
 import type { FreeEntity } from '../../../../../packages/voxel/src/index.js';
 
 const CONFLICT = '#ff4d4d', DIM_TARGET = '#16303c', GROUP = '#5be3b5';
@@ -71,6 +75,9 @@ export function EditorTab({ session }: { session: ProjectSession }) {
     return selectedId && !selectedKeys.has(key) ? { color: DIM_TARGET, amount: 0.55 } : null;
   }, [conflictKeys, selectedKeys, selectedId, groupCells]);
   const { visible, control: layerControl } = useLayerFilter(shownWorld);
+  // UX-02: Geistermodus – mit gewähltem Bauteil werden alle anderen blass, damit verdeckende Wände nicht stören.
+  const xrayFor = useMemo(() => selectedId && selectedKeys.size ? (cell: Cell) => !selectedKeys.has(positionKey(cell.position)) : null, [selectedId, selectedKeys]);
+  const layout = useWorkspaceLayout('editor');
   const focus = useMemo(() => resolved?.placed.find(p => p.instance.id === selectedId)?.payload.bounds ?? null, [resolved, selectedId]);
   const onSelect = useCallback((cell: Cell | null) => {
     setPicked(cell?.position ?? null);
@@ -157,8 +164,8 @@ export function EditorTab({ session }: { session: ProjectSession }) {
   const counts = useMemo(() => world ? countBlocks(world) : null, [world]);
   const conflictsOf = (id: string) => resolved?.conflicts.filter(c => c.instanceIds.includes(id)).length ?? 0;
 
-  return <section className="editor" aria-label="Editor">
-    <aside className="editor-tree">
+  return <section className="editor" aria-label="Editor" ref={layout.ref} {...layout.attrs}>
+    <aside className="editor-tree" id="editor-tree" hidden={!layout.side}>
       <span className="panel-kicker">INSTANZEN</span>
       {project.instances.length === 0 && <p className="muted">Noch keine Bauteile. Füge unten eines aus der Bibliothek ein.</p>}
       <ul className="instance-list">{project.instances.map(i => {
@@ -188,25 +195,34 @@ export function EditorTab({ session }: { session: ProjectSession }) {
           {dragMode && <label className="check drag-snap"><input type="checkbox" checked={snapOn} onChange={e => setSnapOn(e.target.checked)} /> Einrasten</label>}
           <button onClick={session.undo} disabled={!session.history.undo.length} title={session.history.undo.at(-1)?.label ?? ''}>↶ <span>Rückgängig</span></button>
           <button onClick={session.redo} disabled={!session.history.redo.length} title={session.history.redo.at(-1)?.label ?? ''}>↷ <span>Wiederholen</span></button>
+          <LayoutButtons layout={layout} sideLabel="Bauteile" sideId="editor-tree" inspectorId="editor-inspector" />
         </div>
       </div>
-      {shownWorld && visible ? <Viewer payload={shownWorld} cells={visible.cells} onSelect={onSelect} onSelectEntity={setPickedEntity} markFor={markFor} focus={focus} drag={drag} ghost={ghost ?? groupGhost} />
+      {shownWorld && visible ? layout.plan2d ? <PlanView2D payload={shownWorld} cells={visible.cells} onSelect={onSelect} markFor={markFor} />
+        : <Viewer payload={shownWorld} cells={visible.cells} onSelect={onSelect} onSelectEntity={setPickedEntity} markFor={markFor} focus={focus} drag={drag} ghost={ghost ?? groupGhost}
+          sectionTools cameraKey={`projekt:${project.id}`} xrayFor={xrayFor} />
         : <div className="scene empty-scene"><p>{isResolved(resolution) ? 'Leeres Projekt – füge links ein Bauteil ein.' : resolution.error}</p></div>}
       {dragMode && <div className="drag-hint" role="status">{dragInfo || (selected ? `„${selected.name}“ im Bild greifen und ziehen; daneben ziehen dreht die Ansicht. Esc bricht ab.` : 'Erst eine Instanz wählen, dann im Bild ziehen.')}</div>}
       <div className="viewport-footer"><span>Ziehen: drehen · Scrollen: zoomen · Klick: Block und Instanz wählen · F: Fokus · V: Flug · Strg+Z / Strg+Y</span>
         {layerControl}
       </div>
     </div>
-    <aside className="inspector" aria-label="Eigenschaften">
-      {pickedEntity && <EntityCard entity={pickedEntity} />}
-      {resolved && picked && <BlockInfo resolution={resolved} position={picked} onSelectInstance={id => session.select(id)} />}
-      <GroupPanel session={session} resolution={resolved} group={group} reservations={groupReservations} />
-      <span className="panel-kicker">EIGENSCHAFTEN</span>
+    <aside className="inspector" id="editor-inspector" aria-label="Eigenschaften" hidden={!layout.inspector}>
+      <span className="panel-kicker">INSPEKTOR · EIGENSCHAFTEN</span>
+      {(pickedEntity || (resolved && picked) || group.ids.length > 1) && <InspectorSection id="pick" title="Angeklickt">
+        {pickedEntity && <EntityCard entity={pickedEntity} />}
+        {resolved && picked && <BlockInfo resolution={resolved} position={picked} onSelectInstance={id => session.select(id)} />}
+        <GroupPanel session={session} resolution={resolved} group={group} reservations={groupReservations} />
+      </InspectorSection>}
       {!selected ? <p className="muted">Wähle eine Instanz in der Liste oder im Bauwerk.</p> : (() => {
         const { asset, version } = assetOf(selected);
         return <div className="inspector-body">
-          <label>Name<input key={selected.id} defaultValue={selected.name} onBlur={e => { if (e.target.value.trim() !== selected.name) run({ kind: 'instance.update', instanceId: selected.id, name: e.target.value }); }} /></label>
-          <p className="muted">{asset?.name ?? 'Unbekanntes Bauteil'} · Version {version?.label ?? '–'}{asset?.demo ? ' · Beispiel' : ''}</p>
+          <InspectorSection id="part" title="Bauteil">
+            <label>Name<input key={selected.id} defaultValue={selected.name} onBlur={e => { if (e.target.value.trim() !== selected.name) run({ kind: 'instance.update', instanceId: selected.id, name: e.target.value }); }} /></label>
+            <p className="muted">{asset?.name ?? 'Unbekanntes Bauteil'} · Version {version?.label ?? '–'}{asset?.demo ? ' · Beispiel' : ''}</p>
+            {conflictsOf(selected.id) > 0 && <div className="notice warning inspector-conflict" role="status"><strong>{conflictsOf(selected.id)} Konflikte</strong><FixHelp topic="conflict" /></div>}
+          </InspectorSection>
+          <InspectorSection id="position" title="Koordinaten">
           <fieldset><legend>Position (Pivot)</legend>
             {(['X', 'Y', 'Z'] as const).map((label, axis) => <div className="coord-row" key={label}>
               <span>{label}</span>
@@ -217,6 +233,8 @@ export function EditorTab({ session }: { session: ProjectSession }) {
               <button aria-label={`${label} plus 1`} onClick={() => move(selected, axis as 0 | 1 | 2, 1)}>＋</button>
             </div>)}
           </fieldset>
+          </InspectorSection>
+          <InspectorSection id="orientation" title="Ausrichtung">
           <div className="button-row">
             <button onClick={() => transform(selected, rotateInPlace(selected.transform, 3))}>↺ 90°</button>
             <button onClick={() => transform(selected, rotateInPlace(selected.transform, 1))}>↻ 90°</button>
@@ -225,13 +243,14 @@ export function EditorTab({ session }: { session: ProjectSession }) {
           <p className="muted">Drehung {selected.transform.quarterTurns * 90}° · {selected.transform.mirrorX ? 'gespiegelt' : 'nicht gespiegelt'}</p>
           <label className="check"><input type="checkbox" checked={selected.override} onChange={e => run({ kind: 'instance.update', instanceId: selected.id, override: e.target.checked })} />
             Vorrang bei Überschneidung (expliziter Override)</label>
+          </InspectorSection>
           <div className="button-row">
             <button onClick={() => duplicate(selected)}>⧉ Duplizieren</button>
             <button className="danger" onClick={() => { run({ kind: 'instance.remove', instanceId: selected.id }); session.select(null); }}>✕ Entfernen</button>
           </div>
         </div>;
       })()}
-      <SnapPanel session={session} />
+      <InspectorSection id="connectors" title="Anschlüsse"><SnapPanel session={session} /></InspectorSection>
     </aside>
     {message && <div className="notice warning editor-message" role="alert">{message}<button onClick={() => setMessage('')}>OK</button></div>}
     <ConflictReport session={session} />
@@ -240,7 +259,7 @@ export function EditorTab({ session }: { session: ProjectSession }) {
 
 function ConflictReport({ session }: { session: ProjectSession }) {
   const r = session.resolution;
-  if (!isResolved(r)) return <section className="report danger-report" role="alert"><h3>Projekt kann nicht aufgelöst werden</h3><p>{r.error}</p></section>;
+  if (!isResolved(r)) return <section className="report danger-report" role="alert"><h3>Projekt kann nicht aufgelöst werden</h3><p>{r.error}</p><FixHelp topic="resolve" /></section>;
   const name = (id: string) => session.project.instances.find(i => i.id === id)?.name ?? id;
   const ok = r.exportBlockers.length === 0;
   return <section className={`report ${ok ? 'ok-report' : 'danger-report'}`} aria-label="Konfliktbericht">
@@ -252,6 +271,7 @@ function ConflictReport({ session }: { session: ProjectSession }) {
       <div><dt>Überlappende Begrenzungsboxen</dt><dd>{r.boundsOverlaps.length}</dd></div>
     </dl>
     {r.exportBlockers.length > 0 && <ul>{r.exportBlockers.map(b => <li key={b}>{b}</li>)}</ul>}
+    {r.conflicts.length > 0 && <FixHelp topic="conflict" />}
     {r.conflicts.length > 0 && <details><summary>Konflikte anzeigen</summary><ul className="conflict-list">{r.conflicts.slice(0, 200).map(c =>
       <li key={positionKey(c.position)}><button onClick={() => session.select(c.instanceIds[0]!)}>X {c.position[0]} · Y {c.position[1]} · Z {c.position[2]}</button>
         {' '}{c.kind === 'state' ? 'verschiedene Blöcke' : c.kind === 'air-vs-block' ? 'Luft gegen Block' : c.kind === 'erase-vs-block' ? 'Löschen gegen Block' : 'verschiedene BlockEntity-Daten'}: {c.instanceIds.map(name).join(' ↔ ')}</li>)}

@@ -1,0 +1,18 @@
+/* UX-02: Projektübersicht – letzter Stand, Offenes, nächster Bauabschnitt, nächster Meilenstein. */
+.overview { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; align-items: start; }
+.overview-card { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 18px 20px; }
+.overview-card h2 { margin: 0; font-size: 18px; }
+.overview-card p { margin: 0; }
+.overview-card .site-bar { width: 100%; }
+.overview-facts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; }
+.overview-facts b { font-size: 18px; margin-right: 4px; }
+.overview-open { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; width: 100%; }
+.overview-open li { display: grid; gap: 2px; padding-left: 10px; border-left: 3px solid var(--ds-warning, #f0b45a); }
+.overview-open a { color: var(--mint); font-weight: 600; }
+.overview-card.all-clear h2 { color: var(--mint); }
+.overview-sub { margin: 6px 0 0; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.overview-items { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; gap: 4px; font-size: 14px; }
+.overview-items li { display: flex; gap: 8px; justify-content: space-between; border-bottom: 1px dashed var(--line); padding: 2px 0; }
+.overview-items li span { flex: 1; }
+.overview-card :is(a, button):focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+:root[data-theme] .overview { border: 0; background: none; box-shadow: none; padding: 0; }

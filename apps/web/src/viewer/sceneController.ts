@@ -55,6 +55,7 @@ export interface BuildHandler {
 /** Planned cells drawn as translucent boxes over the blocks (shape preview, cells to remove). */
 export interface PreviewCells { readonly positions: readonly Vec3[]; readonly colors?: readonly string[]; readonly color: string; readonly erase?: boolean }
 const PREVIEW_MAX = 30_000;
+const XRAY_MAX = 60_000;
 const GHOST_COLOR: Record<GhostTone, number> = { free: 0xffffff, snap: 0x5ff0b0, conflict: 0xff6b6b };
 
 export interface MeshStats {
@@ -148,6 +149,8 @@ export class SceneController {
   private buildHandler: BuildHandler | null = null;
   private building: { id: number; plane: THREE.Plane; normal: Vec3 } | null = null;
   private preview: THREE.InstancedMesh | null = null;
+  /** Geistermodus (UX-02): verdeckende oder weggeschnittene Blöcke als blasse Kästen. */
+  private xray: THREE.InstancedMesh | null = null;
   private readonly ghost: THREE.LineSegments;
   private readonly disposers: (() => void)[] = [];
   private uploadStarted = 0;
@@ -425,6 +428,45 @@ export class SceneController {
     this.host.dataset.preview = String(n);
     this.requestRender();
   }
+  /**
+   * Geistermodus (UX-02): blasse, nicht greifbare Kästen für Blöcke, die gerade nicht fest gezeichnet werden
+   * (weggeschnitten oder verdeckend). Höchstens 60 000; mehr wird gleichmäßig ausgedünnt. Gibt die gezeichnete Zahl zurück.
+   */
+  setXray(positions: readonly Vec3[] | null, colors?: readonly string[]): number {
+    const total = positions?.length ?? 0, n = Math.min(total, XRAY_MAX);
+    if (!positions || !n || !this.origin) {
+      if (this.xray) this.xray.count = 0;
+      this.host.dataset.xray = '0';
+      this.requestRender(); return 0;
+    }
+    if (!this.xray || this.xray.instanceMatrix.count < n) {
+      if (this.xray) { this.scene.remove(this.xray); this.xray.geometry.dispose(); (this.xray.material as THREE.Material).dispose(); }
+      const capacity = Math.min(XRAY_MAX, Math.max(256, 2 ** Math.ceil(Math.log2(n))));
+      this.xray = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.12, depthWrite: false }), capacity);
+      this.xray.renderOrder = 2; this.xray.frustumCulled = false;
+      this.scene.add(this.xray);
+    }
+    const m = new THREE.Matrix4(), color = new THREE.Color(), step = total / n;
+    for (let i = 0; i < n; i++) {
+      const at = Math.floor(i * step), p = this.local(positions[at]!, 0.5);
+      m.makeScale(0.98, 0.98, 0.98).setPosition(p[0], p[1], p[2]);
+      this.xray.setMatrixAt(i, m);
+      this.xray.setColorAt(i, color.set(colors?.[at] ?? '#9fd8ff'));
+    }
+    this.xray.count = n;
+    this.xray.instanceMatrix.needsUpdate = true;
+    if (this.xray.instanceColor) this.xray.instanceColor.needsUpdate = true;
+    this.host.dataset.xray = String(n);
+    this.requestRender();
+    return n;
+  }
+  /** Aktuelle Kamera in Blockkoordinaten (gespeicherte Kameras, UX-02); null ohne Geometrie oder im Flug. */
+  getPose(): { eye: Vec3; target: Vec3; projection: Projection } | null {
+    if (!this.origin || this.stateValue.mode === 'flight') return null;
+    const o = this.origin, e = this.camera.position, t = this.controls.target;
+    const r = (n: number) => Math.round(n * 100) / 100;
+    return { eye: [r(e.x + o[0]), r(e.y + o[1]), r(e.z + o[2])], target: [r(t.x + o[0]), r(t.y + o[1]), r(t.z + o[2])], projection: this.stateValue.projection };
+  }
   /** Outline box of a planned placement (drag preview); null hides it. */
   setGhost(bounds: Bounds | null, tone: GhostTone = 'free'): void {
     if (!bounds || !this.origin) this.ghost.visible = false;
@@ -451,6 +493,7 @@ export class SceneController {
     this.marker.geometry.dispose(); (this.marker.material as THREE.Material).dispose();
     this.ghost.geometry.dispose(); (this.ghost.material as THREE.Material).dispose();
     if (this.preview) { this.preview.geometry.dispose(); (this.preview.material as THREE.Material).dispose(); }
+    if (this.xray) { this.xray.geometry.dispose(); (this.xray.material as THREE.Material).dispose(); }
     if (this.grid) { this.grid.geometry.dispose(); (this.grid.material as THREE.Material).dispose(); }
     this.renderer.dispose(); this.renderer.domElement.remove();
   }

@@ -1,4 +1,4 @@
-// UX-01: einfache Bedienung – vier Hauptbereiche, Projektreiter in vier Schritten mit Kurzsatz,
+// UX-01/UX-02: einfache Bedienung – vier Hauptbereiche, drei Einstiege, Projektreiter in drei Hauptansichten mit Kurzsatz,
 // Bibliotheksgruppen und eingeklappte Experten- und Datei-Wege (Desktop 1400 px und Handy 390 px).
 import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
@@ -42,28 +42,42 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     const footer = p.getByRole('navigation', { name: 'Weitere Links' });
     assert.equal(await footer.getByRole('link', { name: 'Weltimport aus Datei' }).getAttribute('href'), '#/welt');
 
-    // Startseite: Sicherung und Datei-Notfallwege eingeklappt, Hauptaktionen sichtbar.
+    // Startseite (UX-02): drei direkte Einstiege, Datei-Import ist ein normaler Weg; Sicherung bleibt eingeklappt.
+    const entries = p.getByRole('region', { name: 'Wie möchtest du anfangen?' });
+    assert.deepEqual(await entries.getByRole('heading').allInnerTexts(), ['Projekt fortsetzen', 'Bauwerk auswählen', 'Datei ansehen oder importieren']);
+    assert.equal(await entries.getByRole('link', { name: 'Datei ansehen' }).getAttribute('href'), '#/betrachter');
+    assert.equal(await entries.getByRole('link', { name: 'Als Bauteil in die Bibliothek' }).getAttribute('href'), '#/bibliothek?import=1');
+    assert.ok(await entries.getByRole('button', { name: 'Geführte Tour mit der Burgmauer' }).isVisible());
+    assert.doesNotMatch(await p.locator('.page').first().innerText(), /nur im Notfall/);
     assert.equal(await p.getByRole('button', { name: 'Alles sichern' }).isVisible(), false);
     await p.locator('details.storage-more > summary').click();
     assert.ok(await p.getByRole('button', { name: 'Alles sichern' }).isVisible());
-    assert.equal(await p.getByRole('link', { name: 'Nur eine Datei ansehen →' }).isVisible(), false);
     assert.ok(await p.getByRole('button', { name: '＋ Leeres Projekt anlegen' }).isVisible());
     assert.ok(await fits(p));
 
-    // Projekt: vier Schritte, alle zwölf Reiter, Kurzsatz zum aktiven Reiter.
+    // Projekt (UX-02): drei Hauptansichten statt zwölf gleich lauter Reiter. Die aktive zeigt ihre Reiter mit Namen,
+    // die anderen nur als Symbole (Name für Screenreader); alle 13 Reiter bleiben direkt erreichbar.
     await openSampleProject(p);
     await p.getByText('✓ Geometrisch konfliktfrei').waitFor();
     const bar = p.getByRole('navigation', { name: 'Projektbereiche' });
-    assert.equal(await bar.getByRole('group').count(), 4);
-    assert.equal(await bar.getByRole('link').count(), 12);
-    assert.match(await bar.getByRole('group', { name: 'Schritt 1: Gestalten' }).innerText(), /Editor[\s\S]*Blöcke[\s\S]*Gelände[\s\S]*Landschaft/);
+    assert.deepEqual(await bar.getByRole('group').evaluateAll(g => g.map(x => x.getAttribute('aria-label'))), ['Ansicht Entwerfen', 'Ansicht Bauen', 'Ansicht Verwalten']);
+    assert.equal(await bar.getByRole('link').count(), 13);
+    assert.match(await bar.getByRole('group', { name: 'Ansicht Entwerfen' }).innerText(), /Editor[\s\S]*Blöcke[\s\S]*Gelände[\s\S]*Landschaft/);
+    assert.equal(await bar.locator('.view-group[data-group=bauen] .tab-label').first().isVisible(), true, 'Symbolreiter behalten ihren Namen für Screenreader');
+    assert.ok((await bar.locator('.view-group[data-group=bauen] .tab-label').first().boundingBox()).width <= 1, 'andere Ansichten nur als Symbol');
     // Der Hash wechselt vor dem Neuzeichnen: auf den Kurzsatz des jeweiligen Reiters warten, nicht sofort lesen.
-    assert.match(await p.locator('.tab-hint[data-tab-hint=editor]').innerText(), /Gebäude aus der Bibliothek einfügen/);
+    assert.match(await p.locator('.tab-hint[data-tab-hint=editor]').innerText(), /Gebäude aus der Bibliothek einfügen[\s\S]*Passt dazu: Gelände · Material · Export/);
     await bar.getByRole('link', { name: 'Material' }).click();
     await p.waitForURL(/\/material$/);
     assert.match(await p.locator('.tab-hint[data-tab-hint=material]').innerText(), /Welche Blöcke/);
-    await bar.locator('.tab-group[data-group=bauen][data-active]').waitFor();
-    assert.equal(await bar.getByRole('group', { name: 'Schritt 2: Bauen' }).getAttribute('data-active'), '');
+    await bar.locator('.view-group[data-group=bauen][data-active]').waitFor();
+    assert.equal(await bar.getByRole('button', { name: 'Bauen', exact: true }).getAttribute('aria-pressed'), 'true');
+    // Wechsel der Hauptansicht öffnet den dort zuletzt benutzten Reiter, sonst den ersten.
+    await bar.getByRole('button', { name: 'Verwalten', exact: true }).click();
+    await p.waitForURL(/\/uebersicht$/);
+    await p.getByRole('region', { name: 'Projektübersicht' }).getByRole('heading', { name: '✓ Nichts offen' }).waitFor();
+    await bar.getByRole('button', { name: 'Bauen', exact: true }).click();
+    await p.waitForURL(/\/material$/);
     assert.ok(await fits(p));
 
     // Bibliothek: drei Gruppen, Generatoren unter „Nach Maß“.

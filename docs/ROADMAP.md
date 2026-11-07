@@ -15,7 +15,7 @@ Stand: 2026-11-07T20:44:28.756Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 2 |
 | 🚧 In Arbeit | 5 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 104 |
+| 🧩 Implementiert · Abnahme offen | 105 |
 | ✅ Im beschriebenen Umfang geprüft | 35 |
 | ⏸ Zurückgestellt | 3 |
 
@@ -25,7 +25,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Arbeitsstrang
 
 | Bereich | Offen | Verwaist | Nur Philipp | Geprüft |
 |---|---:|---:|---:|---:|
-| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 29 | 0 | 29 | 2 |
+| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 30 | 0 | 30 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 11 | 0 | 11 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 13 | 0 | 10 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 19 | 0 | 14 | 1 |
@@ -69,6 +69,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Arbeitsstrang
 | [TERRAIN-05](#terrain-05) | Gelände-Werkzeuge auf dem Projektgelände | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Im Reiter „Landschaft“ einen Berg stempeln, verwittern lassen, einen Fluss graben, als Bauteil übernehmen und im Spiel ansehen (PROJ-26). |
 | [UI-03](#ui-03) | Design-System | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Am iPad die neue Oberfläche ansehen und START-20/21 in #/testphase abhaken (Thema „Werkbank“, Reiter wischen, „Bewegung reduzieren“). |
 | [UX-01](#ux-01) | Bedienung des Planers vereinfachen (Struktur und Abläufe) | 🧩 Implementiert · Abnahme offen 6/6 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Testphase START-10..13: vier Hauptbereiche, Projektschritte mit Kurzsatz, eingeklappte Experten- und Datei-Wege im Browser prüfen.<br>START-12 auf dem iPad: Projektreiter waagerecht wischen, eingeklappte Bereiche per Finger öffnen. |
+| [UX-02](#ux-02) | Startseite, Projektansichten und 3D-Editor umbauen | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Startseite, Navigation und 3D-Editor umbauen“ | Testphase START-10/11: drei Einstiege, Tour, drei Projektansichten, Übersicht und die Editor-Werkzeuge im Browser prüfen.<br>GERAET-04 auf dem iPad: Projektleiste, Vollbild, Schnitt-Schieber und 2D-Plan per Finger. |
 | [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Ansicht auf echter GPU und mit Touch prüfen, negative Koordinaten, alle Schnittachsen (S02). |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Mojang-Download und Blockformen in Firefox/Safari und auf echten Geräten (S06). |
 | [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Ausschnitt aus einer Kopie deiner Modpack-Welt übernehmen. |
@@ -319,6 +320,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **ARCH-02** · Datencheck unter #/system mit deinen eigenen, lange gewachsenen Browserdaten (Stichprobe zu S05; automatisch mit drei alten Ständen geprüft).
 - **QA-02** · Bereich „Geräte und Browser“ (GERAET-01 … 06) auf #/testphase auf deinem PC (Chrome/Edge und Firefox) und deinem Handy durchgehen und das Protokoll schicken (QA-02-S02).
 - **UX-01** · START-12 auf dem iPad: Projektreiter waagerecht wischen, eingeklappte Bereiche per Finger öffnen.
+- **UX-02** · GERAET-04 auf dem iPad: Projektleiste, Vollbild, Schnitt-Schieber und 2D-Plan per Finger.
 - **PERF-04** · Olympus auf deinem Rechner, dazu Firefox/Safari (S06).
 - **PERF-06** · GERAET-03 auf #/testphase: auf dem iPad (Safari) den Planer einmal laden, dann im Flugmodus neu öffnen; einmal die Mod über https://bauplaner.pages.dev/Minecraft-Bauplaner/ verbinden.
 - **VIEW-01** · Ansicht auf echter GPU und mit Touch prüfen, negative Koordinaten, alle Schnittachsen (S02).
@@ -351,6 +353,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 ### Im Planer abnehmen
 
 - **UX-01** · Testphase START-10..13: vier Hauptbereiche, Projektschritte mit Kurzsatz, eingeklappte Experten- und Datei-Wege im Browser prüfen.
+- **UX-02** · Testphase START-10/11: drei Einstiege, Tour, drei Projektansichten, Übersicht und die Editor-Werkzeuge im Browser prüfen.
 - **EDIT-05** · Zauberstab, Stapeln, Extrudieren und Wendel in der Werkstatt abnehmen (S07).
 - **LIB-02** · Rückmeldung zur Bedienung der Sammlungen.
 - **LIB-03** · Eigene Ensembles und Generatorvorlagen ausprobieren.
@@ -433,6 +436,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **EDIT-06 · Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: EDIT-06-S05: Philipp prüft das Bauen im 3D-Bild auf PC und iPad (WERK-08) und lädt eine Truhe/ein Schild mit Inhalt im Spiel (WERK-09).
 - **STRUCT-01 · Dateistruktur sauber neu ordnen: Fachordner im Kern und in der Oberfläche, Skripte, Tests und Doku nach Bereich, Ordnerkarte docs/STRUKTUR.md** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Durchsicht der Ordnerkarte durch Philipp; parallele Arbeitsstränge ziehen neue Dateien mit dem Codemod nach.
 - **UX-01 · Bedienung des Planers vereinfachen (Struktur und Abläufe)** — 🧩 Implementiert · Abnahme offen, 6/6 Teilschritte. Nächster Schritt: Abnahme START-10/11 im Browser und START-12 auf dem iPad (Philipp); simple-ui.e2e in drei Engines grün.
+- **UX-02 · Startseite, Projektansichten und 3D-Editor umbauen** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Abnahme START-10/11 im Browser und GERAET-04 auf dem iPad (Philipp).
 - **UI-03 · Design-System: saubere, einheitliche und schön angepasste Planer-Oberfläche** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme START-20/21 durch Philipp am iPad; gruppierte Projektreiter aus „Bedienung vereinfachen“ und Anleitung optisch mitziehen; Werte an das Mod-Menü weitergeben.
 - **OPS-04 · Team-Raum betreiben: Sicherung, Wiederherstellung, Aufbewahrung, Zustand** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-31 mit zwei Geräten (sichern, wiederherstellen, löschen und zurückholen).
 - **DOC-02 · Repository übersichtlich: README als Überblick, Doku-Index, Funktionsstand und Prüfstand neu, interne Arbeitsnotizen und Verlauf aus dem Repository** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Durchsicht von README und Doku-Index durch Philipp.
@@ -618,6 +622,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | ID | Arbeitspaket | Status | Schritte | Abhängigkeiten | Main | Pages-Quelle |
 |---|---|---|---:|---|---|---|
 | [UX-01](#ux-01) | Bedienung des Planers vereinfachen (Struktur und Abläufe) | 🧩 Implementiert · Abnahme offen | 6/6 | UI-02, GUIDE-01 | ausstehend | ausstehend |
+| [UX-02](#ux-02) | Startseite, Projektansichten und 3D-Editor umbauen | 🧩 Implementiert · Abnahme offen | 5/5 | UX-01, UI-03 | ausstehend | ausstehend |
 | [BACKUP-03](#backup-03) | Sicherungen ohne Team-Schlüssel, Team-Zugang verschlüsselt, Verwaltungsschlüssel wechseln | 🧩 Implementiert · Abnahme offen | 3/4 | BACKUP-02, OPS-04, GAME-06 | ausstehend | ausstehend |
 | [TEAM-01](#team-01) | Backendvertrag, Datenbank und Payloadspeicher | ⏳ Offen | 0/2 | ARCH-01, FORMAT-01, STORE-02, LICENSE-01 | ausstehend | ausstehend |
 | [AUTH-01](#auth-01) | Konten, Rechte und Übernahme lokaler Projekte | ⏳ Offen | 0/2 | TEAM-01 | ausstehend | ausstehend |
@@ -1056,6 +1061,30 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/e2e/simple-ui.e2e.mjs](../tests/e2e/simple-ui.e2e.mjs) — Vier Hauptbereiche, Datei-Wege in Fußzeile, Projektschritte mit Kurzsatz, Bibliotheksgruppen, eingeklappte Sicherung (1400 und 390 px).
 
 **Dateiumfang:** `apps/web/src/app/nav.ts`, `apps/web/src/app/Shell.tsx`, `apps/web/src/app/CommandPalette.tsx`, `apps/web/src/app/More.tsx`, `apps/web/src/app/more.css`, `apps/web/src/styles/navGroups.css`, `apps/web/src/styles/map.css`, `apps/web/src/views/project/tabNames.ts`, `apps/web/src/views/project/tabs.ts`, `apps/web/src/views/project/ProjectView.tsx`, `apps/web/src/views/project/team/TeamTab.tsx`, `apps/web/src/views/ProjectsView.tsx`, `apps/web/src/views/BackupPanel.tsx`, `apps/web/src/views/LibraryView.tsx`, `apps/web/src/views/mod/ModView.tsx`, `apps/web/src/views/map/LiveGamePanel.tsx`, `apps/web/src/testing/testplan.ts`, `docs/architecture/planer/UI.md`, `tests/e2e/shell.e2e.mjs`, `tests/e2e/simple-ui.e2e.mjs`, `apps/web/src/styles/shell.css`, `docs/testing/TESTPLAN.md`, `tests/e2e/collections.e2e.mjs`, `tests/e2e/persistence.e2e.mjs`, `docs/TESTING.md`, `tests/e2e/backup-reminder.e2e.mjs`, `tests/e2e/start.mjs`, `tests/e2e/stability.e2e.mjs`, `docs/ROADMAP.md`, `apps/web/src/views/project/SiteTab.tsx`, `apps/web/src/views/project/ProductionTab.tsx`, `apps/web/src/editor/BlockEditor.tsx`, `apps/web/src/editor/editor.css`, `tests/e2e/site.e2e.mjs`, `tests/e2e/production.e2e.mjs`, `tests/e2e/workshop-creative.e2e.mjs`, `tests/e2e/workshop-tools.e2e.mjs`. **Abhängigkeiten:** UI-02, GUIDE-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### UX-02
+
+**Startseite, Projektansichten und 3D-Editor umbauen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Startseite, Navigation und 3D-Editor umbauen“ · Arbeitsstrang: „Startseite, Navigation und 3D-Editor umbauen“ · Aktualisiert: 2026-11-07T20:35:12.255Z
+
+- [x] UX-02-S01: Startseite mit drei direkten Einstiegen (Projekt fortsetzen, Bauwerk auswählen, Datei ansehen oder importieren); Datei-Import kein Notfallweg mehr; geführte Tour mit der Burgmauer in acht Schritten.
+- [x] UX-02-S02: Projekt in drei Hauptansichten Entwerfen, Bauen, Verwalten statt zwölf gleich lauter Reiter; „Passt dazu“-Kurzlinks; neue Projektübersicht mit letztem Stand, Offenem und nächstem Bauabschnitt.
+- [x] UX-02-S03: Editor und Blockwerkstatt: Seitenleisten einklappbar, Vollbild, Inspektor in Abschnitten (Bauteil, Koordinaten, Ausrichtung, Anschlüsse), 2D-Schichtplan als Alternative.
+- [x] UX-02-S04: 3D-Ansicht: freier Schnitt X/Y/Z, Geistermodus für verdeckende und weggeschnittene Blöcke, gespeicherte Kameras; Hinweis der Ersatzansicht überdeckt die Werkzeugleiste nicht mehr.
+- [x] UX-02-S05: Hilfe „Was tun?“ direkt an Fehlern; Handy-Leiste ohne Querverschiebung, Fokusringe, Tastaturbedienung und Namen für Symbolknöpfe.
+
+**Abnahme:** Von der Startseite führt ein Klick zu Fortsetzen, Auswahl oder Datei; im Projekt stehen drei Ansichten, jeder Reiter bleibt direkt erreichbar; der Editor lässt sich auf die Vorschau reduzieren, schneiden, durchleuchten und ohne WebGL bedienen; bestehende Browsertests bleiben grün.
+
+**Nächste Aktion:** Abnahme START-10/11 im Browser und GERAET-04 auf dem iPad (Philipp).
+
+**Nur Philipp:** Im Planer abnehmen: Testphase START-10/11: drei Einstiege, Tour, drei Projektansichten, Übersicht und die Editor-Werkzeuge im Browser prüfen. Auf echten Geräten und Browsern: GERAET-04 auf dem iPad: Projektleiste, Vollbild, Schnitt-Schieber und 2D-Plan per Finger.
+
+**Prüfstand:** npm run check grün; workspace.e2e 5/5, simple-ui.e2e 2/2; volle Browserregression siehe TESTING.md.
+
+**Nachweise:** [tests/e2e/workspace.e2e.mjs](../tests/e2e/workspace.e2e.mjs) — Tour, Übersicht mit Konflikt, Leisten/Vollbild/Inspektor/Schnitt/Geister/Kameras/2D, Ersatzansicht, Handy 390 px.; [tests/unit/web/view-tools.test.mjs](../tests/unit/web/view-tools.test.mjs) — Schnitt, Geister-Aufteilung, Kameras, drei Ansichten, Hilfetexte.
+
+**Dateiumfang:** `apps/web/src/views/ProjectsView.tsx`, `apps/web/src/styles/start.css`, `apps/web/src/views/project/tabNames.ts`, `apps/web/src/views/project/tabs.ts`, `apps/web/src/views/project/ProjectView.tsx`, `apps/web/src/views/project/OverviewTab.tsx`, `apps/web/src/views/project/overview.css`, `apps/web/src/views/project/Tour.tsx`, `apps/web/src/views/project/tour.css`, `apps/web/src/views/project/EditorTab.tsx`, `apps/web/src/views/project/InspectorSection.tsx`, `apps/web/src/app/workspaceLayout.tsx`, `apps/web/src/app/workspaceLayout.css`, `apps/web/src/app/FixHelp.tsx`, `apps/web/src/app/fixHelpText.ts`, `apps/web/src/app/fixHelp.css`, `apps/web/src/app/icons.tsx`, `apps/web/src/viewer/ThreeViewer.tsx`, `apps/web/src/viewer/sceneController.ts`, `apps/web/src/viewer/types.ts`, `apps/web/src/viewer/viewTools.ts`, `apps/web/src/viewer/viewTools.css`, `apps/web/src/viewer/CameraMenu.tsx`, `apps/web/src/viewer/PlanView2D.tsx`, `apps/web/src/editor/BlockEditor.tsx`, `apps/web/src/schem/SchemView.tsx`, `apps/web/src/views/LibraryView.tsx`, `apps/web/src/styles/navGroups.css`, `apps/web/src/styles/style.css`, `apps/web/src/theme/design.css`, `apps/web/src/testing/testplan.ts`, `docs/architecture/planer/UI.md`, `tests/e2e/workspace.e2e.mjs`, `tests/e2e/simple-ui.e2e.mjs`, `tests/unit/web/view-tools.test.mjs`. **Abhängigkeiten:** UX-01, UI-03. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

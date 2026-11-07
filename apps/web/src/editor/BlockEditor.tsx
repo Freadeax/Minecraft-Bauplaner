@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { ReactNode } from 'react';
+import type { ReactNode, RefObject } from 'react';
 import {
   ARCH_STYLE_LABEL, BOX_SHAPE_LABEL, PATTERN_KIND_LABEL, archEdit, boxBounds, boxEdit, boxVolume, cellAt, coneEdit, copyBox, countMatches, cylinderEdit, defaultState, floodEdit, lineEdit, materializeDraft,
   curveEdit, moveBoxEdit, paintEdit, pasteEdit, symmetricEdit, symmetryActive, pyramidEdit, replaceEdit, replacePatternEdit, rotateCellEdit, setCells, sphereEdit, blockSchema, blockLabel, transformClipboard, wallLineEdit,
@@ -12,6 +12,7 @@ import { formatNumber } from '../app/ui';
 import { useLeaveGuard } from '../app/router';
 import { SizeNotice } from '../app/SizeNotice';
 import { Viewer } from '../Viewer';
+import { LayoutButtons, useWorkspaceLayout } from '../app/workspaceLayout';
 import type { BuildHandler, DragHandler, Mark, PickHit, PointerMods, PreviewCells } from '../viewer/types';
 import { ContentEditor } from './ContentEditor';
 import { BlockPalette, StateFields, brushColor, brushLabel, stateText } from './BlockPalette';
@@ -165,6 +166,7 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
   const [coneHeight, setConeHeight] = useState(6);
   const [hover, setHover] = useState<Vec3 | null>(null);
   const [help, setHelp] = useState(false);
+  const layout = useWorkspaceLayout('werkstatt');
   const [replaceFrom, setReplaceFrom] = useState('');
   const [replaceScope, setReplaceScope] = useState<'all' | 'selection'>('all');
   const [keepProps, setKeepProps] = useState(true);
@@ -576,8 +578,8 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
     </div>
     {message && <p className="editor-message" role="status">{message}</p>}
     <SizeNotice cells={model.cellCount} />
-    <div className="editor-main">
-      <aside className="editor-tools" aria-label="Werkzeuge">
+    <div className="editor-main" ref={layout.ref as RefObject<HTMLDivElement | null>} {...layout.attrs}>
+      <aside className="editor-tools" id="werkstatt-tools" aria-label="Werkzeuge" hidden={!layout.side}>
         <div className="tool-grid" role="radiogroup" aria-label="Werkzeug">
           {TOOLS.map(([id, icon, label, hint, letter], i) => <button key={id} role="radio" aria-checked={tool === id} title={`${hint} (${i < 9 ? `${i + 1} oder ` : ''}${letter})`} onClick={() => setTool(id)}>
             <span aria-hidden="true">{icon}</span> {label}<kbd aria-hidden="true">{letter}</kbd></button>)}
@@ -641,6 +643,7 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
           {show3d && <label className="check" title="Zeigt im 3D-Bild nur die Ebenen bis zur aktuellen (G)"><input type="checkbox" checked={cut3d} onChange={e => setCut3d(e.target.checked)} /> 3D bis Ebene</label>}
           {show3d && <label className="check" title="Blöcke direkt an den Flächen im 3D-Bild setzen, abbauen, Formen und Auswahl aufziehen"><input type="checkbox" data-testid="build3d" checked={build3d} onChange={e => setBuild3d(e.target.checked)} /> Im 3D bauen</label>}
           <button onClick={() => setHelp(h => !h)} aria-expanded={help} title="Tastenkürzel (?)">⌨ Tasten</button>
+          <LayoutButtons layout={layout} sideLabel="Werkzeuge" sideId="werkstatt-tools" inspectorId="werkstatt-side" plan2d={false} />
         </div>
         {extent && <LayerStrip layers={layers} min={extent.min[1]} max={extent.max[1]} y={y} onY={setY} />}
         <div className={`canvas-split${show3d ? ' with-3d' : ''}`}>
@@ -655,7 +658,7 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
             {payload ? <Viewer payload={payload} cells={cells3d ?? payload.cells} onSelect={onSelect3d} markFor={markFor}
               focus={selection ? { min: selection.min, maxExclusive: selection.maxExclusive } : null}
               build={build3d ? build3dHandler : null} preview={preview3d} ghost={ghost3d}
-              drag={build3d && tool === 'auswahl' && selection ? moveHandler : null} />
+              drag={build3d && tool === 'auswahl' && selection ? moveHandler : null} sectionTools cameraKey="werkstatt" />
               : <div className="scene empty-3d"><p className="muted">Noch keine Blöcke. Wähle links einen Block und klicke in die Ebene.</p></div>}
             <p className="muted small build3d-hint">{build3d
               ? <>Im 3D bauen: Klick oder Ziehen auf Blöcken setzt auf die Fläche, „Abbauen“ entfernt, Formen und Auswahl lassen sich aufziehen (an Seitenflächen als Wand). Drehen mit der rechten Maustaste oder Ziehen ins Leere.</>
@@ -664,7 +667,7 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
         </div>
       </section>
 
-      <aside className="editor-side" aria-label="Auswahl und Block">
+      <aside className="editor-side" id="werkstatt-side" aria-label="Auswahl und Block" hidden={!layout.inspector}>
         <section className="panel-lite" aria-label="Auswahl">
           <span className="panel-kicker">AUSWAHL</span>
           {selection && selBox ? <>

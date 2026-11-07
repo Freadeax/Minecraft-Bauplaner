@@ -34,6 +34,12 @@ export interface ViewerProps {
    * of the visible cells (follows layer filters); null ⇒ none.
    */
   readonly entities?: readonly FreeEntity[] | null;
+  /** UX-02: Schnitt, Geistermodus (und mit `cameraKey` gespeicherte Kameras) in der Werkzeugleiste anbieten. */
+  readonly sectionTools?: boolean;
+  /** Unter diesem Schlüssel merkt sich die Ansicht gespeicherte Kameras (z. B. Projekt-Id). */
+  readonly cameraKey?: string | undefined;
+  /** Geistermodus: Zellen, die blass statt fest gezeichnet werden (z. B. Bauteile vor dem gewählten). Stabil halten. */
+  readonly xrayFor?: ((cell: Cell) => boolean) | null;
   /** Picking an entity selects it here (and clears the block selection). */
   readonly onSelectEntity?: (entity: FreeEntity | null) => void;
 }

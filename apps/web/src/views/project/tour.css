@@ -1,0 +1,10 @@
+/* UX-02: geführte Tour – Karte unten rechts, Hervorhebung des gemeinten Bereichs. */
+.tour-card { position: fixed; right: 16px; bottom: 16px; z-index: 60; width: min(360px, calc(100vw - 32px)); display: flex; flex-direction: column; gap: 6px;
+  padding: 14px 16px; border-radius: 14px; background: var(--panel); color: var(--text); border: 1px solid var(--mint); box-shadow: 0 12px 40px #0008; }
+.tour-card:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; }
+.tour-card strong { font-size: 16px; }
+.tour-card p { margin: 0; font-size: 14px; line-height: 1.45; }
+.tour-card .button-row { margin-top: 4px; }
+.tour-spot { outline: 3px solid var(--mint) !important; outline-offset: 3px; border-radius: 10px; transition: outline-color .2s; }
+@media (max-width: 760px) { .tour-card { bottom: calc(var(--bottom-nav-h, 64px) + 12px); } }
+@media (prefers-reduced-motion: reduce) { .tour-spot { transition: none; } }

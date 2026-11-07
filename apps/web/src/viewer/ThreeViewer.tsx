@@ -17,6 +17,11 @@ import type { MeshStats, PickHit, PointerMods, ViewerState } from './sceneContro
 import type { ViewerProps } from './types';
 import { buildSectionMeshInBackground, meshInBackground } from './backgroundMesh';
 import { isAbort } from '../jobs/client';
+import { CameraMenu } from './CameraMenu';
+import { CUT_AXIS_LABEL, clampCut, cutRange, defaultCut, splitCells } from './viewTools';
+import type { Cut, CutAxis } from './viewTools';
+import { FixHelp } from '../app/FixHelp';
+import './viewTools.css';
 import { JobStatus } from '../jobs/JobStatus';
 import type { JobProgress } from '../jobs/protocol';
 
@@ -26,8 +31,16 @@ const PAD: readonly (readonly [code: string, label: string, name: string])[] = [
 ];
 const fmt = (n: number) => n.toLocaleString('de-DE');
 
-export default function ThreeViewer({ payload, cells, onSelect, markFor, focus = null, drag = null, ghost = null, frameRequest = null, entities, onSelectEntity, build = null, preview = null }: ViewerProps) {
+export default function ThreeViewer({ payload, cells: allCells, onSelect, markFor, focus = null, drag = null, ghost = null, frameRequest = null, entities, onSelectEntity, build = null, preview = null, sectionTools = false, cameraKey, xrayFor = null }: ViewerProps) {
   const kit = useRenderKit();
+  // UX-02: freier Schnitt und Geistermodus. Weggeschnittene (und im Geistermodus verdeckende) Blöcke fallen
+  // aus dem festen Bild heraus; im Geistermodus bleiben sie als blasse Kästen sichtbar.
+  const [cut, setCut] = useState<Cut | null>(null);
+  const [xrayOn, setXrayOn] = useState(false);
+  const shownCut = cut && clampCut(cut, payload.bounds);
+  const split = useMemo(() => splitCells(allCells, sectionTools ? shownCut : null, sectionTools && xrayOn ? xrayFor : null),
+    [allCells, sectionTools, shownCut?.axis, shownCut?.at, shownCut?.keep, xrayOn, xrayFor]); // eslint-disable-line react-hooks/exhaustive-deps
+  const cells = split.shown;
   const graphics = useGraphics();
   const host = useRef<HTMLDivElement>(null), canvasHost = useRef<HTMLDivElement>(null);
   const controller = useRef<SceneController | null>(null);
@@ -124,6 +137,11 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
   useEffect(() => { controller.current?.setBuildHandler(build); }, [build]);
   // After a geometry change too: the origin of the scene may have moved.
   useEffect(() => { controller.current?.setPreview(preview); }, [preview, stats]);
+  useEffect(() => {
+    const c = controller.current; if (!c) return;
+    const hidden = xrayOn ? split.hidden : [];
+    c.setXray(hidden.map(h => h.position), hidden.map(h => h.kind === 'erase' ? '#d35f5f' : stateColor(payload.palette[h.paletteIndex]?.id ?? '')));
+  }, [split, xrayOn, stats, payload]);
   // A new structure (other payload) clears the block marker.
   useEffect(() => { controller.current?.mark(null); setHover(null); }, [payload]);
 
@@ -139,6 +157,11 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
 
   return <div className={`scene${flying ? ' flying' : ''}`} ref={host}>
     <div className="canvas-host" ref={canvasHost} tabIndex={0} aria-label="3D-Ansicht (fokussierbar für Tastatursteuerung)"
+      onKeyDown={sectionTools ? e => {
+        if (e.ctrlKey || e.metaKey || e.altKey || flying) return;
+        if (e.code === 'KeyC') { e.preventDefault(); setCut(cut ? null : defaultCut(payload.bounds)); }
+        else if (e.code === 'KeyG') { e.preventDefault(); setXrayOn(on => !on); }
+      } : undefined}
       data-mode={software ? 'software' : state.mode} data-projection={state.projection} data-view={state.view ?? ''}
       data-faces={stats?.quads ?? ''} data-spawn-day={stats?.spawnDay ?? ''} data-spawn-night={stats?.spawnNight ?? ''} data-beacons={stats ? `${stats.beacons.active}/${stats.beacons.total}` : ''} data-blocks={stats ? stats.blocks - scene.count : ''} data-entities={scene.count} data-build-ms={stats ? stats.buildMs.toFixed(1) : ''} data-mesh={busy ? 'pending' : stats ? 'ready' : ''} />
     <div className="viewer-tools" role="toolbar" aria-label="Ansicht">
@@ -149,8 +172,15 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
         onClick={() => controller.current?.setProjection(state.projection === 'perspective' ? 'orthographic' : 'perspective')}>⊞ <span>Ortho</span></button>}
       {!software && <button title="Freier Flug (V), Esc beendet" aria-label="Freier Flug" aria-pressed={flying} onClick={() => controller.current?.setFlight(!flying)}>✈ <span>Flug</span></button>}
       {!software && <GraphicsMenu stats={stats} />}
+      {sectionTools && <button title="Freier Schnitt (C): Bauwerk entlang X, Y oder Z aufschneiden" aria-label="Schnitt" aria-pressed={!!cut} aria-controls={cut ? 'viewer-cut' : undefined}
+        onClick={() => setCut(cut ? null : defaultCut(payload.bounds))}>✂ <span>Schnitt</span></button>}
+      {sectionTools && <button title={`Geistermodus (G): ${xrayFor ? 'verdeckende Bauteile und ' : ''}weggeschnittene Blöcke blass zeigen`} aria-label="Geistermodus" aria-pressed={xrayOn}
+        onClick={() => setXrayOn(!xrayOn)}>◌ <span>Geister</span></button>}
+      {sectionTools && cameraKey && !software && <CameraMenu cameraKey={cameraKey} pose={() => controller.current?.getPose() ?? null}
+        apply={cam => { const c = controller.current; if (!c) return; c.setPose(cam.eye, cam.target); if (cam.projection === 'orthographic') c.setProjection('orthographic'); }} />}
       <button title={focus ? 'Auswahl fokussieren (F)' : 'Ganzes Bauwerk einpassen (F)'} aria-label={focus ? 'Auswahl fokussieren' : 'Ganzes Bauwerk einpassen'} onClick={doFocus}>◎ <span>{focus ? 'Auswahl' : 'Einpassen'}</span></button>
     </div>
+    {sectionTools && shownCut && <CutPanel cut={shownCut} bounds={payload.bounds} onChange={setCut} hidden={split.hidden.length} ghosts={xrayOn} />}
     <div className="viewer-hud" aria-hidden="true">
       {hoveredEntity && hover ? <span><b>X {hover.position[0]} · Y {hover.position[1]} · Z {hover.position[2]}</b> {entityLabel(hoveredEntity)}</span>
         : hovered && hover ? <span><b>X {hover.position[0]} · Y {hover.position[1]} · Z {hover.position[2]}</b> {hovered.id}</span>
@@ -169,9 +199,25 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
       <button className="end" onClick={() => controller.current?.setFlight(false)}>✕ Flug beenden</button>
     </div>}
     {busy && !software && <JobStatus className="viewer-busy" title={stats ? '3D-Ansicht wird aktualisiert' : '3D-Ansicht wird berechnet'} progress={busy} />}
-    {software && <div className="render-mode" role="status">Isometrische Ersatzansicht · WebGL hier nicht verfügbar</div>}
+    {software && <div className="render-mode software-note" role="status"><span>Isometrische Ersatzansicht · WebGL hier nicht verfügbar</span><FixHelp topic="webgl" /></div>}
     {!software && !kit.textured && <button type="button" className="texture-hint" onClick={openTextureDialog}
       title="Blockformen sind eigene Nachbildungen in Durchschnittsfarben. Originaltexturen aus deiner Minecraft-Version laden.">▦ Originaltexturen laden</button>}
     {lost && <div className="render-mode" role="alert">Die Grafikverbindung wurde unterbrochen. Bitte die Seite neu laden.</div>}
+  </div>;
+}
+
+/** Leiste des freien Schnitts: Achse, Lage (Schieberegler, auch per Pfeiltasten) und welche Seite bleibt. */
+function CutPanel({ cut, bounds, onChange, hidden, ghosts }: { cut: Cut; bounds: ViewerProps['payload']['bounds']; onChange: (c: Cut | null) => void; hidden: number; ghosts: boolean }) {
+  const [lo, hi] = cutRange(bounds, cut.axis);
+  const label = cut.axis.toUpperCase();
+  return <div className="cut-panel" id="viewer-cut" role="group" aria-label="Freier Schnitt">
+    <div className="seg" role="group" aria-label="Schnittachse">{(['x', 'y', 'z'] as CutAxis[]).map(a =>
+      <button key={a} type="button" aria-pressed={cut.axis === a} title={CUT_AXIS_LABEL[a]} onClick={() => onChange(a === cut.axis ? cut : defaultCut(bounds, a))}>{a.toUpperCase()}</button>)}</div>
+    <input type="range" min={lo} max={hi} step={1} value={cut.at} aria-label="Schnittposition" aria-valuetext={`${label} ${cut.at}`}
+      onChange={e => onChange({ ...cut, at: Number(e.target.value) })} disabled={lo === hi} />
+    <output>{label} {cut.keep === 'below' ? '≤' : '≥'} {cut.at}</output>
+    <button type="button" onClick={() => onChange({ ...cut, keep: cut.keep === 'below' ? 'above' : 'below' })} title="Andere Seite des Schnitts zeigen">⇅ <span>Seite</span></button>
+    <button type="button" onClick={() => onChange(null)} aria-label="Schnitt beenden">✕</button>
+    <small className="cut-note">{fmt(hidden)} Blöcke ausgeblendet{ghosts ? ' · als Geister sichtbar' : ''}</small>
   </div>;
 }

@@ -13,6 +13,10 @@ import { recordBackupReceipt, useBackupStatus } from '../app/backupStatus';
 import { BackupReminder, BackupStatusPanel } from './BackupPanel';
 import './project/updates.css';
 import { More } from '../app/More';
+import { Icon } from '../app/icons';
+import { lastTab, projectTabNames } from './project/tabNames';
+import { startTour } from './project/Tour';
+import '../styles/start.css';
 import type { BackupFile } from '../../../../packages/domain/src/index.js';
 
 const mb = (n: number) => `${(n / 1_000_000).toLocaleString('de-DE', { maximumFractionDigits: 1 })} MB`;
@@ -94,16 +98,16 @@ export function ProjectsView() {
     setStorage(await repo.storageInfo().catch(() => ({})));
   };
 
-  const create = async (project: Project) => {
+  const create = async (project: Project, tour = false) => {
     // PRIV-01: beim ersten eigenen Projekt den Browser um dauerhaften Speicher bitten (Klick des Nutzers, kein Dialog in Chrome).
     if (repo.kind === 'indexeddb') void repo.requestPersistence().catch(() => false);
-    try { await repo.saveProject(project, 0); navigate({ view: 'project', projectId: project.id, tab: 'editor' }); }
+    try { await repo.saveProject(project, 0); if (tour) startTour(project.id); navigate({ view: 'project', projectId: project.id, tab: 'editor' }); }
     catch (e) { setMessage(`Projekt nicht gespeichert: ${errorText(e)}`); }
   };
   const createEmpty = () => {
     try { void create(createProject({ name: name || 'Neues Projekt' })); } catch (e) { setMessage(errorText(e)); }
   };
-  const createSample = () => {
+  const createSample = (tour = false) => {
     const version = (assetId: string) => { const a = library.assets.find(x => x.id === assetId); return a && latestReleaseId(a, library.versions); };
     const tower = version('sample_tower'), wall = version('sample_wall'), gate = version('sample_gate');
     if (!tower || !wall || !gate) { setMessage('Beispielbauteile fehlen in der Bibliothek.'); return; }
@@ -113,7 +117,7 @@ export function ProjectsView() {
     const instances = [at(tower, 'Turm West', 0, 0), at(wall, 'Mauer 1', 4, 1), at(gate, 'Tor', 10, 1), at(wall, 'Mauer 2', 16, 1), at(tower, 'Turm Ost', 22, 0)];
     let project = createProject({ name: 'Burgmauer (Beispiel)', description: 'Beispielprojekt aus den synthetischen Bibliotheksbauteilen.' });
     project = applyOperation(project, { kind: 'batch', label: 'Beispiel', operations: instances.map(instance => ({ kind: 'instance.add' as const, instance })) }).project;
-    void create(project);
+    void create(project, tour);
   };
   const remove = async (project: Project) => {
     // Successors (PROJ-04) and world-map sites that point at this project are tidied up after deleting it.
@@ -135,6 +139,12 @@ export function ProjectsView() {
     await load();
   };
 
+  const recent = projects?.[0] ?? null;
+  // „Sicherung zurückholen“ (Einstieg Datei): klappt Speicher & Sicherung auf und öffnet dieselbe Dateiauswahl.
+  const openRestore = () => {
+    const more = document.querySelector<HTMLDetailsElement>('details.storage-more'); if (more) more.open = true;
+    restoreInput.current?.click();
+  };
   const byAsset = useMemo(() => latestVersions(library.assets, library.versions), [library]);
   const names = useMemo(() => new Map(library.assets.map(a => [a.id, a.name])), [library]);
   // Six large shipped buildings from different families as a teaser.
@@ -151,12 +161,43 @@ export function ProjectsView() {
   return <div className="page">
     <section className="home-hero"><div><span className="eyebrow">PROJEKTZENTRALE</span><h1>Große Ideen.<br /><em>Block für Block.</em></h1>
       <p>Such dir Gebäude aus der Bibliothek, setze sie zu Projekten zusammen, prüfe Überschneidungen Block für Block und bau mit Materialliste und Schritt-für-Schritt-Anleitung nach. Deine Projekte liegen in diesem Browser.</p>
-      <div className="hero-actions"><a className="primary button-link" href="#/bibliothek">Bibliothek entdecken</a>
-        <a className="secondary button-link" href="#neues-projekt" onClick={e => { e.preventDefault(); document.getElementById('projekt-name')?.focus(); }}>＋ Neues Projekt</a>
+      <div className="hero-actions"><a className="primary button-link" href="#neues-projekt" onClick={e => { e.preventDefault(); document.getElementById('projekt-name')?.focus(); }}>＋ Neues Projekt</a>
         <a className="secondary button-link guide-hint" href="#/anleitung" data-guide-link="">? Wie geh ich es an?</a></div>
       <div className="local-badge hero-badge"><span className="pulse" /> {repo.kind === 'memory' ? 'Nur für diese Sitzung gespeichert – bitte Sicherungen herunterladen.' : <>In diesem Browser gespeichert · keine Anmeldung · Team-Freigaben nur auf Wunsch · <a href="#/datenschutz">was wohin geht</a></>}</div></div>
       <div className="hero-mosaic" aria-label="Beispiele aus der Bibliothek">{featured.map(a => { const v = byAsset.get(a.id)!; return <a key={a.id} href={`#/bibliothek/gebaeude/${encodeURIComponent(a.id)}`} title={a.name}>
         <Thumb cacheKey={v.id} payload={() => v.payload} alt={a.name} width={200} height={200} /></a>; })}</div></section>
+    <section className="start-entries" aria-label="Wie möchtest du anfangen?">
+      <article className="entry-card" data-entry="continue" aria-labelledby="entry-continue">
+        <span className="entry-icon" aria-hidden="true"><Icon name="projects" size={22} /></span>
+        <h2 id="entry-continue">Projekt fortsetzen</h2>
+        {projects === null ? <p className="muted">Projekte werden geladen …</p> : recent ? <>
+          <p className="muted">„{recent.name}“ · zuletzt {new Date(recent.updatedAt).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+          <a className="primary button-link" data-continue-project={recent.id} href={href({ view: 'project', projectId: recent.id, tab: lastTab(recent.id) })}>
+            Weiter: {projectTabNames.find(t => t.id === lastTab(recent.id))?.label ?? 'Editor'}</a>
+          {projects.length > 1 && <p className="muted entry-note">Weitere {projects.length - 1} Projekt{projects.length === 2 ? '' : 'e'} unten in der Liste.</p>}
+        </> : <>
+          <p className="muted">Noch kein Projekt. Die kurze Tour zeigt am Beispiel einer Burgmauer jeden Schritt.</p>
+          <button className="primary" type="button" onClick={() => createSample(true)}>Geführte Tour mit der Burgmauer</button>
+        </>}
+        {projects !== null && recent && <button className="text-button" type="button" onClick={() => createSample(true)}>Geführte Tour mit der Burgmauer</button>}
+      </article>
+      <article className="entry-card" data-entry="choose" aria-labelledby="entry-choose">
+        <span className="entry-icon" aria-hidden="true"><Icon name="library" size={22} /></span>
+        <h2 id="entry-choose">Bauwerk auswählen</h2>
+        <p className="muted">{library.assets.filter(a => a.demo && !a.archived).length} Gebäudevorschläge, {ENSEMBLES.length} Ensembles und Generatoren nach Maß.</p>
+        <a className="primary button-link" href="#/bibliothek">Bibliothek öffnen</a>
+        <ul className="entry-more"><li><a href="#/bibliothek/ensembles">Fertige Ensembles</a></li><li><a href="#/bibliothek/generatoren">Nach Maß erzeugen</a></li></ul>
+      </article>
+      <article className="entry-card" data-entry="file" aria-labelledby="entry-file">
+        <span className="entry-icon" aria-hidden="true"><Icon name="viewer" size={22} /></span>
+        <h2 id="entry-file">Datei ansehen oder importieren</h2>
+        <p className="muted">Schem, Litematic oder JSON ansehen, als Bauteil übernehmen oder eine Sicherung zurückholen.</p>
+        <a className="primary button-link" href="#/betrachter">Datei ansehen</a>
+        <ul className="entry-more"><li><a href="#/bibliothek?import=1">Als Bauteil in die Bibliothek</a></li>
+          <li><button className="text-button" type="button" disabled={busy} onClick={openRestore}>Sicherung zurückholen</button></li>
+          <li><TeamOpen onMessage={setMessage} onDone={() => void load()} /></li></ul>
+      </article>
+    </section>
     {repo.notice && <div className="notice warning" role="alert"><strong>Nur Sitzungsspeicher</strong><p>{repo.notice}</p></div>}
     {restore && <section className="restore-plan" aria-label="Wiederherstellung prüfen">
       <span className="panel-kicker">WIEDERHERSTELLUNG PRÜFEN</span>
@@ -177,11 +218,7 @@ export function ProjectsView() {
         <span className="panel-kicker">NEUES PROJEKT</span>
         <label>Name<input id="projekt-name" value={name} maxLength={120} onChange={e => setName(e.target.value)} placeholder="z. B. Hafenviertel" /></label>
         <button className="primary" type="submit">＋ Leeres Projekt anlegen</button>
-        <button className="secondary" type="button" onClick={createSample}>Beispielprojekt „Burgmauer“</button>
-        <More className="more-inline" title="Weitere Wege" hint="Dateien, nur im Notfall">
-          <TeamOpen onMessage={setMessage} onDone={() => void load()} />
-          <a className="text-button" href="#/betrachter">Nur eine Datei ansehen →</a>
-        </More>
+        <button className="secondary" type="button" onClick={() => createSample()}>Beispielprojekt „Burgmauer“</button>
       </form>
       {projects === null ? <p className="muted">Projekte werden geladen …</p> : projects.map(p => <article className="card project-card" key={p.id}>
         <a className="project-thumb" href={href({ view: 'project', projectId: p.id, tab: 'editor' })} tabIndex={-1} aria-hidden="true">

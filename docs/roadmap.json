@@ -40,6 +40,7 @@
     "EDIT-06",
     "STRUCT-01",
     "UX-01",
+    "UX-02",
     "UI-03",
     "OPS-04",
     "DOC-02",
@@ -1429,6 +1430,120 @@
         {
           "kind": "geraet",
           "text": "START-12 auf dem iPad: Projektreiter waagerecht wischen, eingeklappte Bereiche per Finger öffnen."
+        }
+      ],
+      "orphans": []
+    },
+    {
+      "id": "UX-02",
+      "title": "Startseite, Projektansichten und 3D-Editor umbauen",
+      "phase": "P4",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Arbeitsstrang „Startseite, Navigation und 3D-Editor umbauen“",
+      "dependencies": [
+        "UX-01",
+        "UI-03"
+      ],
+      "scope": [
+        "apps/web/src/views/ProjectsView.tsx",
+        "apps/web/src/styles/start.css",
+        "apps/web/src/views/project/tabNames.ts",
+        "apps/web/src/views/project/tabs.ts",
+        "apps/web/src/views/project/ProjectView.tsx",
+        "apps/web/src/views/project/OverviewTab.tsx",
+        "apps/web/src/views/project/overview.css",
+        "apps/web/src/views/project/Tour.tsx",
+        "apps/web/src/views/project/tour.css",
+        "apps/web/src/views/project/EditorTab.tsx",
+        "apps/web/src/views/project/InspectorSection.tsx",
+        "apps/web/src/app/workspaceLayout.tsx",
+        "apps/web/src/app/workspaceLayout.css",
+        "apps/web/src/app/FixHelp.tsx",
+        "apps/web/src/app/fixHelpText.ts",
+        "apps/web/src/app/fixHelp.css",
+        "apps/web/src/app/icons.tsx",
+        "apps/web/src/viewer/ThreeViewer.tsx",
+        "apps/web/src/viewer/sceneController.ts",
+        "apps/web/src/viewer/types.ts",
+        "apps/web/src/viewer/viewTools.ts",
+        "apps/web/src/viewer/viewTools.css",
+        "apps/web/src/viewer/CameraMenu.tsx",
+        "apps/web/src/viewer/PlanView2D.tsx",
+        "apps/web/src/editor/BlockEditor.tsx",
+        "apps/web/src/schem/SchemView.tsx",
+        "apps/web/src/views/LibraryView.tsx",
+        "apps/web/src/styles/navGroups.css",
+        "apps/web/src/styles/style.css",
+        "apps/web/src/theme/design.css",
+        "apps/web/src/testing/testplan.ts",
+        "docs/architecture/planer/UI.md",
+        "tests/e2e/workspace.e2e.mjs",
+        "tests/e2e/simple-ui.e2e.mjs",
+        "tests/unit/web/view-tools.test.mjs"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "UX-02-S01",
+          "title": "Startseite mit drei direkten Einstiegen (Projekt fortsetzen, Bauwerk auswählen, Datei ansehen oder importieren); Datei-Import kein Notfallweg mehr; geführte Tour mit der Burgmauer in acht Schritten.",
+          "done": true
+        },
+        {
+          "id": "UX-02-S02",
+          "title": "Projekt in drei Hauptansichten Entwerfen, Bauen, Verwalten statt zwölf gleich lauter Reiter; „Passt dazu“-Kurzlinks; neue Projektübersicht mit letztem Stand, Offenem und nächstem Bauabschnitt.",
+          "done": true
+        },
+        {
+          "id": "UX-02-S03",
+          "title": "Editor und Blockwerkstatt: Seitenleisten einklappbar, Vollbild, Inspektor in Abschnitten (Bauteil, Koordinaten, Ausrichtung, Anschlüsse), 2D-Schichtplan als Alternative.",
+          "done": true
+        },
+        {
+          "id": "UX-02-S04",
+          "title": "3D-Ansicht: freier Schnitt X/Y/Z, Geistermodus für verdeckende und weggeschnittene Blöcke, gespeicherte Kameras; Hinweis der Ersatzansicht überdeckt die Werkzeugleiste nicht mehr.",
+          "done": true
+        },
+        {
+          "id": "UX-02-S05",
+          "title": "Hilfe „Was tun?“ direkt an Fehlern; Handy-Leiste ohne Querverschiebung, Fokusringe, Tastaturbedienung und Namen für Symbolknöpfe.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Von der Startseite führt ein Klick zu Fortsetzen, Auswahl oder Datei; im Projekt stehen drei Ansichten, jeder Reiter bleibt direkt erreichbar; der Editor lässt sich auf die Vorschau reduzieren, schneiden, durchleuchten und ohne WebGL bedienen; bestehende Browsertests bleiben grün."
+      ],
+      "next": "Abnahme START-10/11 im Browser und GERAET-04 auf dem iPad (Philipp).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/e2e/workspace.e2e.mjs",
+          "note": "Tour, Übersicht mit Konflikt, Leisten/Vollbild/Inspektor/Schnitt/Geister/Kameras/2D, Ersatzansicht, Handy 390 px."
+        },
+        {
+          "path": "tests/unit/web/view-tools.test.mjs",
+          "note": "Schnitt, Geister-Aufteilung, Kameras, drei Ansichten, Hilfetexte."
+        }
+      ],
+      "verification": {
+        "state": "passed",
+        "note": "npm run check grün; workspace.e2e 5/5, simple-ui.e2e 2/2; volle Browserregression siehe TESTING.md."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-07T20:35:12.255Z",
+      "area": "PLANER",
+      "thread": "Startseite, Navigation und 3D-Editor umbauen",
+      "philipp": [
+        {
+          "kind": "planer",
+          "text": "Testphase START-10/11: drei Einstiege, Tour, drei Projektansichten, Übersicht und die Editor-Werkzeuge im Browser prüfen."
+        },
+        {
+          "kind": "geraet",
+          "text": "GERAET-04 auf dem iPad: Projektleiste, Vollbild, Schnitt-Schieber und 2D-Plan per Finger."
         }
       ],
       "orphans": []
@@ -15354,6 +15469,62 @@
           "done": 4,
           "total": 5,
           "next": "Modrinth prüft das Projekt weiter (Status processing, am 07.11.2026 nachgesehen); alle Versionen bis 0.26.0, Texte, Galerie und Offenlegungen sind aktuell (modrinth_publish.mjs plan). Kein Handlungsbedarf außer Abwarten."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T20:35:12.255Z",
+      "kind": "progress",
+      "items": [
+        "UX-02"
+      ],
+      "summary": "Startseite mit drei Einstiegen (fortsetzen, Bauwerk wählen, Datei ansehen/importieren) und geführter Tour mit der Burgmauer; Projekt in drei Ansichten Entwerfen/Bauen/Verwalten mit Kurzlinks und neuer Übersicht (letzter Stand, Offenes, nächster Bauabschnitt); Editor und Blockwerkstatt mit einklappbaren Leisten, Vollbild, Inspektor in Abschnitten, 2D-Schichtplan; 3D-Ansicht mit freiem Schnitt, Geistermodus und gespeicherten Kameras; Ersatzansicht-Hinweis unten mit Hilfe; „Was tun?“ an Fehlern. npm run check grün, workspace.e2e 5/5, Browserregression 241/242 (team-room.e2e wackelt auch auf main).",
+      "files": [
+        "apps/web/src/app/FixHelp.tsx",
+        "apps/web/src/app/fixHelp.css",
+        "apps/web/src/app/fixHelpText.ts",
+        "apps/web/src/app/icons.tsx",
+        "apps/web/src/app/workspaceLayout.css",
+        "apps/web/src/app/workspaceLayout.tsx",
+        "apps/web/src/editor/BlockEditor.tsx",
+        "apps/web/src/schem/SchemView.tsx",
+        "apps/web/src/styles/navGroups.css",
+        "apps/web/src/styles/start.css",
+        "apps/web/src/styles/style.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/theme/design.css",
+        "apps/web/src/viewer/CameraMenu.tsx",
+        "apps/web/src/viewer/PlanView2D.tsx",
+        "apps/web/src/viewer/ThreeViewer.tsx",
+        "apps/web/src/viewer/sceneController.ts",
+        "apps/web/src/viewer/types.ts",
+        "apps/web/src/viewer/viewTools.css",
+        "apps/web/src/viewer/viewTools.ts",
+        "apps/web/src/views/LibraryView.tsx",
+        "apps/web/src/views/ProjectsView.tsx",
+        "apps/web/src/views/project/EditorTab.tsx",
+        "apps/web/src/views/project/InspectorSection.tsx",
+        "apps/web/src/views/project/OverviewTab.tsx",
+        "apps/web/src/views/project/ProjectView.tsx",
+        "apps/web/src/views/project/Tour.tsx",
+        "apps/web/src/views/project/overview.css",
+        "apps/web/src/views/project/tabNames.ts",
+        "apps/web/src/views/project/tabs.ts",
+        "apps/web/src/views/project/tour.css",
+        "docs/TESTING.md",
+        "docs/architecture/planer/UI.md",
+        "docs/testing/TESTPLAN.md",
+        "tests/e2e/simple-ui.e2e.mjs",
+        "tests/e2e/workspace.e2e.mjs",
+        "tests/unit/web/view-tools.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "UX-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Abnahme START-10/11 im Browser und GERAET-04 auf dem iPad (Philipp)."
         }
       ]
     }

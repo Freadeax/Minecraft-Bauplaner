@@ -104,6 +104,10 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
   const compare = useCompare();
   const abort = useRef<AbortController | null>(null);
   const file = useRef<HTMLInputElement>(null);
+  // UX-02: Einstieg „Als Bauteil in die Bibliothek“ von der Startseite – Importknopf fokussieren und hervorheben.
+  const importButton = useRef<HTMLButtonElement>(null);
+  const wantsImport = /(?:^|&)import=1(?:&|$)/.test(search ?? '');
+  useEffect(() => { if (wantsImport) importButton.current?.focus(); }, [wantsImport]);
   const scroll = useRef(0);
   // Metrics are pure functions of immutable, content-addressed versions: cache by version id.
   const catalog = useMemo(() => buildCatalog(library.assets, library.versions, catalogMetrics), [library]);
@@ -346,7 +350,7 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
   const contributions = catalog.entries.filter(e => e.asset.demo && !e.asset.archived && isContributionId(e.asset.id)).length;
   const header = <header className="page-head library-head"><div><span className="eyebrow">BIBLIOTHEK</span><h1 className="page-title">Gebäude &amp; Bauteile</h1>
       <p className="muted">{catalog.entries.filter(e => e.asset.demo && !e.asset.archived).length} mitgelieferte Gebäudevorschläge{contributions ? ` (davon ${contributions} ${contributions === 1 ? 'Bibliotheksbeitrag' : 'Bibliotheksbeiträge'})` : ''} und deine eigenen Bauteile, mit Vorschau, berechneten Kennwerten und Bauplan.</p></div>
-    <div className="button-row"><button className="secondary" disabled={busy} onClick={() => file.current?.click()} title="Eigene Schem-, Litematic- oder JSON-Datei als Bauteil übernehmen">＋ Schem / Litematic / JSON importieren</button>
+    <div className="button-row"><button ref={importButton} className={`secondary${wantsImport ? ' import-wanted' : ''}`} disabled={busy} onClick={() => file.current?.click()} title="Eigene Schem-, Litematic- oder JSON-Datei als Bauteil übernehmen">＋ Schem / Litematic / JSON importieren</button>
       <input ref={file} className="file-input" type="file" aria-label="Bauteildatei" accept={IMPORT_ACCEPT}
         onChange={e => { const f = e.target.files?.[0]; if (f) void open(f); e.target.value = ''; }} />
       <a className="button" href="#/werkstatt/neu" title="Blockeditor: neues Bauteil Block für Block bauen">✎ Neues Bauteil bauen</a>

@@ -46,7 +46,7 @@ export function SchemView({ payload, cacheKey, name, tab, onTab, markFor, tabs =
     <div className="schem-panel" role="tabpanel" id={`schem-panel-${tab}`} aria-labelledby={`schem-tab-${tab}`}>
       {tab === '3d' && <>
         <div className="viewport detail-stage">
-          <Viewer key={cacheKey} payload={payload} cells={layers.visible?.cells ?? payload.cells} onSelect={setPicked} onSelectEntity={setEntity} {...(markFor && { markFor })} />
+          <Viewer key={cacheKey} payload={payload} cells={layers.visible?.cells ?? payload.cells} onSelect={setPicked} onSelectEntity={setEntity} {...(markFor && { markFor })} sectionTools />
         </div>
         {layers.control}
         {entity && <EntityCard entity={entity} />}

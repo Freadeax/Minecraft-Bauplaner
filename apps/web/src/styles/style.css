@@ -244,3 +244,5 @@ label.check{display:flex;align-items:center;gap:8px}fieldset{border:1px solid va
 .placement-body{display:grid;gap:8px;margin-top:10px}.placement-body .muted{margin:0;font-size:12px}.placement-aids,.placement-issues{margin:0;padding-left:18px;font-size:13px;display:grid;gap:4px}
 .placement-issues li small{display:block;color:var(--muted)}.placement-issues code{font-size:12px;word-break:break-all}
 @media(max-width:650px){.placement-check{padding:10px 14px}}
+/* UX-02: Einstieg „Als Bauteil in die Bibliothek“ hebt den Importknopf hervor. */
+.import-wanted{outline:3px solid var(--mint);outline-offset:3px}
