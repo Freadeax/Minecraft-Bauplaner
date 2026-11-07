@@ -1,0 +1,1 @@
+var e=`bauplaner:unloaded`;export{e as t};
