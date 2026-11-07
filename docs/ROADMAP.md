@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T21:30:09.169Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T21:34:40.733Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -1488,7 +1488,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COMPAT-01
 
-**Kompatibilitätscheck vor Export und Download: Minecraft-Version, Loader und Einfügewerkzeug zeigen fehlende Blöcke, angepasste Zustände, nötige Mods und passende Mod-Datei** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Ladezeit und Versions-Check“ · Aktualisiert: 2026-11-07T21:30:09.169Z
+**Kompatibilitätscheck vor Export und Download: Minecraft-Version, Loader und Einfügewerkzeug zeigen fehlende Blöcke, angepasste Zustände, nötige Mods und passende Mod-Datei** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Ladezeit und Versions-Check“ · Aktualisiert: 2026-11-07T21:34:40.733Z
 
 - [x] COMPAT-01-S01: Blockberichte der offiziellen Server 1.20.1 bis 26.3 (12 Versionen) erzeugt und nur die Unterschiede zum Profil eingecheckt (versionCompatData.ts).
 - [x] COMPAT-01-S02: checkCompatibility: fehlende Blöcke und angepasste Zustände je Zelle, Mod-Namensräume je Loader, Werkzeug/Loader-Hinweise, Entities.

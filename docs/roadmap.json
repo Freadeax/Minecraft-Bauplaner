@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T21:30:09.169Z",
+  "updatedAt": "2026-11-07T21:34:40.733Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -3089,7 +3089,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T21:30:09.169Z",
+      "updatedAt": "2026-11-07T21:34:40.733Z",
       "area": "KERN",
       "orphans": []
     },
@@ -15798,6 +15798,26 @@
           "total": 6,
           "next": "O-10 Export im Worker, O-9 Prüfketten trennen; Abnahme auf Philipps Rechner und iPad (Projektzentrale sofort sichtbar)."
         },
+        {
+          "id": "COMPAT-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme COMPAT-01-S04 im echten Spiel; bei neuer Minecraft-Version fetch_version_reports.sh + gen_version_compat.mjs."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T21:34:40.733Z",
+      "kind": "progress",
+      "items": [
+        "COMPAT-01"
+      ],
+      "summary": "Abnahme im Spiel über Testfall PROJ-04 verknüpft (Testplan neu erzeugt)",
+      "files": [
+        "docs/architecture/formate/VERSION_COMPAT.md"
+      ],
+      "snapshot": [
         {
           "id": "COMPAT-01",
           "status": "implemented",

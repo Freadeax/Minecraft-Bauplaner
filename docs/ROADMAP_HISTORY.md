@@ -935,3 +935,17 @@ Projektzentrale startet vor dem Katalog (Start-JS 1734→1206 KiB, bedienbar nac
 - `tests/unit/formats/version-compat.test.mjs`
 - `vite.config.mjs`
 
+## 2026-11-07T21:34:40.733Z · progress
+
+**Aufgaben:** COMPAT-01
+
+Abnahme im Spiel über Testfall PROJ-04 verknüpft (Testplan neu erzeugt)
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COMPAT-01 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme COMPAT-01-S04 im echten Spiel; bei neuer Minecraft-Version fetch_version_reports.sh + gen_version_compat.mjs. |
+
+**Geänderte Dateien:**
+
+- `docs/architecture/formate/VERSION_COMPAT.md`
+

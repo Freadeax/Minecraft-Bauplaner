@@ -64,4 +64,4 @@ Die Auswahlhilfe der DataVersion im Export (`KNOWN_DATA_VERSIONS`) kommt aus der
 - Blöcke, die es nur in älteren Versionen gibt (umbenannt, z. B. `grass` → `short_grass`), betreffen den Import, nicht den Export, und werden hier nicht gemeldet.
 - Ob es Litematica oder WorldEdit für eine bestimmte Version gibt, prüft der Planer nicht; die Hinweise nennen die offiziellen Wege.
 - Inhalte von BlockEntities (z. B. neue Komponenten in Truhen) werden nicht versionsweise geprüft.
-- Tests: `tests/unit/formats/version-compat.test.mjs`, Browser `tests/e2e/compat.e2e.mjs`.
+- Tests: `tests/unit/formats/version-compat.test.mjs`, Browser `tests/e2e/compat.e2e.mjs`; Abnahme im Spiel: Testfall PROJ-04 ([TESTPLAN](../../testing/TESTPLAN.md)).
