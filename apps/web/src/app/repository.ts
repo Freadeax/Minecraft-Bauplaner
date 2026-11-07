@@ -1,11 +1,9 @@
 import type { Repository } from '../../../../packages/application/src/repository.js';
-import { MemoryRepository } from '../../../../packages/application/src/memoryRepository.js';
 import { AssetRevisionConflictError } from '../../../../packages/application/src/repository.js';
 import { planSeed } from '../../../../packages/application/src/catalogSync.js';
 import type { CatalogShipment } from '../../../../packages/application/src/catalogSync.js';
 export type { Repository, StorageBatch, StorageChange, StorageInfo } from '../../../../packages/application/src/repository.js';
 export { RevisionConflictError, AssetRevisionConflictError, WorldPlanConflictError } from '../../../../packages/application/src/repository.js';
-export { MemoryRepository } from '../../../../packages/application/src/memoryRepository.js';
 
 /**
  * Adds the synthetic sample modules and building suggestions (B9) once; never
@@ -44,6 +42,8 @@ export async function openRepository({ seed = true }: { readonly seed?: boolean 
     repo = await openIdbRepository();
   } catch (e) {
     if (e instanceof Error && (e.name === 'StorageNewerError' || e.name === 'StorageMigrationError')) throw e;
+    // Only without IndexedDB; loaded on demand so its record checks stay out of the start bundle (O-9).
+    const { MemoryRepository } = await import('../../../../packages/application/src/memoryRepository.js');
     repo = new MemoryRepository(`Dauerhafter Browserspeicher nicht verfügbar (${e instanceof Error ? e.message : String(e)}). Projekte gelten nur für diese Sitzung – bitte Sicherungen herunterladen.`);
   }
   if (seed) await seedSamples(repo);

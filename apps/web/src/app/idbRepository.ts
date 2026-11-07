@@ -1,8 +1,6 @@
 import type { Asset, AssetVersion, BackupLedger, BackupReceipt, Collection, LibraryTemplate, OriginalFile, Project, WorldPlan } from '../../../../packages/domain/src/index.js';
-import { addReceipt, checkBackupLedger, checkWorldPlan, emptyLedger, emptyWorldPlan } from '../../../../packages/domain/src/index.js';
-import { checkAssetRecord, checkCollectionRecord, checkProjectRecord, checkSchemaVersion, checkTemplateRecord, DOMAIN_SCHEMA_VERSION, LibraryRecordConflictError, nextLibraryRevision } from '../../../../packages/domain/src/index.js';
+import { checkWorldPlan, DOMAIN_SCHEMA_VERSION, emptyWorldPlan } from '../../../../packages/domain/src/index.js';
 import { packVersion, unpackVersion, unpackVersionOrDamaged } from '../../../../packages/domain/src/index.js';
-import { assetRevision, checkStorageBatch, nextAssetRevision } from '../../../../packages/application/src/assetConcurrency.js';
 import { RevisionConflictError, WorldPlanConflictError } from './repository';
 import type { Repository, StorageBatch, StorageChange, StorageInfo } from './repository';
 
@@ -18,6 +16,16 @@ import type { Repository, StorageBatch, StorageChange, StorageInfo } from './rep
 export const DB_NAME = 'minecraft-bauplaner';
 /** Bump together with a new entry in MIGRATIONS. */
 export const DB_VERSION = 4;
+/** Record checks, loaded on first use (O-9): they carry the site, team, planning and production modules. */
+type Checks = typeof import('./recordChecks');
+let loadedChecks: Checks | null = null, pendingChecks: Promise<Checks> | null = null;
+export function loadChecks(): Promise<Checks> {
+  pendingChecks ??= import('./recordChecks').then(m => (loadedChecks = m), e => { pendingChecks = null; throw e; });
+  return pendingChecks;
+}
+/** Marks an upgrade that needs the record checks before they were loaded; the open is retried after loading. */
+const NEED_CHECKS = new Error('Prüfungen werden geladen');
+
 const STORES = ['projects', 'assets', 'versions', 'originals', 'meta', 'collections', 'templates'] as const;
 type StoreName = typeof STORES[number];
 
@@ -36,8 +44,9 @@ const MIGRATIONS: Record<number, (db: IDBDatabase, tx: IDBTransaction, fail: (er
       const cursor = request.result;
       if (!cursor) return;
       try {
-        const asset = checkAssetRecord(cursor.value);
-        assetRevision(asset);
+        if (!loadedChecks) throw NEED_CHECKS;
+        const asset = loadedChecks.checkAssetRecord(cursor.value);
+        loadedChecks.assetRevision(asset);
         if (asset.revision === undefined) cursor.update({ ...asset, revision: 1 });
         cursor.continue();
       } catch (error) { fail(error); }
@@ -97,16 +106,28 @@ export function storageErrorText(e: unknown): string {
 
 const req = <T>(r: IDBRequest<T>) => new Promise<T>((resolve, reject) => { r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error); });
 
-export function openIdbRepository(factory: IDBFactory | undefined = globalThis.indexedDB): Promise<IdbRepository> {
-  if (!factory) return Promise.reject(new Error('IndexedDB fehlt in diesem Browser'));
+export async function openIdbRepository(factory: IDBFactory | undefined = globalThis.indexedDB): Promise<IdbRepository> {
+  if (!factory) throw new Error('IndexedDB fehlt in diesem Browser');
+  void loadChecks().catch(() => undefined); // in parallel; the first read awaits it
+  try { return await openOnce(factory); } catch (e) {
+    if (e !== NEED_CHECKS) throw e;
+    await loadChecks();
+    return openOnce(factory);
+  }
+}
+
+function openOnce(factory: IDBFactory): Promise<IdbRepository> {
   return new Promise((resolve, reject) => {
     let request: IDBOpenDBRequest;
-    let upgradeFailure: unknown = null;
+    let upgradeFailure: unknown = null, needChecks = false;
     let blocked = false;
     try { request = factory.open(DB_NAME, DB_VERSION); } catch (e) { reject(e); return; }
     request.onupgradeneeded = event => {
       const db = request.result, tx = request.transaction!;
-      const fail = (error: unknown) => { upgradeFailure = new StorageMigrationError(error); try { tx.abort(); } catch { /* already aborted */ } };
+      const fail = (error: unknown) => {
+        if (error === NEED_CHECKS) needChecks = true; else upgradeFailure = new StorageMigrationError(error);
+        try { tx.abort(); } catch { /* already aborted */ }
+      };
       try {
         for (let v = event.oldVersion + 1; v <= DB_VERSION; v++) MIGRATIONS[v]!(db, tx, fail);
         tx.objectStore('meta').put({ key: 'schema', dbVersion: DB_VERSION, domainSchemaVersion: DOMAIN_SCHEMA_VERSION, migratedAt: new Date().toISOString() });
@@ -115,6 +136,7 @@ export function openIdbRepository(factory: IDBFactory | undefined = globalThis.i
     request.onblocked = () => { blocked = true; reject(new Error('Ein anderer Tab hält eine ältere Datenbankversion offen. Bitte andere Build-Studio-Tabs schließen und neu laden.')); };
     request.onerror = () => {
       if (upgradeFailure) { reject(upgradeFailure); return; }
+      if (needChecks) { reject(NEED_CHECKS); return; }
       const err = request.error;
       if (err?.name === 'VersionError') { const e = new StorageNewerError(); reject(e); return; }
       reject(err ?? new Error('IndexedDB konnte nicht geöffnet werden'));
@@ -158,10 +180,10 @@ export class IdbRepository implements Repository {
     return this.run([store], 'readonly', tx => req(tx.objectStore(store).getAll() as IDBRequest<T[]>));
   }
 
-  async listProjects() { return (await this.all<unknown>('projects')).map(checkProjectRecord); }
+  async listProjects() { const [c, raw] = await Promise.all([loadChecks(), this.all<unknown>('projects')]); return raw.map(c.checkProjectRecord); }
   async getProject(id: string) {
-    const raw = await this.run(['projects'], 'readonly', tx => req(tx.objectStore('projects').get(id)));
-    return raw === undefined ? null : checkProjectRecord(raw);
+    const [c, raw] = await Promise.all([loadChecks(), this.run(['projects'], 'readonly', tx => req(tx.objectStore('projects').get(id)))]);
+    return raw === undefined ? null : c.checkProjectRecord(raw);
   }
 
   async saveProject(project: Project, baseRevision: number) {
@@ -174,11 +196,12 @@ export class IdbRepository implements Repository {
     this.announce({ kind: 'projects', projectIds: [id] });
   }
 
-  async listAssets() { return (await this.all<unknown>('assets')).map(checkAssetRecord); }
+  async listAssets() { const [c, raw] = await Promise.all([loadChecks(), this.all<unknown>('assets')]); return raw.map(c.checkAssetRecord); }
   async saveAsset(asset: Asset) { await this.applyBatch({ assets: [asset] }); }
   async listVersions() {
-    const list = (await this.all<unknown>('versions')).map(unpackVersionOrDamaged);
-    for (const v of list) checkSchemaVersion('Version', v);
+    const [c, raw] = await Promise.all([loadChecks(), this.all<unknown>('versions')]);
+    const list = raw.map(unpackVersionOrDamaged);
+    for (const v of list) c.checkSchemaVersion('Version', v);
     return list;
   }
   /** Raw records, cells still packed (PERF-04-S05): the library start unpacks them in slices and hands them to the worker. */
@@ -193,15 +216,16 @@ export class IdbRepository implements Repository {
   }
   async saveVersion(version: AssetVersion) { await this.applyBatch({ versions: [version] }); }
 
-  async listCollections(): Promise<Collection[]> { return (await this.all<unknown>('collections')).map(checkCollectionRecord); }
-  async listTemplates(): Promise<LibraryTemplate[]> { return (await this.all<unknown>('templates')).map(checkTemplateRecord); }
+  async listCollections(): Promise<Collection[]> { const [c, raw] = await Promise.all([loadChecks(), this.all<unknown>('collections')]); return raw.map(c.checkCollectionRecord); }
+  async listTemplates(): Promise<LibraryTemplate[]> { const [c, raw] = await Promise.all([loadChecks(), this.all<unknown>('templates')]); return raw.map(c.checkTemplateRecord); }
 
   // BACKUP-02: receipts live in the existing `meta` store (key 'backupLedger'); no schema migration needed.
   async getBackupLedger(): Promise<BackupLedger> {
-    const raw = await this.run(['meta'], 'readonly', tx => req(tx.objectStore('meta').get('backupLedger')));
-    return raw === undefined ? emptyLedger() : checkBackupLedger((raw as { ledger: unknown }).ledger);
+    const [c, raw] = await Promise.all([loadChecks(), this.run(['meta'], 'readonly', tx => req(tx.objectStore('meta').get('backupLedger')))]);
+    return raw === undefined ? c.emptyLedger() : c.checkBackupLedger((raw as { ledger: unknown }).ledger);
   }
   async recordBackup(receipt: BackupReceipt): Promise<BackupLedger> {
+    const { addReceipt, checkBackupLedger, emptyLedger } = await loadChecks();
     const ledger = await this.run(['meta'], 'readwrite', async tx => {
       const store = tx.objectStore('meta'), raw = await req(store.get('backupLedger'));
       const next = addReceipt(raw === undefined ? emptyLedger() : checkBackupLedger((raw as { ledger: unknown }).ledger), receipt);
@@ -243,6 +267,7 @@ export class IdbRepository implements Repository {
     // Snapshot before async reads; callers cannot change the expected revision mid-transaction.
     // Versions are packed first (PERF-04): cloning the packed form is cheap, cloning a million cells is not,
     // and a packed form a worker already made for these cells is reused instead of packing again.
+    const { checkStorageBatch, LibraryRecordConflictError, nextAssetRevision, nextLibraryRevision } = await loadChecks();
     const batch = structuredClone(input.versions?.length ? { ...input, versions: input.versions.map(v => packVersion(v) as unknown as AssetVersion) } : input);
     checkStorageBatch(batch);
     const stores = new Set<StoreName>();

@@ -12,6 +12,7 @@ import { checkUpdates } from '../versions/updateState.js';
 import { projectVersionIds } from './planGraph.js';
 import { checkTerrainReference } from '../world/terrainSurvey.js';
 import { packVersionForFile, unpackVersionFromFile } from './versionStorage.js';
+import { checkSchemaVersion, MAX_BACKUP_BYTES } from './backupLimits.js';
 import { checkTerrainDesignReference } from '../world/terrainDesign.js';
 import { hasTeamAccess, keepTeamAccess, withoutTeamAccess } from '../team/teamAccess.js';
 
@@ -54,8 +55,7 @@ export const BACKUP_FORMAT_VERSION_LIBRARY = 2;
  * whether a file was written packed or plain. Written by {@link serializeBackup}.
  */
 export const BACKUP_FORMAT_VERSION_PACKED = 3;
-/** Upper bound for a backup file read in the browser. */
-export const MAX_BACKUP_BYTES = 100_000_000;
+export { MAX_BACKUP_BYTES, checkSchemaVersion } from './backupLimits.js';
 
 interface BackupOriginal { readonly sha256: string; readonly fileName: string; readonly mediaType: string; readonly size: number; readonly createdAt: string; readonly base64: string }
 interface BackupContent {
@@ -101,13 +101,6 @@ export interface Backup {
   readonly teamAccessIn: readonly string[];
 }
 
-/** Rejects records written by a newer app and unknown old schemas. */
-export function checkSchemaVersion(kind: string, record: { readonly schemaVersion?: unknown }): void {
-  const v = record.schemaVersion;
-  if (v === DOMAIN_SCHEMA_VERSION) return;
-  if (typeof v === 'number' && v > DOMAIN_SCHEMA_VERSION) throw new DomainError('SCHEMA_NEWER', `${kind} stammt aus einer neueren App-Version (Schema ${v}). Bitte die App aktualisieren.`);
-  throw new DomainError('SCHEMA', `${kind} hat ein unbekanntes Schema (${String(v)}).`);
-}
 
 /** Version ids an instance list and its frozen revisions depend on. */
 export function referencedVersionIds(project: Project): Set<string> {

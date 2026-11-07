@@ -20,10 +20,7 @@ import type { TeamEvent, TeamState } from './team.js';
 import { teamKindNeed } from './team.js';
 import { verifyEvent, verifyLeaderEvent } from './eventSig.js';
 
-/** True when the project holds keys of a Team-Raum (live mode). */
-export function hasTeamAccess(project: Pick<Project, 'site'>): boolean {
-  return !!(project.site?.team as RoomTeam | undefined)?.live;
-}
+export { hasTeamAccess, withoutTeamAccess } from './teamAccessBasics.js';
 
 /** Names of the keys a project holds, for notes („Einladung, Verwaltung, Server“). */
 export function teamAccessKinds(project: Pick<Project, 'site'>): string[] {
@@ -32,13 +29,6 @@ export function teamAccessKinds(project: Pick<Project, 'site'>): string[] {
   return ['Einladung', ...(live.adminKey ? ['Verwaltung'] : []), ...(live.serverKey ? ['Server'] : [])];
 }
 
-/** The project without the Team-Raum block (keys, read position, outbox). Everything else stays untouched. */
-export function withoutTeamAccess<P extends Pick<Project, 'site'>>(project: P): P {
-  const team = project.site?.team as RoomTeam | undefined;
-  if (!team?.live) return project;
-  const { live: _l, ...rest } = team;
-  return { ...project, site: { ...project.site!, team: rest as TeamState } };
-}
 
 /**
  * Restore: the local project keeps its own access when the incoming record has none (a key-free backup must not

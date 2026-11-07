@@ -1,8 +1,8 @@
 import { writeSchemV3 } from '../../formats/src/schemWrite.js';
 import { writeLitematic } from '../../formats/src/litematicWrite.js';
-import type { LitematicExportReport } from '../../formats/src/litematicWrite.js';
-import type { SchemAnchor, SchemExportReport, UnselectedPolicy } from '../../formats/src/schemWrite.js';
-import type { NbtTag } from '../../voxel/src/types.js';
+import type { LitematicExportReport, LitematicWriteOptions } from '../../formats/src/litematicWrite.js';
+import type { SchemAnchor, SchemExportReport, SchemWriteOptions, UnselectedPolicy } from '../../formats/src/schemWrite.js';
+import type { NbtTag, VoxelPayload } from '../../voxel/src/types.js';
 import { LEGACY_MOD_MAX_VOLUME } from '../../voxel/src/sizeLimits.js';
 import { exportSafetyLines, sanitizeForExport } from '../../voxel/src/exportSafety.js';
 import type { ExportSafetyReport } from '../../voxel/src/exportSafety.js';
@@ -59,6 +59,18 @@ import { buildGuide } from '../../domain/src/building/guide.js';
 import { sectionOfStep } from '../../domain/src/building/sectionMembership.js';
 import type { Resolution } from '../../domain/src/core/compose.js';
 
+/** One file write: the frozen world and the format options; the only heavy step of an export (O-10). */
+export type FileWriteRequest =
+  | { readonly format: 'litematic'; readonly world: VoxelPayload; readonly options: LitematicWriteOptions }
+  | { readonly format: 'schem'; readonly world: VoxelPayload; readonly options: SchemWriteOptions };
+export interface FileWriteResult { readonly bytes: Uint8Array; readonly sha256: string; readonly report: SchemExportReport | LitematicExportReport }
+/** Writes the file; the web app passes a writer that runs in a background worker (PERF-07, O-10). */
+export type FileWriter = (request: FileWriteRequest) => Promise<FileWriteResult>;
+export const writeExportFile: FileWriter = async request => {
+  const out = request.format === 'litematic' ? await writeLitematic(request.world, request.options) : await writeSchemV3(request.world, request.options);
+  return { bytes: out.bytes, sha256: out.sha256, report: out.report };
+};
+
 /** Most build sections a plan file carries (one byte per cell, 0 = no section). */
 export const MAX_FILE_SECTIONS = 255;
 
@@ -113,7 +125,7 @@ export function exportFileName(project: Project, revision: BlueprintRevision, fo
  */
 export async function exportRevisionSchem(project: Project, revisionId: string, versions: ReadonlyMap<string, AssetVersion>, settings: SchemExportSettings,
   /** The revision's resolution when the caller has it already (same instances and links). */
-  resolved?: Resolution): Promise<RevisionExport> {
+  resolved?: Resolution, writer: FileWriter = writeExportFile): Promise<RevisionExport> {
   const revision = project.revisions.find(r => r.id === revisionId);
   if (!revision) throw new DomainError('NOT_FOUND', `Revision ${revisionId} existiert nicht.`);
   const resolution = resolved ?? resolveRevision(project, revision, versions);
@@ -162,16 +174,16 @@ export async function exportRevisionSchem(project: Project, revisionId: string, 
   const format = settings.format ?? 'schem';
   if (format !== 'schem' && format !== 'litematic') throw new DomainError('EXPORT_FORMAT', `Unbekanntes Exportformat ${String(format)}.`);
   if (format === 'litematic') {
-    const out = await writeLitematic(world, {
+    const out = await writer({ format, world, options: {
       dataVersion: settings.dataVersion, anchor: settings.anchor, unselected: settings.unselected, regionName: project.name,
       metadata: { name: `${project.name} · Revision ${revision.number}`, ...(settings.author?.trim() && { author: settings.author.trim() }), ...(revision.comment && { description: revision.comment }), ...(Number.isSafeInteger(date) && { date }), extra },
-    });
+    } });
     return { format, revision, fileName: exportFileName(project, revision, format), bytes: out.bytes, sha256: out.sha256, report: out.report, notes, safety };
   }
-  const out = await writeSchemV3(world, {
+  const out = await writer({ format, world, options: {
     dataVersion: settings.dataVersion, anchor: settings.anchor, unselected: settings.unselected,
     metadata: { name: `${project.name} · Revision ${revision.number}`, ...(settings.author?.trim() && { author: settings.author.trim() }), ...(Number.isSafeInteger(date) && { date }), extra },
-  });
+  } });
   return { format, revision, fileName: exportFileName(project, revision), bytes: out.bytes, sha256: out.sha256, report: out.report, notes, safety };
 }
 
@@ -179,14 +191,19 @@ export async function exportRevisionSchem(project: Project, revisionId: string, 
 /** Prepare one complete export without storage or UI side effects. Failed writers
  * never publish a new revision; callers persist the returned project only after success. */
 export async function prepareRevisionExport(project: Project, versions: ReadonlyMap<string, AssetVersion>, settings: SchemExportSettings,
-  options: { readonly revisionId?: string; readonly comment?: string } = {}): Promise<{ readonly project: Project; readonly created: boolean; readonly output: RevisionExport }> {
+  options: {
+    readonly revisionId?: string; readonly comment?: string;
+    /** Resolution of `project`'s current state when the caller has it (the page's project computation): no second resolve (O-10). */
+    readonly resolved?: Resolution;
+    readonly writer?: FileWriter;
+  } = {}): Promise<{ readonly project: Project; readonly created: boolean; readonly output: RevisionExport }> {
   // The current state is resolved once: the revision frozen from it (or the unchanged last one) has the same
   // instances and links, so the export reuses it instead of resolving a million cells a second time (SIZE-01).
-  const current = options.revisionId === undefined ? resolveProject(project, versions) : undefined;
+  const current = options.revisionId === undefined ? options.resolved ?? resolveProject(project, versions) : undefined;
   const prepared = current
     ? revisionForExport(project, current, options.comment ?? '')
     : { project, revision: project.revisions.find(r => r.id === options.revisionId), created: false };
   if (!prepared.revision) throw new DomainError('NOT_FOUND', `Revision ${options.revisionId} existiert nicht.`);
-  const output = await exportRevisionSchem(prepared.project, prepared.revision.id, versions, settings, current);
+  const output = await exportRevisionSchem(prepared.project, prepared.revision.id, versions, settings, current, options.writer);
   return { project: prepared.project, created: prepared.created, output };
 }

@@ -3,7 +3,7 @@ import type { Collection, LibraryTemplate } from '../catalog/collections.js';
 import { canonicalJson, newId, sha256Hex } from '../core/hash.js';
 import { DomainError } from '../core/types.js';
 import type { Asset, Project } from '../core/types.js';
-import { withoutTeamAccess } from '../team/teamAccess.js';
+import { withoutTeamAccess } from '../team/teamAccessBasics.js';
 
 /**
  * Sicherungsstand (BACKUP-02-S01). The app records a receipt for every backup

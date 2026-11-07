@@ -60,8 +60,8 @@ Priorität: **P1** spürbar für jeden Nutzer, **P2** bei großen Daten oder bes
 | O-6 | P3 | Sehr große Dateien mit verdichteten Einzeilern: `WorldMapView.tsx` 846 Zeilen, `BlockEditor.tsx` 610, `LandscapeTab.tsx` 547, `TeamTab.tsx`, `team.ts` 752, `base.ts` 801, `blockFacts.ts` 2074. Das erschwert Review und parallele Arbeit, weil Konflikte gehäuft auftreten. **Runde 5:** `StorageModule.java` (Plugin, 1016 Zeilen) in Modul und `StorageCommands` geteilt. | Je Datei erst nach Merge des zuständigen Threads in Unterkomponenten und Hooks aufteilen, jeweils ohne Verhaltensänderung und mit vorhandenen Browsertests als Netz. | nacheinander, nie während ein Thread die Datei bearbeitet |
 | O-7 | P3 | Restliche plattformabhängige Mathematik: `voxel/entities.ts` (Gierwinkel, auf 1/1000° gerundet, daher geringes Risiko), `editor/colorMatch.ts` (`Math.cbrt`, Bild zu Blöcken, Nutzeraktion), `Math.hypot` in Weltplan und Route (Messwerte, nicht gespeichert). | Beobachten. `entities.ts` bei der nächsten Entity-Änderung auf `stableAtan2` umstellen. | — |
 | O-8 | P2 | **Erledigt (Runde 5):** Mod und Paper-Plugin analysiert, siehe unten. Ein echter Befund: das Plugin hielt den gefalteten Teamstand nur für ein Team vor. | Zwischenspeicher je Team; Lagerbefehle in eigene Datei. Weitere Punkte unten als Beobachtung. | — |
-| O-9 | P2 | Das Startpaket trägt noch die Prüfketten der Speicherdaten: `checkProjectRecord`/`checkAssetRecord` (in `data/backup.ts`) prüfen Baustelle, Team, Planung, Produktion, Gelände und Weltplan und ziehen deren Rechenmodule samt Rezepttabellen (`profileRecipes.ts`, `blockFacts.ts`) in den Start. | Reine Prüffunktionen in eigene Dateien ohne Rechencode trennen (`siteCheck.ts`, `teamCheck.ts` …), danach erneut messen. Ziel Start-JavaScript unter 800 kB. | großer Eingriff in viele Fachdateien, nacheinander |
-| O-10 | P2 | Der Revisionsexport (`.schem`/`.litematic`) läuft auf der Seite: bei 287 000 Blöcken rund 1 s Seitenpause (Großbau-Leistungstest). | Als Hintergrundauftrag `export` in `jobs/jobs.ts` (Versionen als Zellspalten übertragen, Ergebnis als Bytes). | — |
+| O-9 | P2 | **Erledigt (Runde 7):** Das Startpaket trug die Prüfketten der Speicherdaten (Baustelle, Team, Planung, Produktion, Gelände samt Rezepttabellen). Ursache war weniger der Prüfcode selbst als der Sammelexport: Der Bundler teilt nach Modulen, und wer eine Funktion über `packages/<paket>/src/index.ts` holt, hängt an jedem Modul dahinter. | Build-Plugin `scripts/pages/barrel_imports.mjs` lenkt jeden Import aus einem Sammelexport auf das Modul, das den Namen deklariert (TypeScript löst Weiterleitungen auf; nur im Build, die Quellen bleiben gleich). Dazu: Speicherprüfungen lädt `idbRepository` erst beim ersten Lesen (`app/recordChecks.ts`, parallel zum Öffnen), der Sitzungsspeicher ohne IndexedDB kommt bei Bedarf, kleine Startteile in eigenen Modulen (`backupLimits.ts`, `teamAccessBasics.ts`). Start-JavaScript 1 206 → **428 KiB**. Test `barrel-imports.test.mjs`. | — |
+| O-10 | P2 | **Erledigt (Runde 7):** Der Revisionsexport lief auf der Seite und berechnete das Projekt ein zweites Mal: bei 287 000 Blöcken rund 1 s Seitenpause. | Der Export nimmt die Projektberechnung der Seite (`prepareRevisionExport(…, { resolved })`), die Datei schreibt der Hintergrundauftrag `write` (`jobs/writeJob.ts`, Welt als Zellspalten). Export 1,3 → 0,6 s, längste Bildpause 983 → 228 ms. | — |
 
 ## Runde 3: Projektberechnung (PERF-02-S03) und Zellen bei Bedarf (O-2)
 
@@ -122,9 +122,20 @@ Messung wie oben (`node scripts/bench/perf/measure_start.mjs --runs 3`), Median,
 | Öffnen bis 3D-Netz | 4,3–4,5 s | 15 s |
 | Schichtwechsel, langsamste Schicht | 415–437 ms | 1 500 ms |
 | Kamera, Zeit je Bild | 1,2–1,3 s | 4 s |
-| Export `.litematic` | 1,3 s (Seitenpause 1 s, O-10) | 5 s |
+| Export `.litematic` | 0,6 s (Runde 7; vorher 1,3 s mit 1 s Seitenpause) | 3 s |
 
 Die Kamerawerte gelten für SwiftShader (Grafik auf der CPU) im Container; mit echter Grafikkarte liegen sie um ein Vielfaches darunter. Das Budget fängt Rückschritte ab, keine Gerätewerte.
+
+## Runde 7: Startpaket ohne Sammelexport-Ballast, Export im Hintergrund (O-9, O-10)
+
+| Messgröße | Runde 6 | nachher |
+|---|---:|---:|
+| Start-JavaScript (Einstieg und Vorladeliste) | 1 206 KiB | **428 KiB** |
+| Erststart bis Projektzentrale sichtbar | 0,26 s | 0,22 s |
+| Längste Hauptthread-Blockade beim Start | 259 ms | 216 ms |
+| Großbau-Export `.litematic` (287 000 Blöcke) | 1,3 s, Bildpause 983 ms | **0,6 s, Bildpause 228 ms** |
+
+Der Rest des Starts ist überwiegend React (rund 200 KiB) und die Projektzentrale selbst. Die übrigen Seiten bekommen durch das Plugin feinere Bausteine; geladen wird je Seite nur, was sie wirklich benutzt.
 
 ## Geprüft ohne Befund
 

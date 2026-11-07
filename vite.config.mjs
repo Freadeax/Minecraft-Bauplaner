@@ -2,8 +2,11 @@ import { defineConfig } from 'vite';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { catalogFingerprint } from './scripts/pages/catalog_key.mjs';
+import { barrelImportsPlugin } from './scripts/pages/barrel_imports.mjs';
 
 export default defineConfig(({ command }) => ({
+  // O-9: imports through the package barrels point at the declaring module, so chunks follow real use.
+  plugins: [barrelImportsPlugin(path.dirname(fileURLToPath(import.meta.url)))],
   root: 'apps/web', base: '/Minecraft-Bauplaner/',
   // three.js is split into the lazily loaded viewer chunk (~580 kB, ~146 kB gzip); the limit documents that size.
   build: { outDir: '../../dist-web', emptyOutDir: true, sourcemap: false, chunkSizeWarningLimit: 650,

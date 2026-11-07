@@ -949,3 +949,36 @@ Abnahme im Spiel über Testfall PROJ-04 verknüpft (Testplan neu erzeugt)
 
 - `docs/architecture/formate/VERSION_COMPAT.md`
 
+## 2026-11-07T22:24:26.927Z · progress
+
+**Aufgaben:** PERF-07
+
+Startpaket 1206 → 428 KiB (Build lenkt Sammelexport-Importe auf die deklarierenden Module, Speicherprüfungen beim ersten Lesen), Export großer Bauten im Hintergrund ohne zweite Projektberechnung (0,6 s statt 1,3 s)
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-07 | 🧩 Implementiert · Abnahme offen | 6/6 | Abnahme auf Philipps Rechner und iPad (Projektzentrale sofort sichtbar, Export großer Bauten ohne Hänger). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/idbRepository.ts`
+- `apps/web/src/app/recordChecks.ts`
+- `apps/web/src/app/repository.ts`
+- `apps/web/src/jobs/exportWriter.ts`
+- `apps/web/src/jobs/jobs.ts`
+- `apps/web/src/jobs/writeJob.ts`
+- `apps/web/src/views/project/ExportTab.tsx`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/kern/PERFORMANCE_AUDIT.md`
+- `packages/application/src/revisionExport.ts`
+- `packages/domain/src/data/backup.ts`
+- `packages/domain/src/data/backupLimits.ts`
+- `packages/domain/src/data/backupStatus.ts`
+- `packages/domain/src/team/teamAccess.ts`
+- `packages/domain/src/team/teamAccessBasics.ts`
+- `scripts/pages/barrel_imports.mjs`
+- `tests/e2e/perf-budgets.json`
+- `tests/unit/tooling/barrel-imports.test.mjs`
+- `vite.config.mjs`
+

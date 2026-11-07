@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T21:34:40.733Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T22:24:26.927Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -208,7 +208,7 @@ Abgeschlossen oder zurückgestellt: LINK-01 (geprüft).
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Olympus auf deinem Rechner, dazu Firefox/Safari (S06). |
 | [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 9/9 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | — |
 | [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | GERAET-03 auf #/testphase: auf dem iPad (Safari) den Planer einmal laden, dann im Flugmodus neu öffnen; einmal die Mod über https://bauplaner.pages.dev/Minecraft-Bauplaner/ verbinden. |
-| [PERF-07](#perf-07) | Ladezeit | 🧩 Implementiert · Abnahme offen 4/6 | P1 | **verwaist** | — |
+| [PERF-07](#perf-07) | Ladezeit | 🧩 Implementiert · Abnahme offen 6/6 | P1 | **verwaist** | — |
 | [RELEASE-01](#release-01) | Browser-Schutz und Release-Check | 🧩 Implementiert · Abnahme offen 5/7 | P1 | „Sicherheitsheader und Release-Check einführen“ | — |
 
 Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF-03 (geprüft).
@@ -385,7 +385,7 @@ Arbeit, für die gerade kein laufender Arbeitsstrang zuständig ist. Zum Verteil
 | ID | Bereich | Prio | Status | Offen ohne Bearbeiter |
 |---|---|---|---|---|
 | [COMPAT-01](#compat-01) | Kern, Minecraft-Daten und Dateiformate | P1 | 🧩 Implementiert · Abnahme offen | Abnahme COMPAT-01-S04 im echten Spiel; bei neuer Minecraft-Version fetch_version_reports.sh + gen_version_compat.mjs. |
-| [PERF-07](#perf-07) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | O-10 Export im Worker, O-9 Prüfketten trennen; Abnahme auf Philipps Rechner und iPad (Projektzentrale sofort sichtbar). |
+| [PERF-07](#perf-07) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | Abnahme auf Philipps Rechner und iPad (Projektzentrale sofort sichtbar, Export großer Bauten ohne Hänger). |
 
 ## Eingänge ohne eigenes Paket
 
@@ -541,7 +541,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart | 🧩 Implementiert · Abnahme offen | 6/7 | PERF-01, MODEL-01, ARCH-02 | ausstehend | ausstehend |
 | [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund | 🧩 Implementiert · Abnahme offen | 9/9 | PERF-04 | ausstehend | ausstehend |
 | [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server: Offline-Speicher (Service Worker) und kostenlose zweite Adresse auf Cloudflare Pages | 🧩 Implementiert · Abnahme offen | 3/3 | PERF-05 | ausstehend | ausstehend |
-| [PERF-07](#perf-07) | Ladezeit: Projektzentrale startet vor dem Katalog, schlankeres Startpaket, feste Leistungstests für Großbauten | 🧩 Implementiert · Abnahme offen | 4/6 | PERF-05 | ausstehend | ausstehend |
+| [PERF-07](#perf-07) | Ladezeit: Projektzentrale startet vor dem Katalog, schlankeres Startpaket, feste Leistungstests für Großbauten | 🧩 Implementiert · Abnahme offen | 6/6 | PERF-05 | ausstehend | ausstehend |
 | [COMPAT-01](#compat-01) | Kompatibilitätscheck vor Export und Download: Minecraft-Version, Loader und Einfügewerkzeug zeigen fehlende Blöcke, angepasste Zustände, nötige Mods und passende Mod-Datei | 🧩 Implementiert · Abnahme offen | 3/4 | PROFILE-01 | ausstehend | ausstehend |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen | 5/6 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material | 🧩 Implementiert · Abnahme offen | 6/7 | VIEW-02, BUILD-01, MAT-01 | ausstehend | ausstehend |
@@ -1465,22 +1465,22 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-07
 
-**Ladezeit: Projektzentrale startet vor dem Katalog, schlankeres Startpaket, feste Leistungstests für Großbauten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Ladezeit und Versions-Check“ · Aktualisiert: 2026-11-07T21:30:09.169Z
+**Ladezeit: Projektzentrale startet vor dem Katalog, schlankeres Startpaket, feste Leistungstests für Großbauten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Ladezeit und Versions-Check“ · Aktualisiert: 2026-11-07T22:24:26.927Z
 
 - [x] PERF-07-S01: Kerncode ohne Nebenwirkungen markiert: Start-JavaScript 1,73 → 1,21 MiB.
 - [x] PERF-07-S02: Projektzentrale öffnet, sobald der lokale Speicher offen ist; Katalog lädt im Hintergrund, andere Seiten warten wie bisher (LibraryGate). Erste Anzeige 1,24 s → 0,26 s.
 - [x] PERF-07-S03: Fachcode der Projektzentrale (Sicherung, Vorschau, Vorlagen, Termine, Teampaket) wird nachgeladen; gespeicherte Vorschaubilder erscheinen sofort, neue warten auf den Katalog.
 - [x] PERF-07-S04: Feste Leistungstests Großbau (287 000 Blöcke): Öffnen, Schichtwechsel, Kamera, Export mit Budgets in tests/e2e/perf-budgets.json.
-- [ ] PERF-07-S05: Revisionsexport großer Projekte in den Hintergrund-Worker (heute rund 1 s Seitenpause bei 287 000 Blöcken, O-10).
-- [ ] PERF-07-S06: Prüfketten der Speicherdaten von Rechencode trennen, damit Sicherung, Baustelle und Team nicht mehr im Startpaket liegen (O-9).
+- [x] PERF-07-S05: Revisionsexport im Hintergrund-Worker und ohne zweite Projektberechnung: Großbau-Export 1,3 → 0,6 s, Bildpause 983 → 228 ms (O-10).
+- [x] PERF-07-S06: Sammelexporte im Build auf die deklarierenden Module gelenkt, Speicherprüfungen beim ersten Lesen geladen: Start-JavaScript 1206 → 428 KiB (O-9).
 
 **Abnahme:** Projektzentrale zeigt eigene Projekte, bevor der Katalog geladen ist; Beispiel, Vorlagen und Sicherung folgen ohne Fehler. Seiten mit Bibliotheksbedarf öffnen erst mit fertigem Katalog (Deep-Links wie bisher). Großbau-Leistungstest im Budget; alle Tests grün.
 
-**Nächste Aktion:** O-10 Export im Worker, O-9 Prüfketten trennen; Abnahme auf Philipps Rechner und iPad (Projektzentrale sofort sichtbar).
+**Nächste Aktion:** Abnahme auf Philipps Rechner und iPad (Projektzentrale sofort sichtbar, Export großer Bauten ohne Hänger).
 
 **Prüfstand:** Chromium im Container gemessen (measure_start, Großbau-Test); echte Geräte offen.
 
-**Nachweise:** [tests/e2e/grossbau-leistung.e2e.mjs](../tests/e2e/grossbau-leistung.e2e.mjs) — Öffnen, Schichtwechsel, Kamera, Export eines Großbaus gegen feste Budgets.; [tests/e2e/home-before-catalog.e2e.mjs](../tests/e2e/home-before-catalog.e2e.mjs) — Projektzentrale vor dem Katalog, Beispiel und Vorlagen danach.; [docs/architecture/kern/PERFORMANCE_AUDIT.md](architecture/kern/PERFORMANCE_AUDIT.md) — Runde 6: Messwerte vorher/nachher, O-9, O-10.
+**Nachweise:** [tests/e2e/grossbau-leistung.e2e.mjs](../tests/e2e/grossbau-leistung.e2e.mjs) — Öffnen, Schichtwechsel, Kamera, Export eines Großbaus gegen feste Budgets.; [tests/e2e/home-before-catalog.e2e.mjs](../tests/e2e/home-before-catalog.e2e.mjs) — Projektzentrale vor dem Katalog, Beispiel und Vorlagen danach.; [docs/architecture/kern/PERFORMANCE_AUDIT.md](architecture/kern/PERFORMANCE_AUDIT.md) — Runden 6 und 7: Messwerte vorher/nachher, O-9 und O-10 erledigt.; [tests/unit/tooling/barrel-imports.test.mjs](../tests/unit/tooling/barrel-imports.test.mjs) — Build lenkt Sammelexport-Importe auf das deklarierende Modul.
 
 **Dateiumfang:** `vite.config.mjs`, `apps/web/src/app/context.tsx`, `apps/web/src/main.tsx`, `apps/web/src/views/ProjectsView.tsx`, `apps/web/src/views/homeDomain.ts`, `apps/web/src/views/loadHomeDomain.ts`, `apps/web/src/views/BackupPanel.tsx`, `apps/web/src/views/project/team/TeamOpen.tsx`, `apps/web/src/thumbnail/Thumb.tsx`, `tests/e2e/start.mjs`, `tests/e2e/grossbau-leistung.e2e.mjs`, `tests/e2e/perf-budgets.json`, `tests/e2e/home-before-catalog.e2e.mjs`, `scripts/bench/perf/measure_start.mjs`, `docs/architecture/kern/PERFORMANCE_AUDIT.md`. **Abhängigkeiten:** PERF-05. **Alte IDs:** —.
 

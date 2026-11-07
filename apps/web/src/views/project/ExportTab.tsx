@@ -14,6 +14,7 @@ import type { ProjectSession } from './session';
 import { checkCompatibility, dataVersionOf, paletteCounts, TOOL_FORMAT } from '../../../../../packages/voxel/src/versionCompat.js';
 import type { GameSetup } from '../../../../../packages/voxel/src/versionCompat.js';
 import { useGameSetup } from '../../app/gameSetup';
+import { backgroundWriter } from '../../jobs/exportWriter';
 import { CompatStatus, GameSetupFields } from '../compat/GameSetupBar';
 
 const date = (iso: string): string => new Date(iso).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
@@ -65,7 +66,8 @@ export function ExportTab({ session }: { session: ProjectSession }) {
     try {
       const prepared = await prepareRevisionExport(project, library.versions,
         { format, dataVersion: dv, anchor, unselected, author, safeMode },
-        { ...(revisionId !== undefined && { revisionId }), comment });
+        // O-10: the page's project computation already resolved the current state; the file is packed in the background.
+        { ...(revisionId !== undefined ? { revisionId } : isResolved(resolution) && { resolved: resolution }), comment, writer: backgroundWriter });
       const out = prepared.output;
       // A failed writer leaves no new revision in the session or repository.
       if (prepared.created) { session.replace(prepared.project); setComment(''); }

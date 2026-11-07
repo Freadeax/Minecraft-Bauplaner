@@ -1,9 +1,9 @@
 {
-  "comment": "PERF-07: feste Budgets der Leistungstests (Chromium headless, Software-WebGL, Cloud-Container), etwa dreifacher Messwert vom 07.11.2026. Messwerte und Verlauf: docs/architecture/kern/PERFORMANCE_AUDIT.md, Runde 6.",
+  "comment": "PERF-07: feste Budgets der Leistungstests (Chromium headless, Software-WebGL, Cloud-Container), etwa dreifacher Messwert vom 07.11.2026. Messwerte und Verlauf: docs/architecture/kern/PERFORMANCE_AUDIT.md, Runden 6 und 7.",
   "grossbau": {
     "oeffnen": { "ms": 15000, "maxFrameGapMs": 2500 },
     "schichtwechsel": { "perLayerMaxMs": 1500, "maxFrameGapMs": 600 },
     "kamera": { "msPerFrame": 4000 },
-    "export": { "ms": 5000, "maxFrameGapMs": 3000 }
+    "export": { "ms": 3000, "maxFrameGapMs": 1000 }
   }
 }
