@@ -9066,3 +9066,17 @@ Rebase auf SIZE-01-S06
 |---|---|---:|---|
 | GAME-06 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LINK-14 auf Philipps Server mit echten Spielern. |
 
+## 2026-11-07T02:16:04.189Z · progress
+
+**Aufgaben:** GAME-09
+
+0.26.0 auf Modrinth (Fabric, NeoForge, Paper); Beschreibung: Abschnittsschutz nach Rollen, signierte Team-Ereignisse
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
+
+**Geänderte Dateien:**
+
+- `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
+
