@@ -1,9 +1,13 @@
-# Sicherheitsgrundsätze
+# Sicherheit
 
-Importierte Dateien sind nicht vertrauenswürdig. Entpackte Größe, Struktur, Laufzeit und Volumen begrenzen. Parser in isolierten Jobs betreiben. Keine importierten Befehle ausführen. Private Weltdaten und Zugangsdaten nicht ins Repository aufnehmen.
+## Grundsätze
 
-Projektzugriffe, Payload-Downloads und Spieladapter benötigen serverseitige Rechteprüfung. Tokens bleiben widerrufbar und auf ihren Zweck begrenzt. Keine frei nutzbare Fernkonsole. Webhooks signieren und interne Netzwerkziele sperren.
+- **Importierte Dateien sind nicht vertrauenswürdig.** Entpackte Größe, Struktur, Laufzeit und Volumen sind begrenzt; Parser laufen in isolierten Web-Workern; importierte Befehle werden nie ausgeführt.
+- **Keine Weltveränderung ohne Auftrag.** Vorschau, Import und Live-Abgleich setzen keine Blöcke. Planübertragung und echte Weltänderungen bleiben getrennt.
+- **Rechte auf dem Server.** Das Paper-Plugin übernimmt Rollen und Abschnittsschutz aus dem Team-Raum nur mit Unterschrift der Bauleitung ([SIGNED_EVENTS](docs/architecture/team/SIGNED_EVENTS.md)). Raumschlüssel sind zweckgebunden; das Server-Plugin erhält nie den Verwaltungsschlüssel eines Raums.
+- **Lokale Verbindung.** Die direkte Verbindung zwischen Planer und Mod läuft nur über `127.0.0.1` und erst nach Freigabe im Spiel.
+- **Keine Geheimnisse im Repository.** Zugangsdaten für Veröffentlichung und Dienste kommen nur aus Umgebungsvariablen; private Weltdaten werden nicht eingecheckt.
 
-Planübertragung und echte Weltänderungen getrennt halten. Vorschau darf keine Blöcke setzen. Weltänderungen erfordern ausdrücklichen Auftrag, Dry-Run, Bereichsprüfung, Budget, Sicherung und Schutz gegen zwischenzeitliche Änderungen.
+## Meldungen
 
-Sicherheitslücken nicht mit Tokens oder privaten Weltdateien öffentlich melden. Ein privater Meldeweg ist noch nicht eingerichtet; vor öffentlichem Betrieb muss der Maintainer einen benennen. Keine nicht existierende Kontaktadresse erfinden.
+Sicherheitslücken bitte nicht als öffentliches Issue mit Tokens, Raumschlüsseln oder privaten Weltdateien melden. Bitte wende dich zuerst direkt an den Maintainer [@Freadeax](https://github.com/Freadeax) und beschreibe das Problem ohne vertrauliche Daten.

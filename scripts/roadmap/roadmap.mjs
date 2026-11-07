@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { isPagesArtifact } from '../pages/prepare_main_pages.mjs';
@@ -10,10 +11,19 @@ const git = args => execFileSync('git', args, { encoding: 'utf8', maxBuffer: 16 
 const safePath = p => typeof p === 'string' && p.length > 0 && !p.startsWith('/') && !p.split('/').includes('..') && !/[\r\n]/.test(p);
 const validDate = s => typeof s === 'string' && Number.isFinite(Date.parse(s)) && /(?:Z|[+-]\d\d:\d\d)$/.test(s);
 const hash = s => s === null || typeof s === 'string' && /^[a-f0-9]{40}$/.test(s);
+/** Prüfsumme über verdichtete Ereignisse, verkettet mit einem früheren Archivblock. */
+export const eventsDigest = (events, prior) => createHash('sha256').update((prior?.sha256 ?? '') + JSON.stringify(events)).digest('hex');
+/** Verdichtet die Historie: Ereignisse wandern in die Git-Historie, roadmap.json behält Anzahl, Prüfsumme und Fundstelle. */
+export function compactHistory(data, commit) {
+  if (!data.events.length) return data;
+  const archive = { until: data.events.at(-1).at, count: (data.archive?.count ?? 0) + data.events.length, sha256: eventsDigest(data.events, data.archive), commit };
+  return { ...data, archive, events: [] };
+}
 export function validateRoadmap(data, root = process.cwd()) {
   const errors = [];
   if (data?.schemaVersion !== 1 || !Array.isArray(data?.items) || !Array.isArray(data?.phases) || !Array.isArray(data?.events)) return ['Roadmap-Schema ungültig.'];
   if (!validDate(data.updatedAt) || !hash(data.baselineCommit) || !data.baselineCommit) errors.push('Zeit/Baseline ungültig.');
+  if (data.archive !== undefined && (!validDate(data.archive?.until) || !Number.isInteger(data.archive.count) || data.archive.count < 1 || !/^[a-f0-9]{64}$/.test(data.archive.sha256 ?? '') || !hash(data.archive.commit) || !data.archive.commit)) errors.push('Archivblock der Historie ungültig.');
   const ids = new Set(), phases = new Set(data.phases.map(p => p.id));
   if (phases.size !== 4 || data.phases.length !== 4) errors.push('Genau vier eindeutige Phasen erforderlich.');
   for (const p of data.phases) if (!p.title || !p.goal || !p.exit?.length) errors.push(`Phase ${p.id}: Ziel/Abnahme fehlt.`);
@@ -61,7 +71,7 @@ export function validateRoadmap(data, root = process.cwd()) {
 }
 export const philippKinds = { server: 'Auf deinem Server mit Mitspielern', spiel: 'Im Spiel an deinem PC', geraet: 'Auf echten Geräten und Browsern', datei: 'Dateien oder Welt liefern', planer: 'Im Planer abnehmen', entscheidung: 'Entscheiden oder Rückfrage beantworten' };
 export const intakeStates = ['verwaist', 'zugeteilt', 'zurückgestellt', 'übernommen', 'verworfen'];
-// Übersicht nach Bereichen (optional je Aufgabe, damit parallele Threads ohne Zuordnung nicht scheitern).
+// Übersicht nach Bereichen (optional je Aufgabe, damit parallele Arbeitsstränge ohne Zuordnung nicht scheitern).
 function validateOverview(data, ids) {
   const errors = [];
   if (data.areas === undefined) return errors;
@@ -73,7 +83,7 @@ function validateOverview(data, ids) {
   }
   for (const i of data.items) {
     if (i.area !== undefined && !areas.has(i.area)) errors.push(`${i.id}: unbekannter Bereich ${i.area}`);
-    if (i.thread !== undefined && i.thread !== null && (typeof i.thread !== 'string' || !i.thread.trim())) errors.push(`${i.id}: zuständiger Thread ungültig.`);
+    if (i.thread !== undefined && i.thread !== null && (typeof i.thread !== 'string' || !i.thread.trim())) errors.push(`${i.id}: Arbeitsstrang ungültig.`);
     if (i.philipp !== undefined && (!Array.isArray(i.philipp) || i.philipp.some(p => !Object.hasOwn(philippKinds, p?.kind) || !p.text))) errors.push(`${i.id}: Philipp-Aufgaben ungültig.`);
     if (i.orphans !== undefined && (!Array.isArray(i.orphans) || i.orphans.some(o => typeof o !== 'string' || !o))) errors.push(`${i.id}: verwaiste Punkte ungültig.`);
   }
@@ -82,7 +92,7 @@ function validateOverview(data, ids) {
     if (!/^IN-\d{2,}$/.test(e?.id ?? '') || seen.has(e.id)) errors.push(`Ungültiger/doppelter Eingang ${e?.id}`);
     seen.add(e?.id);
     if (!validDate(e.at) || !e.title || !e.source || !areas.has(e.area) || !intakeStates.includes(e.state) || !Array.isArray(e.items) || e.items.some(id => !ids.has(id))) errors.push(`${e.id}: Eingang unvollständig.`);
-    if (e.thread !== null && (typeof e.thread !== 'string' || !e.thread.trim())) errors.push(`${e.id}: Thread ungültig.`);
+    if (e.thread !== null && (typeof e.thread !== 'string' || !e.thread.trim())) errors.push(`${e.id}: Arbeitsstrang ungültig.`);
   }
   return errors;
 }
@@ -95,7 +105,7 @@ export function renderOverview(data) {
   if (!Array.isArray(data.areas)) return '';
   const areaOf = new Map(data.areas.map(a => [a.id, a]));
   const groups = [...data.areas, { id: '', title: 'Noch keinem Bereich zugeordnet' }];
-  let out = '## Überblick nach Bereichen\n\nJe Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und dem, was nur Philipp tun kann. „Verwaist“ heißt: Arbeit offen, aber kein laufender Thread zuständig. Abgeschlossene Pakete stehen darunter in einer Zeile. Pflege: Felder `area`, `thread`, `philipp`, `orphans` je Aufgabe in roadmap.json; neue Wünsche ohne Paket als Eingang (`intake`).\n\n| Bereich | Offen | Verwaist | Nur Philipp | Geprüft |\n|---|---:|---:|---:|---:|\n';
+  let out = '## Überblick nach Bereichen\n\nJe Bereich die offenen Pakete mit Status, Priorität, zuständigem Arbeitsstrang und dem, was nur Philipp tun kann. „Verwaist“ heißt: Arbeit offen, aber kein laufender Arbeitsstrang zuständig. Abgeschlossene Pakete stehen darunter in einer Zeile. Pflege: Felder `area`, `thread`, `philipp`, `orphans` je Aufgabe in roadmap.json; neue Wünsche ohne Paket als Eingang (`intake`).\n\n| Bereich | Offen | Verwaist | Nur Philipp | Geprüft |\n|---|---:|---:|---:|---:|\n';
   const inArea = id => data.items.filter(i => (areaOf.has(i.area) ? i.area : '') === id);
   for (const g of groups) {
     const items = inArea(g.id); if (!items.length) continue;
@@ -107,7 +117,7 @@ export function renderOverview(data) {
     const active = items.filter(open).sort((a, b) => a.priority.localeCompare(b.priority) || a.id.localeCompare(b.id));
     out += `<a id="bereich-${(g.id || 'ohne').toLowerCase()}"></a>\n\n### Bereich: ${g.title}\n\n`;
     if (active.length) {
-      out += '| ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |\n|---|---|---|---|---|---|\n';
+      out += '| ID | Paket | Status | Prio | Arbeitsstrang | Nur Philipp |\n|---|---|---|---|---|---|\n';
       for (const i of active) out += `| [${i.id}](#${i.id.toLowerCase()}) | ${esc(shortTitle(i.title))} | ${labels[i.status]} ${done(i)}/${i.steps.length} | ${i.priority} | ${threadLabel(i)}${i.orphans?.length ? ` · ${i.orphans.length} verwaist` : ''} | ${(i.philipp ?? []).map(p => esc(p.text)).join('<br>') || '—'} |\n`;
       out += '\n';
     }
@@ -119,12 +129,12 @@ export function renderOverview(data) {
     const rows = data.items.flatMap(i => (i.philipp ?? []).filter(p => p.kind === kind).map(p => `- **${i.id}** · ${esc(p.text)}`));
     if (rows.length) out += `### ${title}\n\n${rows.join('\n')}\n\n`;
   }
-  out += '## Verwaiste Punkte\n\nArbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thread starten, `thread` in roadmap.json setzen und den Punkt aus `orphans` entfernen, sobald er ein eigener Teilschritt oder erledigt ist.\n\n| ID | Bereich | Prio | Status | Offen ohne Bearbeiter |\n|---|---|---|---|---|\n';
+  out += '## Verwaiste Punkte\n\nArbeit, für die gerade kein laufender Arbeitsstrang zuständig ist. Zum Verteilen: Arbeitsstrang starten, `thread` in roadmap.json setzen und den Punkt aus `orphans` entfernen, sobald er ein eigener Teilschritt oder erledigt ist.\n\n| ID | Bereich | Prio | Status | Offen ohne Bearbeiter |\n|---|---|---|---|---|\n';
   const orphanItems = data.items.filter(orphaned).sort((a, b) => a.priority.localeCompare(b.priority) || a.id.localeCompare(b.id));
   for (const i of orphanItems) out += `| [${i.id}](#${i.id.toLowerCase()}) | ${esc(areaOf.get(i.area)?.title.split(':')[0].split(' (')[0] ?? '—')} | ${i.priority} | ${labels[i.status]} | ${(i.orphans?.length ? i.orphans : [i.next]).map(esc).join('<br>')} |\n`;
   out += '\n';
   if (data.intake?.length) {
-    out += `## Eingänge ohne eigenes Paket\n\n${esc(data.intakeRule ?? '')}\n\n| ID | Eingang | Von | Bereich | Zustand | Thread | Bezug |\n|---|---|---|---|---|---|---|\n`;
+    out += `## Eingänge ohne eigenes Paket\n\n${esc(data.intakeRule ?? '')}\n\n| ID | Eingang | Von | Bereich | Zustand | Arbeitsstrang | Bezug |\n|---|---|---|---|---|---|---|\n`;
     for (const e of data.intake) out += `| ${e.id} | ${esc(e.title)} | ${esc(e.source)}, ${e.at.slice(0, 10)} | ${esc(areaOf.get(e.area)?.title.split(':')[0].split(' (')[0] ?? e.area)} | ${e.state} | ${e.thread ? `„${esc(e.thread)}“` : (e.state === 'verwaist' ? '**verwaist**' : '—')} | ${e.items.join(', ') || '—'} |\n`;
     out += '\n';
   }
@@ -141,7 +151,7 @@ export function renderRoadmap(data) {
     const i = data.items.find(i => i.id === id);
     out += `- **${i.id} · ${i.title}** — ${labels[i.status]}, ${done(i)}/${i.steps.length} Teilschritte. Nächster Schritt: ${i.next}\n`;
   }
-  out += '\n## Verbindlicher Ablauf bei jedem Main-Merge oder Push\n\n1. Vor Beginn Aufgabe und Dateiumfang in COMMUNICATION anmelden; Eintrag hier auf „In Arbeit“ setzen.\n2. Teilschritte und Nachweise nach jedem vollständigen Arbeitsblock aktualisieren; Blocker mit Grund und nächster Aktion festhalten.\n3. `npm run roadmap:record -- ID-01,ID-02 "Konkretes Ergebnis und Prüfgrenzen"` hängt Dateien und Aufgabenstände an die Historie an und rendert beide Ansichten. Änderungen an Aufgaben vorher in roadmap.json eintragen.\n4. `npm run check` und ausführbare Browserprüfungen durchführen; Ergebnisse in TESTING festhalten.\n5. `npm run check:roadmap-change -- <vorheriger-main> [quellcommit]` prüft vor Integration Dateizuordnung, neue Ereignisse und unveränderte Historie.\n6. Regulär integrieren; den passenden manifestgeprüften Pages-Artefaktcommit unmittelbar veröffentlichen. Artefaktcommits benötigen keinen neuen Aufgabenstatus.\n7. Integration und Live-Hash prüfen; tatsächliche SHAs im Abschluss berichten und beim nächsten sachlichen Quellupdate nachtragen. Keine künstliche Deployment-Commit-Schleife.\n\nLokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHub diese lokale Regel nicht für fremde Clients oder direkte API-Schreibzugriffe. Auch beim Konnektor gilt deshalb die dokumentierte Vorprüfung.\n\n';
+  out += '\n## Verbindlicher Ablauf bei jedem Main-Merge oder Push\n\n1. Vor Beginn Aufgabe und Dateiumfang in roadmap.json eintragen; Eintrag hier auf „In Arbeit“ setzen.\n2. Teilschritte und Nachweise nach jedem vollständigen Arbeitsblock aktualisieren; Blocker mit Grund und nächster Aktion festhalten.\n3. `npm run roadmap:record -- ID-01,ID-02 "Konkretes Ergebnis und Prüfgrenzen"` hängt Dateien und Aufgabenstände an die Historie an und rendert beide Ansichten. Änderungen an Aufgaben vorher in roadmap.json eintragen.\n4. `npm run check` und ausführbare Browserprüfungen durchführen; Ergebnisse in TESTING festhalten.\n5. `npm run check:roadmap-change -- <vorheriger-main> [quellcommit]` prüft vor Integration Dateizuordnung, neue Ereignisse und unveränderte Historie.\n6. Regulär integrieren; den passenden manifestgeprüften Pages-Artefaktcommit unmittelbar veröffentlichen. Artefaktcommits benötigen keinen neuen Aufgabenstatus.\n7. Integration und Live-Hash prüfen; tatsächliche SHAs im Abschluss berichten und beim nächsten sachlichen Quellupdate nachtragen. Keine künstliche Deployment-Commit-Schleife.\n\nLokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHub diese lokale Regel nicht für fremde Clients oder direkte API-Schreibzugriffe.\n\n';
   for (const phase of data.phases) {
     out += `## ${phase.id}: ${phase.title}\n\n**Ziel:** ${phase.goal}\n\n**Austrittskriterien:**\n\n${phase.exit.map(x => `- ${x}`).join('\n')}\n\n| ID | Arbeitspaket | Status | Schritte | Abhängigkeiten | Main | Pages-Quelle |\n|---|---|---|---:|---|---|---|\n`;
     for (const i of data.items.filter(i => i.phase === phase.id)) out += `| [${i.id}](#${i.id.toLowerCase()}) | ${esc(i.title)} | ${labels[i.status]} | ${done(i)}/${i.steps.length} | ${i.dependencies.join(', ') || '—'} | ${short(i.delivery.main)} | ${short(i.delivery.pagesSource)} |\n`;
@@ -149,17 +159,18 @@ export function renderRoadmap(data) {
   }
   out += '## Details aller Arbeitspakete\n\n';
   for (const i of data.items) {
-    out += `### ${i.id}\n\n**${i.title}** · ${labels[i.status]} · Priorität ${i.priority} · Verantwortlich: ${i.owner}${i.thread !== undefined ? ` · Zuständiger Thread: ${threadLabel(i)}` : ''} · Aktualisiert: ${i.updatedAt}\n\n${i.steps.map(s => `- [${s.done ? 'x' : ' '}] ${s.id}: ${s.title}`).join('\n')}\n\n**Abnahme:** ${i.acceptance.join(' ')}\n\n**Nächste Aktion:** ${i.next}\n\n`;
+    out += `### ${i.id}\n\n**${i.title}** · ${labels[i.status]} · Priorität ${i.priority} · Verantwortlich: ${i.owner}${i.thread !== undefined ? ` · Arbeitsstrang: ${threadLabel(i)}` : ''} · Aktualisiert: ${i.updatedAt}\n\n${i.steps.map(s => `- [${s.done ? 'x' : ' '}] ${s.id}: ${s.title}`).join('\n')}\n\n**Abnahme:** ${i.acceptance.join(' ')}\n\n**Nächste Aktion:** ${i.next}\n\n`;
     if (i.blockers.length) out += `**Blocker:** ${i.blockers.join(' ')}\n\n`;
     if (i.philipp?.length) out += `**Nur Philipp:** ${i.philipp.map(p => `${philippKinds[p.kind]}: ${p.text}`).join(' ')}\n\n`;
     if (i.orphans?.length) out += `**Verwaist (ohne Bearbeiter):** ${i.orphans.join(' ')}\n\n`;
     out += `**Prüfstand:** ${i.verification.note}\n\n**Nachweise:** ${i.evidence.length ? i.evidence.map(e => `[${e.path}](${path.posix.relative('docs', e.path)}) — ${e.note}`).join('; ') : 'noch ausstehend'}\n\n**Dateiumfang:** ${i.scope.map(p => `\`${p}\``).join(', ')}. **Abhängigkeiten:** ${i.dependencies.join(', ') || 'keine'}. **Alte IDs:** ${i.legacyIds.join(', ') || '—'}.\n\n**Integration:** Main ${commit(i.delivery.main)}; Pages-Quelle ${commit(i.delivery.pagesSource)}.\n\n`;
   }
-  out += '## Weiterführende Dokumente\n\n- [Änderungsverlauf mit Dateien und Aufgabenständen](ROADMAP_HISTORY.md)\n- [Aktueller Systemstatus](STATUS.md)\n- [Tests und Prüfgrenzen](TESTING.md)\n- [Historische Roadmap, nicht mehr steuernd](archiv/ROADMAP_LEGACY.md)\n- [Modulvertrag](architecture/kern/MODULES.md)\n- [Entwicklungskoordination](COMMUNICATION.md)\n';
+  out += '## Weiterführende Dokumente\n\n- [Änderungsverlauf mit Dateien und Aufgabenständen](ROADMAP_HISTORY.md)\n- [Aktueller Systemstatus](STATUS.md)\n- [Prüfstand](TESTING.md)\n- [Modulvertrag](architecture/kern/MODULES.md)\n';
   return out;
 }
 export function renderHistory(data) {
   let text = '# Roadmap-Änderungsverlauf\n\nAus [roadmap.json](roadmap.json) erzeugt. Ereignisse werden angehängt, nicht nachträglich umgeschrieben. Commitnachweise: Git-Historie der JSON-Datei; Veröffentlichung: deployment.json und Artefakt-Kindcommit.\n\n';
+  if (data.archive) text += `**Ältere Ereignisse:** ${data.archive.count} Einträge bis ${data.archive.until.slice(0, 10)} sind verdichtet und vollständig in ${commit(data.archive.commit)} (\`docs/roadmap.json\`, Prüfsumme \`${data.archive.sha256.slice(0, 12)}\`).\n\n`;
   for (const event of data.events) {
     text += `## ${event.at} · ${event.kind}\n\n**Aufgaben:** ${event.items.join(', ')}\n\n${event.summary}\n\n`;
     if (event.snapshot) text += `| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |\n|---|---|---:|---|\n${event.snapshot.map(s => `| ${s.id} | ${labels[s.status]} | ${s.done}/${s.total} | ${esc(s.next)} |`).join('\n')}\n\n`;
@@ -172,8 +183,15 @@ export function checkChange(previous, current, files) {
   const sources = files.filter(p => !isPagesArtifact(p));
   if (!sources.length) return errors; // Source-preserving artifacts verified separately by publisher.
   for (const required of ['docs/roadmap.json', ...generated]) if (!files.includes(required)) errors.push(`Quelländerung ohne aktualisierten Fortschrittsnachweis: ${required}`);
-  if (current.events.length <= previous.events.length || JSON.stringify(current.events.slice(0, previous.events.length)) !== JSON.stringify(previous.events)) errors.push('Neue Quellen benötigen angehängte Historie; alte Ereignisse dürfen nicht umgeschrieben werden.');
-  const events = current.events.slice(previous.events.length);
+  let base = previous.events ?? [];
+  if (JSON.stringify(current.archive ?? null) !== JSON.stringify(previous.archive ?? null)) {
+    // Verdichtung: Der neue Archivblock muss genau die bisherigen Ereignisse zusammenfassen.
+    const a = current.archive;
+    if (!a || a.count !== (previous.archive?.count ?? 0) + base.length || a.sha256 !== eventsDigest(base, previous.archive)) errors.push('Archivblock der Historie passt nicht zu den bisherigen Ereignissen.');
+    base = [];
+  }
+  if (current.events.length <= base.length || JSON.stringify(current.events.slice(0, base.length)) !== JSON.stringify(base)) errors.push('Neue Quellen benötigen angehängte Historie; alte Ereignisse dürfen nicht umgeschrieben werden.');
+  const events = current.events.slice(base.length);
   const covered = new Set(events.flatMap(e => e.files ?? []));
   for (const p of sources.filter(p => !generated.includes(p) && p !== 'docs/roadmap.json')) if (!covered.has(p)) errors.push(`Geänderte Datei ohne Aufgabenzuordnung: ${p}`);
   const affected = new Set(events.flatMap(e => e.items));
@@ -198,7 +216,15 @@ function main() {
   }
   const errors = validateRoadmap(data);
   if (errors.length) throw new Error(errors.join('\n'));
-  if (cmd === 'render' || cmd === 'record') { render(data); console.log('Roadmap und Historie aktualisiert.'); return; }
+  if (cmd === 'compact') {
+    // compact <commit>: verdichtet alle Ereignisse; <commit> muss die vollständige Historie enthalten.
+    if (!args[0]) throw new Error('compact <commit mit vollständiger Historie>');
+    const full = git(['rev-parse', '--verify', `${args[0]}^{commit}`]);
+    if (JSON.stringify(JSON.parse(git(['show', `${full}:docs/roadmap.json`])).events) !== JSON.stringify(data.events)) throw new Error('Der Commit enthält nicht dieselben Ereignisse.');
+    data = compactHistory(data, full);
+    writeFileSync('docs/roadmap.json', JSON.stringify(data, null, 2) + '\n');
+  }
+  if (cmd === 'render' || cmd === 'record' || cmd === 'compact') { render(data); console.log('Roadmap und Historie aktualisiert.'); return; }
   if (readFileSync(generated[0], 'utf8') !== renderRoadmap(data) || readFileSync(generated[1], 'utf8') !== renderHistory(data)) throw new Error('Roadmapansichten veraltet: npm run roadmap:render');
   if (cmd === 'check-change') {
     if (!args[0]) throw new Error('check-change <vorheriger-main> [quellcommit]');
@@ -219,7 +245,7 @@ function main() {
     }
     if (changeErrors.length) throw new Error(changeErrors.join('\n'));
   } else if (cmd !== 'check') throw new Error(`Unbekannter Befehl ${cmd}`);
-  console.log(`Roadmap gültig: ${data.items.length} Aufgaben, ${data.events.length} Verlaufseinträge, keine Abhängigkeitszyklen.`);
+  console.log(`Roadmap gültig: ${data.items.length} Aufgaben, ${(data.archive?.count ?? 0) + data.events.length} Verlaufseinträge${data.archive ? ` (${data.archive.count} verdichtet)` : ''}, keine Abhängigkeitszyklen.`);
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
   try { main(); } catch (e) { console.error(e.message); process.exitCode = 1; }

@@ -13,8 +13,8 @@ Die Seite ist statisch (GitHub Pages, keine Server, keine Konten). Deshalb lädt
 | Schritt | Wer | Was |
 |---|---|---|
 | 1. Einreichen | Spieler im Planer | Gebäudeblatt eines eigenen Bauteils → „⇪ In Bibliothek einreichen“ → „Beitrag vorbereiten …“: Name, Kennung, Beschreibung, Angaben (Kategorie, Stil, Biom, Funktion), Tags, Bautipps, Autor, Herkunft, Nutzungsrechte, Rechtebestätigung. „↓ Beitragspaket erstellen“ lädt `beitrag_<kennung>.bauplaner-beitrag.json` herunter. |
-| 2. Übermitteln | Spieler | Link „Formular ‚Bibliotheksbeitrag‘ auf GitHub öffnen“ (vorausgefüllt: Name, Kennung, Autor, Rechte, Beschreibung) und die Datei in das Feld „Beitragsdatei“ ziehen. Ohne GitHub-Konto: Datei an den Betreuer geben (z. B. im Projektchat hochladen). Lehnt GitHub die Endung ab, die Datei in `.txt` umbenennen; das Skript liest den Inhalt, nicht die Endung. |
-| 3. Übernehmen | Betreuer (oder Claude) | `npm run library:add -- <datei>` prüft und schreibt den Eintrag; Hinweise ansehen; `--trocken` prüft nur. Neue Fassung desselben Beitrags: `--ersetzen`. Entfernen: `npm run library:remove -- <kennung>`. Liste: `npm run library:list`. |
+| 2. Übermitteln | Spieler | Link „Formular ‚Bibliotheksbeitrag‘ auf GitHub öffnen“ (vorausgefüllt: Name, Kennung, Autor, Rechte, Beschreibung) und die Datei in das Feld „Beitragsdatei“ ziehen. Ohne GitHub-Konto: Datei an den Betreuer geben (z. B. per Nachricht schicken). Lehnt GitHub die Endung ab, die Datei in `.txt` umbenennen; das Skript liest den Inhalt, nicht die Endung. |
+| 3. Übernehmen | Betreuer | `npm run library:add -- <datei>` prüft und schreibt den Eintrag; Hinweise ansehen; `--trocken` prüft nur. Neue Fassung desselben Beitrags: `--ersetzen`. Entfernen: `npm run library:remove -- <kennung>`. Liste: `npm run library:list`. |
 | 4. Veröffentlichen | Betreuer | wie jede Änderung: `npm run check`, Commit, Push auf main, `scripts/publish_pages.sh`, Livecheck. |
 | 5. Ausliefern | App | Beim nächsten Start nach dem Update legt der Katalogabgleich den Beitrag als mitgeliefertes Gebäude mit Version „1.0“ an. |
 

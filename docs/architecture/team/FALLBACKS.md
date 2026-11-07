@@ -1,6 +1,6 @@
 # Ausweichwege über alle Verbindungen (FALLBACK-01)
 
-Stand 04.11.2026 · Mod 0.16.0 · Thread „Mod, Server und Client mit Fallbacks ausbauen“.
+Stand 04.11.2026 · Mod 0.16.0 · Arbeitsstrang „Mod, Server und Client mit Fallbacks ausbauen“.
 Anlass: Philipp, 04.11.2026: „Komplette Ausarbeitung von Mod und für Server- und Client-Seite, Erarbeiten von Fallbacks.“
 Grundregel bleibt **Client zuerst**: so viel wie möglich im Spiel und im Planer, so wenig Server wie nötig.
 

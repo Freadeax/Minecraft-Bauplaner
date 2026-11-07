@@ -1,6 +1,6 @@
 # Produktion: Farmen, Deckung und Anbindung (PROD-01…05)
 
-Stand 04.11.2026 · Thread „Produktion und Anbindung im Planer ausbauen“
+Stand 04.11.2026 · Arbeitsstrang „Produktion und Anbindung im Planer ausbauen“
 
 Der Reiter **Produktion** (`#/projekt/<id>/produktion`) beantwortet die Frage, die der Sammelplan der Baustelle (B14, [SITE.md](SITE.md)) offen lässt: *Wie komme ich an das Material – mit welchen Farmen, wie schnell, und reicht das für den Zeitplan?*
 

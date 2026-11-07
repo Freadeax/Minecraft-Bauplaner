@@ -1,4 +1,4 @@
-"""Check local Markdown file links and the GPT project instruction limit."""
+"""Check local Markdown file links and that no GitHub Actions workflows exist."""
 from pathlib import Path
 import os
 import re
@@ -18,13 +18,9 @@ for source in sources:
         if '://' in target or target.startswith('#'):
             continue
         path = (source.parent / target.split('#')[0]).resolve()
-        if not path.is_relative_to(ROOT) or not path.is_file():
+        if not path.is_relative_to(ROOT) or not (path.is_file() or path.is_dir()):
             errors.append(f'{source.relative_to(ROOT)}: missing local target {target}')
-instructions = ROOT / 'docs/project/GPT_PROJECT_INSTRUCTIONS.md'
-length = len(instructions.read_text(encoding='utf-8'))
-if length > 8000:
-    errors.append(f'GPT project instructions exceed 8000 characters: {length}')
 if errors:
     print('\n'.join(errors), file=sys.stderr)
     sys.exit(1)
-print(f'Documentation links valid; GPT instructions: {length}/8000 characters.')
+print(f'Documentation links valid in {len(sources)} Markdown files.')

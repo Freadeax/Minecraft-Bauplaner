@@ -87,9 +87,9 @@ Legende: ✅ vorhanden (gleichwertig oder besser) · ◐ teilweise · ✗ fehlt 
 | Platzierhilfe (richtigen Zustand automatisch setzen) | Litematica Easy Place | ✅ GAME-07 Stufe 3 (Mod 0.4.0, serverkonform), parallel entstanden | – |
 | Symmetrie/Kurven im Spiel | Axiom | ✗ | erst Website, später Mod |
 
-## 3. Auswahl für EDIT-04 (dieser Thread)
+## 3. Auswahl für EDIT-04
 
-Ausgewählt nach Nutzen für Philipps Bauweise (große Burg-/Stadtanlagen, Modpack mit vielen Blöcken), Passung zum vorhandenen Kern und Unabhängigkeit von den parallel laufenden Threads (Blocklogik, Grundstruktur):
+Ausgewählt nach Nutzen für Philipps Bauweise (große Burg-/Stadtanlagen, Modpack mit vielen Blöcken), Passung zum vorhandenen Kern und Unabhängigkeit von den parallel laufenden Arbeitssträngen (Blocklogik, Grundstruktur):
 
 1. **Symmetrie** – Spiegeln an X- und/oder Z-Achse und 2-/4-fache Drehsymmetrie um eine senkrechte Achse; wirkt auf jedes Werkzeug, Zustände werden mit der einen Drehregel (`transformBlockState`) mitgedreht. Ungelöste Zustände bleiben sichtbar gemeldet.
 2. **Kurven** – Catmull-Rom-Kurve durch geklickte Punkte, Profile Rohr, Weg (waagrechtes Band quer zur Richtung), Mauer (Band mit Höhe), offen oder geschlossen. Lückenlos (jede Zelle hat eine Flächennachbarin).
@@ -100,13 +100,13 @@ Ausgewählt nach Nutzen für Philipps Bauweise (große Burg-/Stadtanlagen, Modpa
 
 Technischer Vertrag: [CREATIVE_TOOLS](../architecture/planer/CREATIVE_TOOLS.md).
 
-## 3a. Zweite Runde: EDIT-05 (Thread „Vorschläge aus der Planer-Analyse umsetzen“)
+## 3a. Zweite Runde: EDIT-05 (Arbeitsstrang „Vorschläge aus der Planer-Analyse umsetzen“)
 
 Aus den verbliebenen Lücken der Werkstatt: Zauberauswahl mit Zellauswahl als eigener Auswahlart, Wachsen/Schrumpfen/Einpassen, Stapeln, Extrudieren, Ellipsoid, Torus, Wendel sowie der offene Punkt aus ENTITY-01 (Ausstattung zieht beim Verschieben/Drehen/Stapeln mit). Vertrag: [CREATIVE_TOOLS](../architecture/planer/CREATIVE_TOOLS.md#auswahl--und-formwerkzeuge-edit-05). Weiter offen: Formelformen (niedrig), reale Orte (eigener Thread), Symmetrie/Kurven im Mod.
 
-## 4. Vorschläge für eigene Threads
+## 4. Vorschläge für eigene Arbeitsstränge
 
-Diese Lücken sind groß und unabhängig; sie werden dem Koordinator als eigene Threads vorgeschlagen:
+Diese Lücken sind groß und unabhängig; sie werden als eigene Arbeitsstränge vorgeschlagen:
 
 - ~~Gelände modellieren~~: inzwischen mit TERRAIN-02 umgesetzt.
 - ~~3D-Export~~: inzwischen mit MODEL-01 umgesetzt.

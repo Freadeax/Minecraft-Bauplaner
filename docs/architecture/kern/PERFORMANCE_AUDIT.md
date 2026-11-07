@@ -1,6 +1,6 @@
 # Performance- und Stabilitätsbefund (PERF-05)
 
-Stand: 03.11.2026, Quelle `main` 7b975a0 plus PERF-05. Auftrag: Philipp, Thread „Gesamtsystem auf Performance und Stabilität optimieren“. Rahmen: kleine, einzeln getestete Schritte, kein Big-Bang-Umbau. Dateien der laufenden Threads (Teambau in Mod, Planer und Plugin, Lagerkisten) werden nur nach Absprache angefasst.
+Stand: 03.11.2026, Quelle `main` 7b975a0 plus PERF-05. Auftrag: Philipp, Arbeitsstrang „Gesamtsystem auf Performance und Stabilität optimieren“. Rahmen: kleine, einzeln getestete Schritte, kein Big-Bang-Umbau. Dateien der laufenden Arbeitsstränge (Teambau in Mod, Planer und Plugin, Lagerkisten) werden nur nach Absprache angefasst.
 
 Alle Zahlen sind gemessen, nicht geschätzt: Chromium 1243 headless (SwiftShader, keine GPU), Cloud-Container, `vite preview` auf dem gebauten Pages-Artefakt, Median aus drei Läufen. Messskript: `node scripts/bench/perf/measure_start.mjs` (nach `npm run build`). Auf Philipps Rechner sind die absoluten Werte anders. Die Verhältnisse gelten trotzdem.
 
@@ -94,9 +94,9 @@ Messprojekt: die 60 größten mitgelieferten Gebäude nebeneinander, teils gedre
 | Mod `LiveCheck` | Zählungen je Abschnitt und Plan liegen als Summen vor (`count` ohne Höhenfilter O(1)); der Abgleich läuft in Scheiben (`SWEEP_PER_TICK`). | Ohne Befund. |
 | Mod `HologramRenderer` | Auswahl der gezeichneten Blöcke höchstens viermal je Sekunde neu, Obergrenzen je Leistungsstufe (30k/6k/4k), nur Vanilla-Rendertypen. | Ohne Befund. |
 | Mod `Hologram` / `LiveLinkServer` / `RoomClient` | Eigene Threads (Planlader, Verbindung mit zwei Arbeitern, Team-Raum-Zeitgeber), alle als Daemon; Pläne werden im Spielthread nur eingetauscht. | Ohne Befund; die breiten `catch`-Blöcke sind gewollter Absturzschutz. |
-| Große Dateien Mod | `TeamClient.java` 783, `LiveLink.java` 722, `RoomClient.java` 708, `TeamModule.java` 927 Zeilen. | Nicht aufgeteilt, weil die laufenden Mod-Threads (Gruppen/Hologramm, Mod-Werkzeuge) diese Dateien bearbeiten. Nach deren Merge in gleicher Weise teilen. |
+| Große Dateien Mod | `TeamClient.java` 783, `LiveLink.java` 722, `RoomClient.java` 708, `TeamModule.java` 927 Zeilen. | Nicht aufgeteilt, weil die laufenden Mod-Arbeitsstränge (Gruppen/Hologramm, Mod-Werkzeuge) diese Dateien bearbeiten. Nach deren Merge in gleicher Weise teilen. |
 
-Die Plugin-Änderungen erscheinen mit der nächsten Mod-/Plugin-Version (der Release liegt bei den Mod-Threads).
+Die Plugin-Änderungen erscheinen mit der nächsten Mod-/Plugin-Version (der Release liegt bei den Mod-Arbeitssträngen).
 
 ## Geprüft ohne Befund
 

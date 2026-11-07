@@ -35,7 +35,7 @@
     "roadmap:render": "node scripts/roadmap/roadmap.mjs render",
     "roadmap:record": "node scripts/roadmap/roadmap.mjs record",
     "setup:hooks": "git config core.hooksPath .githooks",
-    "setup:codex": "node scripts/dev/setup_codex.mjs",
+    "setup": "node scripts/dev/setup.mjs",
     "setup:browser": "playwright install chromium"
   },
   "devDependencies": {

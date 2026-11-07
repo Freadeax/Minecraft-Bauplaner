@@ -69,7 +69,7 @@ Sechs weitere Generatoren (`stairwell.ts`, `church.ts`, `harbor.ts`, `gatehouse.
 
 ## GEN-03: Arena und Kolosseum (03.11.2026)
 
-Quelle: Philipps Kolosseum-Bauplan aus einem ChatGPT-Verlauf (Java Edition, originalgetreu, Block für Block): 81 × 61 Blöcke, vier Etagen zu je 8 Blöcken, Ellipsen für Außenkante, Gang, Zuschauerbereich und Arena, Sandarena, acht Sitzreihen aus Sandsteintreppen, vier Haupteingänge mit 5 Blöcke breiten Bögen, Hypogäum neun Blöcke unter der Arena, Materialien Sandstein, Steinziegel, Quarz, Eichenfalltüren, Eisenstangen, Laternen, Banner und Sonnensegel.
+Quelle: Philipps Kolosseum-Bauplan (Java Edition, originalgetreu, Block für Block): 81 × 61 Blöcke, vier Etagen zu je 8 Blöcken, Ellipsen für Außenkante, Gang, Zuschauerbereich und Arena, Sandarena, acht Sitzreihen aus Sandsteintreppen, vier Haupteingänge mit 5 Blöcke breiten Bögen, Hypogäum neun Blöcke unter der Arena, Materialien Sandstein, Steinziegel, Quarz, Eichenfalltüren, Eisenstangen, Laternen, Banner und Sonnensegel.
 
 Generator `arena` (`generators/arena.ts`): Halbachsen 14–60 × 16–50, 1–4 Etagen, Etagenhöhe 7–10, unterer Rang 4–12 und oberer Rang 0–8 Reihen, zwei oder vier Tore, Hypogäum, Velarium, Banner/Laternen, Stil und Verwitterung. Vorlagen: Kolosseum (Sandstein, exakt nach dem Bauplan), Kolosseum aus Marmor, Provinzarena, Kleiner Kampfplatz, Verfallene Arena, Nether-Arena.
 

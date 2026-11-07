@@ -1,6 +1,6 @@
 # Anforderungsregister
 
-Priorität: M = Kern, S = Folgeausbau, L = Langfristig. Status: Übersicht der Anforderungen; Implementierungsnachweise und verbleibende Grenzen stehen in REVIEW.md und STATUS.md. Die Tabelle ist keine pauschale Fertigmeldung. Nach Implementierung Beleg als Datei/Test/Issue ergänzen.
+Priorität: M = Kern, S = Folgeausbau, L = Langfristig. Status: Übersicht der Anforderungen; Implementierungsnachweise und verbleibende Grenzen stehen in STATUS.md und der Roadmap. Die Tabelle ist keine pauschale Fertigmeldung. Nach Implementierung Beleg als Datei/Test/Issue ergänzen.
 
 | ID | Anforderung | Priorität | Roadmap |
 |---|---|---|---|
@@ -34,7 +34,7 @@ Neue Anforderungen erhalten stabile IDs, Nutzen, Abnahme und Abhängigkeiten. Wi
 
 Aktueller Nachweis R-001: packages/formats/src, unabhängige fixtures/schem, tests/unit/formats/schem.test.mjs und Importworker/-Bericht. Begrenzte Sponge-v3-Unterstützung, keine allgemeine Versionsfreigabe. [Importvertrag](architecture/formate/SCHEM_IMPORT.md).
 
-Nachweis B0 (27.10.2026): R-008 teilweise (Metadaten, Tags, Suche, Versionen in `packages/domain/src/catalog/library.ts`), R-010/R-011/R-013 teilweise (Instanztransformationen, Override, Undo/Redo, Voxelkonflikte in `project.ts`/`compose.ts`, Editor), R-024 teilweise (Herkunft/Nutzungsrechte je Asset, inhaltsadressierte Versionen). Tests: `tests/unit/core/domain.test.mjs`, `tests/e2e/app.e2e.mjs`. Offene Teile siehe [Blockplan](archiv/BLOCKS.md).
+Nachweis B0 (27.10.2026): R-008 teilweise (Metadaten, Tags, Suche, Versionen in `packages/domain/src/catalog/library.ts`), R-010/R-011/R-013 teilweise (Instanztransformationen, Override, Undo/Redo, Voxelkonflikte in `project.ts`/`compose.ts`, Editor), R-024 teilweise (Herkunft/Nutzungsrechte je Asset, inhaltsadressierte Versionen). Tests: `tests/unit/core/domain.test.mjs`, `tests/e2e/app.e2e.mjs`. Offene Teile siehe Blockplan.
 
 Nachweis B3 (27.10.2026): R-023 umgesetzt für lokalen Browserspeicher (IndexedDB, Revisionskonflikte, Sicherung/Wiederherstellung; [PERSISTENCE](architecture/kern/PERSISTENCE.md)), R-024 teilweise (Sicherung nimmt Herkunft, alle Versionen verwendeter Bauteile und Originale mit; Wiederherstellung prüft Vollständigkeit). Tests: `tests/unit/data/backup.test.mjs`, `tests/e2e/persistence.e2e.mjs`.
 

@@ -8,7 +8,7 @@ function run(command, args) {
 }
 
 // Called through npm so its installed CLI can run without shell-specific quoting.
-if (!process.env.npm_execpath) throw new Error('Bitte npm run setup:codex verwenden.');
+if (!process.env.npm_execpath) throw new Error('Bitte npm run setup verwenden.');
 run(python, ['--version']);
 run('git', ['rev-parse', '--show-toplevel']);
 for (const args of [['ci', '--ignore-scripts'], ['run', 'setup:hooks'], ['run', 'build']]) {

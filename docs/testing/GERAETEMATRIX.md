@@ -53,4 +53,4 @@ Neben Chromium laufen die Browsertests auch in **Firefox** und **WebKit** (die E
 1. `#/testphase` auf dem Gerät öffnen, beim Namen das Gerät dazuschreiben.
 2. Bereich „Geräte und Browser“ durchgehen, jede Aufgabe abhaken oder als Fehler markieren.
 3. „Protokoll kopieren“ und an Philipp oder in ein GitHub-Issue geben; Fehler über „Fehler melden“ mit Diagnose.
-4. Claude trägt das Ergebnis in diese Matrix ein (Datum, Build, Befund).
+4. Das Projektteam trägt das Ergebnis in diese Matrix ein (Datum, Build, Befund).

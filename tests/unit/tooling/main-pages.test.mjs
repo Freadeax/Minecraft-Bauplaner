@@ -15,9 +15,9 @@ test('initial Main publication adds only artifact files and preserves source', (
   assert.deepEqual(plan.remove, []); assert.equal(plan.write.has('README.md'), false); assert.equal(tracked.get('README.md').toString(), 'source');
 });
 test('only previous verified artifacts can be removed; stale hashed chunks disappear', () => {
-  const old = build({ 'assets/app-old.js': 'old' }); old.set('AGENTS.md', Buffer.from('rules'));
+  const old = build({ 'assets/app-old.js': 'old' }); old.set('CONTRIBUTING.md', Buffer.from('rules'));
   const plan = planMainPages(old, build({ 'assets/app-new.js': 'new' }), source);
-  assert.deepEqual(plan.remove, ['assets/app-old.js']); assert.equal(plan.write.has('AGENTS.md'), false);
+  assert.deepEqual(plan.remove, ['assets/app-old.js']); assert.equal(plan.write.has('CONTRIBUTING.md'), false);
 });
 test('source collisions and manually changed old artifacts abort', () => {
   assert.throws(() => planMainPages(new Map([['index.html', Buffer.from('source')]]), build(), source), /Quellpfad/);
@@ -33,7 +33,7 @@ test('foreign source commits, extra files, missing files and altered bytes abort
   }
 });
 test('untrusted previous manifests cannot delete source or traverse paths', () => {
-  for (const p of ['AGENTS.md', '../outside', 'assets/../../AGENTS.md', 'packages/domain/src/index.ts', '/index.html', 'assets/a.js/other']) {
+  for (const p of ['CONTRIBUTING.md', '../outside', 'assets/../../CONTRIBUTING.md', 'packages/domain/src/index.ts', '/index.html', 'assets/a.js/other']) {
     assert.equal(isPagesArtifact(p), false, p);
     const old = build(); const manifest = JSON.parse(old.get('deployment.json'));
     manifest.files.push({ path: p, bytes: 0, sha256: 'a'.repeat(64) }); old.set('deployment.json', Buffer.from(JSON.stringify(manifest)));

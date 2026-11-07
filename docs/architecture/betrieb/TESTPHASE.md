@@ -1,6 +1,6 @@
 # Testphase: Checklisten, Testprotokoll und Fehlerberichte mit Diagnose (QA-04)
 
-Stand 02.11.2026. Die große Testphase läuft, sobald die laufenden Blöcke auf main sind: Philipp und weitere Tester spielen Planer und Mod durch, Claude sichtet und behebt die gemeldeten Fehler. Diese Seite beschreibt die Werkzeuge dafür. Der Testplan selbst steht in [TESTPLAN](../../testing/TESTPLAN.md) (erzeugt).
+Stand 02.11.2026. Die große Testphase läuft, sobald die laufenden Blöcke auf main sind: Philipp und weitere Tester spielen Planer und Mod durch, das Projektteam sichtet und behebt die gemeldeten Fehler. Diese Seite beschreibt die Werkzeuge dafür. Der Testplan selbst steht in [TESTPLAN](../../testing/TESTPLAN.md) (erzeugt).
 
 ## Ziele
 
@@ -29,7 +29,7 @@ Stand 02.11.2026. Die große Testphase läuft, sobald die laufenden Blöcke auf 
 ## Teststand
 
 - Planer: main ab dem QA-04-Commit (alle Blöcke der Novemberrunde im Kern fertig: LIB-05 Runde 3, EDIT-05, BASE-01/SPLIT-01, PERF-04-S07, MAP-05, Mod-Absturzschutz). Der genaue Stand steht im Systemcheck unter „Auslieferung → Quellstand“ und in jedem Fehlerbericht unter „Build“.
-- Mod: 0.7.2 (Fabric, NeoForge, main 8ce80fc) auf `#/mod`, mit `/bauplaner diagnose` und Absturzschutz; im Spieltest auf NeoForge, Fabric und Fabric mit Philipps Modpack samt Shader geprüft (der Spieltest führt `diagnose` aus und prüft den Bericht). Beispielbericht: `/mnt/project-files/mod/0.7.2-diagnose-beispiel.txt`. Bekannt: eine alte `options.txt` behält Tastenbelegungen über Updates, der Bericht meldet dann z. B. „Ebene tiefer“ auf Num 3 im Konflikt mit Jade; Abhilfe Optionen → Steuerung → Build Studio zurücksetzen (Standard Num *).
+- Mod: 0.7.2 (Fabric, NeoForge, main 8ce80fc) auf `#/mod`, mit `/bauplaner diagnose` und Absturzschutz; im Spieltest auf NeoForge, Fabric und Fabric mit Philipps Modpack samt Shader geprüft (der Spieltest führt `diagnose` aus und prüft den Bericht). Bekannt: eine alte `options.txt` behält Tastenbelegungen über Updates, der Bericht meldet dann z. B. „Ebene tiefer“ auf Num 3 im Konflikt mit Jade; Abhilfe Optionen → Steuerung → Build Studio zurücksetzen (Standard Num *).
 - Stand 04.11.2026 mittags: Mod 0.14.0 (Fabric/NeoForge; Teambau ohne Server-Datei über den Team-Raum, LINK-07) und Paper-Plugin 0.13.0 (Serveraufnahme per Klick, LINK-06) sind der aktuelle Teststand; davor Mod 0.13.0 (Packliste, Gerüst, Markieren); Team-Raum live. Neue Fälle: PROJ-12…15 (Produktion, Materialvarianten, Rohstoffe), BIB-17/18, DATEI-06…08 (Profilprüfung, gedrehte Inhalte, WorldEdit/Litematica), SYS-03, TEAMBAU-26 (Team live im Alltag) (alte Browserdaten), LINK-01…04, TEAMBAU-25, LAGER-01…09.
 - Abnahme je Paket: `ACCEPTANCE` in `testplan.ts` ordnet jedem Roadmap-Paket mit Status „implemented“ die Testfälle seiner Abnahme zu; `npm run check:testplan` schlägt fehl, wenn ein implementiertes Paket keinen Eintrag hat oder ein Fall unbekannt ist. TESTPLAN.md zeigt „Abnahme je Roadmap-Paket“, geordnet nach Ort (`placeOf`/`packagePlace`: nur Browser, mit Minecraft, mit Paper-Server; ein Paket braucht den anspruchsvollsten Ort seiner Fälle), die Seite bei jedem Fall „Abnahme für: …“.
 - Frühere offene Abnahmen (02.11.): BASE-01-S06 (Basisplaner), SPLIT-01-S05 (Herauslösen mit echten Dateien), LIB-05-S08 (neue Gebäude im Spiel), EDIT-05-S07 (gestapelte/gedrehte Bauteile im Spiel), GAME-07-S05/MAP-05 (Paper-Server, Langdruck-Menü am Handy), PERF-04-S06 (Firefox/Safari). Jede hat einen Testfall (BIB-10/11/12, WERK-06, MOD-10, LIVE-01, START-07).
@@ -45,8 +45,8 @@ Stand 02.11.2026. Die große Testphase läuft, sobald die laufenden Blöcke auf 
 ## Wo Berichte landen
 
 - GitHub-Issue-Formulare `.github/ISSUE_TEMPLATE/testphase-planer.yml` und `testphase-mod.yml` (Labels `testphase` + `planer`/`mod`), `config.yml` verlinkt die Testphase-Seite. Die Feld-IDs des Planer-Formulars sind Vertrag für `issueUrl` (Test `tests/unit/web/testphase.test.mjs` prüft beides gegeneinander).
-- Ohne GitHub-Konto: Bericht kopieren und als Nachricht schicken (Projektchat); Claude legt dann das Issue an bzw. behebt direkt.
-- Bearbeitung: Issues mit Label `testphase` werden im Thread „Große Testphase vorbereiten und betreuen“ gesichtet, nach Schwere sortiert (Absturz/Datenverlust zuerst), behoben und mit Commit-Verweis geschlossen; das Testprotokoll des Testers nennt die Fälle, die danach erneut zu prüfen sind.
+- Ohne GitHub-Konto: Bericht kopieren und als Nachricht schicken ; das Projektteam legt dann das Issue an bzw. behebt direkt.
+- Bearbeitung: Issues mit Label `testphase` werden im Arbeitsstrang „Große Testphase vorbereiten und betreuen“ gesichtet, nach Schwere sortiert (Absturz/Datenverlust zuerst), behoben und mit Commit-Verweis geschlossen; das Testprotokoll des Testers nennt die Fälle, die danach erneut zu prüfen sind.
 
 ## Grenzen
 

@@ -1,92 +1,121 @@
 # LMNT — Build Studio
 
-Browserbasierter Minecraft-Bauhelfer: Bauwerke betrachten, wiederverwendbare Module verwalten, neue Pläne zusammensetzen und gemeinsam Schritt für Schritt bauen.
+**Minecraft-Bauprojekte planen, im Browser zusammensetzen und gemeinsam im Spiel bauen.**
 
-Zielrepository: https://github.com/Freadeax/Minecraft-Bauplaner
+[![Planer öffnen](https://img.shields.io/badge/Planer-online%20%C3%B6ffnen-2f855a)](https://freadeax.github.io/Minecraft-Bauplaner/)
+[![Mod auf Modrinth](https://img.shields.io/badge/Mod-Modrinth-1bd96a)](https://modrinth.com/mod/bauplaner-bridge)
+[![Minecraft](https://img.shields.io/badge/Minecraft%20Java-26.3-6b8e23)](docs/architecture/formate/VERSION_PROFILE.md)
+[![Lizenz: MIT](https://img.shields.io/badge/Lizenz-MIT-blue)](LICENSE)
 
-**Stand: 01.11.2026.** Implementiert sind Projektzentrale, Bibliothek mit 336 Gebäuden (u. a. eingerichtete Räume, Garten, Natur, Stadt, Küste, Fahrzeuge, Bergbau, Nether/End, Tierhof, Fantasy und historische Bauten), Composer, Orbit/Freiflug, Schichten, Schem-v3- und Litematic-Import/-Export, lokale Projektspeicherung, Asset-Revisionsschutz gegen konkurrierende Änderungen, abbrechbare Worker-Projektberechnung, Bauanleitungen, Material-/Rohstoffplanung, Baustellen und elf parametrische Generatoren (Haus, Turm, Mauer, Brücke, Dach, Treppenhaus, Kirche, Hafen, Torhaus, Windmühle, Brunnen) mit Anlagen wie Burganlage und Dorfplatz. Spielaufnahmen werden mit Originaldatei und Verlauf gespeichert. Neu: fünf Oberflächenthemen mit Hell/Dunkel/System und ein Materiallabor mit Familien, Suche und Herkunft der berechneten Bauitems. Die Bibliothek bietet elf Bauwelten; Glas, Beton und Terrakotta lassen sich als getrennte Materialvarianten wählen. Die Weltkartenoberfläche und Teamdienste bleiben offen. Grenzen und Prüfstand: [STATUS](docs/STATUS.md).
+LMNT — Build Studio besteht aus drei Teilen, die über das Internet zusammenarbeiten. Es gibt keinen Datei-Austausch und keinen eigenen Server:
 
-## Einstieg
+| Teil | Wofür | Wo |
+|---|---|---|
+| **Planer** (Web-App) | Bauwerke finden, entwerfen und zu Projekten zusammensetzen; Material, Bauablauf, Gelände und Weltkarte planen | [freadeax.github.io/Minecraft-Bauplaner](https://freadeax.github.io/Minecraft-Bauplaner/) · Spiegel [bauplaner.pages.dev](https://bauplaner.pages.dev/) |
+| **Mod** (Fabric / NeoForge, nur Client) | Plan als Hologramm in die Welt legen, Baustand live prüfen, Gelände an den Planer übergeben | [Modrinth](https://modrinth.com/mod/bauplaner-bridge) · [`mods/bauplaner-bridge`](mods/bauplaner-bridge/) |
+| **Team-Raum** (Cloud-Dienst) | Planer, Mod und optionales Paper-Plugin eines Teams live synchron halten | [`services/team-room`](services/team-room/) |
 
-- [Verbindliche Regeln für Coding-Agenten](AGENTS.md)
-- [Ordnerkarte: wo liegt was?](docs/STRUKTUR.md)
-- [Produktgrundsätze](docs/project/PRINCIPLES.md)
-- [Technische Gesamtspezifikation](docs/architecture/kern/SPECIFICATION.md)
-- [Normativer Voxelvertrag v1](docs/architecture/kern/VOXEL_CONTRACT.md)
-- [Architekturentscheidungen](docs/architecture/kern/DECISIONS.md)
-- [Verbindliche Roadmap mit 56 Arbeitspaketen](docs/ROADMAP.md)
-- [Nachvollziehbarer Arbeitsverlauf](docs/ROADMAP_HISTORY.md)
-- [Maschinenlesbarer Aufgabenstand](docs/roadmap.json)
-- [Ausführbarer Modulvertrag](docs/architecture/kern/MODULES.md)
-- [Strukturierte Bestandsprüfung](docs/REVIEW.md)
-- [Weltkarte und Live-Karten-Verknüpfung](docs/architecture/welt/WORLDMAP.md)
-- [Schem-Import und Grenzen](docs/architecture/formate/SCHEM_IMPORT.md)
-- [Vollständiger Umsetzungsplan](docs/archiv/IMPLEMENTATION_PLAN.md)
-- [Selbstständiger GitHub-/Pages-Ablauf](docs/operations/GITHUB_CONNECTOR_RUNBOOK.md)
-- [Anforderungen und Zuordnung](docs/REQUIREMENTS.md)
-- [Domänenvertrag: Bibliothek, Projekte, Konflikte](docs/architecture/kern/DOMAIN.md)
-- [Parallele Arbeitsblöcke](docs/archiv/BLOCKS.md)
-- [Zusammenarbeit und Kommunikation](docs/COMMUNICATION.md)
-- [Stand und Übergabe](docs/STATUS.md)
-- [Eigenständig ausgeführte Prüfungen](docs/TESTING.md)
-- [Anweisung für das GPT-Projekt](docs/project/GPT_PROJECT_INSTRUCTIONS.md)
-- [Beitragsregeln](CONTRIBUTING.md)
-- [Sicherheit](SECURITY.md)
+Optional schützt ein **Paper-Plugin** Bauabschnitte nach Rollen und prüft Lagerkisten auf dem Server.
 
-## Hosting
+---
 
-Verbindliches Ziel: **GitHub Pages** mit lokal gebautem statischem Frontend und Browser-Web-Workers. Keine eigenen Actions. Teamdienste werden später separat angebunden. Statischer Webbuild und Hashmanifest sind vorhanden; die erste Veröffentlichung ist unter https://freadeax.github.io/Minecraft-Bauplaner/ erreichbar. Siehe [Hostingvertrag](docs/architecture/betrieb/HOSTING.md).
+## Funktionen
 
-## Modulstruktur und Datenfluss
-
-| Pfad | Verantwortung |
+| Bereich | Was der Planer kann |
 |---|---|
-| `apps/web` | React-Oberfläche, 3D-/Softwareansicht, Import-/Scan-Worker und lokale Speicherung |
-| `packages/voxel` | gemeinsamer Voxelvertrag, Transformationen und Zustandsregeln |
-| `packages/application` | Exportanwendungsfall, Speicherports, Aufnahmeverwaltung und portabler Sitzungsspeicher |
-| `packages/domain` | Assets/Versionen, Projekte, Zusammensetzen, Materialien, Anleitung, Sicherung und Generatoren |
-| `packages/formats` | getrennte NBT-/Schem-/Litematic-Adapter |
-| `mods/bauplaner-bridge` | Client-Mod (Fabric/NeoForge), Paper-Plugin und Modrinth-Angaben |
-| `fixtures`, `tests` | Formatbeispiele, Kernregressionen und Browserprüfungen |
-| `scripts` | lokale Prüfungen, Webbuild und Main-Veröffentlichung |
-| `docs` | Verträge, Entscheidungen, Aufgaben und Prüfprotokolle |
-| `services/team-room` | Team-Raum (Cloudflare Worker) |
+| **Bibliothek** | 358 eigene Gebäude in Bauwelten und Themen-Sets, 17 Ensembles, 11 Anlagen, 13 Großprojekte, 12 parametrische Generatoren (Haus, Turm, Mauer, Brücke, Kirche, Hafen, Arena …), Suche, Vergleich, Sammlungen und Vorlagen |
+| **Projekte** | Bauteile platzieren und verbinden, blockgenaue Konfliktprüfung, Rückgängig/Wiederholen, Versionen mit gezielten Updates, Basisplaner |
+| **Werkstatt** | Blockeditor mit Auswahl-, Form- und Kreativwerkzeugen (Symmetrie, Kurven, Glätten, Bild → Blöcke), echte Blocklogik von Minecraft 26.3 |
+| **Bauen** | Materialbedarf mit Rezepten, Bauanleitung Schicht für Schicht, Baustelle mit Abschnitten und Lager, Zeitplan mit Meilensteinen, Produktion und Farmen |
+| **Welt** | Weltkarte mit Bauplätzen, Wegen und Zonen, Gelände live aus der Mod, Landschaft formen und bemalen |
+| **Team** | Abschnitte zuweisen, Fortschritt melden und prüfen, gemeinsamer Weltplan, Lagerkisten, Sicherung des Team-Raums |
+| **Formate** | Import und Export von Sponge Schem v3 und Litematic, Weltausschnitte aus Regionsdateien, 3D-Export als glTF/GLB, OBJ, STL und 3MF |
 
-Die Fachordner innerhalb der Pakete und wo neue Dateien hingehören: [Ordnerkarte](docs/STRUKTUR.md). Die Dateien `index.html`, `assets/`, `deployment.json` und `examples/` in der Wurzel sind Pages-Ausgabe und werden nur von `scripts/publish_pages.sh` geschrieben.
+Alles läuft im Browser und speichert lokal (IndexedDB, offline nutzbar). Die Anleitung im Planer unter [„Wie geh ich es an?“](https://freadeax.github.io/Minecraft-Bauplaner/#/anleitung) führt Schritt für Schritt durch einen Bau.
 
-Importadapter erhalten Originaldaten getrennt vom normalisierten Voxelmodell. Der gemeinsame Kern liefert Vorschau, Materialbedarf, Bauanleitung und Export. Projekte referenzieren konkrete unveränderliche Bauteilversionen. IndexedDB speichert Projekte und Originaldateien lokal; Sicherungen ermöglichen den manuellen Transfer. Es gibt noch keinen produktiven Team-/Cloudserver.
+---
 
-## Veröffentlichung
+## Architektur
 
-GitHub Pages liefert **`main` / Repositorywurzel** aus. `scripts/publish_pages.sh` startet den Main-Publisher: geprüften Quellcommit bauen, Webartefakte samt Manifest als Kindcommit auf main übernehmen, anschließend Liveauslieferung prüfen. Quellcode bleibt erhalten. Die Remote-Abfrage vom 01.11.2026 zeigt ausschließlich `main`; keine Branchlöschung durch diesen Setupauftrag. Keine eigenen GitHub Actions und kein Hintergrundprozess, der fremde Pushes selbst baut.
-
-Der Konnektor kann Dateien, Gitobjekte und main aktualisieren. Branchlöschung und Pages-Einstellungen sind in seiner aktuellen Werkzeugoberfläche nicht verfügbar; das ist keine fehlende Freigabe für Entwicklung oder Veröffentlichung.
-
-Eine Projektlizenz ist noch nicht festgelegt. Vor Veröffentlichung fremder Assets, Texturen oder Codebestandteile müssen Nutzungsrechte und Lizenzkompatibilität geprüft werden.
-
-## Lokaler Kernstart
-
-Codex-Einrichtung und konkrete Anschlussaufgaben: [CODEX_SETUP](docs/project/CODEX_SETUP.md). `npm run setup:codex` richtet Abhängigkeiten, lokale Hooks und Build ein. Die Browserlaufzeit wird separat mit `npm run setup:browser` installiert.
-
-Node.js ab 22.18 und npm erforderlich. TypeScript 5.9.3, React/React DOM 19.3.1, Three.js 0.186.1 und Vite 8.3.5 sind exakt im Lockfile fixiert.
-
-```sh
-npm ci --ignore-scripts
-npm run check
+```mermaid
+flowchart LR
+  subgraph Browser
+    P[Planer<br/>apps/web]
+  end
+  subgraph Minecraft
+    M[Mod<br/>Fabric · NeoForge]
+    S[Paper-Plugin<br/>optional]
+  end
+  R[(Team-Raum<br/>Cloudflare Worker)]
+  P <-- WebSocket --> R
+  M <-- WebSocket --> R
+  S <-- signierte Ereignisse --> R
+  P <-. lokal, 127.0.0.1 .-> M
 ```
 
-`check` prüft auch Modulgrenzen, Roadmapschema und generierte Fortschrittsansichten und führt strenge Typprüfung, Bibliotheksbuild, Node-Tests und Dokumentationsprüfung aus. Einzelbefehle: `npm run typecheck`, `npm run build`, `npm test` (nach Build), `npm run check:docs`. Generierte Module und Deklarationen liegen unter `dist/voxel/src/`. Webentwicklung: `npm run dev`; Produktionsvorschau: `npm run preview` (jeweils unter `/Minecraft-Bauplaner/`). `npm run build:web` erzeugt `dist-web/` mit `.nojekyll`, Worker, Lizenzhinweisen und `deployment.json`.
+Der Planer ist in Schichten gebaut; jede Schicht kennt nur die darunterliegenden:
 
-Der Kern zählt platzierte Zustände, Luft und Löschzellen getrennt. Unbekannte Transformationen werden gemeldet und erhalten. Die Testprofile sind synthetisch; daraus folgt keine Minecraft-/Modpack-Kompatibilität.
+```
+apps/web  ──►  packages/application  ──►  packages/domain   ──►  packages/voxel
+                                      └─►  packages/formats  ──┘
+```
 
-Die Darstellung nutzt eigene synthetische Gebäude und farbige Blockwürfel ohne fremde Minecraft-Texturen. Konservative Importlimits und Formatgrenzen stehen in den verlinkten Formatverträgen. Unbekannte Blockzustände bleiben erhalten; ungeklärte Transformationen sperren einen verlässlichen Export.
+| Paket | Verantwortung |
+|---|---|
+| [`packages/voxel`](packages/voxel/) | Voxelvertrag: Zellen, Blockzustände, Drehen und Spiegeln, Blockfakten von 26.3 |
+| [`packages/formats`](packages/formats/) | NBT-, Schem- und Litematic-Adapter, getrennt vom Fachmodell |
+| [`packages/domain`](packages/domain/) | Fachkern: Katalog, Projekte, Material, Bauablauf, Welt, Team, Daten, Versionen |
+| [`packages/application`](packages/application/) | Anwendungsfälle wie Export, Speicherports und Sitzungen |
+| [`apps/web`](apps/web/) | React-Oberfläche, 3D-Ansicht (Three.js), Web-Worker, lokale Speicherung |
 
-Ohne WebGL steht eine gekennzeichnete isometrische Canvas-Ersatzansicht bereit. Browserprüfungen: `npm run build && npm run test:e2e`; Playwright ist exakt im Lockfile fixiert, Chromium über `npm run setup:browser` installieren. Echte GPU-/iPhone- und Referenzwerkzeugtests bleiben gesondert offen.
+Grundregel: Vorschau, Materialbedarf, Bauanleitung und Export entstehen aus derselben aufgelösten Revision. Unbekannte Blockzustände bleiben sichtbar erhalten und werden nie still verworfen. Details: [Spezifikation](docs/architecture/kern/SPECIFICATION.md), [Voxelvertrag](docs/architecture/kern/VOXEL_CONTRACT.md), [Modulvertrag](docs/architecture/kern/MODULES.md), [Architekturentscheidungen](docs/architecture/kern/DECISIONS.md).
+
+---
+
+## Repository
+
+```
+├── apps/web/              Planer-Oberfläche
+├── packages/              TypeScript-Kern ohne Browser (voxel, formats, domain, application)
+├── mods/bauplaner-bridge/ Minecraft-Mod, Paper-Plugin, Modrinth-Angaben
+├── services/team-room/    Team-Raum (Cloudflare Worker)
+├── scripts/               Build, Prüfungen, Veröffentlichung, Datengeneratoren
+├── tests/                 Einheitstests (unit/) und Browsertests (e2e/)
+├── fixtures/              Testdaten (Schem, Litematic, Blöcke)
+└── docs/                  Dokumentation, Roadmap und Prüfstand
+```
+
+Die vollständige Ordnerkarte mit allen Fachordnern steht in [docs/STRUKTUR.md](docs/STRUKTUR.md). `index.html`, `assets/`, `deployment.json` und `examples/` in der Wurzel sind die veröffentlichte Website und werden nur vom Veröffentlichungsskript geschrieben.
+
+---
+
+## Entwicklung
+
+Voraussetzung: Node.js ≥ 22.18 und npm. Alle Abhängigkeiten sind exakt im Lockfile fixiert (TypeScript 5.9, React 19, Three.js 0.186, Vite 8, Playwright 1.64).
+
+```sh
+npm run setup          # Abhängigkeiten, Git-Hooks, erster Build
+npm run dev            # Planer lokal unter http://127.0.0.1:5173/Minecraft-Bauplaner/
+npm run check          # Architektur, Roadmap, Typen, Build, Einheitstests, Doku
+npm run test:e2e       # Browsertests (einmalig: npm run setup:browser)
+```
+
+Die Mod wird mit Gradle gebaut, siehe [mods/bauplaner-bridge](mods/bauplaner-bridge/README.md). Wie Beiträge ablaufen, steht in [CONTRIBUTING.md](CONTRIBUTING.md), die Veröffentlichung in [docs/operations/VEROEFFENTLICHUNG.md](docs/operations/VEROEFFENTLICHUNG.md).
+
+**Qualität:** rund 140 Einheitstest-Dateien und 90 Browsertests, dazu Prüfstände im echten Spiel (Export, Platzierung aller Katalogpläne auf Paper 26.3, Großbauten). Alle Prüfungen laufen lokal vor jeder Veröffentlichung; GitHub Actions werden bewusst nicht verwendet. Prüfstand: [docs/TESTING.md](docs/TESTING.md).
+
+---
+
+## Dokumentation
+
+| Einstieg | |
+|---|---|
+| [Dokumentationsübersicht](docs/README.md) | alle Dokumente nach Bereich |
+| [Funktionsstand](docs/STATUS.md) | was fertig ist und was noch abgenommen wird |
+| [Roadmap](docs/ROADMAP.md) | Arbeitspakete mit Status, erzeugt aus [roadmap.json](docs/roadmap.json) |
+| [Produktgrundsätze](docs/project/PRINCIPLES.md) | woran Entscheidungen gemessen werden |
+| [Testplan](docs/testing/TESTPLAN.md) | Testfälle für Planer und Mod |
 
 ## Lizenz
 
-MIT, siehe [LICENSE](LICENSE). Herkunft aller Inhalte, Fremdbestandteile und Regeln für neue Inhalte: [docs/LICENSING.md](docs/LICENSING.md). Texturen werden nicht mitgeliefert; sie kommen nur aus Quellen des Nutzers.
-
-## Aufgaben und Fortschritt pflegen
-
-Vor jedem Arbeitsblock Aufgabe in `docs/roadmap.json` und COMMUNICATION anmelden. Teilschritte, Nachweise und nächste Aktion nachführen; `npm run roadmap:record -- ARCH-01 "Konkretes Ergebnis und Prüfgrenzen"` hängt Dateizuordnung und Aufgabenstand an. `npm run check:roadmap-change -- <vorheriger-main>` ist vor jedem Quell-Merge/Push verpflichtend. `npm run setup:hooks` aktiviert den lokalen Pre-Push-Check. Die JSON-Datei erzeugt Roadmap und Historie; keine zweite Statusliste pflegen. Details und Grenzen der lokalen Durchsetzung stehen in der Roadmap.
+Code unter [MIT](LICENSE). Herkunft aller Inhalte und Regeln für neue Inhalte: [docs/LICENSING.md](docs/LICENSING.md). Minecraft-Texturen werden nicht mitgeliefert. LMNT — Build Studio ist kein offizielles Minecraft-Produkt und steht in keiner Verbindung zu Mojang oder Microsoft. Sicherheitsmeldungen: [SECURITY.md](SECURITY.md).

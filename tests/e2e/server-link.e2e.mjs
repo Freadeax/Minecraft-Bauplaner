@@ -5,6 +5,7 @@
 import { createRequire } from 'node:module';
 import { spawn } from 'node:child_process';
 import http from 'node:http';
+import { tmpdir } from 'node:os';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { startModSimulator } from './modSimulator.mjs';
@@ -140,7 +141,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     // 6. No horizontal overflow, no errors.
     const overflow = await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     assert.ok(overflow <= 1, `kein waagrechtes Scrollen (${overflow}px)`);
-    await p.screenshot({ path: `/tmp/claude-0/server-link-${viewport.width}.png`, fullPage: false });
+    await p.screenshot({ path: `${tmpdir()}/server-link-${viewport.width}.png`, fullPage: false });
     assert.deepEqual(errors, []);
     await context.close();
   });

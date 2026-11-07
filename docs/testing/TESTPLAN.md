@@ -213,7 +213,7 @@ Lagerkisten des Teams im freiwilligen Paper-Plugin (COOP-05): markieren, zählen
 
 Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan.ts), geordnet nach dem Ort, den die Abnahme braucht. Ein Paket gilt als abgenommen, wenn alle genannten Fälle ✓ sind; Ob ein Paket noch auf Abnahme wartet, steht in `docs/ROADMAP.md`.
 
-### Nur im Browser (46 Pakete)
+### Nur im Browser (47 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -224,6 +224,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | COOP-09 | TEAMBAU-25 |
 | COOP-11 | TEAMBAU-28 |
 | DIFF-01 | BIB-02, PROJ-07 |
+| DOC-02 | START-01 |
 | EDIT-01 | WERK-03 |
 | EDIT-02 | WERK-01 |
 | EDIT-03 | WERK-02, WERK-01 |

@@ -2,7 +2,7 @@
 
 ## Prüfumgebung · Konkretisierung vom 01.11.2026
 
-Die frühere Aussage in ADR-014 über ein extern bereitgestelltes Playwright wird für neue Checkouts ersetzt: Playwright 1.64.1 ist exakt als Entwicklungsabhängigkeit fixiert. Die vorhandene Node-Test-Suite nutzt weiter die [Playwright Library](https://playwright.dev/docs/library); keine Runnerumstellung und kein Laufzeitpaket im Produkt. Chromium wird separat installiert. Windows-Dateipfade werden über `fileURLToPath` aufgelöst, Pythonprüfer mit explizitem UTF-8 gestartet und Textdateien per Git-Attribut auf LF vereinheitlicht. Anlass ist ein tatsächlich fehlgeschlagener frischer Windows-Check, keine Fachkernänderung oder Datenmigration. Rückweg: Setup-/Testwerkzeuge austauschen, ohne gespeicherte Projekte zu ändern. Ablauf und Nachweis: [CODEX_SETUP](../../project/CODEX_SETUP.md), [TESTING](../../TESTING.md).
+Die frühere Aussage in ADR-014 über ein extern bereitgestelltes Playwright wird für neue Checkouts ersetzt: Playwright 1.64.1 ist exakt als Entwicklungsabhängigkeit fixiert. Die vorhandene Node-Test-Suite nutzt weiter die [Playwright Library](https://playwright.dev/docs/library); keine Runnerumstellung und kein Laufzeitpaket im Produkt. Chromium wird separat installiert. Windows-Dateipfade werden über `fileURLToPath` aufgelöst, Pythonprüfer mit explizitem UTF-8 gestartet und Textdateien per Git-Attribut auf LF vereinheitlicht. Anlass ist ein tatsächlich fehlgeschlagener frischer Windows-Check, keine Fachkernänderung oder Datenmigration. Rückweg: Setup-/Testwerkzeuge austauschen, ohne gespeicherte Projekte zu ändern. Ablauf und Nachweis: [CONTRIBUTING](../../../CONTRIBUTING.md), [TESTING](../../TESTING.md).
 
 Status: angenommene Planungsbasis vom 27.10.2026. Historische Planungsbasis; inzwischen sind Voxel-/Web-/Importkern implementiert. Aktueller Stand in STATUS.md. Entscheidungen können mit dokumentierter Begründung geändert werden.
 
@@ -47,7 +47,7 @@ Neues Paket `packages/domain` ohne Laufzeitabhängigkeit. AssetVersion-ID aus SH
 
 ## ADR-014 · Hash-Router, Speicherschnittstelle, parallele Blöcke · 27.10.2026
 
-Hash-Routen funktionieren auf Pages ohne Server-Rewrite. Eine einzige `Repository`-Schnittstelle mit `baseRevision`-Pflicht trennt UI und Speicher; IndexedDB folgt in B3 ohne UI-Umbau. Projektbereiche registrieren sich in einer Tab-Registry, damit parallele Blöcke unterschiedliche Dateien besitzen ([BLOCKS](../../archiv/BLOCKS.md)). Pages-Veröffentlichung über `scripts/publish_pages.sh` (lokaler Build, Commit nur des Artefakts auf gh-pages, kein Force, Schutz gegen Verdrängen eines neueren Stands). Browserprüfung mit lokal vorhandenem Playwright/Chromium, nicht als Projektabhängigkeit fixiert.
+Hash-Routen funktionieren auf Pages ohne Server-Rewrite. Eine einzige `Repository`-Schnittstelle mit `baseRevision`-Pflicht trennt UI und Speicher; IndexedDB folgt in B3 ohne UI-Umbau. Projektbereiche registrieren sich in einer Tab-Registry, damit unabhängige Bereiche unterschiedliche Dateien besitzen. Pages-Veröffentlichung über `scripts/publish_pages.sh` (lokaler Build, Commit nur des Artefakts auf gh-pages, kein Force, Schutz gegen Verdrängen eines neueren Stands). Browserprüfung mit lokal vorhandenem Playwright/Chromium, nicht als Projektabhängigkeit fixiert.
 
 ## ADR-015 · angenommen · 27.10.2026 · Spielbrücke
 

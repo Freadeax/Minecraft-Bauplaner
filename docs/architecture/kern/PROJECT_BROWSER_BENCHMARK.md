@@ -6,7 +6,7 @@ Die vollständigen Einzelwerte, Ergebnisdigests, Invarianten und Laufzeitangaben
 
 ## Reproduktion
 
-Nach dem dokumentierten [Codex-Setup](../../project/CODEX_SETUP.md) mit installiertem Projekt-Chromium:
+Nach dem dokumentierten [Entwicklungs-Setup](../../../CONTRIBUTING.md) mit installiertem Projekt-Chromium:
 
 ```sh
 node scripts/bench/benchmark_project_browser.mjs

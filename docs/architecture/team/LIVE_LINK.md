@@ -32,7 +32,7 @@ Code: `mods/bauplaner-bridge/mod-core/…/mod/live/` (versionsneutral: `LiveLink
 
 ## Protokoll 2 (GAME-08, Mod 0.8.0)
 
-Abgestimmt am 02.11.2026 zwischen MAP-06 (Website) und dem Mod-Thread; Website und Mod (0.8.0, Fabric und NeoForge) sind fertig. Die Website schaltet nie nach Versionsnummern, sondern nach `hello.features`; `hello.protocol` darf 1 oder 2 sein (höhere Werte lehnt `readLiveHello` ab). Unbekannte Felder an Weltplan-Einträgen ignoriert jede Mod (`WorldMarks.parse`), unbekannte **Arten** lehnt sie mit 400 ab – deshalb filtert `marksForMod` vor dem Senden.
+Abgestimmt am 02.11.2026 zwischen MAP-06 (Website) und dem Mod-Arbeitsstrang; Website und Mod (0.8.0, Fabric und NeoForge) sind fertig. Die Website schaltet nie nach Versionsnummern, sondern nach `hello.features`; `hello.protocol` darf 1 oder 2 sein (höhere Werte lehnt `readLiveHello` ab). Unbekannte Felder an Weltplan-Einträgen ignoriert jede Mod (`WorldMarks.parse`), unbekannte **Arten** lehnt sie mit 400 ab – deshalb filtert `marksForMod` vor dem Senden.
 
 | Merkmal in `hello.features` | Bedeutung |
 |---|---|

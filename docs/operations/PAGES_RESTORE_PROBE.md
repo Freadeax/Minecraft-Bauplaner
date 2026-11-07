@@ -1,6 +1,6 @@
 # Isolierte Pages-Wiederherstellungsprobe
 
-Aufgabe: OPS-02. Datum: 01.11.2026. Diese Probe verändert weder main noch GitHub Pages. Sie prüft die Rückkehr auf bekannte Artefakte in einem wegwerfbaren lokalen Git-Clone. Der normale [Veröffentlichungsablauf](GITHUB_CONNECTOR_RUNBOOK.md) bleibt maßgeblich.
+Aufgabe: OPS-02. Datum: 01.11.2026. Diese Probe verändert weder main noch GitHub Pages. Sie prüft die Rückkehr auf bekannte Artefakte in einem wegwerfbaren lokalen Git-Clone. Der normale [Veröffentlichungsablauf](VEROEFFENTLICHUNG.md) bleibt maßgeblich.
 
 ## Ausführen
 

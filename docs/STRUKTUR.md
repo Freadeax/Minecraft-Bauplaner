@@ -1,6 +1,6 @@
 # Ordnerkarte: wo liegt was?
 
-Stand: 05.11.2026 · STRUCT-01. Diese Karte ist verbindlich: Neue Dateien kommen in den Ordner ihres Fachbereichs. Aufgabenstand: [Roadmap](ROADMAP.md). Paketgrenzen: [MODULES](architecture/kern/MODULES.md).
+Stand: 07.11.2026. Diese Karte ist verbindlich: Neue Dateien kommen in den Ordner ihres Fachbereichs. Aufgabenstand: [Roadmap](ROADMAP.md). Paketgrenzen: [MODULES](architecture/kern/MODULES.md).
 
 ## Repo-Wurzel
 
@@ -12,9 +12,10 @@ Stand: 05.11.2026 · STRUCT-01. Diese Karte ist verbindlich: Neue Dateien kommen
 | `services/team-room/` | Team-Raum (Cloudflare Worker) |
 | `scripts/` | Werkzeuge für Build, Pages, Prüfungen, Mod-Tests und Datengeneratoren |
 | `tests/` | Einheitstests (`node --test`) und Browsertests (`tests/e2e/`) |
-| `docs/` | Leitstand (Roadmap, Status, Tests, Kommunikation) und Fachdokumentation |
+| `docs/` | Stand und Planung (Status, Roadmap, Prüfstand) und Fachdokumentation, Einstieg [docs/README.md](README.md) |
 | `fixtures/` | Testdaten (Schem, Litematic, Blöcke, Voxel) |
-| `.githooks/`, `.github/` | pre-push-Prüfung, Issue-Vorlagen (keine Actions) |
+| `.githooks/`, `.github/` | pre-push-Prüfung, Issue- und PR-Vorlagen (keine Actions) |
+| `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, `LICENSE` | Überblick, Arbeitsablauf, Sicherheitsgrundsätze, Lizenz |
 
 **Pages-Ausgabe, nicht von Hand ändern:** `index.html`, `assets/`, `deployment.json`, `favicon.svg`, `.nojekyll`, `THIRD_PARTY_NOTICES.txt`, `examples/`. GitHub Pages liefert `main` aus der Wurzel aus; `scripts/publish_pages.sh` schreibt diese Dateien als eigenen Artefaktcommit ([HOSTING](architecture/betrieb/HOSTING.md)). `downloads/mod/` enthält die ausgelieferten Mod-Dateien, die der Planer verlinkt.
 
@@ -59,9 +60,9 @@ Stand: 05.11.2026 · STRUCT-01. Diese Karte ist verbindlich: Neue Dateien kommen
 | `gen/` | Datengeneratoren aus dem Minecraft-Server (Blockdaten, Blockfakten, Standardzustände, Versionsprofil, `probe/`) |
 | `fixtures/` | Erzeuger der Testdaten unter `fixtures/` |
 | `bench/` | Leistungsmessungen (`perf/`, Benchmarks) |
-| `size/` | Großbau-Abnahme im echten Spiel (SIZE-01-S05, SPLIT-01-S05): Großstadt-Erzeuger `big_build.mjs`, Spielbasis `basis_build.mjs`, Prüfung `grossbau_verify.mjs`, Lauf `test_grossbau_ingame.sh` |
+| `size/` | Großbau-Abnahme im echten Spiel: Großstadt-Erzeuger `big_build.mjs`, Spielbasis `basis_build.mjs`, Prüfung `grossbau_verify.mjs`, Lauf `test_grossbau_ingame.sh` |
 | `library/`, `team/` | Bibliotheksbeiträge übernehmen, Team-Raum-Rauchtest |
-| `dev/` | Python-Starter, Codex-Einrichtung, Umzugswerkzeug `restructure.mjs` mit Listen in `moves/` |
+| `dev/` | Python-Starter, Projekteinrichtung `setup.mjs` (`npm run setup`), Umzugswerkzeug `restructure.mjs` mit Listen in `moves/` |
 
 ## Tests `tests/`
 
@@ -76,7 +77,7 @@ Stand: 05.11.2026 · STRUCT-01. Diese Karte ist verbindlich: Neue Dateien kommen
 
 ## Doku `docs/`
 
-Oben liegt der Leitstand, den jeder Thread pflegt: `roadmap.json` (daraus erzeugt `ROADMAP.md`, `ROADMAP_HISTORY.md`), `STATUS.md`, `TESTING.md`, `COMMUNICATION.md`, `REQUIREMENTS.md`, `REVIEW.md`, `LICENSING.md` und diese Karte.
+Oben liegen der Einstieg [README](README.md) und der Stand: `STATUS.md`, `roadmap.json` (daraus erzeugt `ROADMAP.md`, `ROADMAP_HISTORY.md`), `TESTING.md`, `REQUIREMENTS.md`, `LICENSING.md` und diese Karte.
 
 | Ordner | Inhalt |
 |---|---|
@@ -87,8 +88,7 @@ Oben liegt der Leitstand, den jeder Thread pflegt: `roadmap.json` (daraus erzeug
 | `architecture/welt/` | Weltkarte, Weltbuilder, Live-Karte, Gelände, Landschaft, Weltimport |
 | `architecture/team/` | Teambau, Team-Raum, Kopplung, Live-Abgleich, Ausweichwege, Lagerkisten |
 | `architecture/mod/`, `architecture/betrieb/` | Mod-Brücke und Hologramm; Hosting und Testphase |
-| `archiv/` | abgelöste Pläne und Verläufe (alte Roadmap, Statusverlauf, Blockplan B0–B7, Novemberausbau, Umsetzungsplan) |
-| `project/`, `operations/`, `testing/`, `library/` | Grundsätze und Codex-Anleitung; GitHub-/Pages-Abläufe; Testplan und Gerätematrix; Beitragsliste |
+| `project/`, `operations/`, `testing/`, `library/` | Produktgrundsätze und Planer-Vergleich; Veröffentlichung und Wiederherstellungsprobe; Testplan und Gerätematrix; Beitragsliste |
 
 ## Umziehen von Dateien
 

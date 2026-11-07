@@ -212,7 +212,7 @@ Daraus: Fortschritt je Spieler, Beitragsliste („Anna 3 200 Blöcke, 12 Stacks 
 - Lieferungen (`contribution.items`) erscheinen als „Gemeldete Lieferungen“ neben dem Lager. `site.stock` bleibt die Zahl der Bauleitung und wird nicht automatisch erhöht (keine doppelte Inventarquelle, LAGER-01); eine Übernahme per Klick mit Merker, was schon gebucht ist, folgt mit COOP-04.
 - COOP-04 (umgesetzt): Ein Baumeister erklärt eine Kiste, ein Fass oder eine Shulkerkiste zur **Lagerkiste des Teams** (`/bauplaner lager setzen <Name>` mit Blick auf die Kiste, `store.chest`). Beim Schließen liest das Plugin den Inhalt (Doppelkisten beide Hälften, Inhalt eingelegter Shulkerkisten mit) und schreibt bei Änderung eine Zählung (`store.count`, nur `origin: server`, höchstens 64 Sorten, sonst `more`). Der Bestand ist die letzte Zählung je Kiste; die **Differenz zur vorigen Zählung** wird dem Spieler als „ins Lager“ bzw. „entnommen“ gebucht. Die erste Zählung und gekürzte Listen buchen nichts, ein zweites Einlesen desselben Protokolls auch nicht (Vereinigung nach ID). `/bauplaner lager zaehlen` zählt alle Kisten auf Befehl, `/bauplaner lager` zeigt den Bestand.
 - Im Planer übernimmt Baumeister/Bauleitung den gezählten Bestand per Klick ins Lager der Baustelle (`site.stock`, rückgängig machbar); andere Einträge bleiben.
-- Vertiefung (Schutz der Kisten, lückenloses Klickprotokoll `store.move`, Prüfstatus `store.check`, Siegel, Bedarf im Spiel) übernimmt der Thread „Server-Plugin mit geprüften Lagerkisten“, Konzept `docs/architecture/team/LAGERKISTEN.md`.
+- Vertiefung (Schutz der Kisten, lückenloses Klickprotokoll `store.move`, Prüfstatus `store.check`, Siegel, Bedarf im Spiel) übernimmt der Arbeitsstrang „Server-Plugin mit geprüften Lagerkisten“, Konzept `docs/architecture/team/LAGERKISTEN.md`.
 
 ## 10. Planversionen, Freigabe und Änderungen während des Baus
 
@@ -254,9 +254,9 @@ Tokens, Konten oder Cloud-Dienste werden für keine Stufe benötigt.
 
 ## 15. Schnittstellen
 
-- **PROJ-01 (Thread „Projektmodul vertiefen“):** `Builder` bekommt optional `player`, `role`, `color` (geprüft in `checkProgram`, Patch in `updateBuilder`). `section.assign` schreibt zugleich `program.assignments` (eine Quelle für „wer baut was“ im Zeitplan). Teamprotokoll in `site.team`, geprüft in `checkSite`.
-- **Mod-Thread (GAME-07/08):** COOP-03 ist umgesetzt (§7). Die Lagerkisten (COOP-04) hängen sich über `TeamChannel.decorate` (Felder `stores`, `need`) und `TeamChannel.broadcastStore` an den Kanal.
-- **Paper-Thread (GAME-04):** COOP-02 erweitert `BridgePlugin` um ein eigenes `TeamModule` (eigene Klasse, eigene Befehle), Servertest wie `scripts/mod/test_bridge_paper.sh`.
+- **PROJ-01 (Arbeitsstrang „Projektmodul vertiefen“):** `Builder` bekommt optional `player`, `role`, `color` (geprüft in `checkProgram`, Patch in `updateBuilder`). `section.assign` schreibt zugleich `program.assignments` (eine Quelle für „wer baut was“ im Zeitplan). Teamprotokoll in `site.team`, geprüft in `checkSite`.
+- **Mod-Arbeitsstrang (GAME-07/08):** COOP-03 ist umgesetzt (§7). Die Lagerkisten (COOP-04) hängen sich über `TeamChannel.decorate` (Felder `stores`, `need`) und `TeamChannel.broadcastStore` an den Kanal.
+- **Paper-Arbeitsstrang (GAME-04):** COOP-02 erweitert `BridgePlugin` um ein eigenes `TeamModule` (eigene Klasse, eigene Befehle), Servertest wie `scripts/mod/test_bridge_paper.sh`.
 - **Testphase (QA-04):** neue Fälle im Bereich „Team“.
 - **TEAM-01…03 / AUTH-01:** bleiben als Backend-Option zurückgestellt. Das Ereignismodell ist so gebaut, dass ein späterer Dienst dieselben Ereignisse speichern könnte (ID, Zeit, Urheber, Herkunft).
 
@@ -328,7 +328,7 @@ Ziel: Ein großer Bau (Burg, Stadt, Kolosseum) lässt sich mit mehreren Spielern
 | **Übergabe & Rechte** | Angebot/Annahme (§4), Abwesenheit, „Bauleitung übergeben“ (zwei `member.role`-Ereignisse in einem Schritt: neue Bauleitung, man selbst Baumeister) oder „zusätzlich Bauleitung“; Rechteübersicht aus `canTeam`. |
 | **Serverdatei** | `sections[].need` und `need` (volle Bau-Item-Mengen je Abschnitt bzw. Projekt aus `sectionNeeds`, höchstens 256 Zeilen, absteigend) für den Lagerabgleich des Plugins. |
 
-**Abstimmung:** Mod-Thread baut `teamLink.ts` und `TeamLive.tsx` („Mit Spiel abgleichen“) und ergänzt `SectionIds`/`TeamId` im .schem-Export; Plugin-Thread faltet die COOP-06-Arten in `TeamLog.java` (`/bp uebergeben`, `/bp annehmen`, `/bp abwesend`) und liest `need`; Stufe-3-Thread (COOP-04) besitzt Baunachweis und Lagerkisten.
+**Abstimmung:** Mod-Arbeitsstrang baut `teamLink.ts` und `TeamLive.tsx` („Mit Spiel abgleichen“) und ergänzt `SectionIds`/`TeamId` im .schem-Export; Plugin-Arbeitsstrang faltet die COOP-06-Arten in `TeamLog.java` (`/bp uebergeben`, `/bp annehmen`, `/bp abwesend`) und liest `need`; Stufe-3-Arbeitsstrang (COOP-04) besitzt Baunachweis und Lagerkisten.
 
 **Grenzen:** Teilung nur entlang Schichten und Bauteilen (Abschnittsmitglieder kennen keine Flächen). Zeitplan rechnet mit einem Tempo für alle. Abgehakt-Anteile stammen aus dem Browser, der die Ansicht zeigt.
 

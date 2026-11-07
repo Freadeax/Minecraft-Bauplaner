@@ -1,6 +1,6 @@
 # Team live – Team-Raum statt Datei-Austausch (COOP-07)
 
-Stand 03.11.2026 · Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · baut auf [TEAMBAU](TEAMBAU.md) auf.
+Stand 03.11.2026 · Arbeitsstrang „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · baut auf [TEAMBAU](TEAMBAU.md) auf.
 
 ## 1. Anlass
 
@@ -72,15 +72,15 @@ Ein Raum gehört zu genau einem Team (`teamId`). Alle Antworten sind JSON. Grenz
 
 | Teil | Wer |
 |---|---|
-| Protokoll, Sync-Kern `packages/domain/src/team/teamSync.ts`, Raumdienst `services/team-room/` (Worker + Durable Object, Tests), „Live schalten“/Beitreten/Statuszeile | dieser Thread |
-| Bedienung im Reiter Team (Anwesenheit, Hinweise, neue Bereiche) | Thread „Gemeinsames Bauen im Planer vertiefen“ |
-| `TeamUplink` im Plugin (ausgehend wss/https, Serverschlüssel, Header statt Datei), Befehl `team verbinden` | Thread „Server-Plugin mit geprüften Lagerkisten“ |
-| `/v1/team/pull` als Cursor-Feed, Plan aus dem Raum über den Plugin-Kanal | Mod-Thread |
+| Protokoll, Sync-Kern `packages/domain/src/team/teamSync.ts`, Raumdienst `services/team-room/` (Worker + Durable Object, Tests), „Live schalten“/Beitreten/Statuszeile | dieser Arbeitsstrang |
+| Bedienung im Reiter Team (Anwesenheit, Hinweise, neue Bereiche) | Arbeitsstrang „Gemeinsames Bauen im Planer vertiefen“ |
+| `TeamUplink` im Plugin (ausgehend wss/https, Serverschlüssel, Header statt Datei), Befehl `team verbinden` | Arbeitsstrang „Server-Plugin mit geprüften Lagerkisten“ |
+| `/v1/team/pull` als Cursor-Feed, Plan aus dem Raum über den Plugin-Kanal | Mod-Arbeitsstrang |
 
 ## 9. Was nur Philipp tun kann
 
 - Die Variante wählen.
-- Erledigt (04.11.2026): Cloudflare-Zugang in der Cloud-Umgebung hinterlegt; Claude deployt den Dienst damit (§10).
+- Erledigt (04.11.2026): Cloudflare-Zugang in der Cloud-Umgebung hinterlegt; der Dienst wird damit ausgerollt (§10).
 - Server einmal koppeln (Seite „Spiel“, AUTO_LINK.md) und „Server mit dem Raum verbinden“ klicken – ohne Kopplung `/bauplaner team verbinden <Server-Link>` eingeben. Danach lässt sich der Server auch vom iPad über den Raum einstellen (`POST /v1/rooms/<raum>/control`, LINK-05).
 - Der Live-Test mit Mitspielern.
 
@@ -91,7 +91,7 @@ Ein Raum gehört zu genau einem Team (`teamId`). Alle Antworten sind JSON. Grenz
 - Planer: Die Verbindung hängt am geöffneten Projekt (`ProjectView` → `useTeamRoom` in `views/project/roomClient.ts`), also in jedem Reiter. Eingehende Ereignisse werden ohne Rückgängig-Schritt gespeichert. Reiter „Team“ → Bereich **„Team live“** (`TeamRoom.tsx`): Live schalten, Einladungslink, Link für den Server, Plan in den Raum stellen (bei jeder Freigabe automatisch), „Planstand übernehmen“ für die anderen (vorheriger Stand bleibt als Kopie), Anwesenheit, Status (live / sendet / offline mit wartenden Aktionen), Live trennen. Seite `#/team/beitreten` (`TeamJoinView.tsx`) lädt Plan und Protokoll aus dem Raum, ohne Datei.
 - Prüfung: `tests/unit/team/team-room.test.mjs` (Raum, zwei Browser und Server ohne Datei, verlorene Antworten, Seiten), `tests/e2e/team-room.e2e.mjs` (zwei echte Browser über den Raumkern hinter Playwright-Routing, 1400 und 390 px), `scripts/team/team_room_smoke.mjs <url>` gegen `wrangler dev` oder den echten Dienst.
 - Rückgängig: Ein schon gesendetes Ereignis lässt sich nicht zurückholen (das Protokoll ist nur anhängend); Strg+Z nimmt es lokal zurück, beim nächsten Abgleich kommt es aus dem Raum wieder. Korrekturen laufen wie bisher über Gegenereignisse (freigeben, Nacharbeit).
-- Paper-Plugin: `RoomLink.java` (Plugin-Thread, COOP-07-S05), `/bauplaner team verbinden <Server-Link>`; Test `scripts/mod/test_bridge_paper_room.sh` (BAUPLANER_ROOM).
+- Paper-Plugin: `RoomLink.java` (Plugin-Arbeitsstrang, COOP-07-S05), `/bauplaner team verbinden <Server-Link>`; Test `scripts/mod/test_bridge_paper_room.sh` (BAUPLANER_ROOM).
 - **Betrieb (04.11.2026):** Der Dienst läuft unter `https://bauplaner-team.team-room.workers.dev` (Worker `bauplaner-team`, Cloudflare-Konto des Projekts, Deploy mit `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ACCOUNT_ID` aus der Cloud-Umgebung: `cd services/team-room && npx wrangler deploy`). Der Planer schlägt diese Adresse vor (`DEFAULT_ROOM_URL` in `roomClient.ts`); eigene Räume bleiben eintragbar. Geprüft gegen den echten Dienst: Rauchtest, `TEAM_ROOM_URL=… node --test tests/e2e/team-room.e2e.mjs` (zwei Browser, 1400/390 px) und Paper 26.3 mit RoomLink.
 - Offen: Spieltest mit Mitspielern (TEAMBAU-25).
 
@@ -112,7 +112,7 @@ Philipps Vorgabe: so viel wie möglich im Client, so wenig Server wie nötig. Vi
 | `section.seen` | `section`, `placed ≤ total`, `wrong?`, `missing?` (≤ 24 Zeilen) | Helfer | neuester Stand je Abschnitt (`SectionTeamState.seen`); ändert nie `placed`/`builders` aus `build.tally` |
 | `store.seen` | `chest` (bekannte Lagerkiste), `items` (≤ 64), `more?: true` | Helfer | `StoreChest.seen`; zählt in `stockSeen` nur, solange der Server die Kiste nie gezählt hat; unbekannte Kiste wird abgelehnt |
 
-- Herkunft `planer` (Mitgliedsschlüssel). Der Mod meldet `section.seen` höchstens alle 30 s je Abschnitt und nur bei Änderung, `store.seen` beim Schließen einer bekannten Teamkiste (Vertrag mit dem Thread „Anbindung von Planer, Mod und Server neu denken“, Mod ab 0.15.0).
+- Herkunft `planer` (Mitgliedsschlüssel). Der Mod meldet `section.seen` höchstens alle 30 s je Abschnitt und nur bei Änderung, `store.seen` beim Schließen einer bekannten Teamkiste (Vertrag mit dem Arbeitsstrang „Anbindung von Planer, Mod und Server neu denken“, Mod ab 0.15.0).
 - Planer: Reiter „Team“ → „Baunachweis & Lager“ zeigt je Abschnitt „laut Spiel 72 % (72 von 100) · Anna, …, ungeprüft“ samt den fehlenden Blöcken, je Lagerkiste den gesehenen Inhalt und darunter den „Bestand laut Spiel“ für Kisten ohne Serverzählung. Der Knopf „Bestand ins Baustellen-Lager übernehmen“ nimmt weiterhin nur geprüfte Serverzahlen.
 - Paper `TeamLog.java` kennt beide Arten mit denselben Rechten; das Plugin wertet sie nicht aus (es misst selbst), behält sie aber im Protokoll.
 - Prüfung: `tests/unit/team/team.test.mjs` („Client zuerst“), `tests/e2e/team-room.e2e.mjs` (Mod-Meldung mit Mitgliedsschlüssel erscheint in beiden Browsern).
