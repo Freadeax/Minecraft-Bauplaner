@@ -206,6 +206,11 @@ final class ServerLink implements Listener {
             x.addProperty("name", t.name);
             x.addProperty("events", t.size());
             x.addProperty("sections", t.sections.size());
+            // GAME-06: protection in force and whether the room's events are checked.
+            x.addProperty("protect", tm.protectMode(t));
+            x.addProperty("protectFree", tm.protectFree(t));
+            x.addProperty("checked", tm.trustActive(t));
+            x.addProperty("untrusted", tm.untrusted(t).size());
             teams.add(x);
         }
         a.add("teams", teams);
@@ -263,6 +268,11 @@ final class ServerLink implements Listener {
         }
         String link = LinkCore.str(b, "link");
         if (link == null || link.isBlank()) return CompletableFuture.completedFuture(error("Server-Link fehlt."));
+        if (tm.roomHas(link)) { // GAME-06: takes a new signing key over without reconnecting
+            JsonObject a = new JsonObject();
+            a.addProperty("ok", true); a.addProperty("same", true); a.addProperty("text", "Der Server ist schon mit diesem Team-Raum verbunden.");
+            return CompletableFuture.completedFuture(a);
+        }
         CompletableFuture<JsonObject> out = new CompletableFuture<>();
         tm.roomConnect(link).whenComplete((text, ex) -> Bukkit.getScheduler().runTask(plugin, () -> {
             JsonObject a = new JsonObject();

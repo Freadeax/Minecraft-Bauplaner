@@ -297,13 +297,15 @@ export async function latestServerRecording(projectId: string, onProgress: (text
  * Connects the Minecraft game on this computer with a team room: from then on the mod gets the team state from
  * the room and sends the player's own actions there – no plugin and no file on the server.
  */
-export async function gameToRoom(room: ServerRoom, member: { id: string; name?: string }, teamName: string, serverKey?: string): Promise<string> {
+export async function gameToRoom(room: ServerRoom, member: { id: string; name?: string }, teamName: string, serverKey?: string, signKey?: string): Promise<string> {
   const link = await gameLink();
   if (!liveCan(link.hello, 'room')) throw new LiveError(`Die Mod ${link.hello.mod.version} kann noch nicht direkt mit dem Team-Raum sprechen – Mod 0.14.0 oder neuer installieren.`, 426);
   // LINK-11: the Bauleitung's game also gets the server key; on a server with the plugin the mod hands the room
   // over by itself (link.room, only OP/bauplaner.team.leitung). Older mods ignore the field.
   const handOver = !!serverKey && liveCan(link.hello, 'roomserver');
-  const text = await liveApi.roomSet(link.port, link.token, { url: room.url, room: room.room, key: room.key, member: member.id, ...(member.name && { memberName: member.name }), teamName, device: 'Minecraft', ...(handOver && { serverKey }) });
+  const text = await liveApi.roomSet(link.port, link.token, { url: room.url, room: room.room, key: room.key, member: member.id, ...(member.name && { memberName: member.name }), teamName, device: 'Minecraft', ...(handOver && { serverKey }),
+    // GAME-06: with it the game signs the Bauleitung's events and hands the key to the plugin (link parameter l).
+    ...(handOver && signKey && liveCan(link.hello, 'roomsign') && { signKey }) });
   return handOver ? `${text} Bist du als Bauleitung (OP) mit diesem Spiel auf dem Server mit Build-Studio-Plugin, verbindet die Mod den Server von selbst mit dem Team-Raum.` : text;
 }
 

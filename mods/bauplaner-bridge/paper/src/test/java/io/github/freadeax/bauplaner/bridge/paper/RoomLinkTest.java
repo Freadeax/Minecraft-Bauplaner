@@ -16,5 +16,15 @@ class RoomLinkTest {
         assertEquals("https://bauplaner-team.team-room.workers.dev", web.base());
         assertTrue(RoomLink.parse("https://x/#/team/beitreten?raum=http%3A%2F%2Fevil.example&id=r_1&s=k").isEmpty(), "nur https oder 127.0.0.1");
         assertTrue(RoomLink.parse("https://x/#/team/beitreten?raum=https%3A%2F%2Fa&id=r_1").isEmpty(), "ohne Serverschlüssel");
+        assertNull(l.signKey());
+    }
+
+    @Test
+    void takesTheSigningKeyOfTheBauleitung() {
+        String key = io.github.freadeax.bauplaner.mod.team.EventSig.deriveKey("adminKeyForTests_0123456789abcdefXYZ");
+        assertEquals(key, RoomLink.parse("https://x/#/team/beitreten?raum=https%3A%2F%2Fa&id=r_1&s=k&l=" + key).orElseThrow().signKey());
+        assertNull(RoomLink.parse("https://x/#/team/beitreten?raum=https%3A%2F%2Fa&id=r_1&s=k&l=kurz").orElseThrow().signKey(), "ungültiger Schlüssel wird ignoriert");
+        // As the mod builds it (RoomClient.Config.serverLink, EventSigTest.modLinkCarriesTheKey).
+        assertEquals(key, RoomLink.parse("https://a/#/team/beitreten?raum=https%3A%2F%2Fa&id=r_test1234&s=s_srv&l=" + key).orElseThrow().signKey());
     }
 }

@@ -49,7 +49,12 @@ final class TeamLog {
         NEED.put("section.seen", "helfer"); NEED.put("store.seen", "helfer");
         // TEAM-03 (team.ts): Mitbauer, versioned assignments
         NEED.put("section.crew", "meister"); NEED.put("section.join", "helfer"); NEED.put("section.leave", "helfer");
+        // GAME-06 (SIGNED_EVENTS.md): protection of the sections on the server, the Bauleitung confirms the room's past.
+        NEED.put("team.protect", "leitung"); NEED.put("team.trust", "leitung");
     }
+    /** GAME-06: protection levels (team.protect mode) and who may build in free sections (free). */
+    static final List<String> PROTECT_MODES = List.of("aus", "hinweis", "sperren");
+    static final List<String> PROTECT_FREE = List.of("alle", "team");
     /** Measurements only the server writes (origin server), as in team.ts SERVER_ONLY_KINDS. */
     static final Set<String> SERVER_ONLY = Set.of("build.tally", "store.count", "store.move", "store.check", "store.yield");
     static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
@@ -112,6 +117,8 @@ final class TeamLog {
     List<JsonObject> events() { return new ArrayList<>(events.values()); }
     /** Whether an event with this id is in the log (Teamkanal: an action sent twice counts once). */
     boolean has(String id) { return sortKey.containsKey(id); }
+    /** The event with this id, or null. */
+    JsonObject get(String id) { String k = sortKey.get(id); return k == null ? null : events.get(k); }
     int size() { return events.size(); }
 
     /** Time for a new event: now, never before the last one (keeps the order of the planner). */
@@ -210,6 +217,10 @@ final class TeamLog {
         /** COOP-06: absent members and event ids of hints marked as done. */
         final Map<String, Away> away = new HashMap<>();
         final Set<String> acknowledged = new java.util.LinkedHashSet<>();
+        /** GAME-06: protection set by the Bauleitung in the planner (null = not set, the server's config applies). */
+        String protectMode, protectFree;
+        /** GAME-06: room events the server did not take into this view (id → reason), see {@link EventTrust}. */
+        final Map<String, String> untrusted = new LinkedHashMap<>();
 
         /** Sum of the last counts of all chests. */
         Map<String, Long> stock() {
@@ -236,15 +247,27 @@ final class TeamLog {
     }
 
     static int rank(String role) { return ROLES.indexOf(role); }
+    /** Minimum role of an event kind (null for kinds of newer versions). */
+    static String need(String kind) { return NEED.get(kind); }
     static boolean can(String role, String kind) { return NEED.containsKey(kind) && rank(role) >= rank(NEED.get(kind)); }
 
-    View view() {
+    View view() { return view(null); }
+
+    /** Decides per event whether the fold takes it (GAME-06 trust on the server); the view built so far is passed for first-use rules. */
+    interface Filter { String reject(View sofar, JsonObject event); }
+
+    /** The fold with a filter: events it refuses are left out and listed in {@link View#untrusted}. */
+    View view(Filter filter) {
         View v = new View();
         for (Member m : headerMembers) { v.names.put(m.id, m.name); v.known.add(m.id); if (m.player != null) v.players.put(m.id, m.player); }
         v.known.add(founder);
         v.roles.put(founder, "leitung");
         for (Section s : sections) v.section(s.id);
-        for (JsonObject e : events.values()) fold(v, e);
+        for (JsonObject e : events.values()) {
+            String why = filter == null ? null : filter.reject(v, e);
+            if (why != null) { v.untrusted.put(str(e, "id"), why); continue; }
+            fold(v, e);
+        }
         for (JsonObject t : v.tallies) {
             String by = str(t, "by"), sec = str(t, "section");
             if (v.tallyOff.contains(by)) continue;
@@ -471,6 +494,12 @@ final class TeamLog {
                 s.history.add(at + " " + v.name(by) + ": " + (who.equals(by) ? "ausgestiegen" : v.name(who) + " herausgenommen"));
             }
             case "issue.ack" -> { for (JsonElement x : array(e, "events")) v.acknowledged.add(x.getAsString()); }
+            case "team.protect" -> {
+                String mode = str(e, "mode"), free = Optional.ofNullable(str(e, "free")).orElse("alle");
+                if (!PROTECT_MODES.contains(mode) || !PROTECT_FREE.contains(free)) { reject(v, id, "Unbekannte Schutzstufe."); return; }
+                v.protectMode = mode; v.protectFree = free;
+            }
+            case "team.trust" -> { } // only read by EventTrust (signature and arrival number)
             case "store.config", "store.move", "store.check", "store.seal", "store.yield" -> {
                 if (!v.chests.containsKey(str(e, "chest"))) { reject(v, id, "Lagerkiste unbekannt oder entfernt."); return; }
             }

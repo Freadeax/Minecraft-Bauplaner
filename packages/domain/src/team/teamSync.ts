@@ -265,9 +265,12 @@ export function inviteLink(pageBase: string, live: Pick<TeamLive, 'url' | 'room'
   const q = new URLSearchParams({ raum: live.url, id: live.room, k: live.key });
   return `${pageBase.replace(/#.*$/, '')}#/team/beitreten?${q.toString()}`;
 }
-/** Link for the Paper plugin (`/bauplaner team verbinden <Link>`): same shape, the server key as `s`. */
-export function serverLink(pageBase: string, live: Pick<TeamLive, 'url' | 'room'>, serverKey: string): string {
-  const q = new URLSearchParams({ raum: live.url, id: live.room, s: serverKey });
+/**
+ * Link for the Paper plugin (`/bauplaner team verbinden <Link>`): same shape, the server key as `s`. GAME-06: the
+ * Bauleitung adds its signing key as `l` (never the admin key), so the plugin can check the Bauleitung's signatures.
+ */
+export function serverLink(pageBase: string, live: Pick<TeamLive, 'url' | 'room'>, serverKey: string, signKey?: string): string {
+  const q = new URLSearchParams({ raum: live.url, id: live.room, s: serverKey, ...(signKey && { l: signKey }) });
   return `${pageBase.replace(/#.*$/, '')}#/team/beitreten?${q.toString()}`;
 }
 export interface Invite { readonly url: string; readonly room: string; readonly key: string; readonly kind: 'member' | 'server' }

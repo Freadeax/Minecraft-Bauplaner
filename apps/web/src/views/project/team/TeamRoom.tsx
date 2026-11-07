@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { goLive, headerFingerprint, inviteLink, leaveLive, readBackup, readTeamPackage, roomStatus, serverLink, siteOf, teamContextOf, teamView, whereInPlan } from '../../../../../../packages/domain/src/index.js';
-import type { RoomTeam, TeamState, TeamView } from '../../../../../../packages/domain/src/index.js';
+import { appendEvents, goLive, headerFingerprint, inviteLink, laterThan, leaveLive, PROTECT_MODE_LABEL, PROTECT_MODES, readBackup, readTeamPackage, roomStatus, serverLink, siteOf, teamContextOf, teamEvent, teamView, whereInPlan } from '../../../../../../packages/domain/src/index.js';
+import type { ProtectFree, ProtectMode, RoomTeam, TeamEventBody, TeamState, TeamView } from '../../../../../../packages/domain/src/index.js';
 import { useApp } from '../../../app/context';
 import { errorText } from '../../../app/ui';
-import { createRoom, getPlan, putHeader, putPlan, readRoomUrl, rotateKey, saveRoomUrl, useRoomConnection } from './roomClient';
+import { createRoom, getPlan, putHeader, putPlan, readRoomUrl, rotateKey, saveRoomUrl, signKeyOf, useRoomConnection } from './roomClient';
 import type { ProjectSession } from '../session';
 import { TeamBackup } from './TeamBackup';
 import { roomHeader, takePlan, teamPackageText } from './teamTransfer';
@@ -45,6 +45,15 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
     [anyPos, session.project, session.computation, team]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const saveLive = (next: RoomTeam) => session.replace(p => ({ ...p, site: { ...siteOf(p), team: next as TeamState } }));
+  // GAME-06: the Bauleitung's signing key (from the admin key, only in this browser); the server gets it with its link.
+  const [signKey, setSignKey] = useState<string | undefined>(undefined);
+  useEffect(() => { let on = true; setSignKey(undefined); if (live?.adminKey) void signKeyOf(live.adminKey).then(k => { if (on) setSignKey(k); }); return () => { on = false; }; }, [live?.adminKey]);
+  const founderHere = !!live?.adminKey && me?.id === team.founder;
+  /** A team event of the Bauleitung (signed on the way to the room, roomClient.signedBatch). */
+  const leaderEvent = (body: TeamEventBody) => session.replace(p => {
+    const t = (siteOf(p).team ?? team) as TeamState;
+    return { ...p, site: { ...siteOf(p), team: appendEvents(t, [teamEvent(team.founder, body, laterThan(t))]) } };
+  });
 
   const uploadPlan = async (t: RoomTeam, quiet = false) => {
     if (!t.live?.adminKey) return;
@@ -102,16 +111,30 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
   const serverHere = room.presence.some(p => p.where === 'server');
   const autoServer = useRef('');
   useEffect(() => {
-    if (!leads || !live?.serverKey || !room.connected || serverHere || autoServer.current === live.room) return;
+    // GAME-06: a server already in the room still gets the link once per visit when it carries the signing key
+    // (the plugin answers "same" and only takes the key over).
+    if (!leads || !live?.serverKey || !room.connected || (serverHere && !signKey) || (live.adminKey && !signKey) || autoServer.current === live.room) return;
     autoServer.current = live.room;
-    const link = serverLink(pageBase(), live, live.serverKey);
+    const link = serverLink(pageBase(), live, live.serverKey, signKey);
     void reachableServer().then(async s => {
       if (!s) return;
       const answer = await s.send('room', { link });
       if (s.via === 'mod') rememberRoom(s.pairing.serverId, { url: live.url, room: live.room, key: live.key });
-      onMessage(`„${s.pairing.name}“ hat sich selbst mit dem Team-Raum verbunden${typeof answer.text === 'string' ? `: ${answer.text}` : '.'}`);
+      if (answer.same !== true) onMessage(`„${s.pairing.name}“ hat sich selbst mit dem Team-Raum verbunden${typeof answer.text === 'string' ? `: ${answer.text}` : '.'}`);
     }).catch(() => { autoServer.current = ''; });
-  }, [leads, live?.serverKey, live?.room, room.connected, serverHere]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [leads, live?.serverKey, live?.room, room.connected, serverHere, signKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // GAME-06: once per room the Bauleitung confirms everything that arrived before signatures existed (team.trust).
+  // The server checks room events only from then on; later unsigned events in its name or with its rights are not taken.
+  const trusted = team.events.some(e => e.kind === 'team.trust' && e.by === team.founder);
+  useEffect(() => {
+    if (!founderHere || !room.connected || trusted) return;
+    leaderEvent({ kind: 'team.trust', upTo: /^\d{1,15}$/.test(live!.cursor) ? live!.cursor : '0' });
+  }, [founderHere, room.connected, trusted]); // eslint-disable-line react-hooks/exhaustive-deps
+  const setProtect = (mode: ProtectMode, free: ProtectFree) => {
+    leaderEvent({ kind: 'team.protect', mode, ...(free === 'team' && { free }) });
+    onMessage(`Abschnittsschutz auf dem Server: ${PROTECT_MODE_LABEL[mode]}${free === 'team' ? ', freie Abschnitte nur fürs Team' : ''}. Das Plugin übernimmt es über den Team-Raum (unterschrieben von dir).`);
+  };
 
   // Helpers: the release came live, the matching plan is in the room – take it over with one click.
   const planMissing = !!releaseId && !session.project.revisions.some(r => r.id === releaseId);
@@ -163,7 +186,7 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
   };
   const label = status.state === 'live' ? 'live' : status.state === 'waiting' ? `sendet ${status.pending} …` : status.state === 'offline' ? `offline${status.pending ? ` · ${status.pending} warten` : ''}` : 'aus';
   const invite = inviteLink(pageBase(), live);
-  const server = live.serverKey ? serverLink(pageBase(), live, live.serverKey) : '';
+  const server = live.serverKey ? serverLink(pageBase(), live, live.serverKey, signKey) : '';
   return <div className="team-block team-room" role="region" aria-label="Team live">
     <div className="team-block-head"><h3>Team live <small>{live.url.replace(/^https?:\/\//, '')}</small></h3>
       <span className={`team-live-state ${status.state}`} role="status" data-state={status.state}>● {label}</span></div>
@@ -183,9 +206,20 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
       ? 'Server-Plugin: ● im Team-Raum – bekommt Abschnitte, Lagerkisten und Abschnittsschutz live aus Planer und Mods.'
       : leads ? 'Server-Plugin (freiwillig): noch nicht im Raum. Es verbindet sich von selbst, sobald du nach „Mein Spiel verbinden“ als Bauleitung (OP) auf dem Server mit Build-Studio-Plugin bist – oder sofort, wenn der Server gekoppelt ist. Nichts herunterladen, nichts einfügen.'
       : 'Server-Plugin (freiwillig): nicht im Raum. Die Bauleitung verbindet es mit ihrem Spiel.'}</p>
+    <div className="team-protect" role="group" aria-label="Abschnittsschutz auf dem Server">
+      <h4>Abschnittsschutz auf dem Server</h4>
+      <p className="muted">Gilt mit dem Paper-Plugin: Bauleitung und Baumeister bauen überall, jeder in seinem eigenen Abschnitt, bestätigte Abschnitte ändern nur Baumeister und Bauleitung. Rollen und diese Einstellung nimmt der Server nur mit deiner Unterschrift an.</p>
+      {founderHere ? <div className="team-inline">
+        <label>Stufe<select aria-label="Schutzstufe" value={view.protect?.mode ?? ''} onChange={e => e.target.value && setProtect(e.target.value as ProtectMode, view.protect?.free ?? 'alle')}>
+          {!view.protect && <option value="">wie auf dem Server eingestellt</option>}
+          {PROTECT_MODES.map(m => <option key={m} value={m}>{PROTECT_MODE_LABEL[m]}</option>)}</select></label>
+        <label>Freie Abschnitte<select aria-label="Freie Abschnitte" value={view.protect?.free ?? 'alle'} disabled={!view.protect} onChange={e => view.protect && setProtect(view.protect.mode, e.target.value as ProtectFree)}>
+          <option value="alle">alle dürfen bauen</option><option value="team">nur Team ab Helfer</option></select></label>
+      </div> : <p data-testid="protect-state">{view.protect ? `Eingestellt: ${PROTECT_MODE_LABEL[view.protect.mode]}${view.protect.free === 'team' ? ', freie Abschnitte nur fürs Team' : ''}.` : 'Die Bauleitung hat nichts eingestellt; es gilt die Einstellung des Servers.'}</p>}
+    </div>
     <div className="team-buttons">
       <button className="primary" disabled={busy || !me} title={me ? 'Die Build-Studio-Mod in deinem Minecraft spricht dann selbst mit diesem Raum: Abschnitte, Meldungen und Notizen live im Spiel – ohne Plugin und ohne Datei auf dem Server.' : 'Zuerst oben „Ich bin“ wählen.'}
-        onClick={() => void run(async () => { onMessage(await gameToRoom({ url: live.url, room: live.room, key: live.key }, { id: me!.id, name: me!.name }, team.name, leads && live.adminKey ? live.serverKey : undefined)); askGame(); })}>Mein Spiel verbinden</button>
+        onClick={() => void run(async () => { onMessage(await gameToRoom({ url: live.url, room: live.room, key: live.key }, { id: me!.id, name: me!.name }, team.name, leads && live.adminKey ? live.serverKey : undefined, leads ? signKey : undefined)); askGame(); })}>Mein Spiel verbinden</button>
       <button disabled={busy} className="secondary" title="Die Mod in deinem Minecraft trennt sich vom Team-Raum." onClick={() => void run(async () => { onMessage(await gameLeaveRoom()); askGame(); })}>Spiel trennen</button>
       <button disabled={busy} onClick={() => setShown(shown === 'invite' ? '' : 'invite')}>Einladungslink</button>
       {server && <button disabled={busy} title="Der gekoppelte Server verbindet sich selbst mit diesem Raum (LINK-04). Ohne Kopplung: Link für den Server." onClick={() => void run(async () => {

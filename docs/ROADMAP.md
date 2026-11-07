@@ -12,10 +12,10 @@ Stand: 2026-11-07T02:04:39.741Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 3 |
+| ⏳ Offen | 2 |
 | 🚧 In Arbeit | 8 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 92 |
+| 🧩 Implementiert · Abnahme offen | 93 |
 | ✅ Im beschriebenen Umfang geprüft | 35 |
 | ⏸ Zurückgestellt | 3 |
 
@@ -30,13 +30,13 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 16 | 0 | 14 | 1 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
-| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 13 | 0 | 10 | 0 |
+| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 14 | 0 | 11 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 4 | 0 | 3 | 1 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
 | [Performance und Stabilität](#bereich-perf) | 5 | 0 | 2 | 3 |
 | [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 7 | 0 | 4 | 15 |
 | [Testphase, Qualität und Betrieb](#bereich-qa) | 2 | 1 | 2 | 8 |
-| [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 3 | 0 | 0 | 0 |
+| [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 2 | 0 | 0 | 0 |
 
 <a id="bereich-planer"></a>
 
@@ -159,6 +159,7 @@ Abgeschlossen oder zurückgestellt: COOP-02 (geprüft).
 | [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mehrspieler und Server automatisch abnehmen“ | Mehrspieler-Abnahme auf server.lmnt-gaming.net (S04). |
 | [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Mod-Oberfläche und Hologramm automatisch abnehmen“ | Zusammen mit MAP-03-S06. |
 | [GAME-05](#game-05) | NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Teambau und Befehle in der Mod ausbauen“ | — |
+| [GAME-06](#game-06) | Server-Plugin direkt mit dem Team-Raum (Mod/Plugin 0.26.0) | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Server-Plugin direkt mit dem Team-Raum verbinden“ | Auf dem eigenen Server mit Plugin 0.26.0 den Abschnittsschutz aus dem Planer prüfen (LINK-14). |
 | [GAME-07](#game-07) | Bauplaner-Mod 2.0 | 🧩 Implementiert · Abnahme offen 10/11 | P1 | „Mod-Oberfläche und Hologramm automatisch abnehmen“ | Hologramm, Abschnitte und Röntgensicht auf server.lmnt-gaming.net (S05). |
 | [GAME-12](#game-12) | Mod einfacher bedienen (Mod 0.23.0) | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Mod-Oberfläche und Hologramm automatisch abnehmen“ | Menü J, Meldungen oben rechts, Baufenster und Befehle auf Englisch im Modpack prüfen (MOD-25 bis MOD-28). |
 | [LINK-03](#link-03) | Mod | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mod-Oberfläche und Hologramm automatisch abnehmen“ | Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“. |
@@ -239,7 +240,6 @@ Abgeschlossen oder zurückgestellt: OPS-01 (geprüft), PLAN-01 (geprüft), DOC-0
 |---|---|---|---|---|---|
 | [AUTH-01](#auth-01) | Konten, Rechte und Übernahme lokaler Projekte | ⏳ Offen 0/2 | P0 | — | — |
 | [TEAM-01](#team-01) | Backendvertrag, Datenbank und Payloadspeicher | ⏳ Offen 0/2 | P0 | — | — |
-| [GAME-06](#game-06) | Sichere Serveranbindung (Webhooks) für Server-Plugins | ⏳ Offen 0/1 | P1 | — | — |
 
 Abgeschlossen oder zurückgestellt: GAME-13 (zurückgestellt), DEFER-01 (zurückgestellt), DEFER-02 (zurückgestellt).
 
@@ -286,6 +286,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **TERRAIN-05** · Im Reiter „Landschaft“ einen Berg stempeln, verwittern lassen, einen Fluss graben, als Bauteil übernehmen und im Spiel ansehen (PROJ-26).
 - **GEN-02** · Treppenhaus, Torhaus-Wehrgang und Hafen im Spiel.
 - **MAP-02** · BlueMap-Marker (.conf) bzw. Dynmap-Befehle auf eurer Server-Karte einspielen und prüfen, ob Projekte, Wege und Punkte an der richtigen Stelle erscheinen (KARTE-08).
+- **GAME-06** · Auf dem eigenen Server mit Plugin 0.26.0 den Abschnittsschutz aus dem Planer prüfen (LINK-14).
 - **LIB-04** · Redstone-Bauten im Spiel abnehmen.
 - **LIB-05** · Einige neu gezeichnete Gebäude im Spiel ansehen (S08).
 - **GROSS-01** · Großprojekte und die sechs Großbauten im Spiel ansehen (BIB-13).
@@ -609,7 +610,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [AUTH-01](#auth-01) | Konten, Rechte und Übernahme lokaler Projekte | ⏳ Offen | 0/2 | TEAM-01 | ausstehend | ausstehend |
 | [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo im Team-Raum | 🧩 Implementiert · Abnahme offen | 2/2 | AUTH-01, UPDATE-01 | ausstehend | ausstehend |
 | [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung: mehrere Spieler je Abschnitt und Sammelauftrag, versionierte Zuständigkeiten und Buchungen, live über den Team-Raum | 🧩 Implementiert · Abnahme offen | 2/3 | TEAM-02, COOP-06, PROJ-05 | ausstehend | ausstehend |
-| [GAME-06](#game-06) | Sichere Serveranbindung (Webhooks) für Server-Plugins | ⏳ Offen | 0/1 | TEAM-02, GAME-04 | ausstehend | ausstehend |
+| [GAME-06](#game-06) | Server-Plugin direkt mit dem Team-Raum (Mod/Plugin 0.26.0): unterschriebene Ereignisse der Bauleitung, Ereignis-ID und wiederholbare Verarbeitung, Abschnittsschutz nach Team-Rollen aus dem Raum | 🧩 Implementiert · Abnahme offen | 3/4 | TEAM-02, GAME-04, LINK-11 | ausstehend | ausstehend |
 | [LAGER-01](#lager-01) | Optionale Truhen-/Lagerintegration | 🧩 Implementiert · Abnahme offen | 2/2 | GAME-04 | ausstehend | ausstehend |
 | [OPS-04](#ops-04) | Team-Raum betreiben: Sicherung, Wiederherstellung, Aufbewahrung, Zustand | 🧩 Implementiert · Abnahme offen | 3/4 | TEAM-02 | ausstehend | ausstehend |
 | [DEFER-01](#defer-01) | GitHub-Login, externes Materialrepo und Registry | ⏸ Zurückgestellt | 0/1 | — | ausstehend | ausstehend |
@@ -2397,19 +2398,24 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-06
 
-**Sichere Serveranbindung (Webhooks) für Server-Plugins** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: — · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Server-Plugin direkt mit dem Team-Raum (Mod/Plugin 0.26.0): unterschriebene Ereignisse der Bauleitung, Ereignis-ID und wiederholbare Verarbeitung, Abschnittsschutz nach Team-Rollen aus dem Raum** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Server-Plugin direkt mit dem Team-Raum verbinden“) · Zuständiger Thread: „Server-Plugin direkt mit dem Team-Raum verbinden“ · Aktualisiert: 2026-11-07T02:01:03.047Z
 
-- [ ] GAME-06-S01: Signierte Webhooks, Ereignis-ID und wiederholbare Verarbeitung ergänzen (aus GAME-04-S02 ausgelagert).
+- [x] GAME-06-S01: Signierte Ereignisse, Ereignis-ID und wiederholbare Verarbeitung (aus GAME-04-S02): Bauleitung unterschreibt im Planer und in der Mod (HMAC aus dem Verwaltungsschlüssel, eventSig.ts/EventSig.java, gemeinsamer Prüfvektor), Plugin bekommt den Schlüssel mit dem Server-Link (l), merkt Ankunftsnummern, jede ID wirkt einmal, gleiche ID mit anderem Inhalt ersetzt nichts.
+- [x] GAME-06-S02: EventTrust im Plugin: Bauleitung bestätigt die Vergangenheit (team.trust), danach keine unterschriftslosen Ereignisse im Namen oder mit Rechten der Bauleitung und keine fremden Spielernamen; /bp team raum pruefen; Planer zeigt weiter alles.
+- [x] GAME-06-S03: Abschnittsschutz nach Team-Rollen aus dem Raum (team.protect, Planer „Abschnittsschutz auf dem Server“): Bauleitung/Baumeister überall, bestätigt nur sie, vergeben nur Inhaber, frei alle oder nur Team; Serverhoheit mit team.schutz-quelle.
+- [ ] GAME-06-S04: Echter Servertest mit Team-Raum (test_bridge_paper_signed.sh, Paper 1.21.11 und 26.3) und Abnahme mit echten Spielern durch Philipp (LINK-14).
 
-**Abnahme:** Keine impliziten Weltänderungen; Planlieferung und Blocksetzen getrennt.
+**Abnahme:** Keine impliziten Weltänderungen; Planlieferung und Blocksetzen getrennt. Mit Einladungslink allein lassen sich Rollen, Schutzstufe und fremde Spielernamen auf dem Server nicht ändern. Nichts wird heruntergeladen oder eingefügt; ohne Plugin bleibt alles wie bisher.
 
-**Nächste Aktion:** Nach TEAM-02 spezifizieren.
+**Nächste Aktion:** Abnahme LINK-14 auf Philipps Server mit echten Spielern.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Nur Philipp:** Im Spiel an deinem PC: Auf dem eigenen Server mit Plugin 0.26.0 den Abschnittsschutz aus dem Planer prüfen (LINK-14).
 
-**Nachweise:** noch ausstehend
+**Prüfstand:** Unit-, Plugin- und echte Servertests grün; Abnahme mit echten Spielern offen (LINK-14).
 
-**Dateiumfang:** `mods/`, `packages/application/`. **Abhängigkeiten:** TEAM-02, GAME-04. **Alte IDs:** P6-01.
+**Nachweise:** [tests/unit/team/event-sig.test.mjs](../tests/unit/team/event-sig.test.mjs) — Prüfvektor, Team/Inhalt/Schlüssel, nur eigene Ereignisse, team.protect/team.trust, unterschriebene Fassung beim Zusammenführen, Server-Link mit l.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/team/EventSigTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/team/EventSigTest.java) — Gleicher Vektor in Java, Zahlen/Zeichen wie JavaScript, Link der Mod mit l.; [mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/EventTrustTest.java](../mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/EventTrustTest.java) — Vergangenheit bestätigt, vier Fälschungen abgewiesen, Planer ungefiltert, Regeln des Abschnittsschutzes.; [scripts/mod/bridge_papersigned.mjs](../scripts/mod/bridge_papersigned.mjs) — Echter Paper-Server 1.21.11 und 26.3 mit wrangler-Team-Raum: Schutz sperren/team aus dem Raum, 4 Fälschungen in /bp team raum pruefen, Neustart gleich, schutz-quelle server.
+
+**Dateiumfang:** `mods/bauplaner-bridge/`, `packages/domain/src/team/`, `packages/domain/src/index.ts`, `apps/web/src/views/project/team/`, `apps/web/src/views/mod/`, `apps/web/src/styles/team.css`, `apps/web/src/testing/testplan.ts`, `scripts/mod/`, `tests/unit/team/`, `downloads/mod/`, `docs/`. **Abhängigkeiten:** TEAM-02, GAME-04, LINK-11. **Alte IDs:** P6-01.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

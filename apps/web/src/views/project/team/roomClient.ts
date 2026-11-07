@@ -1,7 +1,7 @@
 // Team-Raum client (COOP-07, docs/architecture/team/TEAM_LIVE.md): HTTP calls and the live connection.
 // The sync logic itself is pure (packages/domain/src/team/teamSync.ts); this file only moves bytes.
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { LINK_TIMING, afterRestore, confirm, ingest, linkDead, nextBatch, reconnectDelay, retryDelay, trackOutbox } from '../../../../../../packages/domain/src/index.js';
+import { LINK_TIMING, afterRestore, confirm, deriveSignKey, ingest, linkDead, nextBatch, reconnectDelay, retryDelay, signBatch, trackOutbox } from '../../../../../../packages/domain/src/index.js';
 import type { AppendAnswer, Batch, FeedAnswer, RoomTeam, StaleStep, TeamEvent, TeamLive } from '../../../../../../packages/domain/src/index.js';
 
 const URL_KEY = 'bauplaner.teamraum.adresse';
@@ -53,6 +53,14 @@ export const makeBackup = (live: AdminRoom) => call<RoomBackup>(live.url, `/v1/r
 export const restoreBackup = (live: AdminRoom, backup: string) => call<{ ok: true; epoch: string; events: number; cursor: string; keys: 'unveraendert' | 'aus-sicherung'; before?: string }>(live.url, `/v1/rooms/${live.room}/restore`, { method: 'POST', body: JSON.stringify({ backup }), key: adminOf(live) });
 export const deleteRoom = (live: AdminRoom) => call<{ deleted: true; backup: string; restorableUntil: string }>(live.url, `/v1/rooms/${live.room}?bestaetigen=${encodeURIComponent(live.room)}`, { method: 'DELETE', key: adminOf(live) });
 export const serviceStatus = (url: string) => call<{ ok: boolean; version: number; features?: string[]; deployment?: { id?: string } | string | null }>(url, '/v1/status');
+/** Signing key of the Bauleitung (GAME-06), derived once per admin key. */
+const signKeys = new Map<string, Promise<string>>();
+export const signKeyOf = (adminKey: string): Promise<string> => { let k = signKeys.get(adminKey); if (!k) signKeys.set(adminKey, k = deriveSignKey(adminKey)); return k; };
+/** The batch as it goes to the room: the founder's events signed when this planner holds the admin key. */
+export async function signedBatch(team: RoomTeam, batch: Batch): Promise<Batch> {
+  if (!team.live?.adminKey) return batch;
+  return { batch: batch.batch, events: await signBatch(await signKeyOf(team.live.adminKey), team, batch.events) };
+}
 
 export async function sha256Hex(bytes: Uint8Array): Promise<string> {
   const d = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes as BufferSource));
@@ -166,18 +174,20 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
   };
   const flush = () => {
     const t = latest.current; if (!t?.live) return;
-    const batch = nextBatch(t); if (!batch || sending.current === batch.batch) return;
-    const socket = ws.current;
-    if (socket?.readyState === WebSocket.OPEN) {
-      sending.current = batch.batch;
-      clearTimeout(answerTimer.current);
-      answerTimer.current = setTimeout(() => { if (sending.current === batch.batch) { sending.current = null; flush(); } }, LINK_TIMING.answerMs);
-      try { socket.send(JSON.stringify({ type: 'append', ...batch })); } catch { sending.current = null; }
-      return;
-    }
-    sending.current = batch.batch;
-    void postBatch(t.live, batch).then(a => { sending.current = null; takeAnswer(a); flush(); })
-      .catch(e => { sending.current = null; setError(e instanceof Error ? e.message : String(e)); });
+    const plain = nextBatch(t); if (!plain || sending.current === plain.batch) return;
+    sending.current = plain.batch;
+    // GAME-06: the founder's planner signs its own events (deterministic, so a resend stays "known" in the room).
+    void signedBatch(t, plain).then(batch => {
+      const socket = ws.current, cur = latest.current;
+      if (!cur?.live) { sending.current = null; return; }
+      if (socket?.readyState === WebSocket.OPEN) {
+        clearTimeout(answerTimer.current);
+        answerTimer.current = setTimeout(() => { if (sending.current === batch.batch) { sending.current = null; flush(); } }, LINK_TIMING.answerMs);
+        try { socket.send(JSON.stringify({ type: 'append', ...batch })); } catch { sending.current = null; }
+        return;
+      }
+      return postBatch(cur.live, batch).then(a => { sending.current = null; takeAnswer(a); flush(); });
+    }).catch(e => { sending.current = null; setError(e instanceof Error ? e.message : String(e)); });
   };
 
   // Outbox changes (own actions) → send.

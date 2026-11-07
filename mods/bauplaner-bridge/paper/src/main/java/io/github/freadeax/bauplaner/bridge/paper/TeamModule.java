@@ -69,7 +69,7 @@ final class TeamModule implements Listener {
      * every hopper or block event on a server with two teams replay both team logs, alternately.
      */
     private final Map<TeamLog, CachedView> views = new java.util.IdentityHashMap<>();
-    private record CachedView(int size, TeamLog.View view) {}
+    private record CachedView(int size, String trust, TeamLog.View view) {}
     private BukkitTask barTask, tallyTask;
     private final StorageModule storage;
     private RoomLink room;
@@ -200,11 +200,43 @@ final class TeamModule implements Listener {
         Files.writeString(log, TeamLog.GSON.toJson(event) + "\n", StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
     }
 
+    /**
+     * The server's view of a team. GAME-06: with a team room, room events pass {@link EventTrust} first (signatures of
+     * the Bauleitung); roles, player names and protection on the server only come from what the server can trust.
+     */
     private TeamLog.View view(TeamLog team) {
         CachedView c = views.get(team);
-        if (c == null || c.size() != team.size()) views.put(team, c = new CachedView(team.size(), team.view()));
+        String stamp = room == null ? "" : room.trustStamp(team.teamId);
+        if (c == null || c.size() != team.size() || !c.trust().equals(stamp)) {
+            EventTrust t = room == null ? null : room.trust(team);
+            views.put(team, c = new CachedView(team.size(), stamp, team.view(t != null && t.active() ? t : null)));
+        }
         return c.view();
     }
+
+    /** GAME-06: the signing key changed – fold again. */
+    void trustChanged() { views.clear(); changed.run(); }
+
+    /** {@code /bauplaner team raum pruefen}: the room events the server did not take into its fold, newest last. */
+    private boolean untrustedList(CommandSender s) {
+        if (teams.isEmpty()) return fail(s, "Kein Team auf diesem Server.");
+        for (TeamLog team : teams.values()) {
+            Map<String, String> u = untrusted(team);
+            say(s, team.name + ": " + room.trustText(team));
+            List<Map.Entry<String, String>> list = new ArrayList<>(u.entrySet());
+            for (var x : list.subList(Math.max(0, list.size() - 10), list.size())) {
+                JsonObject e = team.get(x.getKey());
+                say(s, ChatColor.GRAY + " · " + (e == null ? x.getKey() : TeamLog.str(e, "kind") + " von " + view(team).name(TeamLog.str(e, "by"))) + ": " + x.getValue());
+            }
+        }
+        return true;
+    }
+
+    /** GAME-06: whether the server checks the room's events of this team (signing key known, past confirmed). */
+    boolean trustActive(TeamLog team) { EventTrust t = room == null ? null : room.trust(team); return t != null && t.active(); }
+
+    /** GAME-06: room events the server did not take (id → reason). */
+    Map<String, String> untrusted(TeamLog team) { return view(team).untrusted; }
 
     // ------------------------------------------------------------------ identity
 
@@ -263,7 +295,12 @@ final class TeamModule implements Listener {
         TeamLog team = teams.values().stream().filter(t -> t.teamId.equals(teamId)).findFirst().orElse(null);
         String id = TeamLog.str(e, "id");
         if (team == null || id == null) return false;
-        if (team.has(id)) return true;
+        if (team.has(id)) {
+            // GAME-06: an id is processed once; a different content under a known id never replaces the first one.
+            JsonObject known = team.get(id);
+            if (known != null && !known.equals(e) && warnedTwins.add(id)) plugin.getLogger().warning("Team-Raum: Ereignis " + id + " kam mit anderem Inhalt erneut – der erste Stand bleibt.");
+            return true;
+        }
         try {
             write(team, e);
             team.add(e);
@@ -325,7 +362,10 @@ final class TeamModule implements Listener {
                     return true;
                 }
                 case "trennen": if (!leader(s)) return true; say(s, room.disconnect(args.length > 1 ? args[1] : null)); return true;
-                case "raum": room.status().forEach(line -> say(s, line)); return true;
+                case "raum": {
+                    if (args.length > 1 && args[1].equalsIgnoreCase("pruefen")) return untrustedList(s);
+                    room.status().forEach(line -> say(s, line)); return true;
+                }
                 case "hilfe": return help(s, label);
                 default: break;
             }
@@ -489,7 +529,7 @@ final class TeamModule implements Listener {
         say(s, "notiz <frage|problem|material|info> <text> · notizen · geliefert <item|hand> [menge] · sammle <item> <menge>");
         say(s, "Lager: lager hilfe · lager info · lager bedarf [nr] · nachweis [an|aus] · beitrag [alle] · Baumeister: lager markieren [name] · lager siegeln · lager schutz <stufe>");
         say(s, "Übergabe: uebergeben <nr> <spieler> [notiz] · annehmen [nr] · ablehnen [nr] · abwesend [bis JJJJ-MM-TT] [notiz] · zurueck");
-        say(s, "Baumeister: zuweisen <nr> <spieler> · pruefen <nr> ok|nacharbeit [notiz] · Bauleitung: rolle <spieler> <rolle> · team wahl <name> · team trennen · team raum");
+        say(s, "Baumeister: zuweisen <nr> <spieler> · pruefen <nr> ok|nacharbeit [notiz] · Bauleitung: rolle <spieler> <rolle> · team wahl <name> · team trennen · team raum [pruefen]");
         say(s, ChatColor.GRAY + "Team-Raum: verbindet sich selbst, wenn die Bauleitung mit der Mod beitritt (vorher im Planer „Mein Spiel verbinden“). Notfall ohne Internet: team laden · team export · team verbinden <link>");
         return true;
     }
@@ -710,7 +750,8 @@ final class TeamModule implements Listener {
             case "notiz" -> args.length == 2 ? TeamLog.NOTE_TAGS : List.of();
             case "geliefert" -> args.length == 2 ? List.of("hand") : List.of();
             case "rolle" -> args.length == 2 ? Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()) : args.length == 3 ? List.of("bauleitung", "baumeister", "helfer", "gast") : List.of();
-            case "team" -> args.length == 2 ? List.of("laden", "export", "wahl", "verbinden", "trennen", "raum", "hilfe") : List.of();
+            case "team" -> args.length == 2 ? List.of("laden", "export", "wahl", "verbinden", "trennen", "raum", "hilfe")
+                    : args.length == 3 && args[1].equalsIgnoreCase("raum") ? List.of("pruefen") : List.of();
             case "lager" -> storage.complete(args);
             case "nachweis" -> args.length == 2 ? List.of("an", "aus") : List.of();
             case "beitrag" -> args.length == 2 ? List.of("alle") : List.of();
@@ -834,31 +875,57 @@ final class TeamModule implements Listener {
         return true;
     }
 
-    /** Protection: hint (default) or block changes in sections other members took over. */
+    /**
+     * Protection level of a team: what the Bauleitung set in the planner (team.protect, GAME-06) unless the server
+     * admin keeps the decision on the server ({@code team.schutz-quelle: server}); otherwise {@code team.schutz}.
+     */
+    String protectMode(TeamLog team) {
+        TeamLog.View v = view(team);
+        if (v.protectMode != null && !"server".equals(plugin.getConfig().getString("team.schutz-quelle", "raum"))) return v.protectMode;
+        return plugin.getConfig().getString("team.schutz", "hinweis");
+    }
+
+    /** Who may build in free sections: "alle" (default) or "team" (members from Helfer on). */
+    String protectFree(TeamLog team) {
+        TeamLog.View v = view(team);
+        if (v.protectMode != null && !"server".equals(plugin.getConfig().getString("team.schutz-quelle", "raum"))) return v.protectFree;
+        return plugin.getConfig().getString("team.schutz-frei", "alle");
+    }
+
+    /**
+     * Section protection by team role (GAME-06, TEAMBAU §6): Bauleitung and Baumeister everywhere; a confirmed section only
+     * they; one's own section; a section of somebody else nobody; a free section everybody, or with "team" only members from
+     * Helfer on. Roles and player names come from the trusted view. "hinweis" only tells, "sperren" cancels the change.
+     */
     private void guard(Player p, Location l, Runnable cancel) {
-        String mode = plugin.getConfig().getString("team.schutz", "hinweis");
-        if (teams.isEmpty() || "aus".equals(mode)) return;
+        if (teams.isEmpty()) return;
         Hit hit = at(PaperCompat.dimension(l.getWorld()), l.getBlockX(), l.getBlockY(), l.getBlockZ());
         if (hit == null) return;
+        String mode = protectMode(hit.team);
+        if ("aus".equals(mode)) return;
+        if (p.hasPermission("bauplaner.team.leitung")) return;
         TeamLog.View v = view(hit.team);
         TeamLog.SectionState st = v.section(hit.section.id());
-        if (st.owner == null || st.status.equals("frei")) return;
-        Actor a = new Actor(p, p.getName(), p.getUniqueId(), false);
-        Optional<String> me = memberOf(hit.team, a);
-        if (me.isPresent() && (st.builds(me.get()) || TeamLog.rank(v.role(me.get())) >= TeamLog.rank("meister"))) return;
-        if (p.hasPermission("bauplaner.team.leitung")) return;
+        Optional<String> me = memberOf(hit.team, new Actor(p, p.getName(), p.getUniqueId(), false));
+        // TEAM-03: Mitbauer build in the section like its owner.
+        String owner = me.isPresent() && st.builds(me.get()) ? me.get() : st.owner;
+        String why = ProtectRules.blocked(st.status, owner, me.orElse(null), me.map(v::role).orElse("gast"), protectFree(hit.team));
+        if (why == null) return;
         boolean block = "sperren".equals(mode);
         if (block) cancel.run();
         long now = System.currentTimeMillis();
         if (now - lastHint.getOrDefault(p.getUniqueId(), 0L) < (block ? 3_000 : 60_000)) return;
         lastHint.put(p.getUniqueId(), now);
-        say(p, ChatColor.YELLOW + "Abschnitt " + hit.section.number() + " „" + hit.section.name() + "“ baut " + v.name(st.owner) + "."
+        String who = st.owner != null ? v.name(st.owner) : null;
+        say(p, ChatColor.YELLOW + "Abschnitt " + hit.section.number() + " „" + hit.section.name() + "“: " + ProtectRules.text(why, who)
                 + (block ? " Hier kannst du nichts ändern." : " Bitte absprechen."));
     }
 
     // ------------------------------------------------------------------ Teamkanal (COOP-03, TeamChannel)
 
     private Runnable changed = () -> { };
+    /** GAME-06: ids already reported as twins with different content (one log line each). */
+    private final java.util.Set<String> warnedTwins = new java.util.HashSet<>();
 
     /** Called after every new event and after (re)loading the team files. */
     void onChange(Runnable r) { changed = r == null ? () -> { } : r; }

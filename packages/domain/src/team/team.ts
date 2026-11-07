@@ -103,9 +103,18 @@ export type TeamEventBody =
   /** Baumeister+: splits one gather order (item) over several players; replaces all shares of that item. */
   | { readonly kind: 'gather.assign'; readonly item: string; readonly shares: readonly { readonly member: string; readonly count: number }[]; readonly base?: number; readonly note?: string }
   /** Corrects (or with nothing left cancels) a booked contribution; author of the booking or Baumeister+. New version, the old one stays in the history. */
-  | { readonly kind: 'contribution.fix'; readonly ref: string; readonly blocks?: number; readonly items?: readonly ItemCount[]; readonly note?: string; readonly base?: number };
+  | { readonly kind: 'contribution.fix'; readonly ref: string; readonly blocks?: number; readonly items?: readonly ItemCount[]; readonly note?: string; readonly base?: number }
+  /** GAME-06 (SIGNED_EVENTS.md): section protection on the server (Bauleitung); free = who may build in free sections. */
+  | { readonly kind: 'team.protect'; readonly mode: ProtectMode; readonly free?: ProtectFree }
+  /** GAME-06: the Bauleitung vouches for every room event up to this arrival number (written before signatures existed). */
+  | { readonly kind: 'team.trust'; readonly upTo: string };
 /** Most players per section (owner + Mitbauer) and per split gather order. */
 export const MAX_CREW = 8;
+
+export type ProtectMode = 'aus' | 'hinweis' | 'sperren';
+export type ProtectFree = 'alle' | 'team';
+export const PROTECT_MODES: readonly ProtectMode[] = ['aus', 'hinweis', 'sperren'];
+export const PROTECT_MODE_LABEL: Readonly<Record<ProtectMode, string>> = { aus: 'aus', hinweis: 'nur Hinweis im Chat', sperren: 'Bauen verhindern' };
 
 /** An item and a signed amount (expected stock and open differences of a store can be negative). */
 export interface ItemDelta { readonly item: string; readonly delta: number }
@@ -164,7 +173,7 @@ const KNOWN = new Set<string>(['member.join', 'member.role', 'member.player', 's
   'section.verify', 'contribution', 'gather.claim', 'note.add', 'note.resolve', 'plan.release', 'build.tally', 'member.tally', 'store.chest', 'store.count',
   'store.config', 'store.move', 'store.check', 'store.seal',
   'section.handover', 'section.accept', 'section.decline', 'member.away', 'issue.ack', 'store.yield', 'section.seen', 'store.seen', 'team.digest',
-  'section.crew', 'section.join', 'section.leave', 'gather.assign', 'contribution.fix']);
+  'section.crew', 'section.join', 'section.leave', 'gather.assign', 'contribution.fix', 'team.protect', 'team.trust']);
 /** Kinds only the server plugin may write (origin server): they are measurements, not claims. */
 export const SERVER_ONLY_KINDS: ReadonlySet<string> = new Set(['build.tally', 'store.count', 'store.move', 'store.check', 'store.yield']);
 export const isKnownEvent = (e: TeamEvent): e is KnownTeamEvent => KNOWN.has(e.kind);
@@ -363,6 +372,11 @@ export function checkTeamEvent(raw: unknown): TeamEvent {
       optText(raw.note, 300, `${where}: Notiz`);
       break;
     }
+    case 'team.protect':
+      if (!PROTECT_MODES.includes(raw.mode as ProtectMode)) fail(`${where}: Schutzstufe unbekannt`);
+      if (raw.free !== undefined && raw.free !== 'alle' && raw.free !== 'team') fail(`${where}: freie Abschnitte alle oder team`);
+      break;
+    case 'team.trust': if (typeof raw.upTo !== 'string' || !/^\d{1,15}$/.test(raw.upTo)) fail(`${where}: Ankunftsnummer ungültig`); break;
     default: break; // newer kinds: kept as they are
   }
   return raw as unknown as TeamEvent;
@@ -586,6 +600,9 @@ export interface TeamMerge {
  * merge(b, a) give the same events; merging again adds nothing. Local fields
  * (self) stay; `server` is taken from the incoming log when missing locally.
  */
+const hasSig = (e: TeamEvent) => typeof (e as unknown as { sig?: unknown }).sig === 'string';
+const unsigned = (e: TeamEvent) => { const { sig: _s, ...rest } = e as unknown as Record<string, unknown>; return rest; };
+
 export function mergeTeam(local: TeamState, incoming: TeamState): TeamMerge {
   if (local.teamId !== incoming.teamId) throw new DomainError('TEAM_MISMATCH', `Das Paket gehört zu einem anderen Team (${incoming.name}).`);
   const byId = new Map(local.events.map(e => [e.id, e]));
@@ -594,7 +611,11 @@ export function mergeTeam(local: TeamState, incoming: TeamState): TeamMerge {
   for (const raw of incoming.events) {
     const e = checkTeamEvent(raw), mine = byId.get(e.id);
     if (!mine) { byId.set(e.id, e); added.push(e); continue; }
-    if (canonicalJson(mine) === canonicalJson(e)) known++; else clashes.push({ local: mine, incoming: e });
+    if (canonicalJson(mine) === canonicalJson(e)) { known++; continue; }
+    // GAME-06: the same event with the Bauleitung's signature (as it came back from the room) is the same event;
+    // the signed copy is kept, whichever side has it, so the result does not depend on the merge order.
+    if (canonicalJson(unsigned(mine)) === canonicalJson(unsigned(e))) { known++; if (hasSig(e) && !hasSig(mine)) byId.set(e.id, e); continue; }
+    clashes.push({ local: mine, incoming: e });
   }
   // COOP-11: what a digest replaces does not come back with an older copy of the log.
   let events = [...byId.values()].sort(compareEvents);
@@ -775,6 +796,8 @@ export interface TeamView {
   readonly acknowledged: readonly string[];
   /** Measured yield periods of yield stores, oldest first (COOP-08). */
   readonly yields: readonly StoreYield[];
+  /** GAME-06: section protection the Bauleitung set for the server (null = the server's own setting). */
+  readonly protect: { readonly mode: ProtectMode; readonly free: ProtectFree; readonly by: string; readonly at: string } | null;
 }
 
 export interface TeamContext {
@@ -794,7 +817,7 @@ const NEED: Readonly<Record<TeamEventKind, TeamRole>> = {
   'store.config': 'meister', 'store.seal': 'meister', 'store.move': 'gast', 'store.check': 'gast', 'store.yield': 'gast',
   'section.handover': 'helfer', 'section.accept': 'helfer', 'section.decline': 'helfer', 'member.away': 'gast', 'issue.ack': 'meister',
   'section.seen': 'helfer', 'store.seen': 'helfer', 'team.digest': 'leitung',
-  'section.crew': 'meister', 'section.join': 'helfer', 'section.leave': 'helfer', 'gather.assign': 'meister', 'contribution.fix': 'helfer',
+  'section.crew': 'meister', 'section.join': 'helfer', 'section.leave': 'helfer', 'gather.assign': 'meister', 'contribution.fix': 'helfer', 'team.protect': 'leitung', 'team.trust': 'leitung',
 };
 export const canTeam = (role: TeamRole | undefined, action: TeamAction): boolean => RANK[role ?? 'gast'] >= RANK[NEED[action]];
 
@@ -860,6 +883,7 @@ export function foldTeam(team: TeamState, ctx: TeamContext, opts: { until?: { at
   const acknowledged = new Set<string>();
   const rejected: TeamRejection[] = [], conflicts: TeamConflict[] = [];
   let unknownKinds = 0;
+  let protect: TeamView['protect'] = null;
   const tallyOff = new Set<string>();
   const tallies: { by: string; section: string; placed: number; broken: number; blocks?: readonly ItemCount[]; from: string; until: string }[] = [];
   type Chest = { name: string; pos: readonly [number, number, number]; dimension: string; items: Map<string, number>; countedAt?: string; countedBy?: string; partial: boolean; counted: boolean;
@@ -1248,6 +1272,8 @@ export function foldTeam(team: TeamState, ctx: TeamContext, opts: { until?: { at
       case 'issue.ack':
         for (const id of event.events) acknowledged.add(id);
         break;
+      case 'team.protect': protect = { mode: event.mode, free: event.free ?? 'alle', by: event.by, at: event.at }; break;
+      case 'team.trust': break;
     }
   }
 
@@ -1326,7 +1352,7 @@ export function foldTeam(team: TeamState, ctx: TeamContext, opts: { until?: { at
   return { members, sections: sectionStates, notes: noteList, gather: [...gather.values()].sort((a, b) => a.item.localeCompare(b.item) || a.member.localeCompare(b.member)),
     gatherVersions: Object.fromEntries([...gatherChanges].map(([item, ch]) => [item, ch.length])), bookings: bookingList,
     delivered, release, releases, rejected, conflicts, unknownKinds, stores, stock, stockSeen, placedBlocks,
-    tallySpan: tallyFrom && tallyUntil ? { from: tallyFrom, until: tallyUntil } : null, acknowledged: [...acknowledged], yields };
+    tallySpan: tallyFrom && tallyUntil ? { from: tallyFrom, until: tallyUntil } : null, acknowledged: [...acknowledged], yields, protect };
 }
 
 const sectionName = (ctx: TeamContext, id: string) => ctx.sections.find(s => s.id === id)?.name ?? 'entfernter Abschnitt';
@@ -1369,6 +1395,8 @@ export function eventLabel(e: TeamEvent): string {
     case 'section.leave': return e.member && e.member !== e.by ? 'aus dem Abschnitt genommen' : 'aus dem Abschnitt ausgestiegen';
     case 'gather.assign': return e.shares.length ? `Sammelauftrag ${e.item.replace(/^minecraft:/, '')} auf ${e.shares.length} verteilt` : `Sammelauftrag ${e.item.replace(/^minecraft:/, '')} aufgehoben`;
     case 'contribution.fix': return !e.blocks && !e.items?.length ? 'Buchung storniert' : 'Buchung korrigiert';
+    case 'team.protect': return `Abschnittsschutz auf dem Server: ${PROTECT_MODE_LABEL[e.mode]}${e.free === 'team' ? ', freie Abschnitte nur fürs Team' : ''}`;
+    case 'team.trust': return `bisherigen Teamstand für den Server bestätigt (bis Nr. ${e.upTo})`;
   }
 }
 

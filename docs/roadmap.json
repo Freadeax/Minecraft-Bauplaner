@@ -6564,18 +6564,28 @@
     },
     {
       "id": "GAME-06",
-      "title": "Sichere Serveranbindung (Webhooks) für Server-Plugins",
+      "title": "Server-Plugin direkt mit dem Team-Raum (Mod/Plugin 0.26.0): unterschriebene Ereignisse der Bauleitung, Ereignis-ID und wiederholbare Verarbeitung, Abschnittsschutz nach Team-Rollen aus dem Raum",
       "phase": "P4",
       "priority": "P1",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "implemented",
+      "owner": "Claude (Thread „Server-Plugin direkt mit dem Team-Raum verbinden“)",
       "dependencies": [
         "TEAM-02",
-        "GAME-04"
+        "GAME-04",
+        "LINK-11"
       ],
       "scope": [
-        "mods/",
-        "packages/application/"
+        "mods/bauplaner-bridge/",
+        "packages/domain/src/team/",
+        "packages/domain/src/index.ts",
+        "apps/web/src/views/project/team/",
+        "apps/web/src/views/mod/",
+        "apps/web/src/styles/team.css",
+        "apps/web/src/testing/testplan.ts",
+        "scripts/mod/",
+        "tests/unit/team/",
+        "downloads/mod/",
+        "docs/"
       ],
       "legacyIds": [
         "P6-01"
@@ -6583,28 +6593,67 @@
       "steps": [
         {
           "id": "GAME-06-S01",
-          "title": "Signierte Webhooks, Ereignis-ID und wiederholbare Verarbeitung ergänzen (aus GAME-04-S02 ausgelagert).",
+          "title": "Signierte Ereignisse, Ereignis-ID und wiederholbare Verarbeitung (aus GAME-04-S02): Bauleitung unterschreibt im Planer und in der Mod (HMAC aus dem Verwaltungsschlüssel, eventSig.ts/EventSig.java, gemeinsamer Prüfvektor), Plugin bekommt den Schlüssel mit dem Server-Link (l), merkt Ankunftsnummern, jede ID wirkt einmal, gleiche ID mit anderem Inhalt ersetzt nichts.",
+          "done": true
+        },
+        {
+          "id": "GAME-06-S02",
+          "title": "EventTrust im Plugin: Bauleitung bestätigt die Vergangenheit (team.trust), danach keine unterschriftslosen Ereignisse im Namen oder mit Rechten der Bauleitung und keine fremden Spielernamen; /bp team raum pruefen; Planer zeigt weiter alles.",
+          "done": true
+        },
+        {
+          "id": "GAME-06-S03",
+          "title": "Abschnittsschutz nach Team-Rollen aus dem Raum (team.protect, Planer „Abschnittsschutz auf dem Server“): Bauleitung/Baumeister überall, bestätigt nur sie, vergeben nur Inhaber, frei alle oder nur Team; Serverhoheit mit team.schutz-quelle.",
+          "done": true
+        },
+        {
+          "id": "GAME-06-S04",
+          "title": "Echter Servertest mit Team-Raum (test_bridge_paper_signed.sh, Paper 1.21.11 und 26.3) und Abnahme mit echten Spielern durch Philipp (LINK-14).",
           "done": false
         }
       ],
       "acceptance": [
-        "Keine impliziten Weltänderungen; Planlieferung und Blocksetzen getrennt."
+        "Keine impliziten Weltänderungen; Planlieferung und Blocksetzen getrennt.",
+        "Mit Einladungslink allein lassen sich Rollen, Schutzstufe und fremde Spielernamen auf dem Server nicht ändern.",
+        "Nichts wird heruntergeladen oder eingefügt; ohne Plugin bleibt alles wie bisher."
       ],
-      "next": "Nach TEAM-02 spezifizieren.",
+      "next": "Abnahme LINK-14 auf Philipps Server mit echten Spielern.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/unit/team/event-sig.test.mjs",
+          "note": "Prüfvektor, Team/Inhalt/Schlüssel, nur eigene Ereignisse, team.protect/team.trust, unterschriebene Fassung beim Zusammenführen, Server-Link mit l."
+        },
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/team/EventSigTest.java",
+          "note": "Gleicher Vektor in Java, Zahlen/Zeichen wie JavaScript, Link der Mod mit l."
+        },
+        {
+          "path": "mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/EventTrustTest.java",
+          "note": "Vergangenheit bestätigt, vier Fälschungen abgewiesen, Planer ungefiltert, Regeln des Abschnittsschutzes."
+        },
+        {
+          "path": "scripts/mod/bridge_papersigned.mjs",
+          "note": "Echter Paper-Server 1.21.11 und 26.3 mit wrangler-Team-Raum: Schutz sperren/team aus dem Raum, 4 Fälschungen in /bp team raum pruefen, Neustart gleich, schutz-quelle server."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Unit-, Plugin- und echte Servertests grün; Abnahme mit echten Spielern offen (LINK-14)."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
-      "area": "SPAETER",
-      "thread": null,
-      "philipp": [],
+      "updatedAt": "2026-11-07T02:01:03.047Z",
+      "area": "MOD",
+      "thread": "Server-Plugin direkt mit dem Team-Raum verbinden",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Auf dem eigenen Server mit Plugin 0.26.0 den Abschnittsschutz aus dem Planer prüfen (LINK-14)."
+        }
+      ],
       "orphans": []
     },
     {
@@ -26882,6 +26931,335 @@
           "done": 6,
           "total": 7,
           "next": "Rest von BIB-11 mit einer eigenen Basis aus Philipps Welt. Bekannt: Brücke nimmt das Wasser darunter mit, Bibliotheksgebäude ohne Funktion."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T20:38:30.938Z",
+      "kind": "progress",
+      "items": [
+        "GAME-06"
+      ],
+      "summary": "Paper-Plugin übernimmt Team-Raum-Ereignisse nur geprüft (Unterschrift der Bauleitung, team.trust), Abschnittsschutz nach Team-Rollen mit Schutzstufe aus dem Planer; Mod/Plugin 0.26.0",
+      "files": [
+        "apps/web/src/styles/team.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/mod/modCommands.json",
+        "apps/web/src/views/mod/releases.json",
+        "apps/web/src/views/mod/serverClient.ts",
+        "apps/web/src/views/project/team/TeamRoom.tsx",
+        "apps/web/src/views/project/team/roomClient.ts",
+        "docs/TESTING.md",
+        "docs/architecture/team/AUTO_LINK.md",
+        "docs/architecture/team/SIGNED_EVENTS.md",
+        "docs/architecture/team/TEAMBAU.md",
+        "docs/testing/TESTPLAN.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.26.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.26.0.jar",
+        "downloads/mod/bauplaner-bridge-paper-0.26.0.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/EventSig.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/team/EventSigTest.java",
+        "mods/bauplaner-bridge/paper/build.gradle",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/EventTrust.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/LinkCore.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ProtectRules.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java",
+        "mods/bauplaner-bridge/paper/src/main/resources/config.yml",
+        "mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/EventTrustTest.java",
+        "mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/RoomLinkTest.java",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/team/eventSig.ts",
+        "packages/domain/src/team/liveLink.ts",
+        "packages/domain/src/team/team.ts",
+        "packages/domain/src/team/teamSync.ts",
+        "scripts/mod/bridge_papersigned.mjs",
+        "scripts/mod/test_bridge_paper_signed.sh",
+        "tests/e2e/team-room.e2e.mjs",
+        "tests/unit/team/event-sig.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-06",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LINK-14 auf Philipps Server mit echten Spielern."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T20:39:14.947Z",
+      "kind": "progress",
+      "items": [
+        "GAME-06"
+      ],
+      "summary": "Rebase auf main (TERRAIN-05), Spieltest Fabric 26.3 im Prüfprotokoll",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "GAME-06",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LINK-14 auf Philipps Server mit echten Spielern."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T21:00:22.148Z",
+      "kind": "progress",
+      "items": [
+        "GAME-06"
+      ],
+      "summary": "Voller Browserlauf 197/197, Merkmalsliste in map-depth",
+      "files": [
+        "docs/TESTING.md",
+        "tests/e2e/map-depth.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-06",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LINK-14 auf Philipps Server mit echten Spielern."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T21:01:37.986Z",
+      "kind": "progress",
+      "items": [
+        "GAME-06"
+      ],
+      "summary": "Rebase auf main (QA-04 Testphase gekürzt, TEAM-02, GAME-11): LINK-14 in die neue Testphase, Senden mit Antwort-Zeitlimit und Unterschrift",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "GAME-06",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LINK-14 auf Philipps Server mit echten Spielern."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T21:23:14.190Z",
+      "kind": "progress",
+      "items": [
+        "GAME-06"
+      ],
+      "summary": "Rebase auf main (QA-02, QA-04 AUTO_CHECKS, Roadmap-Runde)",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "GAME-06",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LINK-14 auf Philipps Server mit echten Spielern."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T21:23:28.548Z",
+      "kind": "progress",
+      "items": [
+        "GAME-06"
+      ],
+      "summary": "LINK-14 als teilweise automatisch geprüft (AUTO_CHECKS)",
+      "files": [
+        "apps/web/src/testing/autochecks.ts",
+        "docs/testing/TESTPLAN.md"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-06",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LINK-14 auf Philipps Server mit echten Spielern."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T21:37:05.356Z",
+      "kind": "progress",
+      "items": [
+        "GAME-06"
+      ],
+      "summary": "Rebase auf TEAM-03: Mitbauer im Abschnittsschutz, Befehl team raum pruefen im Befehlskatalog, Jars 0.26.0 neu gebaut und geprüft",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "docs/TESTING.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.26.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.26.0.jar",
+        "downloads/mod/bauplaner-bridge-paper-0.26.0.jar",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalogEn.java",
+        "packages/domain/src/index.ts"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-06",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LINK-14 auf Philipps Server mit echten Spielern."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T21:37:18.364Z",
+      "kind": "progress",
+      "items": [
+        "GAME-06"
+      ],
+      "summary": "Änderungsliste 0.26.0 mit Mitbauern (TEAM-03)",
+      "files": [
+        "mods/bauplaner-bridge/CHANGELOG.md"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-06",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LINK-14 auf Philipps Server mit echten Spielern."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T21:59:13.923Z",
+      "kind": "progress",
+      "items": [
+        "GAME-06"
+      ],
+      "summary": "Rebase auf main (OPS-04, Block 4/6/7)",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "GAME-06",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LINK-14 auf Philipps Server mit echten Spielern."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T01:10:21.155Z",
+      "kind": "progress",
+      "items": [
+        "GAME-06"
+      ],
+      "summary": "Version 0.26.0 nach NAME-01, Jars neu, Paper- und Spieltest erneut, Prüfliste im Servertest wartet auf alle vier Zeilen",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "docs/TESTING.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.26.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.26.0.jar",
+        "downloads/mod/bauplaner-bridge-paper-0.26.0.jar",
+        "scripts/mod/bridge_papersigned.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-06",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LINK-14 auf Philipps Server mit echten Spielern."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T01:10:44.851Z",
+      "kind": "progress",
+      "items": [
+        "GAME-06"
+      ],
+      "summary": "Rebase auf main (BLOCK-02-S07, Block 5 Grafik)",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "GAME-06",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LINK-14 auf Philipps Server mit echten Spielern."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T01:49:41.583Z",
+      "kind": "progress",
+      "items": [
+        "GAME-06"
+      ],
+      "summary": "Rebase auf COOP-05-S06/Block 1, Plugin-Jar 0.26.0 neu gebaut, Paper signed/team erneut grün",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "downloads/mod/bauplaner-bridge-paper-0.26.0.jar"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-06",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LINK-14 auf Philipps Server mit echten Spielern."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T02:00:40.005Z",
+      "kind": "progress",
+      "items": [
+        "GAME-06"
+      ],
+      "summary": "Version 0.26.0 nach Block 3, Jars neu, Paper- und Spieltest erneut",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "docs/TESTING.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.26.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.26.0.jar",
+        "downloads/mod/bauplaner-bridge-paper-0.26.0.jar"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-06",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LINK-14 auf Philipps Server mit echten Spielern."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T02:01:03.047Z",
+      "kind": "progress",
+      "items": [
+        "GAME-06"
+      ],
+      "summary": "Rebase auf QA-02 Block 5 Geräte",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "GAME-06",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LINK-14 auf Philipps Server mit echten Spielern."
         }
       ]
     }

@@ -19,6 +19,12 @@ team:
   # Bauen in Abschnitten, die ein anderer übernommen hat: hinweis (Chatzeile), sperren (Blocksetzen/-abbauen verhindert;
   # Inhaber, Baumeister, Bauleitung und bauplaner.team.leitung ausgenommen) oder aus.
   schutz: hinweis
+  # GAME-06: Stellt die Bauleitung im Planer den Abschnittsschutz ein (Reiter „Team“, unterschrieben über den Team-Raum),
+  # gilt deren Stufe (raum). server: nur diese Datei entscheidet.
+  schutz-quelle: raum
+  # Freie Abschnitte ohne Schutzeinstellung aus dem Planer: alle dürfen bauen, oder team (nur Mitglieder ab Helfer).
+  # Bestätigte Abschnitte ändern immer nur Baumeister und Bauleitung (bei „sperren“ verhindert, sonst Hinweis).
+  schutz-frei: alle
   # Baunachweis (COOP-04): zählt gesetzte und abgebaute Blöcke von Teammitgliedern, nur innerhalb der Abschnitte des Teams.
   # Jeder Spieler kann ihn mit /bauplaner nachweis aus für sich abschalten (blendet auch bisherige Zahlen aus).
   nachweis: true

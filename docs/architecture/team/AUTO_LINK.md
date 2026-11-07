@@ -149,3 +149,6 @@ Paper-Plugin ── wss + Serverschlüssel ─▶ Team-Raum ◀── Kopf (Absc
 
 Tests: `TeamTest.roomHandOverToThePlugin`, `RoomLinkTest`, `LiveLinkTest` (Merkmal), `tests/unit/team/team-room.test.mjs` (`headerFingerprint`), `tests/e2e/team-room.e2e.mjs` (Bauleitung gibt den Serverschlüssel, Helfer nie), `scripts/mod/test_bridge_paper_link.sh` mit `BAUPLANER_ROOM` (echter Paper: OP übergibt, Nicht-OP abgewiesen, zweite Übergabe ändert nichts). Abnahme: Testfälle LINK-12, LINK-13.
 
+## 11. Unterschriebene Ereignisse (GAME-06, Mod/Plugin 0.26.0)
+
+Der Server-Link trägt zusätzlich den Unterschriftsschlüssel der Bauleitung (`l`, aus dem Verwaltungsschlüssel abgeleitet, nie dieser selbst). Die Mod bekommt ihn bei „Mein Spiel verbinden“ als `signKey` (Merkmal `roomsign`), unterschreibt damit die eigenen Ereignisse der Bauleitung und reicht ihn mit `link.room` an das Plugin weiter; ein schon verbundener Server übernimmt nur den Schlüssel. Das Plugin nimmt Rollen, Spielernamen und Schutzstufe dann nur noch geprüft an. Vertrag: [SIGNED_EVENTS](SIGNED_EVENTS.md).

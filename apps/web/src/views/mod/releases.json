@@ -1079,6 +1079,53 @@
       "releasedAt": "2026-11-07",
       "sourceCommit": "a1177f67e6a4a7e7256eb71cced76c9a394a0d5e",
       "tested": "Unit-Tests paper; Lagerkisten und Ertragsfarm mit echten Spielern (COOP-05/08) im Quellstand"
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.26.0.jar",
+      "modVersion": "0.26.0",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 330665,
+      "sha256": "0e5e2472db9e12271d71757cd3a22731b82378f30679dffc1719f26551c32c46",
+      "releasedAt": "2026-11-07",
+      "sourceCommit": "4c5231610de46f73682e793172060ee55a3f64cd",
+      "tested": "Paper 1.21.11 und 26.3: Team, unterschriebene Ereignisse (GAME-06), Mitbauer (TEAM-03)"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.26.0.jar",
+      "modVersion": "0.26.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 664602,
+      "sha256": "9c79c559b44f7839f2cc309c3a9df0e88666794c9de82f73900ef038e315f9a0",
+      "releasedAt": "2026-11-07",
+      "sourceCommit": "4c5231610de46f73682e793172060ee55a3f64cd",
+      "tested": "Bau und Kern-Tests; Team-Raum mit Unterschrift im Mod-Kern geprüft"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.26.0.jar",
+      "modVersion": "0.26.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 669466,
+      "sha256": "869603501b71a653fde2753279bbb6c1aded8556e6408e048ba71ce863a4d96f",
+      "releasedAt": "2026-11-07",
+      "sourceCommit": "4c5231610de46f73682e793172060ee55a3f64cd",
+      "tested": "Spieltest Minecraft 26.3 (Fabric): Oberfläche in 3 Fenstergrößen, Planer im Browser, Hologramm, Team-Raum, Website-Verbindung; Raum mit Unterschriftsschlüssel (GAME-06)"
     }
   ]
 }

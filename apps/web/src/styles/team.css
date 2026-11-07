@@ -141,3 +141,6 @@ details.team-emergency:not(.team-block) { margin-top: .6rem; }
 .team-backup-list li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; font-size: 12.5px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; }
 .team-backup-list li span { min-width: 0; overflow-wrap: anywhere; }
 @media (max-width: 520px) { .team-backup-state { grid-template-columns: 1fr; } .team-backup-state dt { margin-top: 4px; } }
+.team-protect { margin: .6rem 0; padding: .5rem .7rem; border: 1px solid var(--line); border-radius: 8px; }
+.team-protect h4 { margin: 0 0 .25rem; }
+.team-protect label { display: flex; flex-direction: column; gap: 2px; font-size: .92em; }

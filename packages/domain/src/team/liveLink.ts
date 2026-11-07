@@ -145,6 +145,8 @@ export const LIVE_FEATURE_LABELS: readonly { readonly id: string; readonly label
   { id: LIVE_FEATURE_BOX, label: 'Blockgenaue Geländeprüfung aus dem Spiel' },
   // LINK-11 (mod 0.21.0): the Bauleitung's game hands the team room to the server plugin by itself.
   { id: 'roomserver', label: 'Server-Plugin von selbst mit dem Team-Raum verbinden' },
+  // GAME-06 (mod 0.26.0): the Bauleitung's game signs its events and gives the server the signing key.
+  { id: 'roomsign', label: 'Unterschrift der Bauleitung an Server-Plugin weitergeben' },
 ];
 /** Other players (feature `players`): name and position in the client's dimension. */
 export interface LiveOtherPlayer { readonly name: string; readonly x: number; readonly y: number; readonly z: number; readonly yaw: number }

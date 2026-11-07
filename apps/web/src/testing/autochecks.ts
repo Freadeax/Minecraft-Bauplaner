@@ -387,6 +387,13 @@ export const AUTO_CHECKS: readonly AutoCheck[] = [
     command: 'npm run test:grossbau && node --test tests/unit/core/split-game-base.test.mjs',
     evidence: '06.11.2026, main 7f48d4b + SIZE-01-S06, Mod 0.23.0 aus dem Quellstand: Minecraft 26.3 Fabric-Client-Gametest (weston, ohne GPU) und Chromium auf dist-web, Lauf grün.',
   },
+  {
+    caseId: 'LINK-14', scope: 'teil',
+    covers: 'Echter Paper-Server (1.21.11 und 26.3) mit lokalem Team-Raum: Server-Link mit Unterschriftsschlüssel, „noch ungeprüft“ bis zur Bestätigung, unterschriebene Schutzstufe „sperren/team“ gilt, vier gefälschte Ereignisse (Rolle im Namen der Bauleitung, Schutz aus von einem Baumeister, fremder Spielername, falsche Unterschrift) stehen in /bp team raum pruefen, nach Neustart gleich, schutz-quelle server; Planer schickt Schlüssel und unterschriebene Schutzstufe (team-room.e2e).',
+    remaining: 'Blocksetzen echter Spieler in fremden, freien und eigenen Abschnitten auf Philipps Server.',
+    command: 'scripts/mod/test_bridge_paper_signed.sh; node --test tests/e2e/team-room.e2e.mjs',
+    evidence: '06.11.2026, Mod/Plugin 0.26.0, Paper 1.21.11 + 26.3, wrangler dev',
+  },
 ];
 
 export function autoCheckOf(caseId: string): AutoCheck | undefined {

@@ -29,7 +29,7 @@ before(async () => {
     try { if ((await fetch(BASE)).ok) break; } catch {}
     await new Promise(r => setTimeout(r, 200));
   }
-  mod = await startModSimulator(MOD_PORT, { protocol: 2, features: ['scan', 'marks2', 'players', 'bigplans', 'team', 'pairask', 'server', 'marks3', 'room', 'roomserver'] });
+  mod = await startModSimulator(MOD_PORT, { protocol: 2, features: ['scan', 'marks2', 'players', 'bigplans', 'team', 'pairask', 'server', 'marks3', 'room', 'roomserver', 'roomsign'] });
   mod.state.tokens.add(MOD_TOKEN);
   browser = await chromium.launch();
 });
@@ -214,8 +214,11 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await liveBlock(a).getByTestId('server-room').filter({ hasText: 'verbindet sich von selbst' }).waitFor();
     await liveBlock(a).locator('details.team-emergency > summary').click();
     await liveBlock(a).getByRole('button', { name: 'Link für den Server' }).click();
-    const serverLink = await liveBlock(a).getByLabel('Link für den Server').inputValue();
-    assert.match(serverLink, /&s=[\w-]+$/);
+    // GAME-06: the link carries the Bauleitung's signing key (derived in the browser, a moment later).
+    let serverLink = '';
+    for (let i = 0; i < 40 && !/&l=/.test(serverLink); i++) { serverLink = await liveBlock(a).getByLabel('Link für den Server').inputValue(); if (!/&l=/.test(serverLink)) await a.waitForTimeout(100); }
+    assert.match(serverLink, /&s=[\w-]+&l=[\w-]{43}$/);
+    const signKey = new URLSearchParams(serverLink.split('?')[1]).get('l');
     const q = new URLSearchParams(link.split('?')[1]), roomId = q.get('id');
     const room = remote(roomId, q.get('k'), new URLSearchParams(serverLink.split('?')[1]).get('s'));
     const header = await room.header();
@@ -286,8 +289,24 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await liveBlock(a).getByRole('button', { name: 'Mein Spiel verbinden' }).click();
     await a.getByText(/verbindet die Mod den Server von selbst mit dem Team-Raum/).first().waitFor();
     assert.equal(mod.state.room.serverKey, new URLSearchParams(serverLink.split('?')[1]).get('s'), 'Bauleitung: server key for the hand-over');
+    assert.equal(mod.state.room.signKey, signKey, 'GAME-06: the Bauleitung\'s game gets the signing key (never the admin key)');
+    assert.equal(handed.signKey, undefined, 'a helper never gets the signing key');
     assert.equal(mod.state.room.key, q.get('k'));
     mod.state.room = annaRoom;
+
+    // ---- GAME-06: the Bauleitung confirmed the past by itself and sets the section protection – both signed.
+    await liveBlock(a).getByLabel('Schutzstufe').selectOption('sperren');
+    await liveBlock(a).getByLabel('Freie Abschnitte').selectOption('team');
+    await liveBlock(b).getByTestId('protect-state').filter({ hasText: 'Eingestellt: Bauen verhindern, freie Abschnitte nur fürs Team.' }).waitFor();
+    {
+      const signed = await room.events();
+      const trust = signed.filter(e => e.kind === 'team.trust'), protect = signed.filter(e => e.kind === 'team.protect');
+      assert.equal(trust.length, 1, 'one confirmation per room');
+      assert.equal(protect.length, 2);
+      for (const e of [...trust, ...protect]) assert.match(e.sig ?? '', /^[\w-]{43}$/, `${e.kind} signed`);
+      assert.ok(signed.filter(e => e.kind === 'section.claim' && e.sig === undefined).length >= 1, 'a helper\'s events stay unsigned');
+      assert.equal(protect.at(-1).free, 'team');
+    }
 
     // ---- Server measures (plugin with server key); a helper key cannot fake it.
     const logged = await room.events();

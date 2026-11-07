@@ -8823,3 +8823,236 @@ Nachtrag zu SIZE-01-S06/SPLIT-01-S07: docs/testing/TESTPLAN.md im Verlaufseintra
 | SIZE-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Rest von MOD-11 im eigenen Spiel (Bildrate auf echter Grafikkarte). Folgepunkt Leistung: Werkstatt, Projekt anlegen, Export und Senden blockieren bei 1,5 Mio. Blöcken die Seite 4–10 s (in den Hintergrundrechner verlagern); Mod-Zahlen mit Tausenderpunkt. |
 | SPLIT-01 | 🧩 Implementiert · Abnahme offen | 6/7 | Rest von BIB-11 mit einer eigenen Basis aus Philipps Welt. Bekannt: Brücke nimmt das Wasser darunter mit, Bibliotheksgebäude ohne Funktion. |
 
+## 2026-11-06T20:38:30.938Z · progress
+
+**Aufgaben:** GAME-06
+
+Paper-Plugin übernimmt Team-Raum-Ereignisse nur geprüft (Unterschrift der Bauleitung, team.trust), Abschnittsschutz nach Team-Rollen mit Schutzstufe aus dem Planer; Mod/Plugin 0.26.0
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-06 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LINK-14 auf Philipps Server mit echten Spielern. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/styles/team.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/mod/modCommands.json`
+- `apps/web/src/views/mod/releases.json`
+- `apps/web/src/views/mod/serverClient.ts`
+- `apps/web/src/views/project/team/TeamRoom.tsx`
+- `apps/web/src/views/project/team/roomClient.ts`
+- `docs/TESTING.md`
+- `docs/architecture/team/AUTO_LINK.md`
+- `docs/architecture/team/SIGNED_EVENTS.md`
+- `docs/architecture/team/TEAMBAU.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.26.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.26.0.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.26.0.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/EventSig.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/team/EventSigTest.java`
+- `mods/bauplaner-bridge/paper/build.gradle`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/EventTrust.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/LinkCore.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ProtectRules.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
+- `mods/bauplaner-bridge/paper/src/main/resources/config.yml`
+- `mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/EventTrustTest.java`
+- `mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/RoomLinkTest.java`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/team/eventSig.ts`
+- `packages/domain/src/team/liveLink.ts`
+- `packages/domain/src/team/team.ts`
+- `packages/domain/src/team/teamSync.ts`
+- `scripts/mod/bridge_papersigned.mjs`
+- `scripts/mod/test_bridge_paper_signed.sh`
+- `tests/e2e/team-room.e2e.mjs`
+- `tests/unit/team/event-sig.test.mjs`
+
+## 2026-11-06T20:39:14.947Z · progress
+
+**Aufgaben:** GAME-06
+
+Rebase auf main (TERRAIN-05), Spieltest Fabric 26.3 im Prüfprotokoll
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-06 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LINK-14 auf Philipps Server mit echten Spielern. |
+
+## 2026-11-06T21:00:22.148Z · progress
+
+**Aufgaben:** GAME-06
+
+Voller Browserlauf 197/197, Merkmalsliste in map-depth
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-06 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LINK-14 auf Philipps Server mit echten Spielern. |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+- `tests/e2e/map-depth.e2e.mjs`
+
+## 2026-11-06T21:01:37.986Z · progress
+
+**Aufgaben:** GAME-06
+
+Rebase auf main (QA-04 Testphase gekürzt, TEAM-02, GAME-11): LINK-14 in die neue Testphase, Senden mit Antwort-Zeitlimit und Unterschrift
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-06 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LINK-14 auf Philipps Server mit echten Spielern. |
+
+## 2026-11-06T21:23:14.190Z · progress
+
+**Aufgaben:** GAME-06
+
+Rebase auf main (QA-02, QA-04 AUTO_CHECKS, Roadmap-Runde)
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-06 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LINK-14 auf Philipps Server mit echten Spielern. |
+
+## 2026-11-06T21:23:28.548Z · progress
+
+**Aufgaben:** GAME-06
+
+LINK-14 als teilweise automatisch geprüft (AUTO_CHECKS)
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-06 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LINK-14 auf Philipps Server mit echten Spielern. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/autochecks.ts`
+- `docs/testing/TESTPLAN.md`
+
+## 2026-11-06T21:37:05.356Z · progress
+
+**Aufgaben:** GAME-06
+
+Rebase auf TEAM-03: Mitbauer im Abschnittsschutz, Befehl team raum pruefen im Befehlskatalog, Jars 0.26.0 neu gebaut und geprüft
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-06 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LINK-14 auf Philipps Server mit echten Spielern. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `docs/TESTING.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.26.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.26.0.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.26.0.jar`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalogEn.java`
+- `packages/domain/src/index.ts`
+
+## 2026-11-06T21:37:18.364Z · progress
+
+**Aufgaben:** GAME-06
+
+Änderungsliste 0.26.0 mit Mitbauern (TEAM-03)
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-06 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LINK-14 auf Philipps Server mit echten Spielern. |
+
+**Geänderte Dateien:**
+
+- `mods/bauplaner-bridge/CHANGELOG.md`
+
+## 2026-11-06T21:59:13.923Z · progress
+
+**Aufgaben:** GAME-06
+
+Rebase auf main (OPS-04, Block 4/6/7)
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-06 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LINK-14 auf Philipps Server mit echten Spielern. |
+
+## 2026-11-07T01:10:21.155Z · progress
+
+**Aufgaben:** GAME-06
+
+Version 0.26.0 nach NAME-01, Jars neu, Paper- und Spieltest erneut, Prüfliste im Servertest wartet auf alle vier Zeilen
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-06 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LINK-14 auf Philipps Server mit echten Spielern. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `docs/TESTING.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.26.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.26.0.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.26.0.jar`
+- `scripts/mod/bridge_papersigned.mjs`
+
+## 2026-11-07T01:10:44.851Z · progress
+
+**Aufgaben:** GAME-06
+
+Rebase auf main (BLOCK-02-S07, Block 5 Grafik)
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-06 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LINK-14 auf Philipps Server mit echten Spielern. |
+
+## 2026-11-07T01:49:41.583Z · progress
+
+**Aufgaben:** GAME-06
+
+Rebase auf COOP-05-S06/Block 1, Plugin-Jar 0.26.0 neu gebaut, Paper signed/team erneut grün
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-06 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LINK-14 auf Philipps Server mit echten Spielern. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `downloads/mod/bauplaner-bridge-paper-0.26.0.jar`
+
+## 2026-11-07T02:00:40.005Z · progress
+
+**Aufgaben:** GAME-06
+
+Version 0.26.0 nach Block 3, Jars neu, Paper- und Spieltest erneut
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-06 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LINK-14 auf Philipps Server mit echten Spielern. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `docs/TESTING.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.26.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.26.0.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.26.0.jar`
+
+## 2026-11-07T02:01:03.047Z · progress
+
+**Aufgaben:** GAME-06
+
+Rebase auf QA-02 Block 5 Geräte
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-06 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LINK-14 auf Philipps Server mit echten Spielern. |
+

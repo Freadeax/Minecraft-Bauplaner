@@ -360,7 +360,7 @@ public final class TeamSync {
         if (link != Link.LIVE || room == null) return;
         var c = room.config();
         if (c == null || c.serverLink() == null) return;
-        String mark = serverKey + "|" + c.url() + "|" + c.room() + "|" + Integer.toHexString(c.serverKey().hashCode());
+        String mark = serverKey + "|" + c.url() + "|" + c.room() + "|" + Integer.toHexString(c.serverKey().hashCode()) + (c.signKey() == null ? "" : "|" + Integer.toHexString(c.signKey().hashCode()));
         if (mark.equals(handedTo)) return;
         handedTo = mark;
         Map<String, Object> body = new LinkedHashMap<>();

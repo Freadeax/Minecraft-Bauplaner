@@ -245,6 +245,7 @@ public final class CommandCatalog {
         s(m, SERVER_TEAM, "bp.team.export", "Ausfuhr schreiben", "team export", "Teamprotokoll für den Planer schreiben.", Need.LEAD);
         s(m, SERVER_TEAM, "bp.team.laden", "Teamdateien neu laden", "team laden", "Nach dem Hochladen einer Serverdatei.", Need.LEAD);
         s(m, SERVER_TEAM, "bp.team.raum", "Team-Raum (Status)", "team raum", "Live-Verbindung des Servers zum Team-Raum. Verbinden ohne Befehl: im Planer auf der Seite „Spiel“ → „Server“ → „Team-Raum verbinden“.", Need.PLUGIN);
+        s(m, SERVER_TEAM, "bp.team.raum.pruefen", "Team-Raum prüfen", "team raum pruefen", "Zeigt, ob der Server Rollen und Abschnittsschutz mit der Unterschrift der Bauleitung prüft, und welche Ereignisse aus dem Raum er nicht übernommen hat (GAME-06).", Need.PLUGIN);
         s(m, SERVER_TEAM, "bp.team.trennen", "Team-Raum trennen", "team trennen", "Server vom Team-Raum trennen (Bauleitung).", Need.LEAD);
         s(m, SERVER_TEAM, "bp.team.hilfe", "Hilfe (Server)", "team hilfe", "Alle Teambefehle des Servers.", Need.PLUGIN);
         // Storage chests (plugin)

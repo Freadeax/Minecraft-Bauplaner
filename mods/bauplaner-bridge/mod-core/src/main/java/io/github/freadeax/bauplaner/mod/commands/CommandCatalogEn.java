@@ -117,6 +117,7 @@ final class CommandCatalogEn {
         e("bp.team.export", "Write export", "Write the team log for the planner.");
         e("bp.team.laden", "Reload team files", "After uploading a server file.");
         e("bp.team.raum", "Team room (status)", "Live link of the server to the team room. Connect without a command: in the planner on the page “Game” → “Server” → “Connect team room”.");
+        e("bp.team.raum.pruefen", "Check team room", "Shows whether the server checks roles and section protection with the Bauleitung's signature, and which room events it did not take over (GAME-06).");
         e("bp.team.trennen", "Disconnect team room", "Disconnect the server from the team room (team lead).");
         e("bp.team.hilfe", "Help (server)", "All team commands of the server.");
         // Storage (plugin)

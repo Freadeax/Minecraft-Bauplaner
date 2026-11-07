@@ -2,6 +2,22 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.26.0 – 2026-11-07
+
+**Server plugin trusts the team room only with the Bauleitung's signature / Server-Plugin prüft den Team-Raum mit der Unterschrift der Bauleitung**
+
+- Signed team events: the planner of the team lead (Bauleitung) signs its own events; the mod of the team lead does the same and passes the signing key to the server plugin together with the team room (never the room's admin key). Nothing to download, nothing to paste.
+- Server plugin: roles, player names and the section protection are only taken from what it can trust – its own events, signed events, and the room's past once the team lead confirmed it. Unsigned events in the team lead's name, role or protection changes without signature and a player name already used by someone else are not taken; `/bp team raum pruefen` lists them.
+- Section protection by team role, set by the team lead in the planner (tab “Team” → “Team live” → “Section protection on the server”): off, notice or block; free sections for everybody or only the team. Team lead and master builders build everywhere, a confirmed section only they, a taken section only its owner and co-builders. Server admins keep the last word with `team.schutz-quelle: server`.
+- Every room event works once by its id, also after a restart; the same id with other content never replaces the first one.
+- Several players per section: co-builders (set in the planner or joined in the game) build in a taken section like its owner; the storage protection “section” lets them in too.
+
+- Unterschriebene Teamereignisse: Der Planer der Bauleitung unterschreibt seine eigenen Ereignisse; die Mod der Bauleitung ebenso, und sie gibt den Unterschriftsschlüssel mit dem Team-Raum an das Server-Plugin weiter (nie den Verwaltungsschlüssel des Raums). Nichts herunterladen, nichts einfügen.
+- Server-Plugin: Rollen, Spielernamen und Abschnittsschutz übernimmt es nur noch aus dem, was es prüfen kann – eigene Ereignisse, unterschriebene Ereignisse und die Vergangenheit des Raums, sobald die Bauleitung sie bestätigt hat. Unterschriftslose Ereignisse im Namen der Bauleitung, Rollen- oder Schutzänderungen ohne Unterschrift und ein Spielername, den schon jemand anderes hat, wirken nicht; `/bp team raum pruefen` listet sie.
+- Abschnittsschutz nach Team-Rollen, eingestellt von der Bauleitung im Planer (Reiter „Team“ → „Team live“ → „Abschnittsschutz auf dem Server“): aus, Hinweis oder Bauen verhindern; freie Abschnitte für alle oder nur fürs Team. Bauleitung und Baumeister bauen überall, bestätigte Abschnitte nur sie, vergebene nur Inhaber und Mitbauer. Server-Admins behalten mit `team.schutz-quelle: server` das letzte Wort.
+- Jedes Raum-Ereignis wirkt genau einmal über seine ID, auch nach einem Neustart; dieselbe ID mit anderem Inhalt ersetzt nie den ersten Stand.
+- Mehrere Spieler je Abschnitt: Mitbauer (im Planer festgelegt oder im Spiel beigetreten) bauen in einem vergebenen Abschnitt wie der Inhaber; der Lagerschutz „abschnitt“ lässt sie ebenfalls zu.
+
 ## 0.25.0 – 2026-11-06
 
 **Tidy screen in every window size / Aufgeräumtes Bild in jeder Fenstergröße**

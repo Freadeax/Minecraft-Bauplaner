@@ -44,10 +44,15 @@ public final class RoomClient {
     /**
      * @param serverKey LINK-11: only for the Bauleitung – the room's server key, handed to the server plugin over the team
      *                  channel ({@code link.room}) so the server joins the room by itself. Stored like the key, never shown.
+     * @param signKey   GAME-06: only for the Bauleitung – its signing key (derived from the admin key in the planner). The mod
+     *                  signs its own events with it and hands it to the server plugin with the server link ({@code l}).
      */
-    public record Config(String url, String room, String key, String member, String memberName, String teamName, String device, String serverKey) {
+    public record Config(String url, String room, String key, String member, String memberName, String teamName, String device, String serverKey, String signKey) {
         public Config(String url, String room, String key, String member, String memberName, String teamName, String device) {
-            this(url, room, key, member, memberName, teamName, device, null);
+            this(url, room, key, member, memberName, teamName, device, null, null);
+        }
+        public Config(String url, String room, String key, String member, String memberName, String teamName, String device, String serverKey) {
+            this(url, room, key, member, memberName, teamName, device, serverKey, null);
         }
         public Map<String, Object> publicFields() {
             Map<String, Object> m = new LinkedHashMap<>();
@@ -61,7 +66,7 @@ public final class RoomClient {
         public String serverLink() {
             if (serverKey == null) return null;
             java.util.function.Function<String, String> enc = v -> java.net.URLEncoder.encode(v, StandardCharsets.UTF_8);
-            return url + "/#/team/beitreten?raum=" + enc.apply(url) + "&id=" + enc.apply(room) + "&s=" + enc.apply(serverKey);
+            return url + "/#/team/beitreten?raum=" + enc.apply(url) + "&id=" + enc.apply(room) + "&s=" + enc.apply(serverKey) + (signKey == null ? "" : "&l=" + enc.apply(signKey));
         }
     }
 
@@ -230,7 +235,8 @@ public final class RoomClient {
         String teamName = m.get("teamName") instanceof String s ? s.substring(0, Math.min(80, s.length())) : null;
         String device = m.get("device") instanceof String s ? s.substring(0, Math.min(64, s.length())) : "Minecraft";
         String serverKey = m.get("serverKey") instanceof String s && !s.isBlank() ? Json.str(s, "Serverschlüssel", 200) : null;
-        return new Config(url, room, key, member, memberName, teamName, device, serverKey);
+        String signKey = m.get("signKey") instanceof String s && s.matches(io.github.freadeax.bauplaner.mod.team.EventSig.KEY_PATTERN) ? s : null;
+        return new Config(url, room, key, member, memberName, teamName, device, serverKey, signKey);
     }
 
     public synchronized Config config() { return config; }
@@ -244,6 +250,7 @@ public final class RoomClient {
             Map<String, Object> m = new LinkedHashMap<>(c.publicFields());
             m.put("key", c.key()); m.put("device", c.device());
             if (c.serverKey() != null) m.put("serverKey", c.serverKey());
+            if (c.signKey() != null) m.put("signKey", c.signKey());
             Path tmp = file.resolveSibling(file.getFileName() + ".tmp");
             Files.writeString(tmp, Json.write(m), StandardCharsets.UTF_8);
             Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
@@ -513,14 +520,28 @@ public final class RoomClient {
     public synchronized int pendingReports() { return reports.size(); }
 
     /** Sends own team events (already in event form with {@code by}); false when not live. */
-    public synchronized boolean append(String batch, List<Map<String, Object>> list) {
-        if (list.isEmpty()) return false;
+    public synchronized boolean append(String batch, List<Map<String, Object>> plain) {
+        if (plain.isEmpty()) return false;
+        List<Map<String, Object>> list = signed(plain);
         if (status == Status.POLL) { appendHttp(batch, list); return true; }
         if (status != Status.LIVE || ws == null) return false;
         Map<String, Object> m = new LinkedHashMap<>();
         m.put("type", "append"); m.put("batch", batch); m.put("events", new ArrayList<Object>(list));
         send(m);
         return true;
+    }
+
+    /**
+     * GAME-06: with the Bauleitung's signing key, the mod signs the events it writes in the founder's name (deterministic:
+     * a resend keeps the signature, the room answers "known"). Others' events and those without key stay as they are.
+     */
+    private List<Map<String, Object>> signed(List<Map<String, Object>> list) {
+        Config c = config;
+        TeamLog l = log;
+        if (c == null || c.signKey() == null || l == null) return list;
+        List<Map<String, Object>> out = new ArrayList<>(list.size());
+        for (Map<String, Object> e : list) out.add(l.founder.equals(e.get("by")) ? io.github.freadeax.bauplaner.mod.team.EventSig.signed(c.signKey(), l.teamId, e) : e);
+        return out;
     }
 
     /** Presence: the section the player stands in (null: none); sent only when it changes. */

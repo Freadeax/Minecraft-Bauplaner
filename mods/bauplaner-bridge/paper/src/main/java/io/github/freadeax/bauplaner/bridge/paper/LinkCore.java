@@ -171,6 +171,8 @@ final class LinkCore {
             new Setting("team.anzeige", Kind.BOOL, 0, 0, List.of(), true, "Aktionsleiste im Abschnitt"),
             new Setting("team.neue-spieler-beitreten", Kind.BOOL, 0, 0, List.of(), false, "Neue Spieler treten selbst als Helfer bei"),
             new Setting("team.schutz", Kind.CHOICE, 0, 0, List.of("hinweis", "sperren", "aus"), false, "Bauen in fremden Abschnitten"),
+            new Setting("team.schutz-quelle", Kind.CHOICE, 0, 0, List.of("raum", "server"), false, "Abschnittsschutz: Einstellung der Bauleitung im Planer gilt"),
+            new Setting("team.schutz-frei", Kind.CHOICE, 0, 0, List.of("alle", "team"), false, "Freie Abschnitte: wer darf bauen"),
             new Setting("team.nachweis", Kind.BOOL, 0, 0, List.of(), false, "Baunachweis je Spieler"),
             new Setting("team.nachweis-minuten", Kind.INT, 1, 120, List.of(), true, "Baunachweis schreiben alle … Minuten"),
             new Setting("lager.modus", Kind.CHOICE, 0, 0, List.of("sperren", "hinweis"), false, "Lagerschutz"),
