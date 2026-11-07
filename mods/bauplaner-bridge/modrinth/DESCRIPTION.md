@@ -35,7 +35,7 @@
 | NeoForge | Minecraft 26.3 client | NeoForge 26.3.0.100+, Java 25 |
 | Paper plugin (optional) | Paper **server** 1.18.2 to 26.3 | Java 17+. Goes into the server's `plugins` folder, not into a client `mods` folder |
 
-The Paper plugin is optional. It sets itself up, an operator pairs it from the planner with one click, and nobody needs to type server commands. It adds what only a server can do: recording the build state of the whole area, section protection by team role (owner, co-builders, site lead), checked team storage chests, yield chests for farms, markers of the team's world plan drawn on BlueMap or Dynmap, and optional protection of locked building sites. It accepts team room events only when they are signed by the site lead. It never changes the world.
+The Paper plugin is optional. It sets itself up, an operator pairs it from the planner with one click, and nobody needs to type server commands. It adds what only a server can do: recording the build state of the whole area, section protection by team role (owner, co-builders, site lead), checked team storage chests, yield chests for farms, markers of the team's world plan drawn on BlueMap or Dynmap, and optional protection of locked building sites. It accepts team room events only when they are signed with the team members' own keys, so nobody can fake a team role; the plugin only ever gets the public check key. It never changes the world.
 
 ## Links
 

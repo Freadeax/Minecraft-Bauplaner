@@ -796,3 +796,17 @@ Auf main 49daa6f: Mod/Plugin 0.28.0 im Download, Fortschrittsnachweis vervollst�
 |---|---|---:|---|
 | TEAM-SEC-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Team-Raum gemeinsam mit HARDEN-01 ausrollen, Rauch-/Missbrauchsprobe gegen den echten Dienst, Mod/Plugin 0.28.0 auf Modrinth. |
 
+## 2026-11-07T20:44:28.756Z · progress
+
+**Aufgaben:** GAME-09
+
+0.27.1 und 0.28.0 auf Modrinth (Fabric, NeoForge, Paper); Beschreibung: Team-Rollen mit eigenen Schlüsseln
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth prüft das Projekt weiter (Status processing, am 07.11.2026 nachgesehen); alle Versionen bis 0.26.0, Texte, Galerie und Offenlegungen sind aktuell (modrinth_publish.mjs plan). Kein Handlungsbedarf außer Abwarten. |
+
+**Geänderte Dateien:**
+
+- `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
+

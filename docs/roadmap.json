@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T20:38:47.757Z",
+  "updatedAt": "2026-11-07T20:44:28.756Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -9154,7 +9154,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T14:44:36.135Z",
+      "updatedAt": "2026-11-07T20:44:28.756Z",
       "area": "MODRINTH",
       "thread": "Mod auf Modrinth veröffentlichen",
       "philipp": [],
@@ -15334,6 +15334,26 @@
           "done": 4,
           "total": 5,
           "next": "Team-Raum gemeinsam mit HARDEN-01 ausrollen, Rauch-/Missbrauchsprobe gegen den echten Dienst, Mod/Plugin 0.28.0 auf Modrinth."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T20:44:28.756Z",
+      "kind": "progress",
+      "items": [
+        "GAME-09"
+      ],
+      "summary": "0.27.1 und 0.28.0 auf Modrinth (Fabric, NeoForge, Paper); Beschreibung: Team-Rollen mit eigenen Schlüsseln",
+      "files": [
+        "mods/bauplaner-bridge/modrinth/DESCRIPTION.md"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 4,
+          "total": 5,
+          "next": "Modrinth prüft das Projekt weiter (Status processing, am 07.11.2026 nachgesehen); alle Versionen bis 0.26.0, Texte, Galerie und Offenlegungen sind aktuell (modrinth_publish.mjs plan). Kein Handlungsbedarf außer Abwarten."
         }
       ]
     }
