@@ -2,6 +2,22 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.27.0 – 2026-11-07
+
+**Co-builders in the game / Mitbauer im Spiel**
+
+- Several players per section are now visible in the game: the section frame keeps the owner's colour, and every co-builder gets a thinner frame of their own colour just inside it.
+- Team panel, section list and overview name everyone who builds there (“Anna + Ben, Cem”); in your own section you see who builds with you.
+- New commands: `/buildplanner team join <no.>` builds along at a section someone already has (up to 8 players per section), `/buildplanner team leave [no.]` stops again – if the owner leaves, the first co-builder takes over. German: `mitbauen`, `aussteigen`.
+- Sections you build along at count as your own: “only my sections” in the hologram, material list and the done hint include them.
+- Server plugin: the same commands as `/bp mitbauen <nr>` and `/bp aussteigen [nr]`; the team channel accepts join and leave from the mod.
+
+- Mehrere Spieler je Abschnitt sind jetzt im Spiel sichtbar: Der Abschnittsrahmen bleibt in der Farbe der Verantwortlichen, jeder Mitbauer bekommt direkt darin einen dünneren Rahmen in seiner eigenen Farbe.
+- Teamanzeige, Abschnittsliste und Übersicht nennen alle, die dort bauen („Anna + Ben, Cem“); im eigenen Abschnitt steht, wer mit dir baut.
+- Neue Befehle: `/bauplaner team mitbauen <nr>` baut an einem schon vergebenen Abschnitt mit (bis zu 8 Spieler je Abschnitt), `/bauplaner team aussteigen [nr]` hört wieder auf – steigt die Verantwortliche aus, übernimmt der erste Mitbauer. Englisch: `join`, `leave`.
+- Abschnitte, an denen du mitbaust, zählen als deine: „Nur meine zeigen“ im Hologramm, Materialliste und der Fertig-Hinweis schließen sie ein.
+- Server-Plugin: dieselben Befehle als `/bp mitbauen <nr>` und `/bp aussteigen [nr]`; der Teamkanal nimmt Mitbauen und Aussteigen aus der Mod an.
+
 ## 0.26.0 – 2026-11-07
 
 **Server plugin trusts the team room only with the Bauleitung's signature / Server-Plugin prüft den Team-Raum mit der Unterschrift der Bauleitung**

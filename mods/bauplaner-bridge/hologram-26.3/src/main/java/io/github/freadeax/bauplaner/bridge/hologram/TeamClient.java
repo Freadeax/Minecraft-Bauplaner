@@ -280,14 +280,18 @@ public final class TeamClient {
         int ox = (int) Math.floor(cam.x), oy = (int) Math.floor(cam.y), oz = (int) Math.floor(cam.z);
         record Frame(int[] b, int color, float width) {}
         List<Frame> list = new ArrayList<>();
+        crewFrames.clear();
         for (TeamState.Section s : t.sections()) {
             List<int[]> boxes = planHere ? boxesOf(t, tp, s) : (t.dimension().equals(dim) ? s.boxes() : List.of());
-            boolean mine = t.me() != null && t.me().equals(s.owner());
+            boolean mine = s.builds(t.me());
             int color = TeamColors.ofSection(t, s);
             if (s.pending()) color = TeamColors.alpha(color, 0x90);
+            int[] crew = TeamColors.ofCrew(t, s);
             for (int[] b : boxes) {
                 if (far(b, cam, 192)) continue;
                 list.add(new Frame(b, color, mine ? 4.0f : 2.0f));
+                // TEAM-03: every Mitbauer as a thinner frame just inside the owner's, in their own colour.
+                for (int i = 0; i < crew.length; i++) crewFrames.add(new CrewFrame(b, s.pending() ? TeamColors.alpha(crew[i], 0x90) : crew[i], i + 1));
             }
         }
         // Team chests (COOP-04) in the colour of their check; notes as a post with a frame.
@@ -306,12 +310,17 @@ public final class TeamClient {
             marks.add(new Frame(box, noteColor(n.tag()), -1f));
         }
         if (list.isEmpty() && marks.isEmpty()) return;
+        List<CrewFrame> crewList = List.copyOf(crewFrames);
         pose.pushPose();
         pose.translate(ox - cam.x, oy - cam.y, oz - cam.z);
         out.submitCustomGeometry(pose, RenderTypes.lines(), (p, vc) -> {
             for (Frame f : list) {
                 int[] b = f.b;
                 HologramRenderer.frame(p, vc, b[0] - ox - 0.08f, b[1] - oy - 0.08f, b[2] - oz - 0.08f, b[3] + 1.08f - ox, b[4] + 1.08f - oy, b[5] + 1.08f - oz, f.color, f.width);
+            }
+            for (CrewFrame f : crewList) {
+                float[] q = TeamColors.crewInset(f.b(), f.slot());
+                if (q != null) HologramRenderer.frame(p, vc, q[0] - ox, q[1] - oy, q[2] - oz, q[3] - ox, q[4] - oy, q[5] - oz, f.color(), 2.0f);
             }
             for (Frame f : marks) {
                 int[] b = f.b;
@@ -324,6 +333,10 @@ public final class TeamClient {
         });
         pose.popPose();
     }
+
+    /** A Mitbauer frame: box, colour, place inside the owner frame (1 = first Mitbauer). */
+    private record CrewFrame(int[] b, int color, int slot) {}
+    private final List<CrewFrame> crewFrames = new ArrayList<>();
 
     private static boolean far(int[] b, Vec3 cam, double r) {
         double dx = Math.max(0, Math.max(b[0] - cam.x, cam.x - b[3] - 1)), dy = Math.max(0, Math.max(b[1] - cam.y, cam.y - b[4] - 1)), dz = Math.max(0, Math.max(b[2] - cam.z, cam.z - b[5] - 1));
@@ -367,9 +380,12 @@ public final class TeamClient {
         out.add(row("Team „" + t.name() + "“ · " + where + (waiting > 0 ? " · " + waiting + t(" wartet", " waiting") : ""), live ? HudCard.ACCENT : HudCard.TEXT));
         TeamState.Section here = sectionAt(t, tp, McCompat.dimension(mc.level), px, py, pz);
         if (here != null) {
-            String owner = here.owner() == null ? t("frei – /bauplaner team nehmen ", "free – /buildplanner team take ") + here.nr() : t.nameOf(here.owner());
+            String owner = t.buildersText(here, t("frei – /bauplaner team nehmen ", "free – /buildplanner team take ") + here.nr());
             out.add(row(t("Hier: ", "Here: ") + here.nr() + " „" + here.name() + "“ · " + owner + " · " + TeamState.statusText(here.pending() ? "wartet" : here.status()),
                     TeamColors.ofSection(t, here)));
+            // TEAM-03: a section someone else has can take more builders.
+            if (here.owner() != null && !here.builds(t.me()) && t.me() != null && !"bestaetigt".equals(here.status()) && here.builders().size() < TeamState.MAX_CREW)
+                out.add(row(t("Mitbauen: /bauplaner team mitbauen ", "Join: /buildplanner team join ") + here.nr(), HudCard.MUTED));
         }
         List<TeamState.Section> mine = t.mine();
         if (mine.isEmpty()) {
@@ -383,6 +399,10 @@ public final class TeamClient {
                 progress = " · " + TeamPlan.percent(p) + " % · " + p[2] + t(" offen", " open");
             } else if (hologram.active()) progress = t(" · nicht im Plan", " · not in the plan");
             out.add(row(t("Mein Auftrag: ", "My task: ") + s.nr() + " „" + s.name() + "“" + progress + (mine.size() > 1 ? " (+" + (mine.size() - 1) + ")" : ""), t.colorOf(t.me())));
+            // TEAM-03: who builds with me there.
+            List<String> others = s.builders().stream().filter(m -> !m.equals(t.me())).toList();
+            if (!others.isEmpty()) out.add(row((t.me().equals(s.owner()) ? t("Mitbauer: ", "Co-builders: ") : t("Mitbauer bei ", "Co-builder with "))
+                    + String.join(", ", others.stream().map(t::nameOf).toList()), t.colorOf(others.get(0))));
             if ("nacharbeit".equals(s.status())) out.add(row(t("Nacharbeit verlangt – /bauplaner team abschnitte", "Rework requested – /buildplanner team sections"), HudCard.ERROR));
         }
         if (tp != null && tp.mismatch() != null) out.add(row(tp.mismatch(), HudCard.ERROR));
@@ -472,6 +492,10 @@ public final class TeamClient {
                         .executes(c -> sectionAct(StringArgumentType.getString(c, "abschnitt"), "section.claim", null))))
                 .then(TeamClient.<S>literal("abgeben").executes(c -> sectionAct(null, "section.release", null))
                         .then(TeamClient.<S, String>argument("abschnitt", StringArgumentType.word()).suggests(numbers).executes(c -> sectionAct(StringArgumentType.getString(c, "abschnitt"), "section.release", null))))
+                .then(TeamClient.<S>literal("mitbauen").then(TeamClient.<S, String>argument("abschnitt", StringArgumentType.word()).suggests(numbers)
+                        .executes(c -> sectionAct(StringArgumentType.getString(c, "abschnitt"), "section.join", null))))
+                .then(TeamClient.<S>literal("aussteigen").executes(c -> sectionAct(null, "section.leave", null))
+                        .then(TeamClient.<S, String>argument("abschnitt", StringArgumentType.word()).suggests(numbers).executes(c -> sectionAct(StringArgumentType.getString(c, "abschnitt"), "section.leave", null))))
                 .then(TeamClient.<S>literal("fertig").executes(c -> sectionAct(null, "section.done", null))
                         .then(TeamClient.<S, String>argument("abschnitt", StringArgumentType.word()).suggests(numbers).executes(c -> sectionAct(StringArgumentType.getString(c, "abschnitt"), "section.done", null))
                                 .then(TeamClient.<S, String>argument("notiz", StringArgumentType.greedyString()).executes(c -> sectionAct(StringArgumentType.getString(c, "abschnitt"), "section.done", StringArgumentType.getString(c, "notiz"))))))
@@ -533,12 +557,13 @@ public final class TeamClient {
         say(t.summary() + ".");
         list(t("Verbindung: ", "Connection: ") + sync.link().text() + (t.me() != null ? t(" · du bist ", " · you are ") + t.nameOf(t.me()) + " (" + TeamState.roleText(t.roleOf(t.me())) + ")" : ""));
         List<TeamState.Section> mine = t.mine();
-        if (!mine.isEmpty()) list(t("Deine Abschnitte: ", "Your sections: ") + String.join(", ", mine.stream().map(s -> s.nr() + " „" + s.name() + "“ (" + TeamState.statusText(s.status()) + ")").toList()));
+        if (!mine.isEmpty()) list(t("Deine Abschnitte: ", "Your sections: ") + String.join(", ", mine.stream().map(s -> s.nr() + " „" + s.name() + "“ (" + TeamState.statusText(s.status())
+                + (s.builders().size() > 1 ? " · " + t.buildersText(s, "") : "") + ")").toList()));
         List<TeamState.Section> free = t.sections().stream().filter(TeamState.Section::free).limit(5).toList();
         if (!free.isEmpty()) list(t("Frei: ", "Free: ") + String.join(", ", free.stream().map(s -> s.nr() + " „" + s.name() + "“").toList()) + t(" – /bauplaner team nehmen <nr>", " – /buildplanner team take <no.>"));
         int waiting = sync.outbox().pending(t.teamId()).size();
         if (waiting > 0) list(waiting + t(" eigene Meldung(en) warten auf Abgleich: /bauplaner team korb", " own message(s) waiting for sync: /buildplanner team outbox"));
-        list(t("Befehle: abschnitte, nehmen, abgeben, fertig, mein, frei, material, notiz, geliefert, lager, status, erlauben", "Commands: sections, take, release, done, mine, free, material, note, delivered, storage, status, allow"));
+        list(t("Befehle: abschnitte, nehmen, mitbauen, aussteigen, abgeben, fertig, mein, frei, material, notiz, geliefert, lager, status, erlauben", "Commands: sections, take, join, leave, release, done, mine, free, material, note, delivered, storage, status, allow"));
         return 1;
     }
 
@@ -548,7 +573,7 @@ public final class TeamClient {
         TeamPlan tp = teamPlan(t);
         list(t("Abschnitte (", "Sections (") + t.sections().size() + "):");
         for (TeamState.Section s : t.sections()) {
-            String owner = s.owner() == null ? t("frei", "free") : t.nameOf(s.owner());
+            String owner = t.buildersText(s, t("frei", "free"));
             String progress = "";
             if (tp != null && tp.number(s.id()) > 0) progress = " · " + TeamPlan.percent(TeamPlan.progress(hologram.check(), tp.number(s.id()))) + " %";
             McCompat.chatLine(Minecraft.getInstance(), Component.literal("  " + s.nr() + ". " + s.name() + " – " + owner + " · " + TeamState.statusText(s.pending() ? "wartet" : s.status()) + progress)
@@ -566,7 +591,7 @@ public final class TeamClient {
         // Without a number: the section underfoot, else the only own one.
         Minecraft mc = Minecraft.getInstance();
         TeamState.Section here = mc.player == null ? null : sectionAt(t, teamPlan(t), McCompat.dimension(mc.level), mc.player.getBlockX(), mc.player.getBlockY(), mc.player.getBlockZ());
-        if (here != null && (!ownFirst || t.me() != null && t.me().equals(here.owner()))) return Optional.of(here);
+        if (here != null && (!ownFirst || here.builds(t.me()))) return Optional.of(here);
         List<TeamState.Section> mine = t.mine();
         if (ownFirst && mine.size() == 1) return Optional.of(mine.get(0));
         say(t("Welcher Abschnitt? Nummer angeben (/bauplaner team abschnitte).", "Which section? Give its number (/buildplanner team sections)."));
@@ -576,7 +601,7 @@ public final class TeamClient {
     private int sectionAct(String ref, String kind, String note) {
         TeamState t = need();
         if (t == null) return 0;
-        Optional<TeamState.Section> s = section(t, ref, !kind.equals("section.claim"));
+        Optional<TeamState.Section> s = section(t, ref, !kind.equals("section.claim") && !kind.equals("section.join"));
         if (s.isEmpty()) return 0;
         TeamState.Section sec = s.get();
         String me = t.me();
@@ -585,7 +610,13 @@ public final class TeamClient {
                 if (me != null && me.equals(sec.owner())) return said(t("Abschnitt " + sec.nr() + " gehört schon dir.", "Section " + sec.nr() + " is already yours."));
                 if (!sec.free()) say(t("Hinweis: Abschnitt " + sec.nr() + " hat schon " + t.nameOf(sec.owner()) + " – Server oder Planer entscheiden, wer ihn bekommt.", "Note: " + t.nameOf(sec.owner()) + " already has section " + sec.nr() + " – server or planner decide who gets it."));
             }
-            case "section.release" -> { if (me != null && !me.equals(sec.owner())) return said(t("Abschnitt " + sec.nr() + " gehört nicht dir.", "Section " + sec.nr() + " is not yours.")); }
+            case "section.release" -> { if (me != null && !sec.builds(me)) return said(t("Abschnitt " + sec.nr() + " gehört nicht dir.", "Section " + sec.nr() + " is not yours.")); }
+            case "section.join" -> {
+                if (sec.builds(me)) return said(t("Du baust schon an Abschnitt " + sec.nr() + ".", "You already build at section " + sec.nr() + "."));
+                if ("bestaetigt".equals(sec.status())) return said(t("Abschnitt " + sec.nr() + " ist schon bestätigt.", "Section " + sec.nr() + " is already confirmed."));
+                if (sec.builders().size() >= TeamState.MAX_CREW) return said(t("An Abschnitt " + sec.nr() + " bauen schon " + TeamState.MAX_CREW + " Spieler.", TeamState.MAX_CREW + " players already build at section " + sec.nr() + "."));
+            }
+            case "section.leave" -> { if (me != null && !sec.builds(me)) return said(t("Du baust nicht an Abschnitt " + sec.nr() + ".", "You do not build at section " + sec.nr() + ".")); }
             default -> { }
         }
         Map<String, Object> body = new LinkedHashMap<>();
@@ -594,6 +625,11 @@ public final class TeamClient {
         String what = switch (kind) {
             case "section.claim" -> t("Abschnitt " + sec.nr() + " „" + sec.name() + "“ übernommen", "Took section " + sec.nr() + " “" + sec.name() + "”");
             case "section.release" -> t("Abschnitt " + sec.nr() + " „" + sec.name() + "“ zurückgegeben", "Released section " + sec.nr() + " “" + sec.name() + "”");
+            case "section.join" -> sec.owner() == null ? t("Abschnitt " + sec.nr() + " „" + sec.name() + "“ übernommen", "Took section " + sec.nr() + " “" + sec.name() + "”")
+                    : t("Du baust jetzt mit " + t.nameOf(sec.owner()) + " an Abschnitt " + sec.nr() + " „" + sec.name() + "“", "You now build with " + t.nameOf(sec.owner()) + " at section " + sec.nr() + " “" + sec.name() + "”");
+            case "section.leave" -> me != null && me.equals(sec.owner()) && !sec.crew().isEmpty()
+                    ? t("Aus Abschnitt " + sec.nr() + " ausgestiegen, " + t.nameOf(sec.crew().get(0)) + " übernimmt", "Left section " + sec.nr() + ", " + t.nameOf(sec.crew().get(0)) + " takes over")
+                    : t("Aus Abschnitt " + sec.nr() + " „" + sec.name() + "“ ausgestiegen", "Left section " + sec.nr() + " “" + sec.name() + "”");
             default -> t("Abschnitt " + sec.nr() + " „" + sec.name() + "“ fertig gemeldet", "Reported section " + sec.nr() + " “" + sec.name() + "” as done");
         };
         String r = sync.act(kind, body, what);

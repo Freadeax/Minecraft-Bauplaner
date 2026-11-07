@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T12:35:25.144Z",
+  "updatedAt": "2026-11-07T12:53:56.832Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -6300,7 +6300,10 @@
         "mods/bauplaner-bridge/paper/",
         "tests/unit/team/teamCrew.test.mjs",
         "tests/e2e/teamcrew.e2e.mjs",
-        "docs/architecture/team/TEAMBAU.md"
+        "docs/architecture/team/TEAMBAU.md",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamState.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java",
+        "packages/domain/src/team/teamLink.ts"
       ],
       "legacyIds": [],
       "steps": [
@@ -6318,6 +6321,11 @@
           "id": "TEAM-03-S03",
           "title": "Abnahme TEAMBAU-30 durch Philipp (zwei Browser oder Mitspieler, Team live).",
           "done": false
+        },
+        {
+          "id": "TEAM-03-S04",
+          "title": "Mitbauer in Mod und Hologramm (Mod/Plugin 0.27.0): crew in Planer-, Plugin- und Team-Raum-Stand, eigener Rahmen je Mitbauer, Teamanzeige/Abschnittsliste mit allen Beteiligten, /bauplaner team mitbauen|aussteigen und /bp mitbauen|aussteigen.",
+          "done": true
         }
       ],
       "acceptance": [
@@ -6325,7 +6333,7 @@
         "Kein stiller Verlust und kein Überschreiben fremder Zuständigkeiten: überholte Änderungen werden sichtbar abgelehnt, alle Geräte entscheiden gleich.",
         "Ereignisse ohne Version (ältere Mod/Plugin) wirken wie bisher."
       ],
-      "next": "Plugin-Faltung der Mitbauer ist seit Plugin 0.25.0 ausgeliefert. Offen: Mod zeigt Mitbauer je Abschnitt (Block D), Abnahme TEAMBAU-30 (Block B).",
+      "next": "Abnahme TEAMBAU-30 (Block B / Philipp); Mitbauer jetzt auch in Mod und Hologramm sichtbar (Mod 0.27.0).",
       "blockers": [],
       "evidence": [
         {
@@ -6339,17 +6347,25 @@
         {
           "path": "mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/TeamLogCrewTest.java",
           "note": "Plugin faltet Mitbauer und Versionen wie team.ts."
+        },
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomCrewTest.java",
+          "note": "Mod: Mitbauer aus dem Team-Raum, Parser, eigenes Mitbauen/Aussteigen im Overlay, Rahmenfarben und -abstände."
+        },
+        {
+          "path": "scripts/mod/bridge_gametest.mjs",
+          "note": "Echter Fabric-/NeoForge-26.3-Spieltest: Abschnittsliste und Übersicht zeigen „+ Anna, Ben“, mitbauen am eigenen Abschnitt, Bild mitbauer-galerie.png."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Einheits-, Browser- und Plugin-Tests grün; Abnahme TEAMBAU-30 offen."
+        "note": "Einheits-, Browser-, Plugin- und Mod-Tests sowie Spieltests Fabric/NeoForge grün; Abnahme TEAMBAU-30 offen."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T12:31:42.554Z",
+      "updatedAt": "2026-11-07T12:53:56.832Z",
       "area": "TEAM",
       "thread": "Mitbauer in Mod und Hologramm zeigen",
       "philipp": [],
@@ -14030,6 +14046,54 @@
           "done": 3,
           "total": 4,
           "next": "Abnahme durch Philipp: Seite und Mod 0.24.0 im Spiel ansehen (Tastengruppe „Build Studio“, Menütitel)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T12:53:56.832Z",
+      "kind": "progress",
+      "items": [
+        "TEAM-03"
+      ],
+      "summary": "TEAM-03-S04: Mitbauer in Mod und Hologramm (Mod/Plugin 0.27.0) – crew im Planer-, Plugin- und Team-Raum-Stand, eigener Rahmen je Mitbauer, Teamanzeige/Abschnittsliste/Übersicht mit allen Beteiligten, /bauplaner team mitbauen|aussteigen, /bp mitbauen|aussteigen. Geprüft: RoomCrewTest, team-link.test, Spieltest Fabric und NeoForge 26.3, Paper-Teamtest 1.21.11/26.3. Offen: Abnahme TEAMBAU-30.",
+      "files": [
+        "apps/web/src/views/mod/modCommands.json",
+        "apps/web/src/views/mod/releases.json",
+        "docs/architecture/team/TEAMBAU.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.27.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.27.0.jar",
+        "downloads/mod/bauplaner-bridge-paper-0.27.0.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalogEn.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandWords.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomState.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamColors.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamOutbox.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamPlan.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamState.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomCrewTest.java",
+        "mods/bauplaner-bridge/modrinth/DESCRIPTION.md",
+        "mods/bauplaner-bridge/modrinth/gallery/15-co-builders.png",
+        "mods/bauplaner-bridge/modrinth/project.json",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamChannel.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java",
+        "mods/bauplaner-bridge/paper/src/main/resources/plugin.yml",
+        "packages/domain/src/team/teamLink.ts",
+        "scripts/mod/bridge_gametest.mjs",
+        "tests/unit/team/team-link.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "TEAM-03",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme TEAMBAU-30 (Block B / Philipp); Mitbauer jetzt auch in Mod und Hologramm sichtbar (Mod 0.27.0)."
         }
       ]
     }

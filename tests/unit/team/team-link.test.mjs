@@ -31,6 +31,23 @@ test('team link state: sections numbered in build order, owners, open notes, me'
   assert.equal(LIVE_FEATURE_TEAM, 'team');
 });
 
+test('team link state: Mitbauer go to the mod as crew (TEAM-03, mod 0.27.0)', () => {
+  let team = appendEvents(base(), [
+    teamEvent('bld_anna', { kind: 'section.claim', section: 'sec_b' }, '2026-11-03T09:02:00Z'),
+    teamEvent('bld_phil', { kind: 'section.join', section: 'sec_b' }, '2026-11-03T09:03:00Z'),
+  ]);
+  let s = teamLinkState(team, teamView(team, ctx), ctx, { at: '2026-11-03T10:00:00Z' });
+  const b = s.sections.find(x => x.id === 'sec_b');
+  assert.equal(b.owner, 'bld_anna');
+  assert.deepEqual(b.crew, ['bld_phil']);
+  assert.equal(s.sections.find(x => x.id === 'sec_a').crew, undefined, 'no crew field without Mitbauer');
+  // Anna leaves: Philipp takes over, the crew is empty and the field disappears.
+  team = appendEvents(team, [teamEvent('bld_anna', { kind: 'section.leave', section: 'sec_b' }, '2026-11-03T09:04:00Z')]);
+  s = teamLinkState(team, teamView(team, ctx), ctx, { at: '2026-11-03T10:00:00Z' });
+  assert.equal(s.sections.find(x => x.id === 'sec_b').owner, 'bld_phil');
+  assert.equal(s.sections.find(x => x.id === 'sec_b').crew, undefined);
+});
+
 test('reading the mod: outbox events merge as planner events, malformed ones are dropped', () => {
   const claim = { id: 'tev_mabcdefghijklmno', at: '2026-11-03T10:01:00Z', by: 'bld_anna', origin: 'planer', kind: 'section.claim', section: 'sec_a' };
   const live = readLiveTeam({ link: 'live', allowed: true, outbox: [claim, { id: 'x', kind: 'section.claim' }], waiting: 2, rejections: ['Abschnitt 1 ist schon vergeben', 7],

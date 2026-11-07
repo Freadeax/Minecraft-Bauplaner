@@ -45,6 +45,7 @@ public final class CommandWords {
         put(m, "geliefert", "delivered"); put(m, "sammle", "collect"); put(m, "lager", "storage"); put(m, "aufnahme", "record");
         put(m, "erlauben", "allow"); put(m, "verbieten", "forbid"); put(m, "korb", "outbox"); put(m, "leeren", "clear");
         put(m, "rahmen", "frames"); put(m, "anzeige", "panel");
+        put(m, "mitbauen", "join"); put(m, "aussteigen", "leave");
         // Build guides
         put(m, "symmetrie", "symmetry"); put(m, "kante", "edge"); put(m, "kurve", "curve"); put(m, "punkt", "point");
         put(m, "zurueck", "undo"); put(m, "profil", "profile"); put(m, "rohr", "pipe"); put(m, "weg", "path"); put(m, "mauer", "wall");

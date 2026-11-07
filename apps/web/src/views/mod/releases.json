@@ -1126,6 +1126,53 @@
       "releasedAt": "2026-11-07",
       "sourceCommit": "4c5231610de46f73682e793172060ee55a3f64cd",
       "tested": "Spieltest Minecraft 26.3 (Fabric): Oberfläche in 3 Fenstergrößen, Planer im Browser, Hologramm, Team-Raum, Website-Verbindung; Raum mit Unterschriftsschlüssel (GAME-06)"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.27.0.jar",
+      "modVersion": "0.27.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 675217,
+      "sha256": "d58747383e554f20df498ef9598cff74bf0b54298d86555bc9a57c7a72306c45",
+      "releasedAt": "2026-11-07",
+      "sourceCommit": "fe7dcbb85a327dcac49ce0048a07ac740c7533c1",
+      "tested": "Spieltest Minecraft 26.3 (Fabric): Oberfläche in 3 Fenstergrößen, Planer im Browser, Hologramm, Website-Verbindung; Mitbauer in Abschnittsliste, Übersicht, Teamanzeige und Rahmen (TEAM-03)"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.27.0.jar",
+      "modVersion": "0.27.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 670337,
+      "sha256": "8d2277a1a2acaad71201137803623ff6f0bce428eea16ad31e57204acd16e366",
+      "releasedAt": "2026-11-07",
+      "sourceCommit": "fe7dcbb85a327dcac49ce0048a07ac740c7533c1",
+      "tested": "Spieltest Minecraft 26.3 (NeoForge): Hologramm, Website-Verbindung, Team; Mitbauer im Mod-Kern geprüft"
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.27.0.jar",
+      "modVersion": "0.27.0",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 331615,
+      "sha256": "681581254810ff129304b5c2f9666448cd3051baff48ae40c5e401ae128466e2",
+      "releasedAt": "2026-11-07",
+      "sourceCommit": "fe7dcbb85a327dcac49ce0048a07ac740c7533c1",
+      "tested": "Paper 1.21.11 und 26.3: Team; Teamkanal nimmt Mitbauen/Aussteigen an, /bp mitbauen|aussteigen (TEAM-03)"
     }
   ]
 }

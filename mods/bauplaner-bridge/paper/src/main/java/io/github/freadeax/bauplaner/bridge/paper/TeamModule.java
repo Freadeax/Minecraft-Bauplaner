@@ -54,7 +54,8 @@ import org.bukkit.scheduler.BukkitTask;
  */
 final class TeamModule implements Listener {
     static final List<String> COMMANDS = List.of("team", "abschnitte", "nehmen", "abgeben", "fertig", "zeigen", "notiz", "notizen", "geliefert", "sammle",
-            "zuweisen", "pruefen", "rolle", "lager", "nachweis", "beitrag", "uebergeben", "annehmen", "ablehnen", "abwesend", "zurueck");
+            "zuweisen", "pruefen", "rolle", "lager", "nachweis", "beitrag", "uebergeben", "annehmen", "ablehnen", "abwesend", "zurueck",
+            "mitbauen", "aussteigen");
     private static final String PREFIX = ChatColor.GOLD + "[Build Studio] " + ChatColor.RESET;
 
     private final JavaPlugin plugin;
@@ -389,6 +390,28 @@ final class TeamModule implements Listener {
                 JsonObject e = team.event(me.get(), "section.release"); e.addProperty("section", sec.id());
                 return submit(team, e, s, "Abschnitt " + sec.number() + " „" + sec.name() + "“ ist wieder frei.");
             });
+            // TEAM-03: build together – join a section someone already has, or leave it again.
+            case "mitbauen" -> args.length == 0 ? fail(s, "/" + label + " mitbauen <nr>") : withSection(s, team, args[0], sec -> {
+                Optional<String> m = ensureMember(team, a);
+                if (m.isEmpty()) return fail(s, "Du bist nicht im Team (neue Spieler treten auf diesem Server nicht selbst bei).");
+                TeamLog.SectionState st = v.section(sec.id());
+                if (st.builds(m.get())) return fail(s, "Du baust schon an Abschnitt " + sec.number() + " „" + sec.name() + "“.");
+                JsonObject e = team.event(m.get(), "section.join"); e.addProperty("section", sec.id());
+                return submit(team, e, s, st.owner == null ? "Abschnitt " + sec.number() + " „" + sec.name() + "“ war frei und gehört jetzt dir."
+                        : "Du baust jetzt mit " + v.name(st.owner) + " an Abschnitt " + sec.number() + " „" + sec.name() + "“.");
+            });
+            case "aussteigen" -> {
+                if (me.isEmpty()) yield fail(s, "Du bist nicht im Team.");
+                String ref = args.length > 0 ? args[0] : null;
+                Optional<TeamLog.Section> sec = ref != null ? team.section(ref) : ownSection(team, v, me.get(), a);
+                if (sec.isEmpty()) yield fail(s, ref == null ? "Welcher Abschnitt? /" + label + " aussteigen <nr>" : "Abschnitt „" + ref + "“ gibt es nicht.");
+                TeamLog.SectionState st = v.section(sec.get().id());
+                if (!st.builds(me.get())) yield fail(s, "Du baust nicht an Abschnitt " + sec.get().number() + ".");
+                JsonObject e = team.event(me.get(), "section.leave"); e.addProperty("section", sec.get().id());
+                yield submit(team, e, s, me.get().equals(st.owner) && !st.crew.isEmpty()
+                        ? "Du bist aus Abschnitt " + sec.get().number() + " ausgestiegen, " + v.name(st.crew.get(0)) + " übernimmt."
+                        : "Du bist aus Abschnitt " + sec.get().number() + " „" + sec.get().name() + "“ ausgestiegen.");
+            }
             case "fertig" -> {
                 Optional<String> m = ensureMember(team, a);
                 if (m.isEmpty()) yield fail(s, "Du bist nicht im Team.");
@@ -526,6 +549,7 @@ final class TeamModule implements Listener {
 
     private boolean help(CommandSender s, String label) {
         say(s, "Team: /" + label + " team · abschnitte · nehmen <nr> · abgeben <nr> · fertig [<nr>] [notiz] · zeigen <nr>");
+        say(s, "Mitbauen: mitbauen <nr> (an einem vergebenen Abschnitt mitbauen) · aussteigen [nr]");
         say(s, "notiz <frage|problem|material|info> <text> · notizen · geliefert <item|hand> [menge] · sammle <item> <menge>");
         say(s, "Lager: lager hilfe · lager info · lager bedarf [nr] · nachweis [an|aus] · beitrag [alle] · Baumeister: lager markieren [name] · lager siegeln · lager schutz <stufe>");
         say(s, "Übergabe: uebergeben <nr> <spieler> [notiz] · annehmen [nr] · ablehnen [nr] · abwesend [bis JJJJ-MM-TT] [notiz] · zurueck");
@@ -742,7 +766,7 @@ final class TeamModule implements Listener {
         TeamLog team = teams.values().iterator().next();
         List<String> numbers = team.ordered().stream().map(sec -> String.valueOf(sec.number())).collect(Collectors.toList());
         return switch (sub) {
-            case "nehmen", "abgeben", "fertig", "zeigen", "annehmen", "ablehnen" -> args.length == 2 ? numbers : List.of();
+            case "nehmen", "abgeben", "fertig", "zeigen", "annehmen", "ablehnen", "mitbauen", "aussteigen" -> args.length == 2 ? numbers : List.of();
             case "uebergeben" -> args.length == 2 ? numbers : args.length == 3 ? Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()) : List.of();
             case "abwesend" -> args.length == 2 ? List.of("bis", "aus", java.time.LocalDate.now().plusDays(7).toString()) : List.of();
             case "zuweisen" -> args.length == 2 ? numbers : args.length == 3 ? Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()) : List.of();
@@ -946,7 +970,7 @@ final class TeamModule implements Listener {
 
     private static final java.util.Set<String> CHANNEL_KINDS = java.util.Set.of("section.claim", "section.release", "section.done", "section.verify", "section.assign",
             "contribution", "gather.claim", "note.add", "note.resolve",
-            "section.handover", "section.accept", "section.decline", "member.away");
+            "section.handover", "section.accept", "section.decline", "member.away", "section.join", "section.leave");
     private static final List<String> CHANNEL_FIELDS = List.of("section", "note", "ok", "member", "blocks", "items", "item", "count", "noteId", "text", "tag", "pos", "until");
 
     /**

@@ -72,6 +72,8 @@ final class CommandCatalogEn {
         e("team.abschnitte", "Sections", "All sections with owner and state.");
         e("team.nehmen", "Take section", "Take a free section.");
         e("team.abgeben", "Release", "Release your section (empty = the one you stand in).");
+        e("team.mitbauen", "Join", "Build along at a section someone already has (up to 8 players per section).");
+        e("team.aussteigen", "Leave", "Stop building along (empty = the one you stand in). If the owner leaves, the first co-builder takes over.");
         e("team.fertig", "Report done", "Report a section as done, optionally with a note.");
         e("team.mein", "Show only mine", "Hologram only with your sections.");
         e("team.frei", "Show only free", "Hologram only with free sections.");
@@ -98,6 +100,8 @@ final class CommandCatalogEn {
         e("bp.team", "Overview (server)", "What the server knows about you and the team.");
         e("bp.abschnitte", "Sections (server)", "Sections according to the server.");
         e("bp.nehmen", "Take (server)", "Take a section directly on the server.");
+        e("bp.mitbauen", "Join (server)", "Build along at a taken section.");
+        e("bp.aussteigen", "Leave (server)", "Stop building along (empty = where you stand).");
         e("bp.abgeben", "Release (server)", "Release a section.");
         e("bp.fertig", "Done (server)", "Report done (empty = where you stand).");
         e("bp.zeigen", "Show outline", "Particle outline of the section.");

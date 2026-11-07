@@ -101,6 +101,11 @@
       "file": "gallery/14-message-cards.png",
       "title": "Messages at the top right",
       "description": "Short animated message cards instead of a full chat, errors in red, and a compact build panel at the top right."
+    },
+    {
+      "file": "gallery/15-co-builders.png",
+      "title": "Several players per section",
+      "description": "The section frame keeps the owner's colour; every co-builder gets a thinner frame of their own colour inside it. The team panel names who builds with you. Join with /buildplanner team join, stop with leave."
     }
   ],
   "firstVersion": "0.10.0",

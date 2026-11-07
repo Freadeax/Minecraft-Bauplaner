@@ -200,6 +200,8 @@ public final class CommandCatalog {
         c(m, TEAM, "team.abschnitte", "Abschnitte", "team abschnitte", "Alle Abschnitte mit Inhaber und Stand.", Need.TEAM);
         c(m, TEAM, "team.nehmen", "Abschnitt nehmen", "team nehmen", "Freien Abschnitt übernehmen.", Need.TEAM, Arg.of("abschnitt", Kind.SECTION));
         c(m, TEAM, "team.abgeben", "Abgeben", "team abgeben", "Eigenen Abschnitt freigeben (leer = der, in dem du stehst).", Need.TEAM, Arg.opt("abschnitt", Kind.SECTION));
+        c(m, TEAM, "team.mitbauen", "Mitbauen", "team mitbauen", "An einem vergebenen Abschnitt mitbauen (bis zu 8 Spieler je Abschnitt).", Need.TEAM, Arg.of("abschnitt", Kind.SECTION));
+        c(m, TEAM, "team.aussteigen", "Aussteigen", "team aussteigen", "Nicht mehr mitbauen (leer = der, in dem du stehst). Steigt der Inhaber aus, übernimmt der erste Mitbauer.", Need.TEAM, Arg.opt("abschnitt", Kind.SECTION));
         c(m, TEAM, "team.fertig", "Fertig melden", "team fertig", "Abschnitt fertig melden, optional mit Notiz.", Need.TEAM, Arg.opt("abschnitt", Kind.SECTION), Arg.opt("notiz", Kind.TEXT));
         c(m, TEAM, "team.mein", "Nur meine zeigen", "team mein", "Hologramm nur mit deinen Abschnitten.", Need.TEAM);
         c(m, TEAM, "team.frei", "Nur freie zeigen", "team frei", "Hologramm nur mit freien Abschnitten.", Need.TEAM);
@@ -227,6 +229,8 @@ public final class CommandCatalog {
         s(m, SERVER_TEAM, "bp.abschnitte", "Abschnitte (Server)", "abschnitte", "Abschnitte laut Server.", Need.PLUGIN);
         s(m, SERVER_TEAM, "bp.nehmen", "Nehmen (Server)", "nehmen", "Abschnitt direkt auf dem Server übernehmen.", Need.PLUGIN, Arg.of("abschnitt", Kind.SECTION));
         s(m, SERVER_TEAM, "bp.abgeben", "Abgeben (Server)", "abgeben", "Abschnitt freigeben.", Need.PLUGIN, Arg.of("abschnitt", Kind.SECTION));
+        s(m, SERVER_TEAM, "bp.mitbauen", "Mitbauen (Server)", "mitbauen", "An einem vergebenen Abschnitt mitbauen.", Need.PLUGIN, Arg.of("abschnitt", Kind.SECTION));
+        s(m, SERVER_TEAM, "bp.aussteigen", "Aussteigen (Server)", "aussteigen", "Nicht mehr mitbauen (leer = wo du stehst).", Need.PLUGIN, Arg.opt("abschnitt", Kind.SECTION));
         s(m, SERVER_TEAM, "bp.fertig", "Fertig (Server)", "fertig", "Fertig melden (leer = wo du stehst).", Need.PLUGIN, Arg.opt("abschnitt", Kind.SECTION), Arg.opt("notiz", Kind.TEXT));
         s(m, SERVER_TEAM, "bp.zeigen", "Umriss zeigen", "zeigen", "Partikelumriss des Abschnitts.", Need.PLUGIN, Arg.of("abschnitt", Kind.SECTION));
         s(m, SERVER_TEAM, "bp.notiz", "Notiz (Server)", "notiz", "Notiz an deiner Stelle.", Need.PLUGIN, Arg.choice("art", "frage", "problem", "material", "info"), Arg.of("text", Kind.TEXT));

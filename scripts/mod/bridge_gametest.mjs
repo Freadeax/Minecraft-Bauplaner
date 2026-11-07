@@ -46,7 +46,16 @@ if (mode === 'prepare') {
   // COOP-03: the team view the planner sends to the mod ("Ich bin" = the tester; Turm already taken by them, Mauer free).
   const ctx = teamContextOf(project.site);
   let team = createTeam({ name: 'Spieltest-Team', founder: 'bld_test', teamId: 'team_gametest01', at: '2026-11-03T09:00:00Z' });
-  team = { ...appendEvents(team, [teamEvent('bld_test', { kind: 'section.claim', section: project.site.sections[0].id }, '2026-11-03T09:01:00Z')]), self: 'bld_test' };
+  // TEAM-03: Anna and Ben build along at the tester's Turm (Mitbauer), so the mod shows their frames and names.
+  const turm = project.site.sections[0].id;
+  team = { ...appendEvents(team, [
+    teamEvent('bld_test', { kind: 'section.claim', section: turm }, '2026-11-03T09:01:00Z'),
+    teamEvent('bld_test', { kind: 'member.join', member: 'bld_test', name: 'Lea' }, '2026-11-03T09:01:05Z'),
+    teamEvent('bld_anna', { kind: 'member.join', member: 'bld_anna', name: 'Anna' }, '2026-11-03T09:01:10Z'),
+    teamEvent('bld_ben', { kind: 'member.join', member: 'bld_ben', name: 'Ben' }, '2026-11-03T09:01:20Z'),
+    teamEvent('bld_anna', { kind: 'section.join', section: turm }, '2026-11-03T09:01:30Z'),
+    teamEvent('bld_ben', { kind: 'section.join', section: turm }, '2026-11-03T09:01:40Z'),
+  ]), self: 'bld_test' };
   writeFileSync(join(dir, 'team.json'), JSON.stringify(teamLinkState(team, teamView(team, ctx), ctx, { dimension: 'minecraft:overworld' })));
   writeFileSync(join(dir, 'state.json'), JSON.stringify({ project, revisionId: revision.id, planSha256: plan.sha256, wrong: wrong.position, missing: missing.position, missingState: stateString(resolution.world.palette[missing.paletteIndex]) }));
   console.log(`Spieltest vorbereitet: ${blocks.length} Blöcke, Abweichungen bei ${wrong.position.join('/')} (Diamant) und ${missing.position.join('/')} (fehlt).`);
@@ -317,6 +326,10 @@ async function live(file, loader, plan, logFile) {
     assert.match(String(raw.teamPull.body.error ?? raw.teamPull.body), /keinem Server/, 'Einzelspieler: kein Server zum Abholen');
     const log = readFileSync(logFile, 'utf8');
     assert.match(log, /\[Build Studio\] Hologramm zeigt nur deine Abschnitte \(2\)/, 'eigene Abschnitte eingeblendet');
+    // TEAM-03 (mod 0.27.0): Mitbauer from the planner in the section list and the join command in the game.
+    assert.match(log, / +1\. Turm – .+ \+ Anna, Ben · /, 'Mitbauer in der Abschnittsliste');
+    assert.match(log, /\[Build Studio\] Du baust schon an Abschnitt 1\./, 'mitbauen am eigenen Abschnitt');
+    assert.match(log, /Deine Abschnitte: 1 „Turm“ \(in Arbeit · .+ \+ Anna, Ben\)/, 'Übersicht nennt die Mitbauer');
   }
   // GAME-10 command page (J menu): real clicks, the typed command and its answer, greyed-out server buttons without plugin.
   let page;

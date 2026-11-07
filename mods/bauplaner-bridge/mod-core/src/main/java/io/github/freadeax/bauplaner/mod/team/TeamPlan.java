@@ -59,11 +59,11 @@ public final class TeamPlan {
     /** Team section of a plan section number, null when the team does not know it. */
     public TeamState.Section section(int number) { return sectionOf.get(number); }
 
-    /** Plan section numbers of a member's open sections (not confirmed ones). */
+    /** Plan section numbers of a member's open sections (not confirmed ones), as owner or Mitbauer (TEAM-03). */
     public Set<Integer> numbersOf(String memberId) {
         Set<Integer> out = new LinkedHashSet<>();
         for (TeamState.Section s : team.sections())
-            if (memberId != null && memberId.equals(s.owner()) && !"bestaetigt".equals(s.status()) && number(s.id()) > 0) out.add(number(s.id()));
+            if (s.builds(memberId) && !"bestaetigt".equals(s.status()) && number(s.id()) > 0) out.add(number(s.id()));
         return out;
     }
 

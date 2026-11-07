@@ -27,7 +27,7 @@ public final class TeamOutbox {
     public static final int MAX = 200;
     /** Kinds the mod may write; rights are checked again by the plugin or the planner fold. */
     public static final List<String> KINDS = List.of("section.claim", "section.release", "section.done", "section.verify", "section.assign",
-            "contribution", "gather.claim", "note.add", "note.resolve");
+            "section.join", "section.leave", "contribution", "gather.claim", "note.add", "note.resolve");
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final String ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz";
 

@@ -750,7 +750,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
             out.put("teamId", st.teamId()); out.put("sections", st.sections().size()); out.put("me", st.me());
             out.put("waiting", t.sync().outbox().pending(st.teamId()).size());
             List<Object> owners = new ArrayList<>();
-            for (var sec : st.sections()) { Map<String, Object> m = new LinkedHashMap<>(); m.put("id", sec.id()); m.put("status", sec.status()); if (sec.owner() != null) m.put("owner", sec.owner()); owners.add(m); }
+            for (var sec : st.sections()) { Map<String, Object> m = new LinkedHashMap<>(); m.put("id", sec.id()); m.put("status", sec.status()); if (sec.owner() != null) m.put("owner", sec.owner()); if (!sec.crew().isEmpty()) m.put("crew", sec.crew()); owners.add(m); }
             out.put("sectionStates", owners);
         }
         if (room.lastError() != null) out.put("lastError", room.lastError());

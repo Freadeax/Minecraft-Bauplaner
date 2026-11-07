@@ -321,3 +321,45 @@ Inaktive Threads Block A: Abnahme-Verantwortung offener Pakete von beendeten Thr
 - `docs/testing/TESTPLAN.md`
 - `tests/e2e/team-room.e2e.mjs`
 
+## 2026-11-07T12:53:56.832Z · progress
+
+**Aufgaben:** TEAM-03
+
+TEAM-03-S04: Mitbauer in Mod und Hologramm (Mod/Plugin 0.27.0) – crew im Planer-, Plugin- und Team-Raum-Stand, eigener Rahmen je Mitbauer, Teamanzeige/Abschnittsliste/Übersicht mit allen Beteiligten, /bauplaner team mitbauen|aussteigen, /bp mitbauen|aussteigen. Geprüft: RoomCrewTest, team-link.test, Spieltest Fabric und NeoForge 26.3, Paper-Teamtest 1.21.11/26.3. Offen: Abnahme TEAMBAU-30.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TEAM-03 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme TEAMBAU-30 (Block B / Philipp); Mitbauer jetzt auch in Mod und Hologramm sichtbar (Mod 0.27.0). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/modCommands.json`
+- `apps/web/src/views/mod/releases.json`
+- `docs/architecture/team/TEAMBAU.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.27.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.27.0.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.27.0.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalogEn.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandWords.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomState.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamColors.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamOutbox.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamPlan.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamState.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomCrewTest.java`
+- `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
+- `mods/bauplaner-bridge/modrinth/gallery/15-co-builders.png`
+- `mods/bauplaner-bridge/modrinth/project.json`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamChannel.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
+- `mods/bauplaner-bridge/paper/src/main/resources/plugin.yml`
+- `packages/domain/src/team/teamLink.ts`
+- `scripts/mod/bridge_gametest.mjs`
+- `tests/unit/team/team-link.test.mjs`
+

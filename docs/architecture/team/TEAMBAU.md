@@ -387,6 +387,13 @@ Ein Abschnitt hat weiter genau eine **Verantwortliche** (`owner`: meldet fertig,
 
 **Planung:** Im Teamzeitplan (`teamSchedule`) arbeitet ein Abschnitt mit n Beteiligten n-mal so schnell und belegt die Zeit aller Beteiligten; der Fortschritt je Mitglied (`teamProgress`) teilt die Arbeit gleich auf. Das Bauleute-Konto (PROJ-05) liest verteilte Sammelaufträge wie eigene Zusagen.
 
-**Plugin (`TeamLog.java`):** faltet `section.crew/join/leave` und `base` genauso (Test `TeamLogCrewTest`); Abschnittsschutz und Lagerschutz „abschnitt“ lassen Mitbauer wie Verantwortliche zu, `/bauplaner team liste` nennt die Mitbauer. Kommt mit der nächsten Plugin-Version. Die Mod zeigt Abschnitte weiter in der Farbe der Verantwortlichen.
+**Plugin (`TeamLog.java`):** faltet `section.crew/join/leave` und `base` genauso (Test `TeamLogCrewTest`); Abschnittsschutz und Lagerschutz „abschnitt“ lassen Mitbauer wie Verantwortliche zu, `/bauplaner team liste` nennt die Mitbauer. Seit Plugin 0.26.0 ausgeliefert.
 
 Prüfung: `tests/unit/team/teamCrew.test.mjs`, `tests/e2e/teamcrew.e2e.mjs` (Desktop und Handy), Paper `TeamLogCrewTest`. Abnahme: TEAMBAU-30.
+
+**Mod und Hologramm (Mod/Plugin 0.27.0, 07.11.2026):** Planer (`teamLinkState`), Plugin-Teamkanal (`TeamChannel.state`) und die Faltung des Team-Raums in der Mod (`RoomState`) schicken je Abschnitt zusätzlich `crew` (Mitbauer in Beitrittsreihenfolge, nur mit Verantwortlicher). Ältere Mods ignorieren das Feld, ältere Sender lassen es weg (dann keine Mitbauer). In der Mod (`TeamState.Section.crew/builds/builders`):
+
+- **Rahmen:** außen die Farbe der Verantwortlichen (wie bisher), darin je Mitbauer ein dünnerer Rahmen in seiner Farbe, jeweils 0,16 Blöcke weiter innen (`TeamColors.ofCrew/crewInset`; hat ein Mitbauer zufällig die Farbe der Verantwortlichen, nimmt er die nächste Palettenfarbe). Eigene Abschnitte – auch als Mitbauer – haben den dicken Rahmen.
+- **Teamanzeige:** „Hier: 3 „Turm“ · Anna + Ben, Cem · in Arbeit“, darunter in fremden Abschnitten „Mitbauen: /bauplaner team mitbauen 3“; beim eigenen Auftrag „Mitbauer: …“ bzw. „Mitbauer bei Anna“. Abschnittsliste, Übersicht und `/bauplaner team mein` (Hologramm nur meine Abschnitte, Materialliste) zählen Mitbauer-Abschnitte als eigene.
+- **Befehle:** `/bauplaner team mitbauen <nr>` (`section.join`) und `/bauplaner team aussteigen [nr]` (`section.leave`), englisch `join`/`leave`; `abgeben` als Mitbauer heißt Aussteigen. Bis zur Antwort zeigt die Mod den eigenen Schritt als „wartet“ (Outbox-Overlay wie bei claim/release). Über den Plugin-Kanal sind `section.join/leave` jetzt zugelassen; das Plugin hat dieselben Befehle als `/bp mitbauen <nr>` und `/bp aussteigen [nr]`.
+- Prüfung: `RoomCrewTest` (Faltung aus dem Raum, Parser, Overlay, Farben/Rahmen), `team-link.test.mjs` (crew im Planerformat), Spieltest Fabric 26.3 (Abschnittsliste und Übersicht mit „+ Anna, Ben“, `mitbauen` am eigenen Abschnitt, Bild `mitbauer.png`).

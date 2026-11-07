@@ -17,6 +17,8 @@ export interface TeamLinkSection {
   readonly nr: number;
   readonly name: string;
   readonly owner?: string;
+  /** TEAM-03: Mitbauer besides the owner, in the order they joined (mod 0.27.0+ shows them; older mods ignore it). */
+  readonly crew?: readonly string[];
   readonly status: string;
   readonly offer?: { readonly to: string };
 }
@@ -46,6 +48,7 @@ export function teamLinkState(team: TeamState, view: TeamView, ctx: TeamContext,
     return {
       id: s.id, nr: i + 1, name: s.name.slice(0, 120), status: st?.status ?? 'frei',
       ...(st?.owner && { owner: st.owner }),
+      ...(st?.owner && st.crew.length > 0 && { crew: st.crew.slice(0, 7) }),
       ...(offer && typeof offer.to === 'string' && { offer: { to: offer.to } }),
     };
   });

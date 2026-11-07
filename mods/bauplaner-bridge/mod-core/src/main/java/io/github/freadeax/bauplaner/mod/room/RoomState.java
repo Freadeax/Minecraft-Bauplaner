@@ -32,6 +32,8 @@ final class RoomState {
             j.addProperty("nr", sec.number());
             j.addProperty("name", sec.name());
             if (st.owner != null) j.addProperty("owner", st.owner);
+            // TEAM-03: Mitbauer besides the owner (mod 0.27.0+ shows them; older mods ignore the field).
+            if (st.owner != null && !st.crew.isEmpty()) { JsonArray c = new JsonArray(); st.crew.forEach(c::add); j.add("crew", c); }
             j.addProperty("status", st.status);
             JsonArray boxes = new JsonArray();
             for (TeamLog.Box b : sec.boxes()) {

@@ -757,6 +757,27 @@ public final class BridgeGameTest implements FabricClientGameTest {
         chat(context, "/bauplaner team mein");
         context.waitTicks(30);
         copy(context.takeScreenshot("bauplaner-team"), io.resolve("team.png"));
+        // TEAM-03: Mitbauer – the join command answers for the own section, the overview lists Anna and Ben.
+        chat(context, "/bauplaner team mitbauen 1");
+        context.waitTicks(10);
+        chat(context, "/bauplaner team");
+        context.waitTicks(10);
+        copy(context.takeScreenshot("bauplaner-mitbauer"), io.resolve("mitbauer.png"));
+        // Gallery picture (Modrinth): the building with the owner's frame and one inner frame per Mitbauer, team panel, no chat.
+        String standBack = context.computeOnClient(mc -> mc.player.getX() + " " + mc.player.getY() + " " + mc.player.getZ() + " " + mc.player.getYRot() + " " + mc.player.getXRot());
+        // The plan may have been moved by the planner step: aim at where the hologram stands now.
+        String placed = request(context, http, base + "/v1/status", "GET", null, token, "https://freadeax.github.io");
+        var pm = java.util.regex.Pattern.compile("\"placement\":\\{\"dimension\":\"[^\"]*\",\"x\":(-?\\d+),\"y\":(-?\\d+),\"z\":(-?\\d+)").matcher(placed);
+        int[] at = pm.find() ? new int[] { Integer.parseInt(pm.group(1)), Integer.parseInt(pm.group(2)), Integer.parseInt(pm.group(3)) } : anchor;
+        double gdx = 9.0, gdy = 4.5 - 1.62, gdz = 11.0;
+        world.getServer().runCommand("tp @a " + (at[0] - 5.5) + " " + at[1] + " " + (at[2] - 8.5) + " " + (-Math.toDegrees(Math.atan2(gdx, gdz))) + " " + (-Math.toDegrees(Math.atan2(gdy, Math.hypot(gdx, gdz)))));
+        world.getConnection().waitForChunksRender();
+        context.setScreen(() -> null);
+        context.runOnClient(mc -> mc.gui.hud.getChat().clearMessages(false));
+        context.waitTicks(170);
+        copy(context.takeScreenshot("bauplaner-mitbauer-galerie"), io.resolve("mitbauer-galerie.png"));
+        world.getServer().runCommand("tp @a " + standBack);
+        world.getConnection().waitForChunksRender();
         out.append(",\"team\":").append(request(context, http, base + "/v1/team", "GET", null, token, "https://freadeax.github.io"));
         out.append(",\"teamPull\":").append(request(context, http, base + "/v1/team/pull?teamId=x", "GET", null, token, "https://freadeax.github.io"));
         chat(context, "/bauplaner team alle");

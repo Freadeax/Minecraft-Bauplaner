@@ -24,6 +24,8 @@ public record TeamState(Source source, String teamId, String name, String dimens
         Source(String label) { this.label = label; }
     }
 
+    /** Builders per section (owner + Mitbauer), as MAX_CREW in team.ts and TeamLog. */
+    public static final int MAX_CREW = 8;
     public static final int MAX_SECTIONS = 1000, MAX_MEMBERS = 500, MAX_NOTES = 500, MAX_STORES = 200, MAX_BOXES = 64;
     public static final List<String> STATUSES = List.of("frei", "vergeben", "gemeldet", "bestaetigt", "nacharbeit");
     public static final Map<String, String> STATUS_LABEL = Map.of("frei", "frei", "vergeben", "in Arbeit", "gemeldet", "fertig gemeldet",
@@ -48,15 +50,27 @@ public record TeamState(Source source, String teamId, String name, String dimens
     /**
      * One build section. {@code nr} is 1-based in build order (as on the server and in the plan file).
      * {@code boxes}: world boxes [x0,y0,z0,x1,y1,z1] (inclusive) from the server file; empty from the planer.
-     * {@code pending}: the owner/status is the mod's own action still waiting in the outbox.
+     * {@code crew}: Mitbauer besides the owner (TEAM-03, at most {@link #MAX_CREW} − 1), in the order they joined.
+     * {@code pending}: the owner/crew/status is the mod's own action still waiting in the outbox.
      */
-    public record Section(String id, int nr, String name, String owner, String status, List<int[]> boxes, List<Need> need, String offerTo, boolean pending) {
+    public record Section(String id, int nr, String name, String owner, List<String> crew, String status, List<int[]> boxes, List<Need> need, String offerTo, boolean pending) {
         public boolean free() { return owner == null || "frei".equals(status); }
+        /** Owner or Mitbauer (TEAM-03): may build here, report done and give back. */
+        public boolean builds(String member) { return member != null && (member.equals(owner) || crew.contains(member)); }
+        /** Everyone building here: owner first, then the Mitbauer. */
+        public List<String> builders() {
+            if (owner == null) return List.of();
+            List<String> out = new ArrayList<>(crew.size() + 1);
+            out.add(owner);
+            out.addAll(crew);
+            return List.copyOf(out);
+        }
         public boolean contains(int x, int y, int z) {
             for (int[] b : boxes) if (x >= b[0] && x <= b[3] && y >= b[1] && y <= b[4] && z >= b[2] && z <= b[5]) return true;
             return false;
         }
-        Section with(String owner, String status) { return new Section(id, nr, name, owner, status, boxes, need, offerTo, true); }
+        Section with(String owner, String status) { return with(owner, owner == null ? List.of() : crew, status); }
+        Section with(String owner, List<String> crew, String status) { return new Section(id, nr, name, owner, List.copyOf(crew), status, boxes, need, offerTo, true); }
     }
 
     /** Material of a section: needed, lying ready in checked chests (COOP-04 stores). */
@@ -125,9 +139,15 @@ public record TeamState(Source source, String teamId, String name, String dimens
                 need.add(new Need(item(l.get("item")), Json.integer(l.get("count"), "Menge", 0, 1_000_000_000),
                         l.get("stored") == null ? 0 : Json.integer(l.get("stored"), "Bereit", 0, 1_000_000_000)));
             }
+            // TEAM-03: Mitbauer (planner, plugin and team room send them since 0.27.0); older senders leave the field out.
+            List<String> crew = new ArrayList<>();
+            if (m.get("crew") != null && owner != null) for (Object x : limit(Json.arr(m.get("crew"), "Mitbauer"), MAX_CREW)) {
+                String c = Json.str(x, "Mitbauer", 64);
+                if (!c.equals(owner) && !crew.contains(c) && crew.size() < MAX_CREW - 1) crew.add(c);
+            }
             String offerTo = null;
             if (m.get("offer") instanceof Map<?, ?> offer && offer.get("to") instanceof String to && to.length() <= 64) offerTo = to;
-            sections.add(new Section(id, nr, sname, owner, status, List.copyOf(boxes), List.copyOf(need), offerTo, false));
+            sections.add(new Section(id, nr, sname, owner, List.copyOf(crew), status, List.copyOf(boxes), List.copyOf(need), offerTo, false));
         }
         List<Member> members = new ArrayList<>();
         if (body.get("members") != null) for (Object o : limit(Json.arr(body.get("members"), "Mitglieder"), MAX_MEMBERS)) {
@@ -234,7 +254,24 @@ public record TeamState(Source source, String teamId, String name, String dimens
         return sections.stream().filter(s -> s.name.toLowerCase(java.util.Locale.ROOT).startsWith(l)).findFirst();
     }
 
-    public List<Section> mine() { return me == null ? List.of() : sections.stream().filter(s -> me.equals(s.owner) && !"bestaetigt".equals(s.status)).toList(); }
+    /** Open sections the player builds at: own ones first, then those where they are Mitbauer (TEAM-03). */
+    public List<Section> mine() {
+        if (me == null) return List.of();
+        List<Section> out = new ArrayList<>(sections.stream().filter(s -> me.equals(s.owner) && !"bestaetigt".equals(s.status)).toList());
+        sections.stream().filter(s -> s.crew.contains(me) && !"bestaetigt".equals(s.status)).forEach(out::add);
+        return List.copyOf(out);
+    }
+
+    /** Sections where the player is Mitbauer only (not owner). */
+    public List<Section> crewOf(String memberId) { return memberId == null ? List.of() : sections.stream().filter(s -> s.crew.contains(memberId) && !"bestaetigt".equals(s.status)).toList(); }
+
+    /** "Anna + Ben, Carla" (owner, then Mitbauer); "frei" text when nobody builds. */
+    public String buildersText(Section s, String free) {
+        if (s.owner == null) return free;
+        StringBuilder b = new StringBuilder(nameOf(s.owner));
+        if (!s.crew.isEmpty()) b.append(" + ").append(String.join(", ", s.crew.stream().map(this::nameOf).toList()));
+        return b.toString();
+    }
 
     /** First section whose server box contains the position (only server states carry boxes). */
     public Optional<Section> sectionAt(String dim, int x, int y, int z) {
@@ -259,13 +296,32 @@ public record TeamState(Source source, String teamId, String name, String dimens
             if (s == null) continue;
             switch (a.kind()) {
                 case "section.claim" -> { if (s.free()) byId.put(sec, s.with(me, "vergeben")); }
-                case "section.release" -> { if (me.equals(s.owner)) byId.put(sec, s.with(null, "frei")); }
+                case "section.release" -> {
+                    // A Mitbauer giving back only leaves the crew (team.ts, TeamLog).
+                    if (me.equals(s.owner)) byId.put(sec, s.with(null, "frei"));
+                    else if (s.crew.contains(me)) byId.put(sec, s.with(s.owner, without(s.crew, me), s.status));
+                }
+                case "section.join" -> {
+                    if (s.builds(me) || "bestaetigt".equals(s.status)) break;
+                    if (s.owner == null) byId.put(sec, s.with(me, "vergeben"));
+                    else if (s.crew.size() < MAX_CREW - 1) { List<String> c = new ArrayList<>(s.crew); c.add(me); byId.put(sec, s.with(s.owner, c, s.status)); }
+                }
+                case "section.leave" -> {
+                    if (!s.builds(me) || "bestaetigt".equals(s.status)) break;
+                    if (me.equals(s.owner)) {
+                        // The first Mitbauer takes over; without one the section is free again.
+                        if (s.crew.isEmpty()) byId.put(sec, s.with(null, "frei"));
+                        else byId.put(sec, s.with(s.crew.get(0), s.crew.subList(1, s.crew.size()), s.status));
+                    } else byId.put(sec, s.with(s.owner, without(s.crew, me), s.status));
+                }
                 case "section.done" -> byId.put(sec, s.with(s.owner == null ? me : s.owner, "gemeldet"));
                 default -> { }
             }
         }
         return new TeamState(source, teamId, name, dimension, revision, revisionSummary, me, List.copyOf(byId.values()), members, notes, stores, at);
     }
+
+    private static List<String> without(List<String> l, String x) { List<String> c = new ArrayList<>(l); c.remove(x); return c; }
 
     /** "Team Burgbau · Planstand 4 · 3 frei, 2 in Arbeit, 1 gemeldet · vom Server". */
     public String summary() {

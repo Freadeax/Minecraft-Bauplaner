@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T12:35:25.144Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T12:53:56.832Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -135,7 +135,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [LINK-04](#link-04) | Planer | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Testplan-Bereich LINK durchgehen. |
 | [LINK-05](#link-05) | Zweiter Weg über den Team-Raum | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern. |
 | [OPS-04](#ops-04) | Team-Raum betreiben | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Testfall TEAMBAU-31 mit zwei Geräten: sichern, wiederherstellen, löschen und zurückholen. |
-| [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Mitbauer in Mod und Hologramm zeigen“ | — |
+| [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Mitbauer in Mod und Hologramm zeigen“ | — |
 | [WORLD-SHARE-01](#world-share-01) | Weltplan und Server-Karte nur über den Team-Raum | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Mit dem Paper-Plugin und BlueMap oder Dynmap prüfen, ob die Marker des Weltplans ohne Datei auf der Server-Karte erscheinen und gesperrte Bauplätze geschützt sind (KARTE-10..12). |
 | [COOP-08](#coop-08) | Ertragskisten | 🧩 Implementiert · Abnahme offen 4/5 | P2 | „Große Testphase vorbereiten und betreuen“ | LAGER-01…09 mit echten Spielern. |
 
@@ -606,7 +606,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [TEAM-01](#team-01) | Backendvertrag, Datenbank und Payloadspeicher | ⏳ Offen | 0/2 | ARCH-01, FORMAT-01, STORE-02, LICENSE-01 | ausstehend | ausstehend |
 | [AUTH-01](#auth-01) | Konten, Rechte und Übernahme lokaler Projekte | ⏳ Offen | 0/2 | TEAM-01 | ausstehend | ausstehend |
 | [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo im Team-Raum | 🧩 Implementiert · Abnahme offen | 2/2 | AUTH-01, UPDATE-01 | ausstehend | ausstehend |
-| [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung: mehrere Spieler je Abschnitt und Sammelauftrag, versionierte Zuständigkeiten und Buchungen, live über den Team-Raum | 🧩 Implementiert · Abnahme offen | 2/3 | TEAM-02, COOP-06, PROJ-05 | ausstehend | ausstehend |
+| [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung: mehrere Spieler je Abschnitt und Sammelauftrag, versionierte Zuständigkeiten und Buchungen, live über den Team-Raum | 🧩 Implementiert · Abnahme offen | 3/4 | TEAM-02, COOP-06, PROJ-05 | ausstehend | ausstehend |
 | [GAME-06](#game-06) | Server-Plugin direkt mit dem Team-Raum (Mod/Plugin 0.26.0): unterschriebene Ereignisse der Bauleitung, Ereignis-ID und wiederholbare Verarbeitung, Abschnittsschutz nach Team-Rollen aus dem Raum | 🧩 Implementiert · Abnahme offen | 3/4 | TEAM-02, GAME-04, LINK-11 | ausstehend | ausstehend |
 | [LAGER-01](#lager-01) | Optionale Truhen-/Lagerintegration | 🧩 Implementiert · Abnahme offen | 2/2 | GAME-04 | ausstehend | ausstehend |
 | [OPS-04](#ops-04) | Team-Raum betreiben: Sicherung, Wiederherstellung, Aufbewahrung, Zustand | 🧩 Implementiert · Abnahme offen | 4/4 | TEAM-02 | ausstehend | ausstehend |
@@ -2316,21 +2316,22 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TEAM-03
 
-**Gemeinsame Aufgaben, Abschnitte und Sammelplanung: mehrere Spieler je Abschnitt und Sammelauftrag, versionierte Zuständigkeiten und Buchungen, live über den Team-Raum** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Abschnitte mehreren Spielern zuweisen“ · Arbeitsstrang: „Mitbauer in Mod und Hologramm zeigen“ · Aktualisiert: 2026-11-07T12:31:42.554Z
+**Gemeinsame Aufgaben, Abschnitte und Sammelplanung: mehrere Spieler je Abschnitt und Sammelauftrag, versionierte Zuständigkeiten und Buchungen, live über den Team-Raum** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Abschnitte mehreren Spielern zuweisen“ · Arbeitsstrang: „Mitbauer in Mod und Hologramm zeigen“ · Aktualisiert: 2026-11-07T12:53:56.832Z
 
 - [x] TEAM-03-S01: Zuständigkeiten und Lagerbuchungen versionieren: Version je Abschnitt, Sammelauftrag und Buchung; Änderungen auf überholter Version wirken nicht und stehen mit „Trotzdem so übernehmen“ in den Hinweisen; Buchungen korrigieren/stornieren (contribution.fix).
 - [x] TEAM-03-S02: Abschnitte und Sammelaufträge mehreren Spielern zuweisen: section.crew/join/leave (Verantwortliche + bis zu 7 Mitbauer), gather.assign; Zeitplan, Fortschritt, Planung und Paper-Plugin (Abschnitts- und Lagerschutz) berücksichtigen Mitbauer.
 - [ ] TEAM-03-S03: Abnahme TEAMBAU-30 durch Philipp (zwei Browser oder Mitspieler, Team live).
+- [x] TEAM-03-S04: Mitbauer in Mod und Hologramm (Mod/Plugin 0.27.0): crew in Planer-, Plugin- und Team-Raum-Stand, eigener Rahmen je Mitbauer, Teamanzeige/Abschnittsliste mit allen Beteiligten, /bauplaner team mitbauen|aussteigen und /bp mitbauen|aussteigen.
 
 **Abnahme:** Planung, manuelle Bestätigung und Spielnachweis bleiben getrennt. Kein stiller Verlust und kein Überschreiben fremder Zuständigkeiten: überholte Änderungen werden sichtbar abgelehnt, alle Geräte entscheiden gleich. Ereignisse ohne Version (ältere Mod/Plugin) wirken wie bisher.
 
-**Nächste Aktion:** Plugin-Faltung der Mitbauer ist seit Plugin 0.25.0 ausgeliefert. Offen: Mod zeigt Mitbauer je Abschnitt (Block D), Abnahme TEAMBAU-30 (Block B).
+**Nächste Aktion:** Abnahme TEAMBAU-30 (Block B / Philipp); Mitbauer jetzt auch in Mod und Hologramm sichtbar (Mod 0.27.0).
 
-**Prüfstand:** Einheits-, Browser- und Plugin-Tests grün; Abnahme TEAMBAU-30 offen.
+**Prüfstand:** Einheits-, Browser-, Plugin- und Mod-Tests sowie Spieltests Fabric/NeoForge grün; Abnahme TEAMBAU-30 offen.
 
-**Nachweise:** [tests/unit/team/teamCrew.test.mjs](../tests/unit/team/teamCrew.test.mjs) — 9 Fälle: Mitbauer, Rechte, gleichzeitige Zuweisung (überholt, Merge beidseitig gleich, Lösung), alte Ereignisse, Sammelauftrag verteilen, Buchung korrigieren/stornieren, Verdichten, Grenzen, Zeitplan/Fortschritt.; [tests/e2e/teamcrew.e2e.mjs](../tests/e2e/teamcrew.e2e.mjs) — Chromium 1400/390 px: Mitbauer wählen, mitbauen/aussteigen, Sammelauftrag verteilen, Buchung V1→V2→storniert.; [mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/TeamLogCrewTest.java](../mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/TeamLogCrewTest.java) — Plugin faltet Mitbauer und Versionen wie team.ts.
+**Nachweise:** [tests/unit/team/teamCrew.test.mjs](../tests/unit/team/teamCrew.test.mjs) — 9 Fälle: Mitbauer, Rechte, gleichzeitige Zuweisung (überholt, Merge beidseitig gleich, Lösung), alte Ereignisse, Sammelauftrag verteilen, Buchung korrigieren/stornieren, Verdichten, Grenzen, Zeitplan/Fortschritt.; [tests/e2e/teamcrew.e2e.mjs](../tests/e2e/teamcrew.e2e.mjs) — Chromium 1400/390 px: Mitbauer wählen, mitbauen/aussteigen, Sammelauftrag verteilen, Buchung V1→V2→storniert.; [mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/TeamLogCrewTest.java](../mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/TeamLogCrewTest.java) — Plugin faltet Mitbauer und Versionen wie team.ts.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomCrewTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomCrewTest.java) — Mod: Mitbauer aus dem Team-Raum, Parser, eigenes Mitbauen/Aussteigen im Overlay, Rahmenfarben und -abstände.; [scripts/mod/bridge_gametest.mjs](../scripts/mod/bridge_gametest.mjs) — Echter Fabric-/NeoForge-26.3-Spieltest: Abschnittsliste und Übersicht zeigen „+ Anna, Ben“, mitbauen am eigenen Abschnitt, Bild mitbauer-galerie.png.
 
-**Dateiumfang:** `packages/domain/src/team/team.ts`, `packages/domain/src/team/teamPlan.ts`, `apps/web/src/views/project/team/TeamTab.tsx`, `apps/web/src/views/project/team/TeamPlan.tsx`, `apps/web/src/styles/team.css`, `mods/bauplaner-bridge/paper/`, `tests/unit/team/teamCrew.test.mjs`, `tests/e2e/teamcrew.e2e.mjs`, `docs/architecture/team/TEAMBAU.md`. **Abhängigkeiten:** TEAM-02, COOP-06, PROJ-05. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/team/team.ts`, `packages/domain/src/team/teamPlan.ts`, `apps/web/src/views/project/team/TeamTab.tsx`, `apps/web/src/views/project/team/TeamPlan.tsx`, `apps/web/src/styles/team.css`, `mods/bauplaner-bridge/paper/`, `tests/unit/team/teamCrew.test.mjs`, `tests/e2e/teamcrew.e2e.mjs`, `docs/architecture/team/TEAMBAU.md`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamState.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`, `packages/domain/src/team/teamLink.ts`. **Abhängigkeiten:** TEAM-02, COOP-06, PROJ-05. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
