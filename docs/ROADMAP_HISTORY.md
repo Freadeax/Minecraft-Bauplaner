@@ -8810,4 +8810,5 @@ SIZE-01-S06 und SPLIT-01-S07: Großbau (1,45 Mio. Blöcke) und eine im echten Sp
 - `tests/unit/core/split-game-base.test.mjs`
 - `tests/unit/core/split-under.test.mjs`
 - `tests/unit/formats/litematic.test.mjs`
+- `docs/testing/TESTPLAN.md`
 

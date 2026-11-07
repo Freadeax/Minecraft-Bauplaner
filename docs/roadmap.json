@@ -26839,7 +26839,8 @@
         "tests/unit/core/size-limits.test.mjs",
         "tests/unit/core/split-game-base.test.mjs",
         "tests/unit/core/split-under.test.mjs",
-        "tests/unit/formats/litematic.test.mjs"
+        "tests/unit/formats/litematic.test.mjs",
+        "docs/testing/TESTPLAN.md"
       ],
       "snapshot": [
         {
