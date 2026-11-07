@@ -71,6 +71,15 @@ class RoomClientTest {
         assertTrue(Files.readString(f).contains("mem_tom"));
         RoomClient again = new RoomClient(f, t -> { });
         assertEquals("Burg", again.config().teamName());
+        assertTrue(again.sharesPosition() && again.sharesScans(), "ältere raum.json: beides wie bisher an");
+        // PRIV-01: what the game shares is stored with the room and survives a restart and a new key.
+        again.share(false, null);
+        assertTrue(Files.readString(f).contains("\"position\":false"));
+        RoomClient third = new RoomClient(f, t -> { });
+        assertTrue(!third.sharesPosition() && third.sharesScans());
+        third.use(RoomClient.parse(Map.of("url", "http://127.0.0.1:9", "room", "r_abc12345", "key", "neu", "member", "mem_tom")));
+        assertTrue(Files.readString(f).contains("\"position\":false"));
+        third.close();
         again.forget();
         assertTrue(!Files.exists(f));
         r.close(); again.close();
@@ -173,6 +182,24 @@ class RoomClientTest {
             log = http.send(HttpRequest.newBuilder(URI.create(base + "/v1/rooms/" + room + "/events?after=")).header("Authorization", "Bearer " + admin).build(), HttpResponse.BodyHandlers.ofString()).body();
         }
         assertTrue(log.contains("\"section.seen\"") && log.contains("\"placed\":40"), log);
+
+        // PRIV-01: position and scans can be switched off separately; the position leaves the room's presence at once.
+        planner.clear();
+        client.share(false, false);
+        String gone = null;
+        for (int i = 0; i < 50 && gone == null; i++) { String m = planner.poll(200, java.util.concurrent.TimeUnit.MILLISECONDS); if (m != null && m.contains("\"presence\"") && m.contains("mem_tom") && !m.contains("\"x\":12")) gone = m; }
+        assertNotNull(gone, "Position aus der Anwesenheit entfernt");
+        assertTrue(!client.position(40, 64, 40, "minecraft:overworld", 0, System.currentTimeMillis() + 20_000), "keine Position mehr gesendet");
+        // The room passes on one ask per socket every 10 s: ask again until it went to the game.
+        boolean passed = false;
+        for (int i = 0; i < 15 && !passed; i++) {
+            ws.sendText("{\"type\":\"ask\",\"what\":\"scan\"}", true).get();
+            for (int j = 0; j < 10; j++) { String m = planner.poll(200, java.util.concurrent.TimeUnit.MILLISECONDS); if (m != null && m.contains("\"asked\"")) { passed = !m.contains("zu-oft"); break; } }
+            if (!passed) Thread.sleep(1000);
+        }
+        assertTrue(passed, "Anfrage ging an das Spiel");
+        assertEquals(null, asks.poll(1500, java.util.concurrent.TimeUnit.MILLISECONDS), "Anfrage abgelehnt, solange Aufnahmen aus sind");
+        synchronized (said) { assertTrue(said.stream().anyMatch(t -> t.contains("Aufnahme-Anfrage abgelehnt")), String.valueOf(said)); }
         ws.abort();
         client.forget();
         client.close();

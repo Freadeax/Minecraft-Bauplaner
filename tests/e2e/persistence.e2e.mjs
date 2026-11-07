@@ -52,7 +52,7 @@ async function downloadBackup(p, button) {
 test('Projekt überlebt Neuladen; Projektliste anderer Tabs aktualisiert sich', async () => {
   const context = await newContext();
   const { p, errors } = await open(context);
-  await p.getByText('Lokal in diesem Browser gespeichert').waitFor();
+  await p.getByText('In diesem Browser gespeichert · keine Anmeldung').waitFor();
   const other = await open(context);
   await createSample(p);
   const url = p.url();

@@ -1,0 +1,33 @@
+/* PRIV-01: Freigabe-Hinweise und Seite „Datenschutz und Freigaben“. */
+.share-note { margin: .5rem 0; border: 1px solid var(--line, #8884); border-radius: 8px; padding: .35rem .7rem; font-size: .88rem; background: var(--panel, transparent); }
+.share-note > summary { cursor: pointer; color: var(--muted, inherit); }
+.share-note[open] > summary { margin-bottom: .4rem; }
+.share-note dl { display: grid; gap: .3rem; margin: 0 0 .4rem; }
+.share-note dl > div { display: grid; grid-template-columns: 8.5rem 1fr; gap: .5rem; }
+.share-note dt { font-weight: 600; }
+.share-note dd { margin: 0; }
+@media (max-width: 560px) { .share-note dl > div { grid-template-columns: 1fr; gap: 0; } }
+.privacy-page .flow-list { display: grid; gap: .8rem; padding: 0; list-style: none; }
+.privacy-page .flow-card { border: 1px solid var(--line, #8884); border-radius: 10px; padding: .8rem 1rem; }
+.privacy-page .flow-card h3 { margin: 0 0 .4rem; display: flex; gap: .5rem; align-items: baseline; flex-wrap: wrap; }
+.privacy-page .flow-card dl > div { display: grid; grid-template-columns: 8.5rem 1fr; gap: .5rem; margin: .2rem 0; }
+.privacy-page .flow-card dt { font-weight: 600; }
+.privacy-page .flow-card dd { margin: 0; }
+@media (max-width: 560px) { .privacy-page .flow-card dl > div { grid-template-columns: 1fr; gap: 0; } }
+.flow-badge { font-size: .75rem; padding: .1rem .5rem; border-radius: 99px; border: 1px solid currentColor; }
+.flow-badge.online { font-weight: 600; }
+.flow-badge.local { opacity: .85; }
+.privacy-page .host-steps li { margin: .3rem 0; }
+.storage-warning { margin: .5rem 0 0; }
+.save-state small { opacity: .8; font-weight: normal; }
+.team-share { border: 1px solid var(--line, #8884); border-radius: 8px; padding: .5rem .8rem; margin: .6rem 0; display: grid; gap: .3rem; }
+.team-share legend { font-weight: 600; padding: 0 .3rem; }
+.map-host-confirm { display: block; margin: .4rem 0; }
+.map-host-confirm .button-row { margin-top: .4rem; }
+details.storage-warning { position: relative; display: inline-block; margin-left: .4rem; font-size: .8rem; }
+details.storage-warning > summary { cursor: pointer; list-style: none; padding: .15rem .6rem; border-radius: 99px; border: 1px solid var(--line, #8884); background: var(--panel, transparent); }
+details.storage-warning > summary::-webkit-details-marker { display: none; }
+details.storage-warning.full > summary, details.storage-warning.session > summary { font-weight: 600; border-color: currentColor; }
+.storage-warning-body { position: absolute; z-index: 30; top: calc(100% + .35rem); left: 0; width: min(26rem, calc(100vw - 2rem)); padding: .7rem .9rem; border-radius: 10px; border: 1px solid var(--line, #8884); background: var(--panel, #fff); color: var(--text, inherit); box-shadow: 0 8px 24px #0003; font-size: .88rem; }
+.storage-warning-body p { margin: 0 0 .5rem; }
+.storage-warning-body .button-row { margin: 0; gap: .4rem; align-items: center; flex-wrap: wrap; }

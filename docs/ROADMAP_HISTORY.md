@@ -513,3 +513,52 @@ Projekt- und Gesamtsicherungen ohne Team-Raum-Schlüssel, verschlüsselter Team-
 - `tests/e2e/team-access.e2e.mjs`
 - `tests/unit/data/backup-secrets.test.mjs`
 
+## 2026-11-07T19:17:28.843Z · progress
+
+**Aufgaben:** PRIV-01
+
+Datenschutz und Freigaben: Seite #/datenschutz mit allen Datenwegen aus einer Liste, Hinweis an jeder Freigabe, Fußzeile ohne „Alles bleibt lokal“, fremde Webkarten erst nach Bestätigung der Domain, Live-Position und Aufnahmen getrennt freigeben (Planer + Mod-Quellcode roomshare, Auslieferung mit Mod 0.28.0), Speicherstatus „In diesem Browser gespeichert“ mit Datum der Sicherungsdatei und Speicherwarnung, geführter Umzug GitHub Pages ↔ Cloudflare, Release-Datenprobe (Offline-Start, Update bei offenem Projekt, Rücksprung). Offen: Einladungen einzeln widerrufen (wartet auf Schlüssel-API).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PRIV-01 | 🚧 In Arbeit | 6/8 | S05 auf der Schlüssel-API des Team-Identitäten-Pakets bauen; S03 mit Mod 0.28.0 ausliefern. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/CommandPalette.tsx`
+- `apps/web/src/app/ShareNote.tsx`
+- `apps/web/src/app/Shell.tsx`
+- `apps/web/src/app/StorageWarning.tsx`
+- `apps/web/src/app/dataFlows.ts`
+- `apps/web/src/app/nav.ts`
+- `apps/web/src/app/router.ts`
+- `apps/web/src/main.tsx`
+- `apps/web/src/styles/privacy.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/HostMove.tsx`
+- `apps/web/src/views/PrivacyView.tsx`
+- `apps/web/src/views/ProjectsView.tsx`
+- `apps/web/src/views/SystemView.tsx`
+- `apps/web/src/views/map/LiveMapPanel.tsx`
+- `apps/web/src/views/map/MapLink.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/map/WorldSharePanel.tsx`
+- `apps/web/src/views/map/mapHosts.ts`
+- `apps/web/src/views/mod/serverClient.ts`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `apps/web/src/views/project/team/TeamRoom.tsx`
+- `docs/README.md`
+- `docs/architecture/betrieb/DATENSCHUTZ.md`
+- `docs/operations/VEROEFFENTLICHUNG.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java`
+- `tests/e2e/persistence.e2e.mjs`
+- `tests/e2e/privacy.e2e.mjs`
+- `tests/e2e/release-data.e2e.mjs`
+- `tests/unit/web/dataFlows.test.mjs`
+

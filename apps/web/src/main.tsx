@@ -28,6 +28,7 @@ const ProjectView = lazyPage(() => import('./views/project/ProjectView').then(m 
 const ViewerView = lazyPage(() => import('./views/ViewerView').then(m => m.ViewerView));
 const SystemView = lazyPage(() => import('./views/SystemView').then(m => m.SystemView));
 const GuideView = lazyPage(() => import('./views/guide/GuideView').then(m => m.GuideView));
+const PrivacyView = lazyPage(() => import('./views/PrivacyView').then(m => m.PrivacyView));
 const TestphaseView = lazyPage(() => import('./testing/TestphaseView').then(m => m.TestphaseView));
 const WorldMapView = lazyPage(() => import('./views/map/WorldMapView').then(m => m.WorldMapView));
 const TeamJoinView = lazyPage(() => import('./views/project/team/TeamJoinView').then(m => m.TeamJoinView));
@@ -43,6 +44,7 @@ function Page({ route }: { route: Route }) {
     case 'system': return <SystemView />;
     case 'testphase': return <TestphaseView search={route.search} />;
     case 'guide': return <GuideView search={route.search} />;
+    case 'privacy': return <PrivacyView />;
     case 'map': return <WorldMapView search={route.search} />;
     case 'mod': return <ModView search={route.search} />;
     case 'team-join': return <TeamJoinView search={route.search ?? ''} />;

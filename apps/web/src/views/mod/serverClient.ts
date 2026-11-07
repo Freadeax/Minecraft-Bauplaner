@@ -297,6 +297,22 @@ export async function latestServerRecording(projectId: string, onProgress: (text
  * Connects the Minecraft game on this computer with a team room: from then on the mod gets the team state from
  * the room and sends the player's own actions there – no plugin and no file on the server.
  */
+/** PRIV-01: what the own game shares with the team room (stored per browser, sent with every connect). */
+export interface GameShare { readonly position: boolean; readonly scans: boolean }
+const SHARE_KEY = 'bauplaner.spiel.teilen';
+export function readGameShare(): GameShare {
+  try { const v = JSON.parse(localStorage.getItem(SHARE_KEY) ?? 'null') as Partial<GameShare> | null; return { position: v?.position !== false, scans: v?.scans !== false }; } catch { return { position: true, scans: true }; }
+}
+export function saveGameShare(s: GameShare): void { try { localStorage.setItem(SHARE_KEY, JSON.stringify(s)); } catch { /* privates Fenster */ } }
+
+/** PRIV-01: tells the running game what it shares; null when no game or the mod is too old (before 0.28.0). */
+export async function gameShare(share: GameShare): Promise<string | null> {
+  let link;
+  try { link = await gameLink(); } catch { return null; }
+  if (!liveCan(link.hello, 'roomshare')) return null;
+  return liveApi.roomSet(link.port, link.token, { share });
+}
+
 export async function gameToRoom(room: ServerRoom, member: { id: string; name?: string }, teamName: string, serverKey?: string, signKey?: string): Promise<string> {
   const link = await gameLink();
   if (!liveCan(link.hello, 'room')) throw new LiveError(`Die Mod ${link.hello.mod.version} kann noch nicht direkt mit dem Team-Raum sprechen – Mod 0.14.0 oder neuer installieren.`, 426);
@@ -304,6 +320,7 @@ export async function gameToRoom(room: ServerRoom, member: { id: string; name?: 
   // over by itself (link.room, only OP/bauplaner.team.leitung). Older mods ignore the field.
   const handOver = !!serverKey && liveCan(link.hello, 'roomserver');
   const text = await liveApi.roomSet(link.port, link.token, { url: room.url, room: room.room, key: room.key, member: member.id, ...(member.name && { memberName: member.name }), teamName, device: 'Minecraft', ...(handOver && { serverKey }),
+    ...(liveCan(link.hello, 'roomshare') && { share: readGameShare() }),
     // GAME-06: with it the game signs the Bauleitung's events and hands the key to the plugin (link parameter l).
     ...(handOver && signKey && liveCan(link.hello, 'roomsign') && { signKey }) });
   return handOver ? `${text} Bist du als Bauleitung (OP) mit diesem Spiel auf dem Server mit Build-Studio-Plugin, verbindet die Mod den Server von selbst mit dem Team-Raum.` : text;

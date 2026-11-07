@@ -1,3 +1,5 @@
+import { HostMove } from './HostMove';
+import { hostOf } from '../app/dataFlows';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TeamOpen } from './project/team/TeamOpen';
 import { applyOperation, applyWorldPlanOp, backupFileName, cellCount, buildRestore, createBackup, createEnsembleProject, createProject, findUpdates, hasTeamAccess, latestReleaseId, latestVersions, summarizeUpdates, MAX_BACKUP_BYTES, missingMembers, newInstance, planRestore, programSummary, projectRemoval, readBackup, resolveProject, serializeBackup, siteOf, ENSEMBLES } from '../../../../packages/domain/src/index.js';
@@ -93,6 +95,8 @@ export function ProjectsView() {
   };
 
   const create = async (project: Project) => {
+    // PRIV-01: beim ersten eigenen Projekt den Browser um dauerhaften Speicher bitten (Klick des Nutzers, kein Dialog in Chrome).
+    if (repo.kind === 'indexeddb') void repo.requestPersistence().catch(() => false);
     try { await repo.saveProject(project, 0); navigate({ view: 'project', projectId: project.id, tab: 'editor' }); }
     catch (e) { setMessage(`Projekt nicht gespeichert: ${errorText(e)}`); }
   };
@@ -146,11 +150,11 @@ export function ProjectsView() {
 
   return <div className="page">
     <section className="home-hero"><div><span className="eyebrow">PROJEKTZENTRALE</span><h1>Große Ideen.<br /><em>Block für Block.</em></h1>
-      <p>Such dir Gebäude aus der Bibliothek, setze sie zu Projekten zusammen, prüfe Überschneidungen Block für Block und bau mit Materialliste und Schritt-für-Schritt-Anleitung nach. Alles läuft lokal in deinem Browser.</p>
+      <p>Such dir Gebäude aus der Bibliothek, setze sie zu Projekten zusammen, prüfe Überschneidungen Block für Block und bau mit Materialliste und Schritt-für-Schritt-Anleitung nach. Deine Projekte liegen in diesem Browser.</p>
       <div className="hero-actions"><a className="primary button-link" href="#/bibliothek">Bibliothek entdecken</a>
         <a className="secondary button-link" href="#neues-projekt" onClick={e => { e.preventDefault(); document.getElementById('projekt-name')?.focus(); }}>＋ Neues Projekt</a>
         <a className="secondary button-link guide-hint" href="#/anleitung" data-guide-link="">? Wie geh ich es an?</a></div>
-      <div className="local-badge hero-badge"><span className="pulse" /> {repo.kind === 'memory' ? 'Nur für diese Sitzung gespeichert – bitte Sicherungen herunterladen.' : 'Lokal in diesem Browser gespeichert · keine Anmeldung · kein Welt-Upload'}</div></div>
+      <div className="local-badge hero-badge"><span className="pulse" /> {repo.kind === 'memory' ? 'Nur für diese Sitzung gespeichert – bitte Sicherungen herunterladen.' : <>In diesem Browser gespeichert · keine Anmeldung · Team-Freigaben nur auf Wunsch · <a href="#/datenschutz">was wohin geht</a></>}</div></div>
       <div className="hero-mosaic" aria-label="Beispiele aus der Bibliothek">{featured.map(a => { const v = byAsset.get(a.id)!; return <a key={a.id} href={`#/bibliothek/gebaeude/${encodeURIComponent(a.id)}`} title={a.name}>
         <Thumb cacheKey={v.id} payload={() => v.payload} alt={a.name} width={200} height={200} /></a>; })}</div></section>
     {repo.notice && <div className="notice warning" role="alert"><strong>Nur Sitzungsspeicher</strong><p>{repo.notice}</p></div>}
@@ -205,7 +209,7 @@ export function ProjectsView() {
           <div className="button-row"><button className="primary" disabled={missingMembers(e, byAsset).length > 0} onClick={() => void createFromEnsemble(e)}>Als Projekt anlegen</button>
             <a className="text-button" href={`#/bibliothek/ensembles/${e.id}`}>Ansehen →</a></div></div></article></li>)}</ul>
     </section>
-    <More className="storage-more" title="Speicher & Sicherung" hint={backupState.status?.headline ?? 'Sicherungsdatei, Wiederherstellen, Datencheck'} open={backupState.status?.level === 'due'}>
+    <More className="storage-more" title="Speicher & Sicherung" hint={backupState.status?.headline ?? 'Sicherungsdatei, Wiederherstellen, Datencheck'} open={backupState.status?.level === 'due' || (projects?.length === 0 && !!hostOf(location.origin))}>
       <section className="storage-panel" aria-label="Speicher und Sicherung">
         <div><span className="panel-kicker">SPEICHER & SICHERUNG</span>
           <p className="muted">{repo.kind === 'indexeddb' ? 'IndexedDB in diesem Browser' : 'Sitzungsspeicher'}
@@ -218,6 +222,7 @@ export function ProjectsView() {
             onChange={e => { const f = e.target.files?.[0]; if (f) void openBackup(f); }} /></label>
           <a href="#/system">Datencheck</a>
         </div>
+        <HostMove busy={busy || !projects} empty={!projects?.length} onBackupAll={() => void backup('all')} />
         <BackupStatusPanel state={backupState} busy={busy} onBackupProject={id => { const p = projects?.find(x => x.id === id); if (p) void backup('project', p); }} />
       </section>
     </More>

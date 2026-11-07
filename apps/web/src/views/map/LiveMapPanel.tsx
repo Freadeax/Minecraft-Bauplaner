@@ -9,6 +9,9 @@ import { download, errorText } from '../../app/ui';
 import { LIVE_MAP_KIND_LABEL as KIND_LABEL, LIVE_MAP_PRESETS, templateProblem } from './liveMapConfig';
 import type { SavedLiveMap } from '../../../../../packages/domain/src/world/livemap.js';
 import type { LiveMapSettings } from './liveMapConfig';
+import { MapHostConfirm, MapLink } from './MapLink';
+import { isTrustedMapHost, mapHostOf, trustMapHost } from './mapHosts';
+import { ShareNote } from '../../app/ShareNote';
 
 function linkFor(settings: LiveMapSettings, entry: MapEntry): string | null {
   if (!settings.urlTemplate || templateProblem(settings)) return null;
@@ -27,7 +30,7 @@ export function liveMapUrlAt(settings: LiveMapSettings, dimension: string, x: nu
 /** “Auf der Live-Karte” for one project; nothing when no usable template is set. */
 export function LiveMapLink({ settings, entry }: { settings: LiveMapSettings; entry: MapEntry }) {
   const url = linkFor(settings, entry);
-  return url ? <a href={url} target="_blank" rel="noreferrer noopener">Auf {settings.name || 'der Live-Karte'} zeigen ↗</a> : null;
+  return url ? <MapLink url={url}>Auf {settings.name || 'der Live-Karte'} zeigen ↗</MapLink> : null;
 }
 
 
@@ -79,6 +82,7 @@ export function LiveMapPanel({ settings, onChange, map, dimension, items = [], o
     const t = liveMapTemplateFromLink(text);
     if (!t) return false;
     const keepName = !!settings.name && !['Live-Karte', 'BlueMap', 'Dynmap', 'Pl3xMap', 'Webkarte'].includes(settings.name);
+    trustMapHost(t.template); // selbst eingefügt = freigegeben (PRIV-01)
     onChange({ ...settings, name: keepName ? settings.name : KIND_LABEL[t.kind], urlTemplate: t.template, worlds: { ...settings.worlds, [dim]: t.world } });
     setMessage(`Link erkannt (${t.kind === 'bluemap' ? 'BlueMap-Format' : t.kind === 'dynmap' ? 'Dynmap-Format' : 'Format mit world/x/z'}): Karte „${t.world}“ gilt jetzt für ${dimensionLabel(dim)}. Jedes Projekt hat ab jetzt den Link „Auf ${keepName ? settings.name : KIND_LABEL[t.kind]} zeigen“.`);
     return true;
@@ -133,6 +137,7 @@ export function LiveMapPanel({ settings, onChange, map, dimension, items = [], o
   const setTemplate = (value: string) => {
     const v = value.trim();
     if (v && !v.includes('{') && adoptLink(v, dimension)) return;
+    if (v && !v.includes('eure-karte.example')) trustMapHost(v);
     onChange({ ...settings, urlTemplate: v });
   };
   const setWorld = (dim: string, value: string) => {
@@ -143,7 +148,8 @@ export function LiveMapPanel({ settings, onChange, map, dimension, items = [], o
 
   return <details className="live-panel">
     <summary><b>Server-Webkarte verknüpfen</b> <span className="muted">{ready ? `· ${settings.name}${host ? ` (${host})` : ''} verknüpft` : '· BlueMap, Dynmap, Pl3xMap · optional'}</span></summary>
-    <p className="muted">Hat euer Server eine Karte im Browser (z. B. BlueMap)? Dann bekommt jedes Projekt einen Knopf, der eure Server-Karte genau an seiner Stelle öffnet. {shared ? 'Die verknüpfte Karte und die Kartenliste gehen über den Team-Raum an alle im Team.' : 'Ohne Team-Raum bleibt die Einstellung nur in diesem Browser.'}</p>
+    <p className="muted">Hat euer Server eine Karte im Browser (z. B. BlueMap)? Dann bekommt jedes Projekt einen Knopf, der eure Server-Karte genau an seiner Stelle öffnet. {shared ? 'Die verknüpfte Karte und die Kartenliste gehen über den Team-Raum an alle im Team.' : 'Ohne Team-Raum bleibt die Einstellung nur in diesem Browser.'} Eine Domain, die du nicht selbst eingetragen hast, öffnet der Planer erst nach deiner Bestätigung.</p>
+    <ShareNote flow="webmap" />
     <ol className="live-steps">
       <li>Eure Server-Karte in einem anderen Tab öffnen und einmal irgendwo in die Karte klicken.</li>
       <li>Die Adresse aus der Adresszeile kopieren und hier einfügen. Fertig.</li>
@@ -161,7 +167,7 @@ export function LiveMapPanel({ settings, onChange, map, dimension, items = [], o
     {problem && <p className="field-error" role="alert">{problem}. Am einfachsten: einen echten Link aus eurer Karte oben einfügen.</p>}
     {message && <p className="muted" role="status">{message}</p>}
     {ready && <div className="button-row">
-      {openUrl && <a className="secondary" href={openUrl} target="_blank" rel="noreferrer noopener">{settings.name} öffnen ↗</a>}
+      {openUrl && <MapLink className="secondary" url={openUrl}>{settings.name} öffnen ↗</MapLink>}
       {!world && <span className="warn-text">Für {dimensionLabel(dimension)} ist noch keine Karte eingetragen: in eurer Karte zu {dimensionLabel(dimension)} wechseln, Link kopieren und oben mit „gilt für {dimensionLabel(dimension)}“ einfügen.</span>}
     </div>}
     <section className="live-saved" aria-label="Gespeicherte Karten">
@@ -215,10 +221,12 @@ export function LiveMapPanel({ settings, onChange, map, dimension, items = [], o
       </details>
     </details>
     {settings.embed && openUrl && (mixed
-      ? <p className="notice" role="note">Eure Karte läuft über <code>http://</code>. Eine <code>https</code>-Seite wie diese darf sie nicht einbetten, der Browser blockiert das. <a href={openUrl} target="_blank" rel="noreferrer noopener">{settings.name} in neuem Tab öffnen ↗</a></p>
+      ? <p className="notice" role="note">Eure Karte läuft über <code>http://</code>. Eine <code>https</code>-Seite wie diese darf sie nicht einbetten, der Browser blockiert das. <MapLink url={openUrl}>{settings.name} in neuem Tab öffnen ↗</MapLink></p>
+      : !isTrustedMapHost(mapHostOf(openUrl)) ? <p className="live-embed-ask"><MapHostConfirm host={openUrl} action="Einbetten" onDone={ok => { if (ok) setMessage(`${mapHostOf(openUrl)} freigegeben.`); else onChange({ ...settings, embed: false }); }} /></p>
       : <figure className="live-embed">
-        <iframe src={openUrl} title={`${settings.name} (eingebettet)`} sandbox="allow-scripts allow-same-origin allow-popups" referrerPolicy="no-referrer" loading="lazy" />
-        <figcaption className="muted">Bleibt die Fläche leer, erlaubt der Kartenserver kein Einbetten. Dann <a href={openUrl} target="_blank" rel="noreferrer noopener">in neuem Tab öffnen ↗</a>.</figcaption>
+        {/* PRIV-01: so wenig Rechte wie möglich – Skripte für die Karte, keine Pop-ups, keine Formulare, keine Gerätefunktionen. */}
+        <iframe src={openUrl} title={`${settings.name} (eingebettet)`} sandbox="allow-scripts allow-same-origin" allow="" referrerPolicy="no-referrer" loading="lazy" />
+        <figcaption className="muted">Eingebettet von {mapHostOf(openUrl)}. Bleibt die Fläche leer, erlaubt der Kartenserver kein Einbetten. Dann <MapLink url={openUrl}>in neuem Tab öffnen ↗</MapLink>.</figcaption>
       </figure>)}
   </details>;
 }

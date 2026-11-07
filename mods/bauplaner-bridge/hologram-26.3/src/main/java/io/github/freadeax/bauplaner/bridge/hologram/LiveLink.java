@@ -740,6 +740,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
         out.put("mode", room.mode());
         if (room.syncedAt() > 0) out.put("syncedAt", java.time.Instant.ofEpochMilli(room.syncedAt()).toString());
         out.put("pendingReports", room.pendingReports());
+        out.put("share", room.shareFields());
         if (t.sync().handoverText() != null) out.put("serverHandover", t.sync().handoverText());
         out.put("events", room.events());
         List<Object> here = new ArrayList<>();
@@ -764,9 +765,20 @@ public final class LiveLink implements LiveLinkServer.Handler {
         var room = t.sync().room();
         if (room == null) throw new LiveLinkServer.HttpError(404, "Diese Mod kennt keinen Team-Raum.");
         if (Boolean.TRUE.equals(body.get("off"))) { room.forget(); return Json.write(Map.of("ok", true, "text", "Team-Raum getrennt. Die Mod spricht mit keinem Raum mehr.")); }
+        // PRIV-01: what this game shares (live position, scans on request); alone or together with a new room.
+        Boolean sharePos = null, shareScans = null;
+        if (body.get("share") instanceof Map<?, ?> share) {
+            if (share.get("position") instanceof Boolean b) sharePos = b;
+            if (share.get("scans") instanceof Boolean b) shareScans = b;
+            if (body.get("url") == null) {
+                room.share(sharePos, shareScans);
+                return Json.write(Map.of("ok", true, "text", "Freigaben gespeichert: Position " + (room.sharesPosition() ? "wird geteilt" : "wird nicht geteilt") + ", Aufnahmen auf Anfrage " + (room.sharesScans() ? "an" : "aus") + ".", "share", room.shareFields()));
+            }
+        }
         io.github.freadeax.bauplaner.mod.room.RoomClient.Config c;
         try { c = io.github.freadeax.bauplaner.mod.room.RoomClient.parse(body); }
         catch (RuntimeException e) { throw new LiveLinkServer.HttpError(400, e.getMessage()); }
+        if (sharePos != null || shareScans != null) room.share(sharePos, shareScans);
         room.use(c);
         Minecraft mc = Minecraft.getInstance();
         mc.execute(() -> McCompat.chat(mc, Component.literal("[Build Studio] " + t("Der Planer hat dein Spiel mit dem Team-Raum" + (c.teamName() != null ? " „" + c.teamName() + "“" : "")

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T18:58:50.082Z",
+  "updatedAt": "2026-11-07T19:17:28.843Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -43,7 +43,8 @@
     "UI-03",
     "OPS-04",
     "DOC-02",
-    "BACKUP-03"
+    "BACKUP-03",
+    "PRIV-01"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -12283,6 +12284,108 @@
         }
       ],
       "orphans": []
+    },
+    {
+      "id": "PRIV-01",
+      "title": "Datenschutz und Freigaben verständlich: was geht wohin, wer sieht es, Speicherstatus und Umzug",
+      "phase": "P4",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Arbeitsstrang „Datenschutz, Freigaben und Speicherstatus klären“",
+      "dependencies": [
+        "COOP-07",
+        "WORLD-SHARE-01",
+        "BACKUP-02"
+      ],
+      "scope": [
+        "apps/web/",
+        "tests/",
+        "mods/bauplaner-bridge/",
+        "docs/architecture/betrieb/",
+        "docs/operations/",
+        "docs/testing/TESTPLAN.md",
+        "docs/TESTING.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "PRIV-01-S01",
+          "title": "Fußzeile, Startseite und Systemcheck behaupten nicht mehr „Alles bleibt lokal“; Seite #/datenschutz listet jeden Datenweg mit was, wohin, wer sieht es, wie lange, wie zurücknehmen.",
+          "done": true
+        },
+        {
+          "id": "PRIV-01-S02",
+          "title": "An jeder Freigabe (Live schalten, Einladungslink, Server-Link, Weltplan im Team, Webkarte, Spielfreigaben) steht derselbe Hinweis aus einer Liste (dataFlows.ts).",
+          "done": true
+        },
+        {
+          "id": "PRIV-01-S03",
+          "title": "Live-Position und Aufnahmen getrennt freigeben: Schalter im Team-Reiter, Mod speichert sie in raum.json und setzt sie sofort um (Feature roomshare); Auslieferung mit der nächsten Mod-Version.",
+          "done": false
+        },
+        {
+          "id": "PRIV-01-S04",
+          "title": "Server-Webkarten fremder Domains erst nach Bestätigung öffnen oder einbetten; Einbettung ohne Pop-ups und Gerätefunktionen; Freigaben auf #/datenschutz entfernbar.",
+          "done": true
+        },
+        {
+          "id": "PRIV-01-S05",
+          "title": "Einladungen einzeln widerrufbar: Liste der persönlichen Schlüssel im Team-Reiter auf der Worker-API des Team-Identitäten-Pakets.",
+          "done": false
+        },
+        {
+          "id": "PRIV-01-S06",
+          "title": "Speicherstatus am Projekt: „In diesem Browser gespeichert“, Zeitpunkt der letzten Sicherungsdatei, Speicherwarnung (löschbar, fast voll, nur Sitzung) mit „Dauerhaft speichern anfragen“; beim ersten Projekt automatisch angefragt.",
+          "done": true
+        },
+        {
+          "id": "PRIV-01-S07",
+          "title": "Geführter Umzug zwischen GitHub Pages und Cloudflare Pages (getrennte Speicher) über die Gesamtsicherung.",
+          "done": true
+        },
+        {
+          "id": "PRIV-01-S08",
+          "title": "Release-Datenprobe: Offline-Start mit Projekt, Update bei offenem Projekt, Rücksprung auf ältere Fassung (tests/e2e/release-data.e2e.mjs), Wiederherstellung (persistence.e2e.mjs), Pages-Rollback (PAGES_RESTORE_PROBE).",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Jede Stelle, an der Daten den Browser verlassen, sagt vorher was, wohin und wer es sieht; Position und Aufnahmen lassen sich einzeln abschalten; fremde Webkarten öffnen erst nach Bestätigung; der Speicherstatus am Projekt ist ehrlich."
+      ],
+      "next": "S05 auf der Schlüssel-API des Team-Identitäten-Pakets bauen; S03 mit Mod 0.28.0 ausliefern.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "docs/architecture/betrieb/DATENSCHUTZ.md",
+          "note": "Datenwege, Freigaben, Speicher und Umzug."
+        },
+        {
+          "path": "tests/e2e/privacy.e2e.mjs",
+          "note": "Fußzeile, Datenschutz-Seite, fremde Webkarte."
+        },
+        {
+          "path": "tests/e2e/release-data.e2e.mjs",
+          "note": "Release-Datenprobe."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "npm run check und Browsertests im Container; Sichtprüfung durch Philipp offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-07T19:17:28.843Z",
+      "area": "QA",
+      "thread": "Datenschutz, Freigaben und Speicherstatus klären",
+      "philipp": [
+        {
+          "kind": "planer",
+          "text": "#/datenschutz ansehen; im Team-Reiter „Meine Position teilen“ ausschalten und prüfen, dass du in „Gerade da“ ohne Koordinaten erscheinst (ab Mod 0.28.0)."
+        }
+      ],
+      "orphans": []
     }
   ],
   "events": [
@@ -14408,6 +14511,61 @@
           "done": 3,
           "total": 4,
           "next": "Team-Raum-Dienst mit dem neuen Wechselweg ausrollen (bis dahin meldet der Planer „zu alte Version“ und empfiehlt einen neuen Raum)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T19:17:28.843Z",
+      "kind": "progress",
+      "items": [
+        "PRIV-01"
+      ],
+      "summary": "Datenschutz und Freigaben: Seite #/datenschutz mit allen Datenwegen aus einer Liste, Hinweis an jeder Freigabe, Fußzeile ohne „Alles bleibt lokal“, fremde Webkarten erst nach Bestätigung der Domain, Live-Position und Aufnahmen getrennt freigeben (Planer + Mod-Quellcode roomshare, Auslieferung mit Mod 0.28.0), Speicherstatus „In diesem Browser gespeichert“ mit Datum der Sicherungsdatei und Speicherwarnung, geführter Umzug GitHub Pages ↔ Cloudflare, Release-Datenprobe (Offline-Start, Update bei offenem Projekt, Rücksprung). Offen: Einladungen einzeln widerrufen (wartet auf Schlüssel-API).",
+      "files": [
+        "apps/web/src/app/CommandPalette.tsx",
+        "apps/web/src/app/ShareNote.tsx",
+        "apps/web/src/app/Shell.tsx",
+        "apps/web/src/app/StorageWarning.tsx",
+        "apps/web/src/app/dataFlows.ts",
+        "apps/web/src/app/nav.ts",
+        "apps/web/src/app/router.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/src/styles/privacy.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/HostMove.tsx",
+        "apps/web/src/views/PrivacyView.tsx",
+        "apps/web/src/views/ProjectsView.tsx",
+        "apps/web/src/views/SystemView.tsx",
+        "apps/web/src/views/map/LiveMapPanel.tsx",
+        "apps/web/src/views/map/MapLink.tsx",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "apps/web/src/views/map/WorldSharePanel.tsx",
+        "apps/web/src/views/map/mapHosts.ts",
+        "apps/web/src/views/mod/serverClient.ts",
+        "apps/web/src/views/project/ProjectView.tsx",
+        "apps/web/src/views/project/team/TeamRoom.tsx",
+        "docs/README.md",
+        "docs/architecture/betrieb/DATENSCHUTZ.md",
+        "docs/operations/VEROEFFENTLICHUNG.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java",
+        "tests/e2e/persistence.e2e.mjs",
+        "tests/e2e/privacy.e2e.mjs",
+        "tests/e2e/release-data.e2e.mjs",
+        "tests/unit/web/dataFlows.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PRIV-01",
+          "status": "in_progress",
+          "done": 6,
+          "total": 8,
+          "next": "S05 auf der Schlüssel-API des Team-Identitäten-Pakets bauen; S03 mit Mod 0.28.0 ausliefern."
         }
       ]
     }

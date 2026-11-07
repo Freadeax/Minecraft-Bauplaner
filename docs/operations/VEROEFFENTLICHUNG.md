@@ -29,6 +29,10 @@ Danach den Live-Stand prüfen: `deployment.json` muss den Quellcommit nennen. Di
 
 Artefakt-Commits brauchen keinen neuen Roadmap-Eintrag; jede Quelländerung dagegen schon (siehe [CONTRIBUTING](../../CONTRIBUTING.md)).
 
+### Datenprobe vor jeder Veröffentlichung
+
+Der Planer speichert lokal, deshalb gehört die Datenwiederherstellung zum Release-Test. `npm run test:e2e` enthält sie: Offline-Start mit Projekt, Update bei offenem Projekt und Rücksprung auf eine ältere Fassung (`tests/e2e/release-data.e2e.mjs`), Sicherung und Wiederherstellung (`tests/e2e/persistence.e2e.mjs`). Einzeln: `node --test tests/e2e/release-data.e2e.mjs tests/e2e/persistence.e2e.mjs` nach `npm run build`. Details: [Datenschutz und Speicher](../architecture/betrieb/DATENSCHUTZ.md#release-datenprobe).
+
 ### Rückkehr auf einen früheren Stand
 
 Ein fehlerhafter Stand wird nicht per Force-Push entfernt, sondern durch einen neuen, korrigierten Quellcommit mit anschließender Veröffentlichung ersetzt. Wie sich bekannte Artefakte in einem Wegwerf-Clone wiederherstellen lassen, beschreibt die [Wiederherstellungsprobe](PAGES_RESTORE_PROBE.md).

@@ -1,5 +1,6 @@
 import { href } from '../../app/router';
 import type { WorldShareState } from './useWorldShare';
+import { ShareNote } from '../../app/ShareNote';
 
 const time = (ms: number) => ms ? new Date(ms).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
 
@@ -29,6 +30,7 @@ export function WorldSharePanel({ share }: { share: WorldShareState }) {
           {room && <button className="secondary" disabled={share.busy} onClick={share.syncNow}>Jetzt abgleichen</button>}
         </div>
         {room && <p className="muted small">Bauplätze, Wege, Zonen, Punkte, Gruppen und Sperren gehen an alle im Team: Die Mods zeigen sie im Spiel, das Paper-Plugin zeichnet sie als Marker auf BlueMap/Dynmap und kann gesperrte Flächen schützen. Gleichzeitige Änderungen werden je Eintrag zusammengeführt. Die Kartenliste und die verknüpfte Server-Webkarte kommen mit.</p>}
+        <ShareNote flow="world-share" extra={room ? `Gerade: ${room.url} (Team „${room.teamName}“).` : 'Gerade: nicht geteilt.'} />
         {share.message && <p className="muted small" role="status">{share.message}</p>}
       </>}
   </section>;

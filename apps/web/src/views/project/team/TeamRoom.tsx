@@ -8,7 +8,9 @@ import type { ProjectSession } from '../session';
 import { TeamBackup } from './TeamBackup';
 import { AdminKeyChange, TeamAccessOpen, TeamAccessSave } from './TeamAccess';
 import { roomHeader, takePlan, teamPackageText } from './teamTransfer';
-import { control, currentPairedServer, gameLeaveRoom, gameRoomState, gameToRoom, reachableServer, rememberRoom } from '../../mod/serverClient';
+import { control, currentPairedServer, gameLeaveRoom, gameRoomState, gameShare, gameToRoom, reachableServer, readGameShare, rememberRoom, saveGameShare } from '../../mod/serverClient';
+import type { GameShare } from '../../mod/serverClient';
+import { ShareNote } from '../../../app/ShareNote';
 
 const UPLOADED_KEY = (room: string) => `bauplaner.teamraum.plan.${room}`;
 const HEADER_KEY = (room: string) => `bauplaner.teamraum.kopf.${room}`;
@@ -169,6 +171,7 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
   if (!live) return <div className="team-block team-room" role="region" aria-label="Team live">
     <div className="team-block-head"><h3>Team live <small>ohne Dateien</small></h3><span className="team-live-state off">aus</span></div>
     <p>Im Team-Raum sieht jeder jeden Schritt der anderen sofort: Abschnitte, Fertigmeldungen, Notizen, Lieferungen und die Messungen des Servers. Neue Planstände kommen ohne Datei an. Wer offline baut, holt beim nächsten Verbinden alles nach.</p>
+    {leads && <><ShareNote flow="team-room" extra={url.trim() ? `Eingetragen: ${url.trim()}.` : undefined} /><ShareNote flow="team-plan" /></>}
     {leads ? <>
       <div className="team-inline"><label className="grow">Adresse des Team-Raums<input value={url} placeholder="https://bauplaner-team.….workers.dev" onChange={e => setUrl(e.target.value)} aria-label="Adresse des Team-Raums" /></label>
         <button className="primary" disabled={busy || !url.trim()} onClick={() => void goOnline()}>Live schalten</button></div>
@@ -193,6 +196,7 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
     <div className="team-block-head"><h3>Team live <small>{live.url.replace(/^https?:\/\//, '')}</small></h3>
       <span className={`team-live-state ${status.state}`} role="status" data-state={status.state}>● {label}</span></div>
     {room.error && <p className="notice warning" role="alert">{room.error}</p>}
+    <ShareNote flow="team-room" extra={`Dieser Raum: ${live.url}.`} />
     {status.state === 'offline' && <p className="muted">Ohne Verbindung arbeitest du normal weiter; alles wird beim nächsten Verbinden nachgeholt{status.lastContact ? ` (zuletzt verbunden ${new Date(status.lastContact).toLocaleString('de-DE')})` : ''}.</p>}
     <h4>Gerade da</h4>
     {room.presence.length ? <ul className="team-presence" aria-label="Gerade da">{room.presence.map(p =>
@@ -219,6 +223,7 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
           <option value="alle">alle dürfen bauen</option><option value="team">nur Team ab Helfer</option></select></label>
       </div> : <p data-testid="protect-state">{view.protect ? `Eingestellt: ${PROTECT_MODE_LABEL[view.protect.mode]}${view.protect.free === 'team' ? ', freie Abschnitte nur fürs Team' : ''}.` : 'Die Bauleitung hat nichts eingestellt; es gilt die Einstellung des Servers.'}</p>}
     </div>
+    <GameShareControls game={game} onMessage={onMessage} onChanged={askGame} />
     <div className="team-buttons">
       <button className="primary" disabled={busy || !me} title={me ? 'Die Build-Studio-Mod in deinem Minecraft spricht dann selbst mit diesem Raum: Abschnitte, Meldungen und Notizen live im Spiel – ohne Plugin und ohne Datei auf dem Server.' : 'Zuerst oben „Ich bin“ wählen.'}
         onClick={() => void run(async () => { onMessage(await gameToRoom({ url: live.url, room: live.room, key: live.key }, { id: me!.id, name: me!.name }, team.name, leads && live.adminKey ? live.serverKey : undefined, leads ? signKey : undefined)); askGame(); })}>Mein Spiel verbinden</button>
@@ -240,9 +245,10 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
     </div>
     <TeamAccessSave session={session} team={team as RoomTeam} onMessage={onMessage} />
     {shown && <div className="team-shown">
-      <p>{shown === 'invite' ? 'Diesen Link an alle Mitspieler schicken. Wer ihn öffnet, bekommt Plan und Teamstand und ist sofort live dabei.'
+      <p>{shown === 'invite' ? 'Diesen Link an alle Mitspieler schicken. Wer ihn öffnet, bekommt Plan und Teamstand und ist sofort live dabei. Er gilt für jeden, der ihn bekommt (auch weitergeleitet), bis du „Einladung erneuern“ drückst.'
         : <>Einfacher geht es mit „Server mit dem Raum verbinden“, wenn der Server gekoppelt ist. Koppeln geht im Menü „Spiel“ mit einem Klick (als OP mit der Mod im Spiel). Nur ohne Kopplung: auf dem Server <code>/bauplaner team verbinden &lt;Link&gt;</code> eingeben (Konsole oder OP). Nicht weitergeben: Mit diesem Link schreibt man Messungen als Server.</>}</p>
       <textarea readOnly rows={2} value={shown === 'invite' ? invite : server} aria-label={shown === 'invite' ? 'Einladungslink' : 'Link für den Server'} onFocus={e => e.currentTarget.select()} />
+      <ShareNote flow={shown === 'invite' ? 'team-room' : 'server-link'} />
       <button onClick={() => void copyText(shown === 'invite' ? invite : server).then(ok => onMessage(ok ? 'Link kopiert.' : 'Kopieren nicht möglich – bitte den Link markieren und kopieren.'))}>Kopieren</button>
     </div>}
     {server && <details className="team-emergency"><summary>Notfall: Server ohne Mod verbinden</summary>
@@ -250,6 +256,32 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
       <button disabled={busy} className="secondary" onClick={() => setShown(shown === 'server' ? '' : 'server')}>Link für den Server</button></details>}
     {live.adminKey && <TeamBackup live={live} onMessage={onMessage} onRestored={() => { uploading.current = ''; }} />}
   </div>;
+}
+
+/**
+ * PRIV-01: Live-Position und Aufnahmen getrennt freigeben. Gilt für das Spiel auf diesem Computer: sofort, wenn es
+ * läuft, sonst beim nächsten „Mein Spiel verbinden“. Mods vor 0.28.0 teilen beides immer.
+ */
+function GameShareControls({ game, onMessage, onChanged }: { game: Record<string, unknown> | null; onMessage(m: string): void; onChanged(): void }) {
+  const [share, setShare] = useState<GameShare>(readGameShare);
+  const fromGame = game?.share as { position?: boolean; aufnahmen?: boolean } | undefined;
+  const set = (next: GameShare) => {
+    setShare(next); saveGameShare(next);
+    void gameShare(next).then(text => {
+      if (text) { onMessage(text); onChanged(); }
+      else if (game?.connected) onMessage('Gespeichert für dieses Gerät. Deine Mod ist älter als 0.28.0 und teilt Position und Aufnahmen noch immer – bitte die Mod aktualisieren.');
+      else onMessage('Gespeichert. Gilt beim nächsten „Mein Spiel verbinden“.');
+    }).catch(e => onMessage(errorText(e)));
+  };
+  const differs = fromGame && (fromGame.position !== share.position || fromGame.aufnahmen !== share.scans);
+  return <fieldset className="team-share" aria-label="Was mein Spiel teilt">
+    <legend>Was mein Spiel mit dem Team teilt</legend>
+    <label className="chip-check"><input type="checkbox" checked={share.position} onChange={e => set({ ...share, position: e.target.checked })} /> Meine Position teilen (Gerade da, Live-Karte)</label>
+    <label className="chip-check"><input type="checkbox" checked={share.scans} onChange={e => set({ ...share, scans: e.target.checked })} /> Aufnahmen auf Anfrage senden</label>
+    {game?.connected === true && !fromGame && <p className="warn-text small">Deine Mod kennt diese Freigaben noch nicht (vor 0.28.0) und teilt Position und Aufnahmen immer.</p>}
+    {differs && <p className="warn-text small" role="status">Dein Spiel nutzt gerade: Position {fromGame.position ? 'an' : 'aus'}, Aufnahmen {fromGame.aufnahmen ? 'an' : 'aus'}. <button className="link-button" onClick={() => set(share)}>Angleichen</button></p>}
+    <ShareNote flow="position" /><ShareNote flow="scans" />
+  </fieldset>;
 }
 
 const MODE: Record<string, string> = { ws: 'live', http: 'über HTTP (Ausweichweg)', off: 'ohne Verbindung' };

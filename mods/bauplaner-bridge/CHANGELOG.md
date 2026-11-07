@@ -2,6 +2,14 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## Unveröffentlicht
+
+**Share your position and scans separately / Position und Aufnahmen getrennt freigeben**
+
+- Two switches in the planner (Team live → “What my game shares with the team”): share my position, send scans on request. The game applies them at once and keeps them with the team room. Position off removes your coordinates from “who is here” right away; scans off turns down requests from the team (your own `/bauplaner team aufnahme` still works). Rooms set up before keep both on.
+
+- Zwei Schalter im Planer (Team live → „Was mein Spiel mit dem Team teilt“): Meine Position teilen, Aufnahmen auf Anfrage senden. Das Spiel übernimmt sie sofort und merkt sie sich mit dem Team-Raum. Position aus nimmt deine Koordinaten sofort aus „Gerade da“; Aufnahmen aus lehnt Anfragen aus dem Team ab (dein eigenes `/bauplaner team aufnahme` geht weiter). Bisher eingerichtete Räume behalten beides an.
+
 ## 0.27.1 – 2026-11-07
 
 **Nothing lost offline, honest diagnosis / Offline geht nichts verloren, ehrliche Diagnose**

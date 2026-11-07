@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T18:58:50.082Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T19:17:28.843Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -13,7 +13,7 @@ Stand: 2026-11-07T18:58:50.082Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | Status | Pakete |
 |---|---:|
 | ⏳ Offen | 2 |
-| 🚧 In Arbeit | 4 |
+| 🚧 In Arbeit | 5 |
 | ⛔ Blockiert | 0 |
 | 🧩 Implementiert · Abnahme offen | 99 |
 | ✅ Im beschriebenen Umfang geprüft | 35 |
@@ -35,7 +35,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Arbeitsstrang
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
 | [Performance und Stabilität](#bereich-perf) | 5 | 0 | 3 | 3 |
 | [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 8 | 0 | 5 | 15 |
-| [Testphase, Qualität und Betrieb](#bereich-qa) | 2 | 0 | 2 | 8 |
+| [Testphase, Qualität und Betrieb](#bereich-qa) | 3 | 0 | 3 | 8 |
 | [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 2 | 0 | 0 | 0 |
 
 <a id="bereich-planer"></a>
@@ -230,6 +230,7 @@ Abgeschlossen oder zurückgestellt: CORE-01 (geprüft), CORE-02 (geprüft), CORE
 | ID | Paket | Status | Prio | Arbeitsstrang | Nur Philipp |
 |---|---|---|---|---|---|
 | [QA-04](#qa-04) | Große Testphase | 🧩 Implementiert · Abnahme offen 4/6 | P0 | „Große Testphase vorbereiten und betreuen“ | Testphase mit weiteren Testern: erst die Kernfälle auf #/testphase. |
+| [PRIV-01](#priv-01) | Datenschutz und Freigaben verständlich | 🚧 In Arbeit 6/8 | P1 | „Datenschutz, Freigaben und Speicherstatus klären“ | #/datenschutz ansehen; im Team-Reiter „Meine Position teilen“ ausschalten und prüfen, dass du in „Gerade da“ ohne Koordinaten erscheinst (ab Mod 0.28.0). |
 | [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | 🚧 In Arbeit 1/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Bereich „Geräte und Browser“ (GERAET-01 … 06) auf #/testphase auf deinem PC (Chrome/Edge und Firefox) und deinem Handy durchgehen und das Protokoll schicken (QA-02-S02). |
 
 Abgeschlossen oder zurückgestellt: OPS-01 (geprüft), PLAN-01 (geprüft), DOC-01 (geprüft), QA-01 (geprüft), QA-03 (geprüft), OPS-02 (geprüft), OPS-03 (geprüft), LICENSE-01 (geprüft).
@@ -359,6 +360,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **LINK-11** · Abnahme LINK-13: alle Dateiwege nur noch zugeklappt unter „Notfall“.
 - **DOC-02** · README und Doku-Index auf GitHub ansehen: Ist auf einen Blick klar, was das Projekt ist?
 - **CORE-04** · Projekt mit Nachfolger und Bauplatz löschen; Blockeditor mit Änderungen verlassen; Truhe mit verzaubertem Schwert umsortieren (CORE-04-S05).
+- **PRIV-01** · #/datenschutz ansehen; im Team-Reiter „Meine Position teilen“ ausschalten und prüfen, dass du in „Gerade da“ ohne Koordinaten erscheinst (ab Mod 0.28.0).
 
 ### Entscheiden oder Rückfrage beantworten
 
@@ -428,6 +430,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **OPS-04 · Team-Raum betreiben: Sicherung, Wiederherstellung, Aufbewahrung, Zustand** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-31 mit zwei Geräten (sichern, wiederherstellen, löschen und zurückholen).
 - **DOC-02 · Repository übersichtlich: README als Überblick, Doku-Index, Funktionsstand und Prüfstand neu, interne Arbeitsnotizen und Verlauf aus dem Repository** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Durchsicht von README und Doku-Index durch Philipp.
 - **BACKUP-03 · Sicherungen ohne Team-Schlüssel, Team-Zugang verschlüsselt, Verwaltungsschlüssel wechseln** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Team-Raum-Dienst mit dem neuen Wechselweg ausrollen (bis dahin meldet der Planer „zu alte Version“ und empfiehlt einen neuen Raum).
+- **PRIV-01 · Datenschutz und Freigaben verständlich: was geht wohin, wer sieht es, Speicherstatus und Umzug** — 🚧 In Arbeit, 6/8 Teilschritte. Nächster Schritt: S05 auf der Schlüssel-API des Team-Identitäten-Pakets bauen; S03 mit Mod 0.28.0 ausliefern.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -639,6 +642,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LINK-11](#link-11) | Alles über das Internet: Server-Plugin bekommt die Team-Infos von Mod und Planer selbst über den Team-Raum, Dateiwege nur noch als versteckter Notfall (Mod/Plugin 0.21.0) | 🧩 Implementiert · Abnahme offen | 5/6 | LINK-10, COOP-07 | ausstehend | ausstehend |
 | [GUIDE-01](#guide-01) | Anleitung „Wie geh ich es an?“: eigener Reiter mit Wegen nach Ziel, jeder Schritt mit Grafik, kurzem Satz und Link an die passende Stelle | 🧩 Implementiert · Abnahme offen | 4/5 | UI-02, GAME-11, TERRAIN-04, LINK-11 | ausstehend | ausstehend |
 | [NAME-01](#name-01) | Neuer Produktname „LMNT — Build Studio“ auf Seite, Mod, Plugin und Modrinth | 🧩 Implementiert · Abnahme offen | 3/4 | UI-03, GAME-12 | ausstehend | ausstehend |
+| [PRIV-01](#priv-01) | Datenschutz und Freigaben verständlich: was geht wohin, wer sieht es, Speicherstatus und Umzug | 🚧 In Arbeit | 6/8 | COOP-07, WORLD-SHARE-01, BACKUP-02 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -3849,6 +3853,33 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [docs/architecture/planer/UI.md](architecture/planer/UI.md) — Name und Schreibweise im Design-System.
 
 **Dateiumfang:** `apps/web/`, `packages/`, `services/team-room/`, `mods/bauplaner-bridge/`, `tests/`, `scripts/mod/`, `docs/architecture/`, `docs/testing/TESTPLAN.md`, `README.md`, `CONTRIBUTING.md`, `.github/`, `downloads/mod/`. **Abhängigkeiten:** UI-03, GAME-12. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### PRIV-01
+
+**Datenschutz und Freigaben verständlich: was geht wohin, wer sieht es, Speicherstatus und Umzug** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Arbeitsstrang „Datenschutz, Freigaben und Speicherstatus klären“ · Arbeitsstrang: „Datenschutz, Freigaben und Speicherstatus klären“ · Aktualisiert: 2026-11-07T19:17:28.843Z
+
+- [x] PRIV-01-S01: Fußzeile, Startseite und Systemcheck behaupten nicht mehr „Alles bleibt lokal“; Seite #/datenschutz listet jeden Datenweg mit was, wohin, wer sieht es, wie lange, wie zurücknehmen.
+- [x] PRIV-01-S02: An jeder Freigabe (Live schalten, Einladungslink, Server-Link, Weltplan im Team, Webkarte, Spielfreigaben) steht derselbe Hinweis aus einer Liste (dataFlows.ts).
+- [ ] PRIV-01-S03: Live-Position und Aufnahmen getrennt freigeben: Schalter im Team-Reiter, Mod speichert sie in raum.json und setzt sie sofort um (Feature roomshare); Auslieferung mit der nächsten Mod-Version.
+- [x] PRIV-01-S04: Server-Webkarten fremder Domains erst nach Bestätigung öffnen oder einbetten; Einbettung ohne Pop-ups und Gerätefunktionen; Freigaben auf #/datenschutz entfernbar.
+- [ ] PRIV-01-S05: Einladungen einzeln widerrufbar: Liste der persönlichen Schlüssel im Team-Reiter auf der Worker-API des Team-Identitäten-Pakets.
+- [x] PRIV-01-S06: Speicherstatus am Projekt: „In diesem Browser gespeichert“, Zeitpunkt der letzten Sicherungsdatei, Speicherwarnung (löschbar, fast voll, nur Sitzung) mit „Dauerhaft speichern anfragen“; beim ersten Projekt automatisch angefragt.
+- [x] PRIV-01-S07: Geführter Umzug zwischen GitHub Pages und Cloudflare Pages (getrennte Speicher) über die Gesamtsicherung.
+- [x] PRIV-01-S08: Release-Datenprobe: Offline-Start mit Projekt, Update bei offenem Projekt, Rücksprung auf ältere Fassung (tests/e2e/release-data.e2e.mjs), Wiederherstellung (persistence.e2e.mjs), Pages-Rollback (PAGES_RESTORE_PROBE).
+
+**Abnahme:** Jede Stelle, an der Daten den Browser verlassen, sagt vorher was, wohin und wer es sieht; Position und Aufnahmen lassen sich einzeln abschalten; fremde Webkarten öffnen erst nach Bestätigung; der Speicherstatus am Projekt ist ehrlich.
+
+**Nächste Aktion:** S05 auf der Schlüssel-API des Team-Identitäten-Pakets bauen; S03 mit Mod 0.28.0 ausliefern.
+
+**Nur Philipp:** Im Planer abnehmen: #/datenschutz ansehen; im Team-Reiter „Meine Position teilen“ ausschalten und prüfen, dass du in „Gerade da“ ohne Koordinaten erscheinst (ab Mod 0.28.0).
+
+**Prüfstand:** npm run check und Browsertests im Container; Sichtprüfung durch Philipp offen.
+
+**Nachweise:** [docs/architecture/betrieb/DATENSCHUTZ.md](architecture/betrieb/DATENSCHUTZ.md) — Datenwege, Freigaben, Speicher und Umzug.; [tests/e2e/privacy.e2e.mjs](../tests/e2e/privacy.e2e.mjs) — Fußzeile, Datenschutz-Seite, fremde Webkarte.; [tests/e2e/release-data.e2e.mjs](../tests/e2e/release-data.e2e.mjs) — Release-Datenprobe.
+
+**Dateiumfang:** `apps/web/`, `tests/`, `mods/bauplaner-bridge/`, `docs/architecture/betrieb/`, `docs/operations/`, `docs/testing/TESTPLAN.md`, `docs/TESTING.md`. **Abhängigkeiten:** COOP-07, WORLD-SHARE-01, BACKUP-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

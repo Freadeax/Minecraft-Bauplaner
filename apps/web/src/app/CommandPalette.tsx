@@ -34,6 +34,7 @@ const PAGES: readonly Omit<Entry, 'key' | 'group'>[] = [
   { label: 'Generatoren', hint: 'Haus, Turm, Mauer, Brücke, Dach nach Maß', href: '#/bibliothek/generatoren', icon: 'library' },
   { label: 'Werkstatt', hint: 'Blockeditor: neues Bauteil Block für Block bauen', href: '#/werkstatt/neu', icon: 'editor' },
   { label: 'Systemcheck', hint: 'Auslieferung, Speicher, Datencheck, Fehlerprotokoll', href: '#/system', icon: 'system' },
+  { label: 'Datenschutz und Freigaben', hint: 'Was geht wohin, wer sieht es, Speicher, Umzug zwischen GitHub und Cloudflare', href: '#/datenschutz', icon: 'system' },
   { label: 'Testphase', hint: 'Checklisten für Planer und Mod, Testprotokoll, Fehler melden', href: '#/testphase', icon: 'system' },
 ];
 
@@ -47,7 +48,7 @@ function score(entry: Entry, words: readonly string[]): number {
   return label.startsWith(words[0]!) ? 3 : words.every(w => label.includes(w)) ? 2 : 1;
 }
 
-const LIMIT: Readonly<Record<string, number>> = { Seiten: 8, 'Dieses Projekt': 10, Projekte: 6, Gebäude: 8 };
+const LIMIT: Readonly<Record<string, number>> = { Seiten: 14, 'Dieses Projekt': 10, Projekte: 6, Gebäude: 8 };
 
 /**
  * Schnellsuche (Strg+K / ⌘K): springt zu Seiten, Projekten, Bereichen des

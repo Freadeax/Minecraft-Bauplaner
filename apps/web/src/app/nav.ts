@@ -39,6 +39,7 @@ export function routeTitle(route: Route): string {
   if (route.view === 'system') return 'Systemcheck';
   if (route.view === 'testphase') return 'Testphase';
   if (route.view === 'guide') return 'Wie geh ich es an?';
+  if (route.view === 'privacy') return 'Datenschutz und Freigaben';
   if (route.view === 'mod') return 'Mod herunterladen';
   if (route.view === 'viewer') return 'Betrachter';
   if (route.view === 'world') return 'Weltimport';

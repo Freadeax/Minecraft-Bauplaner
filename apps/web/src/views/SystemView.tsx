@@ -145,7 +145,7 @@ export function SystemView() {
   const ownAssets = library.assets.filter(a => !a.demo).length;
   return <div className="page system-page">
     <div className="page-head"><div><span className="eyebrow">SYSTEMCHECK</span><h1 className="page-title">Läuft alles sauber?</h1>
-      <p className="muted">Prüft Auslieferung, Browserfähigkeiten, Speicher und deine gespeicherten Daten. Alles bleibt lokal; es wird nichts gesendet und nichts verändert.</p></div></div>
+      <p className="muted">Prüft Auslieferung, Browserfähigkeiten, Speicher und deine gespeicherten Daten. Der Check läuft in diesem Browser: Er sendet nichts und verändert nichts. <a href="#/datenschutz">Was wohin geht</a></p></div></div>
     {message && <div className="notice" role="status">{message}</div>}
 
     <div className="system-grid">

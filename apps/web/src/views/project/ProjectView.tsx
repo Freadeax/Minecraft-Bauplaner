@@ -14,11 +14,12 @@ import { TeamRoomContext, useTeamRoom } from './team/roomClient';
 import { TeamLiveChip, TeamNews } from './team/TeamLiveBar';
 import type { Project } from '../../../../../packages/domain/src/index.js';
 import type { Repository } from '../../app/repository';
+import { StorageWarning } from '../../app/StorageWarning';
 import '../../styles/backup.css';
 import './updates.css';
 import '../../styles/navGroups.css';
 
-const saveLabel = { saved: 'gespeichert', saving: 'speichert …', error: 'Speichern fehlgeschlagen', conflict: 'Konflikt mit anderem Tab' } as const;
+const saveLabel = { saved: 'In diesem Browser gespeichert', saving: 'speichert …', error: 'Speichern fehlgeschlagen', conflict: 'Konflikt mit anderem Tab' } as const;
 
 export function ProjectView({ projectId, tab }: { projectId: string; tab: string }) {
   const { repo } = useApp();
@@ -62,10 +63,10 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
         <nav className="crumbs" aria-label="Pfad"><a className="crumb" href="#/">Projekte</a><span aria-hidden="true">›</span><span aria-current="page">{session.project.name}</span></nav>
         <h1 className="page-title">{session.project.name}<button type="button" className="text-button project-rename" aria-label="Projekt umbenennen" title="Projekt umbenennen"
           onClick={() => rename(session)}>✎</button></h1>
-        <BackupChip repo={repo} project={session.project} /><UpdateChip project={session.project} projectId={projectId} /><TeamLiveChip project={session.project} />
+        <BackupChip repo={repo} project={session.project} /><UpdateChip project={session.project} projectId={projectId} /><TeamLiveChip project={session.project} /><StorageWarning />
       </div>
-      <span className={`save-state ${session.saveState}`} role="status" title={session.saveError}>
-        {saveLabel[session.saveState]}{repo.kind === 'memory' && ' · nur diese Sitzung'}</span>
+      <span className={`save-state ${session.saveState}`} role="status" title={session.saveError || 'Gespeichert wird in diesem Browser (IndexedDB). Eine Kopie außerhalb gibt es nur als Sicherungsdatei.'}>
+        {repo.kind === 'memory' && session.saveState === 'saved' ? 'nur in dieser Sitzung' : saveLabel[session.saveState]}</span>
       <nav className="tabs tab-groups" aria-label="Projektbereiche" ref={tabBar}>{projectTabGroups.map((g, i) =>
         <div key={g.id} className="tab-group" role="group" aria-label={`Schritt ${i + 1}: ${g.label}`} title={g.hint} data-group={g.id}
           data-active={active?.group === g.id ? '' : undefined}>
@@ -99,14 +100,17 @@ function rename(session: ProjectSession) {
   if (error) window.alert(error);
 }
 
-const chipText = { never: 'noch nie gesichert', changed: 'seit Sicherung geändert', current: 'gesichert' } as const;
+const day = (iso: string) => new Date(iso).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+/** PRIV-01: Zeitpunkt der letzten Sicherungsdatei direkt am Projekt. */
+const chipText = (state: 'never' | 'changed' | 'current', at?: string) => state === 'never' ? 'noch keine Sicherungsdatei'
+  : state === 'changed' ? `seit Sicherungsdatei vom ${day(at!)} geändert` : `Sicherungsdatei vom ${day(at!)}`;
 
 /** Sicherungsstand of this project (BACKUP-02): links to the Projektzentrale, never claims a copy outside the browser. */
 function BackupChip({ repo, project }: { repo: Repository; project: Project }) {
   const line = useProjectBackupState(repo, project);
   if (!line) return null;
   const title = line.receipt ? `Zuletzt in „${line.receipt.fileName}“ (${new Date(line.receipt.at).toLocaleString('de-DE')}). Ob die Datei außerhalb dieses Browsers liegt, kann das Build Studio nicht prüfen.` : 'In keiner Sicherungsdatei dieses Browsers enthalten.';
-  return <a className={`backup-chip ${line.state}`} href="#/" data-backup-state={line.state} title={title}>{chipText[line.state]}</a>;
+  return <a className={`backup-chip ${line.state}`} href="#/" data-backup-state={line.state} title={title}>{line.receipt ? chipText(line.state, line.receipt.at) : chipText('never')}</a>;
 }
 
 /** Neue Versionen (UPDATE-01): shown only when an update is available; links to the Updates tab. */

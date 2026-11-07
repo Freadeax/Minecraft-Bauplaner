@@ -41,8 +41,8 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
     </header>
     <div id="inhalt" tabIndex={-1} className="content">{children}</div>
     <footer className="site-footer">
-      <span><strong>LMNT — BUILD STUDIO</strong> · Mit Plan gebaut. Alles bleibt lokal in deinem Browser.</span>
-      <nav aria-label="Weitere Links"><a href="#/mod">Minecraft-Mod</a>{fileTools.map(n => <a key={n.id} href={n.href} title={n.hint}>{n.label}</a>)}<a href="#/system">Systemcheck</a><a href="#/testphase">Testphase</a><a href={REPO_URL} target="_blank" rel="noreferrer">GitHub ↗</a></nav>
+      <span><strong>LMNT — BUILD STUDIO</strong> · Mit Plan gebaut. Projekte liegen in diesem Browser; ins Internet geht nur, was du im Team teilst.</span>
+      <nav aria-label="Weitere Links"><a href="#/mod">Minecraft-Mod</a>{fileTools.map(n => <a key={n.id} href={n.href} title={n.hint}>{n.label}</a>)}<a href="#/datenschutz">Datenschutz &amp; Freigaben</a><a href="#/system">Systemcheck</a><a href="#/testphase">Testphase</a><a href={REPO_URL} target="_blank" rel="noreferrer">GitHub ↗</a></nav>
       <span className="footer-legal">Unabhängiges Projekt · kein offizielles Minecraft-Produkt</span>
     </footer>
     <nav className="bottom-nav" aria-label="Hauptnavigation mobil">

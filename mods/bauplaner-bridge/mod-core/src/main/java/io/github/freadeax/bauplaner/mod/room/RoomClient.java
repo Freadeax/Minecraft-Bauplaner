@@ -151,6 +151,12 @@ public final class RoomClient {
     static long docPollEveryMs = 15_000;
     private long docPollAt;
     private String player;
+    /**
+     * PRIV-01: what this player shares with the room, chosen in the planner (stored in raum.json). Position: the live
+     * position for „Gerade da“ and the live map. Scans: recordings when someone in the team asks for one. Both on for
+     * rooms stored before 0.28.0 (unchanged behaviour); an own {@code /bauplaner team aufnahme} always works.
+     */
+    private boolean sharePos = true, shareScans = true;
     private int[] lastPos;
     private String lastDim;
     private long lastPosAt;
@@ -161,7 +167,11 @@ public final class RoomClient {
         this.cacheFile = file == null ? null : file.resolveSibling("raum-stand.json");
         this.notify = notify;
         if (file != null && Files.isRegularFile(file)) {
-            try { config = parse(Json.obj(Json.parse(Files.readString(file, StandardCharsets.UTF_8)), "Team-Raum")); }
+            try {
+                Map<String, Object> stored = Json.obj(Json.parse(Files.readString(file, StandardCharsets.UTF_8)), "Team-Raum");
+                config = parse(stored);
+                if (stored.get("teilen") instanceof Map<?, ?> t) { sharePos = !Boolean.FALSE.equals(t.get("position")); shareScans = !Boolean.FALSE.equals(t.get("aufnahmen")); }
+            }
             catch (IOException | RuntimeException e) { lastError = "raum.json nicht lesbar: " + e.getMessage(); }
         }
         if (config != null) loadCache();
@@ -251,6 +261,7 @@ public final class RoomClient {
             m.put("key", c.key()); m.put("device", c.device());
             if (c.serverKey() != null) m.put("serverKey", c.serverKey());
             if (c.signKey() != null) m.put("signKey", c.signKey());
+            m.put("teilen", shareFields());
             Path tmp = file.resolveSibling(file.getFileName() + ".tmp");
             Files.writeString(tmp, Json.write(m), StandardCharsets.UTF_8);
             Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
@@ -260,6 +271,39 @@ public final class RoomClient {
         if (!same) reset();
         if (status == Status.REFUSED) status = Status.OFF;
         connect();
+    }
+
+    /** PRIV-01: {position, aufnahmen} as stored in raum.json and shown to the planner. */
+    public synchronized Map<String, Object> shareFields() {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("position", sharePos); m.put("aufnahmen", shareScans);
+        return m;
+    }
+    public synchronized boolean sharesPosition() { return sharePos; }
+    public synchronized boolean sharesScans() { return shareScans; }
+
+    /**
+     * PRIV-01: the planner sets what this game shares (null: keep). Switching the position off takes it out of the
+     * room's presence right away (an empty {@code pos}); the setting is stored with the room.
+     */
+    public synchronized void share(Boolean position, Boolean scans) throws IOException {
+        boolean posOff = Boolean.FALSE.equals(position) && sharePos;
+        if (position != null) sharePos = position;
+        if (scans != null) shareScans = scans;
+        if (posOff) {
+            Map<String, Object> m = new LinkedHashMap<>();
+            // An empty position replaces the last one in the room (it keeps presence fields it is not sent again) and is dropped there.
+            m.put("type", "presence"); m.put("where", "spiel"); m.put("pos", new LinkedHashMap<String, Object>());
+            if (section != null) m.put("section", section);
+            send(m);
+        }
+        if (config != null && file != null && Files.isRegularFile(file)) {
+            Map<String, Object> m = new LinkedHashMap<>(Json.obj(Json.parse(Files.readString(file, StandardCharsets.UTF_8)), "Team-Raum"));
+            m.put("teilen", shareFields());
+            Path tmp = file.resolveSibling(file.getFileName() + ".tmp");
+            Files.writeString(tmp, Json.write(m), StandardCharsets.UTF_8);
+            Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        }
     }
 
     /** Forgets the room (planner „Spiel trennen“). */
@@ -308,7 +352,7 @@ public final class RoomClient {
                 hello.put("where", "spiel"); hello.put("after", cursor);
                 if (section != null) hello.put("section", section);
                 if (player != null) hello.put("player", player);
-                if (lastPos != null) hello.put("pos", posMap(lastPos, lastDim, null));
+                if (lastPos != null && sharePos) hello.put("pos", posMap(lastPos, lastDim, null));
                 send(hello);
                 ping = timer.scheduleAtFixedRate(() -> { synchronized (this) { if (ws != null) send(Map.of("type", "ping")); } }, 30, 30, TimeUnit.SECONDS);
             }
@@ -448,7 +492,9 @@ public final class RoomClient {
             }
             case "appended" -> answered(m);
             case "ask" -> {
-                if ("scan".equals(TeamLog.str(m, "what"))) {
+                if ("scan".equals(TeamLog.str(m, "what")) && !shareScans) {
+                    notify.accept("Team-Raum: Aufnahme-Anfrage abgelehnt – „Aufnahmen auf Anfrage senden“ ist für dieses Spiel aus (Planer → Team live).");
+                } else if ("scan".equals(TeamLog.str(m, "what"))) {
                     Ask a = new Ask(TeamLog.str(m, "from"), TeamLog.str(m, "projectId"), TeamLog.str(m, "id"));
                     try { onAsk.accept(a); } catch (RuntimeException e) { lastError = "Aufnahme anfordern: " + e.getMessage(); }
                 }
@@ -569,7 +615,7 @@ public final class RoomClient {
      * two blocks or changing the dimension; nothing while not live.
      */
     public synchronized boolean position(int x, int y, int z, String dim, double yaw, long now) {
-        if (status != Status.LIVE || ws == null) { lastPos = new int[] { x, y, z }; lastDim = dim; return false; }
+        if (status != Status.LIVE || ws == null || !sharePos) { lastPos = new int[] { x, y, z }; lastDim = dim; return false; }
         boolean moved = lastPos == null || !java.util.Objects.equals(dim, lastDim) || Math.abs(x - lastPos[0]) + Math.abs(y - lastPos[1]) + Math.abs(z - lastPos[2]) >= 2;
         if (!moved || now - lastPosAt < 2000) return false;
         lastPos = new int[] { x, y, z }; lastDim = dim; lastPosAt = now;

@@ -39,6 +39,7 @@ import { chunkImage } from './terrainLayer';
 import { areaAround, storeSurvey } from '../world/surveys';
 import { PlacementForm } from './PlacementForm';
 import { LiveMapPanel, LiveMapLink, liveMapUrlAt } from './LiveMapPanel';
+import { isTrustedMapHost, mapHostOf, trustMapHost } from './mapHosts';
 import { useLiveMapSettings, useSavedLiveMaps } from './liveMapConfig';
 import { useWorldShare } from './useWorldShare';
 import { WorldSharePanel } from './WorldSharePanel';
@@ -744,7 +745,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
     { label: 'Alles auswählen (Strg+A)', onClick: selectAll },
     { label: 'Messen ab hier', onClick: () => setTool('measure') },
     ...(connected && holo ? [null, { label: `Hologramm „${holo.name}“ hierher setzen`, onClick: () => void moveHologramTo(menu.column[0], menu.column[1]) }] : []),
-    ...(menuLiveUrl ? [null, { label: `Diese Stelle auf ${live.name || 'der Live-Karte'} zeigen ↗`, onClick: () => window.open(menuLiveUrl, '_blank', 'noopener,noreferrer') }] : []),
+    ...(menuLiveUrl ? [null, { label: `Diese Stelle auf ${live.name || 'der Live-Karte'} zeigen ↗`, onClick: () => { if (isTrustedMapHost(mapHostOf(menuLiveUrl)) || window.confirm(`Fremde Seite öffnen: ${mapHostOf(menuLiveUrl)}?\n\nDiese Webkarte gehört nicht zum Build Studio; ihr Betreiber sieht deine IP-Adresse und die Koordinaten. Die Domain wird danach in diesem Browser gemerkt.`)) { trustMapHost(menuLiveUrl); window.open(menuLiveUrl, '_blank', 'noopener,noreferrer'); } } }] : []),
   ] : [
     ...(menuPath && menu.vertex ? [
       { label: `${menuPath.kind === 'zone' ? 'Zonenecke' : 'Wegecke'} löschen`, onClick: () => { const n = pathOp(() => removePathVertex(menuPath, menu.vertex!.index)); if (n) editPath(menuPath, n, `${menuPath.kind === 'zone' ? 'Zonenecke' : 'Wegecke'} gelöscht`); }, disabled: menuPath.points.length <= (menuPath.kind === 'zone' ? 3 : 2), hint: menuPath.points.length <= (menuPath.kind === 'zone' ? 3 : 2) ? (menuPath.kind === 'zone' ? 'Eine Zone braucht mindestens drei Ecken.' : 'Ein Weg braucht mindestens zwei Ecken.') : undefined },

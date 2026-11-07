@@ -42,7 +42,7 @@ Alle Dokumente von LMNT — Build Studio nach Bereich. Für den Gesamtüberblick
 
 **Mod** (`architecture/mod/`): [Spielbrücke](architecture/mod/MOD_BRIDGE.md) · [Hologramm und Live-Abgleich](architecture/mod/MOD_HOLOGRAM.md) · Bauen und Testen: [mods/bauplaner-bridge](../mods/bauplaner-bridge/README.md)
 
-**Betrieb** (`architecture/betrieb/`, `operations/`): [Hosting](architecture/betrieb/HOSTING.md) · [Offline und zweite Adresse](architecture/betrieb/OFFLINE.md) · [Veröffentlichung](operations/VEROEFFENTLICHUNG.md) · [Wiederherstellungsprobe](operations/PAGES_RESTORE_PROBE.md) · [Testphase](architecture/betrieb/TESTPHASE.md)
+**Betrieb** (`architecture/betrieb/`, `operations/`): [Hosting](architecture/betrieb/HOSTING.md) · [Offline und zweite Adresse](architecture/betrieb/OFFLINE.md) · [Datenschutz und Freigaben](architecture/betrieb/DATENSCHUTZ.md) · [Veröffentlichung](operations/VEROEFFENTLICHUNG.md) · [Wiederherstellungsprobe](operations/PAGES_RESTORE_PROBE.md) · [Testphase](architecture/betrieb/TESTPHASE.md)
 
 ## Testen
 
