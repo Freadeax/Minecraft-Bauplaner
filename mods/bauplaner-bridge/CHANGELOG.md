@@ -2,6 +2,11 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## Unreleased
+
+- Fix (Paper plugin): after `/bp weltplan sperren hinweis` the hint line appears right away instead of after a minute.
+- Behoben (Paper-Plugin): Nach `/bp weltplan sperren hinweis` erscheint die Hinweiszeile sofort statt erst nach einer Minute.
+
 ## 0.27.0 – 2026-11-07
 
 **Co-builders in the game / Mitbauer im Spiel**

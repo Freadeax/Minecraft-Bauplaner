@@ -425,3 +425,17 @@ Block B Nachtrag: Dateizuordnung der Abnahme-Prüfungen (planer-abnahmen, team-a
 - `tests/e2e/teamRoomDev.mjs`
 - `tests/e2e/werkstatt-abnahme.e2e.mjs`
 
+## 2026-11-07T14:07:04.677Z · progress
+
+**Aufgaben:** GAME-09
+
+Changelog: Abschnitt Unreleased mit Plugin-Fix Sperrhinweis für die nächste Version
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth prüft das Projekt weiter (Status processing, am 07.11.2026 nachgesehen); alle Versionen bis 0.26.0, Texte, Galerie und Offenlegungen sind aktuell (modrinth_publish.mjs plan). Kein Handlungsbedarf außer Abwarten. |
+
+**Geänderte Dateien:**
+
+- `mods/bauplaner-bridge/CHANGELOG.md`
+
