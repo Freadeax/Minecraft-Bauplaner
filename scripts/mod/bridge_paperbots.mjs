@@ -392,7 +392,10 @@ async function farmDay(anna, ben) {
   const m = info.match(/: (\d+) Items in (\d+) min geladen · (\d+) je Stunde/);
   assert.ok(m, info);
   step(`/bp lager info: ${m[1]} Items in ${m[2]} min · ${m[3]} je Stunde`);
-  await until('store.yield im Team-Raum', async () => (await feed()).filter(e => e.kind === 'store.yield').length >= 2 || (await sleep(5_000), false), 420);
+  // The plugin reports every lager.ertrag-minuten counted from the server start, the chest was marked later: wait until
+  // the reports in the room cover 10 loaded minutes (the planner, like /bp lager info, uses the rate from then on).
+  const roomMinutes = async () => (await feed()).filter(e => e.kind === 'store.yield').reduce((n, e) => n + e.minutes, 0);
+  await until('store.yield im Team-Raum über 10 min', async () => (await roomMinutes()) >= 10 || (await sleep(5_000), false), 420);
   await stop();
 
   // Planner: farm in the Produktion tab, rate from the yield store reported by the server.
@@ -405,7 +408,7 @@ async function farmDay(anna, ben) {
   const production = { schemaVersion: 1, farms: [{ id: 'farm_rohr', name: 'Zuckerrohrfarm', type: 'zuckerrohr', units: 1, state: 'laeuft' }], log: [], gatherHoursPerDay: 2, afkHoursPerDay: 0, simulationDistance: 10 };
   const [status] = farmStatuses(production, t);
   const rate = status.rates.find(r => r.itemId === 'minecraft:sugar_cane');
-  assert.equal(rate.source, 'Lagerkiste', `Planer rechnet mit der Ertragskiste (${JSON.stringify(status.chest)})`);
+  assert.equal(rate.source, 'Lagerkiste', `Planer rechnet mit der Ertragskiste (${JSON.stringify(status.chest)} · ${status.issues.join(' | ')})`);
   assert.equal(status.chest.basis, 'server');
   const expected = Math.round(total / (store.yieldMinutes / 60) * 10) / 10;
   assert.ok(Math.abs(rate.perHour - expected) <= 1, `Rate im Planer ${rate.perHour}/h ≈ ${expected}/h`);

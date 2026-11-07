@@ -9118,3 +9118,33 @@ BLOCK-02-S08 Spielprüfstand: Sätze gelaende, basis, grossprojekte, grossprojek
 - `tests/unit/catalog/plan-landscape.test.mjs`
 - `tests/unit/world/terrain-game.test.mjs`
 
+## 2026-11-07T02:28:19.135Z · progress
+
+**Aufgaben:** COOP-08, PROD-05
+
+Farmtest LAGER-10 stabilisiert: der Test wartet, bis die store.yield-Meldungen im Team-Raum 10 geladene Minuten abdecken (Meldetakt zählt ab Serverstart, die Kiste wird später markiert), sonst blieb der Planer je nach Zeitpunkt beim Richtwert. Planer-Rechnung unverändert. Farmlauf auf main grün (29 Rohr in 10 min = 174/h, Planer gleich).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-08 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme LAGER-10 mit einer echten Farm; Ertragsbuch in TEAMBAU-28. |
+| PROD-05 | 🧩 Implementiert · Abnahme offen | 6/6 | Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen. |
+
+**Geänderte Dateien:**
+
+- `scripts/mod/bridge_paperbots.mjs`
+
+## 2026-11-07T02:31:45.596Z · progress
+
+**Aufgaben:** COOP-08
+
+TESTING.md: Hinweis zur Stabilisierung des Farmtests.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-08 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme LAGER-10 mit einer echten Farm; Ertragsbuch in TEAMBAU-28. |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+- `scripts/mod/bridge_paperbots.mjs`
+

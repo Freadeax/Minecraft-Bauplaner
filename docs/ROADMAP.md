@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T02:19:42.343Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T02:31:45.596Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -3109,7 +3109,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-08
 
-**Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion)** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Server-Plugin mit geprüften Lagerkisten“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T01:21:51.439Z
+**Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion)** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Server-Plugin mit geprüften Lagerkisten“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T02:31:45.596Z
 
 - [x] COOP-08-S01: Zweck ertrag, store.config.farm, store.yield (nur Server) in team.ts und TeamLog/StoreIndex; farms in der Serverdatei (production.serverFarms).
 - [x] COOP-08-S02: Plugin misst Ertrag und Laufzeit, /bauplaner lager farm, Info mit Rate; Trichterbuchungen gebündelt (lager.trichter-buendeln-sekunden).
@@ -3222,7 +3222,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROD-05
 
-**Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T01:21:51.439Z
+**Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T02:28:19.135Z
 
 - [x] PROD-05-S01: FarmEntry.chest (geprüft, rückgängig machbar über updateFarm).
 - [x] PROD-05-S02: teamChests/chestYield: store.yield bevorzugt, sonst Trichterbuchungen mit Lückenregel 5 min.
