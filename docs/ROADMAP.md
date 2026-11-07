@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T20:17:06.217Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T20:38:47.757Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -3943,7 +3943,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TEAM-SEC-01
 
-**Team-Rollen gegen Vortäuschen absichern: Absender aus der Sitzung, eigene Schlüssel, Ed25519 für den Server** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Team-Rollen gegen Vortäuschen absichern“ · Arbeitsstrang: „Team-Rollen gegen Vortäuschen absichern“ · Aktualisiert: 2026-11-07T20:17:06.217Z
+**Team-Rollen gegen Vortäuschen absichern: Absender aus der Sitzung, eigene Schlüssel, Ed25519 für den Server** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Team-Rollen gegen Vortäuschen absichern“ · Arbeitsstrang: „Team-Rollen gegen Vortäuschen absichern“ · Aktualisiert: 2026-11-07T20:38:47.757Z
 
 - [x] TEAM-SEC-01-S01: Team-Raum nimmt den Absender aus dem Schlüssel und prüft die Rolle (NEED wie TEAM_NEED); Einladung nur noch lesen und beitreten (strict), in alten Räumen nie im Namen der Bauleitung oder mit Baumeister-Rechten.
 - [x] TEAM-SEC-01-S02: Eigener Schlüssel je Mitglied und Gerät (join, keys, widerrufen, Übernahme bestätigen); Planer tauscht die Einladung von selbst, die Mod bekommt einen eigenen Geräteschlüssel.

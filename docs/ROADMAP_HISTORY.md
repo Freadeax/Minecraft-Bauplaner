@@ -786,3 +786,13 @@ Team-Raum nimmt den Absender aus dem Schlüssel und prüft Rollen; eigene Schlü
 - `tests/unit/team/team-identity.test.mjs`
 - `tests/unit/team/team-room.test.mjs`
 
+## 2026-11-07T20:38:47.757Z · progress
+
+**Aufgaben:** TEAM-SEC-01
+
+Auf main 49daa6f: Mod/Plugin 0.28.0 im Download, Fortschrittsnachweis vervollständigt; Ausrollen des Team-Raums und Modrinth folgen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TEAM-SEC-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Team-Raum gemeinsam mit HARDEN-01 ausrollen, Rauch-/Missbrauchsprobe gegen den echten Dienst, Mod/Plugin 0.28.0 auf Modrinth. |
+

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T20:17:06.217Z",
+  "updatedAt": "2026-11-07T20:38:47.757Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -12669,7 +12669,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T20:17:06.217Z",
+      "updatedAt": "2026-11-07T20:38:47.757Z",
       "area": "TEAM",
       "thread": "Team-Rollen gegen Vortäuschen absichern",
       "philipp": [],
@@ -15309,6 +15309,24 @@
         "tests/unit/team/team-identity.test.mjs",
         "tests/unit/team/team-room.test.mjs"
       ],
+      "snapshot": [
+        {
+          "id": "TEAM-SEC-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Team-Raum gemeinsam mit HARDEN-01 ausrollen, Rauch-/Missbrauchsprobe gegen den echten Dienst, Mod/Plugin 0.28.0 auf Modrinth."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T20:38:47.757Z",
+      "kind": "progress",
+      "items": [
+        "TEAM-SEC-01"
+      ],
+      "summary": "Auf main 49daa6f: Mod/Plugin 0.28.0 im Download, Fortschrittsnachweis vervollständigt; Ausrollen des Team-Raums und Modrinth folgen.",
+      "files": [],
       "snapshot": [
         {
           "id": "TEAM-SEC-01",
