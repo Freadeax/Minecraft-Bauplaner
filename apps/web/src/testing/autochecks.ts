@@ -216,9 +216,9 @@ export const AUTO_CHECKS: readonly AutoCheck[] = [
     evidence: '06.11.2026, Block 6, Chromium und Linux-Container: 6/6, 2/2, 2/2' },
   { caseId: 'GERAET-03', scope: 'teil',
     covers: 'Browserdaten, die echte alte Stände geschrieben haben (28.10. Datenbank v1, 02.11. v3, 04.11. v4: Katalog, eigenes Gebäude mit Versionen, Projekt mit Baustelle und Haken, Sammlung, Vorlage, Sicherung), öffnet die aktuelle App: alles ist noch da und unverändert, Datencheck ohne Fehler, altes Projekt öffnet, alte Sicherung lesbar.',
-    remaining: 'Stichprobe mit deinen eigenen, lange gewachsenen Daten auf PC und iPad; „Dauerhaft speichern“ im echten Browser.',
-    command: 'npm run build && node --test tests/e2e/aged-browserdata.e2e.mjs',
-    evidence: '06.11.2026, Block 6, Chromium: 3/3' },
+    remaining: 'Stichprobe mit deinen eigenen, lange gewachsenen Daten auf PC und iPad; „Dauerhaft speichern“ im echten Browser; Flugmodus auf dem echten iPad (Safari-Speicherverhalten).',
+    command: 'npm run build && node --test tests/e2e/aged-browserdata.e2e.mjs tests/e2e/offline.e2e.mjs',
+    evidence: '06.11.2026, Block 6, Chromium: 3/3; Offline-Speicher (PERF-06: installiert, Start ohne Netz, alte Dateien fallen weg, Ausschalten) 07.11.2026 Chromium 6/6 Läufe grün, Firefox und WebKit im Block 5 Geräte grün' },
   // Block 5 Werkstatt und Weltkarte (EDIT-01/02/03/05/06, MAP-01, MAP-04) auf iPad/iPhone-Profilen und Firefox.
   {
     caseId: 'WERK-01', scope: 'teil',

@@ -299,7 +299,13 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await liveBlock(a).getByLabel('Freie Abschnitte').selectOption('team');
     await liveBlock(b).getByTestId('protect-state').filter({ hasText: 'Eingestellt: Bauen verhindern, freie Abschnitte nur fürs Team.' }).waitFor();
     {
-      const signed = await room.events();
+      // The confirmation is appended on its own after the first signed step; give it a moment to reach the room.
+      let signed = [];
+      for (let i = 0; i < 50; i++) {
+        signed = await room.events();
+        if (signed.some(e => e.kind === 'team.trust') && signed.filter(e => e.kind === 'team.protect').length >= 2) break;
+        await a.waitForTimeout(200);
+      }
       const trust = signed.filter(e => e.kind === 'team.trust'), protect = signed.filter(e => e.kind === 'team.protect');
       assert.equal(trust.length, 1, 'one confirmation per room');
       assert.equal(protect.length, 2);

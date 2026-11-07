@@ -35,7 +35,7 @@ Diese Läufe starten echte Minecraft-Clients oder Paper-Server (kopflos) und sin
 | Prüfung | Ergebnis |
 |---|---|
 | `npm run check` | grün |
-| Browsertests Chromium | 197/197 grün |
+| Browsertests Chromium | 212/212 grün (91 Dateien; `team-room.e2e` danach 10 Läufe hintereinander grün, `offline.e2e` 6/6) |
 | Firefox, WebKit, iPad-/iPhone-Profile | grün für Werkstatt, Weltkarte und Grafik |
 | Platzierung im Spiel | Katalog, Generatoren und Gelände 670 Pläne, Basis 28, Großprojekte 169 + 13 auf Gelände: jeweils 0 Abweichungen |
 | Exporte im Spiel | 22/22 Fälle |

@@ -7,7 +7,7 @@ import { useApp } from '../../app/context';
 import { Icon, tabIcon } from '../../app/icons';
 import { useDocumentTitle } from '../../app/Shell';
 import { useProjectBackupState } from '../../app/backupStatus';
-import { findUpdates, siteOf, summarizeUpdates, teamContextOf, teamView } from '../../../../../packages/domain/src/index.js';
+import { appendEvents, findUpdates, siteOf, summarizeUpdates, teamContextOf, teamView } from '../../../../../packages/domain/src/index.js';
 import type { RoomTeam, TeamState } from '../../../../../packages/domain/src/index.js';
 import { TeamRoomContext, useTeamRoom } from './team/roomClient';
 import { TeamLiveChip, TeamNews } from './team/TeamLiveBar';
@@ -37,9 +37,20 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
     if (!team?.live || !team.self || !session) return undefined;
     return teamView(team, teamContextOf(siteOf(session.project))).sections.find(s => s.owner === team.self && s.status === 'vergeben')?.sectionId;
   }, [team?.events, team?.self, !!team?.live]); // eslint-disable-line react-hooks/exhaustive-deps
+  // The room hook works on the team of the last render. A step made locally in the meantime (e.g. the Bauleitung's
+  // automatic team.trust right after connecting) is in the stored project but not in `next`: keep it instead of
+  // overwriting it, the hook's outbox then sends it like any own step.
+  const renderedTeam = useRef(team); renderedTeam.current = team;
   const room = useTeamRoom(team, team?.self, next => {
     const s = sessionRef.current; if (!s) return;
-    s.replace(p => { const site = siteOf(p); return site.team?.teamId !== next.teamId ? p : { ...p, site: { ...site, team: next as TeamState } }; });
+    s.replace(p => {
+      const site = siteOf(p), cur = site.team as RoomTeam | undefined;
+      if (cur?.teamId !== next.teamId) return p;
+      const known = new Set([...(renderedTeam.current?.events ?? []), ...next.events].map(e => e.id));
+      const local = cur.events.filter(e => !known.has(e.id));
+      const team = local.length ? { ...next, ...appendEvents(next as TeamState, local), live: next.live } as RoomTeam : next;
+      return { ...p, site: { ...site, team: team as TeamState } };
+    });
   }, mySection);
   useDocumentTitle(session ? `${session.project.name}${active && active.id !== 'editor' ? ` · ${active.label}` : ''}` : 'Projekt');
   if (loadError) return <div className="page"><div className="notice warning" role="alert"><strong>Projekt nicht geladen</strong><p>{loadError}</p><a href="#/">Zur Projektzentrale</a></div></div>;

@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T12:19:01.724Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T12:35:25.144Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -13,9 +13,9 @@ Stand: 2026-11-07T12:19:01.724Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | Status | Pakete |
 |---|---:|
 | ⏳ Offen | 2 |
-| 🚧 In Arbeit | 8 |
+| 🚧 In Arbeit | 4 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 94 |
+| 🧩 Implementiert · Abnahme offen | 98 |
 | ✅ Im beschriebenen Umfang geprüft | 35 |
 | ⏸ Zurückgestellt | 3 |
 
@@ -30,12 +30,12 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Arbeitsstrang
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 16 | 0 | 14 | 1 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
-| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 14 | 0 | 11 | 0 |
+| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 14 | 0 | 12 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 4 | 0 | 3 | 1 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
-| [Performance und Stabilität](#bereich-perf) | 5 | 0 | 2 | 3 |
+| [Performance und Stabilität](#bereich-perf) | 5 | 0 | 3 | 3 |
 | [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 8 | 0 | 5 | 15 |
-| [Testphase, Qualität und Betrieb](#bereich-qa) | 2 | 1 | 2 | 8 |
+| [Testphase, Qualität und Betrieb](#bereich-qa) | 2 | 0 | 2 | 8 |
 | [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 2 | 0 | 0 | 0 |
 
 <a id="bereich-planer"></a>
@@ -44,35 +44,35 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Arbeitsstrang
 
 | ID | Paket | Status | Prio | Arbeitsstrang | Nur Philipp |
 |---|---|---|---|---|---|
-| [BACKUP-02](#backup-02) | Sicherungserinnerung und Abschnittsrevisionen | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Browser und Geräte automatisch abnehmen“ | Sicherungs-Download in Safari; Rückmeldung, ob 7 Tage für die Erinnerung passen. |
-| [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Browser und Geräte automatisch abnehmen“ | Mehrfachauswahl auf echten Geräten (QA-02). |
-| [EDIT-02](#edit-02) | Blockeditor | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Browser und Geräte automatisch abnehmen“ | Gesetzte und gedrehte Zustände im Spiel prüfen. |
-| [EDIT-03](#edit-03) | Werkstatt vertiefen | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Browser und Geräte automatisch abnehmen“ | Schablonen-Zustände (Tür, Treppe, Laterne) im Spiel prüfen. |
-| [EDIT-04](#edit-04) | Kreativwerkzeuge aus dem Planer-Vergleich | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Mod-Oberfläche und Hologramm automatisch abnehmen“ | Gespiegelte und gedrehte Zustände (Türen, Truhen, Schienen) im Spiel (S07).<br>Bauhilfen Symmetrie und Kurven in der Mod (MOD-18, MOD-19). |
-| [EDIT-05](#edit-05) | Auswahl- und Formwerkzeuge aus Editor-Mods | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Browser und Geräte automatisch abnehmen“ | Zauberstab, Stapeln, Extrudieren und Wendel in der Werkstatt abnehmen (S07).<br>Gestapelte und gedrehte Bauteile mit Ausstattung im Spiel. |
-| [EDIT-06](#edit-06) | Direkt im 3D-Bild bauen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Browser und Geräte automatisch abnehmen“ | Im 3D-Bild bauen auf PC und iPad (WERK-08).<br>Truhe und Schild mit Inhalt im Spiel laden (WERK-09). |
-| [GFX-01](#gfx-01) | Grafik vertiefen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Browser und Geräte automatisch abnehmen“ | Licht und Schatten auf echten GPUs, Firefox/Safari und Handy (S06). |
-| [GFX-02](#gfx-02) | Darstellung und Leistung, Runde 2 | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Browser und Geräte automatisch abnehmen“ | Biom, Leuchtfeuer-Strahl und flüssiges Laden großer Modelle auf dem eigenen Rechner ansehen (S04). |
-| [GUIDE-01](#guide-01) | Anleitung „Wie geh ich es an?“ | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Browser und Geräte automatisch abnehmen“ | Anleitung am iPad durchgehen (START-08/09), unklare Sätze melden. |
-| [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Browser und Geräte automatisch abnehmen“ | Weltkarte auf echter GPU und mit Touch (QA-02). |
-| [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Projekt, Produktion und Weltkarte vertiefen“ | BlueMap-Marker (.conf) bzw. Dynmap-Befehle auf eurer Server-Karte einspielen und prüfen, ob Projekte, Wege und Punkte an der richtigen Stelle erscheinen (KARTE-08). |
+| [BACKUP-02](#backup-02) | Sicherungserinnerung und Abschnittsrevisionen | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Sicherungs-Download in Safari; Rückmeldung, ob 7 Tage für die Erinnerung passen. |
+| [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Mehrfachauswahl auf echten Geräten (QA-02). |
+| [EDIT-02](#edit-02) | Blockeditor | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Gesetzte und gedrehte Zustände im Spiel prüfen. |
+| [EDIT-03](#edit-03) | Werkstatt vertiefen | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Schablonen-Zustände (Tür, Treppe, Laterne) im Spiel prüfen. |
+| [EDIT-04](#edit-04) | Kreativwerkzeuge aus dem Planer-Vergleich | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Große Testphase vorbereiten und betreuen“ | Gespiegelte und gedrehte Zustände (Türen, Truhen, Schienen) im Spiel (S07).<br>Bauhilfen Symmetrie und Kurven in der Mod (MOD-18, MOD-19). |
+| [EDIT-05](#edit-05) | Auswahl- und Formwerkzeuge aus Editor-Mods | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Zauberstab, Stapeln, Extrudieren und Wendel in der Werkstatt abnehmen (S07).<br>Gestapelte und gedrehte Bauteile mit Ausstattung im Spiel. |
+| [EDIT-06](#edit-06) | Direkt im 3D-Bild bauen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Im 3D-Bild bauen auf PC und iPad (WERK-08).<br>Truhe und Schild mit Inhalt im Spiel laden (WERK-09). |
+| [GFX-01](#gfx-01) | Grafik vertiefen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Licht und Schatten auf echten GPUs, Firefox/Safari und Handy (S06). |
+| [GFX-02](#gfx-02) | Darstellung und Leistung, Runde 2 | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Biom, Leuchtfeuer-Strahl und flüssiges Laden großer Modelle auf dem eigenen Rechner ansehen (S04). |
+| [GUIDE-01](#guide-01) | Anleitung „Wie geh ich es an?“ | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Anleitung am iPad durchgehen (START-08/09), unklare Sätze melden. |
+| [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Weltkarte auf echter GPU und mit Touch (QA-02). |
+| [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Große Testphase vorbereiten und betreuen“ | BlueMap-Marker (.conf) bzw. Dynmap-Befehle auf eurer Server-Karte einspielen und prüfen, ob Projekte, Wege und Punkte an der richtigen Stelle erscheinen (KARTE-08). |
 | [MAP-03](#map-03) | Live-Karte mit Spielanbindung | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Kopplung und Senden auf dem LMNT-Server mit Browserfreigabe „lokales Netzwerk“ (S06). |
-| [MAP-04](#map-04) | Weltbuilder vertiefen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Browser und Geräte automatisch abnehmen“ | Langdruck-Menü auf echtem Touch-Gerät (S06). |
-| [MAP-05](#map-05) | Planung auf der Live-Karte vertiefen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mod-Oberfläche und Hologramm automatisch abnehmen“ | „Baustand holen“ mit der Mod auf server.lmnt-gaming.net (S05). |
-| [MAP-06](#map-06) | Weltkarte in die Tiefe | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Mod-Oberfläche und Hologramm automatisch abnehmen“ | Weltkarte mit Mod 0.8.0 oder neuer im Spiel abnehmen (S08, KARTE-05/06, LIVE-08). |
-| [MAP-07](#map-07) | Gedrehte und gespiegelte Projektlagen auf der Weltkarte | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Projekt, Produktion und Weltkarte vertiefen“ | Ein Projekt auf der Weltkarte drehen, ins Spiel senden und mit F3 prüfen; ein im Spiel gedrehtes Hologramm übernehmen (KARTE-07). |
-| [NAME-01](#name-01) | Neuer Produktname „LMNT — Build Studio“ auf Seite, Mod, Plugin und Modrinth | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „In „LMNT — Build Studio“ umbenennen“ | Mod 0.24.0 laden: Optionen → Steuerung zeigt die Gruppe „Build Studio“, J-Menü heißt „Build Studio“. |
+| [MAP-04](#map-04) | Weltbuilder vertiefen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Langdruck-Menü auf echtem Touch-Gerät (S06). |
+| [MAP-05](#map-05) | Planung auf der Live-Karte vertiefen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | „Baustand holen“ mit der Mod auf server.lmnt-gaming.net (S05). |
+| [MAP-06](#map-06) | Weltkarte in die Tiefe | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Weltkarte mit Mod 0.8.0 oder neuer im Spiel abnehmen (S08, KARTE-05/06, LIVE-08). |
+| [MAP-07](#map-07) | Gedrehte und gespiegelte Projektlagen auf der Weltkarte | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Ein Projekt auf der Weltkarte drehen, ins Spiel senden und mit F3 prüfen; ein im Spiel gedrehtes Hologramm übernehmen (KARTE-07). |
+| [NAME-01](#name-01) | Neuer Produktname „LMNT — Build Studio“ auf Seite, Mod, Plugin und Modrinth | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Mod 0.24.0 laden: Optionen → Steuerung zeigt die Gruppe „Build Studio“, J-Menü heißt „Build Studio“. |
 | [TERRAIN-01](#terrain-01) | Geländeaufnahmen für Weltkarte und Anlagen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Kopie deiner 26.3-Welt für die Geländeabnahme (S05). |
 | [TERRAIN-02](#terrain-02) | Landschaft gestalten | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Abnahme in deiner eigenen Welt und auf Touch-Geräten (S05). |
-| [TERRAIN-03](#terrain-03) | Gelände und Wege im Projekt | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | PROJ-19: Weg mit Treppen und Brücke als .litematic in deiner Welt ansehen.<br>BIB-20: Basis mit Wegenetz als Landschaftsweg auf einem echten Hang einfügen und im Spiel ansehen. |
-| [TERRAIN-04](#terrain-04) | Gelände direkt aus der Mod | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mod-Oberfläche und Hologramm automatisch abnehmen“ | Mod 0.20.0 installieren, einmal um den Bauplatz laufen, im Reiter „Gelände“ „Gelände aus dem Spiel übernehmen“ und „Gelände aus dem Spiel prüfen“ (S05). |
-| [TERRAIN-05](#terrain-05) | Gelände-Werkzeuge auf dem Projektgelände | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Im Reiter „Landschaft“ einen Berg stempeln, verwittern lassen, einen Fluss graben, als Bauteil übernehmen und im Spiel ansehen (PROJ-26). |
-| [UI-03](#ui-03) | Design-System | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Browser und Geräte automatisch abnehmen“ | Am iPad die neue Oberfläche ansehen und START-20/21 in #/testphase abhaken (Thema „Werkbank“, Reiter wischen, „Bewegung reduzieren“). |
-| [UX-01](#ux-01) | Bedienung des Planers vereinfachen (Struktur und Abläufe) | 🚧 In Arbeit 6/6 | P1 | „Browser und Geräte automatisch abnehmen“ | Testphase START-10..13: vier Hauptbereiche, Projektschritte mit Kurzsatz, eingeklappte Experten- und Datei-Wege im Browser prüfen.<br>START-12 auf dem iPad: Projektreiter waagerecht wischen, eingeklappte Bereiche per Finger öffnen. |
-| [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P1 | „Browser und Geräte automatisch abnehmen“ | Ansicht auf echter GPU und mit Touch prüfen, negative Koordinaten, alle Schnittachsen (S02). |
-| [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Browser und Geräte automatisch abnehmen“ | Mojang-Download und Blockformen in Firefox/Safari und auf echten Geräten (S06). |
+| [TERRAIN-03](#terrain-03) | Gelände und Wege im Projekt | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Große Testphase vorbereiten und betreuen“ | PROJ-19: Weg mit Treppen und Brücke als .litematic in deiner Welt ansehen.<br>BIB-20: Basis mit Wegenetz als Landschaftsweg auf einem echten Hang einfügen und im Spiel ansehen. |
+| [TERRAIN-04](#terrain-04) | Gelände direkt aus der Mod | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Mod 0.20.0 installieren, einmal um den Bauplatz laufen, im Reiter „Gelände“ „Gelände aus dem Spiel übernehmen“ und „Gelände aus dem Spiel prüfen“ (S05). |
+| [TERRAIN-05](#terrain-05) | Gelände-Werkzeuge auf dem Projektgelände | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Im Reiter „Landschaft“ einen Berg stempeln, verwittern lassen, einen Fluss graben, als Bauteil übernehmen und im Spiel ansehen (PROJ-26). |
+| [UI-03](#ui-03) | Design-System | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Am iPad die neue Oberfläche ansehen und START-20/21 in #/testphase abhaken (Thema „Werkbank“, Reiter wischen, „Bewegung reduzieren“). |
+| [UX-01](#ux-01) | Bedienung des Planers vereinfachen (Struktur und Abläufe) | 🧩 Implementiert · Abnahme offen 6/6 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Testphase START-10..13: vier Hauptbereiche, Projektschritte mit Kurzsatz, eingeklappte Experten- und Datei-Wege im Browser prüfen.<br>START-12 auf dem iPad: Projektreiter waagerecht wischen, eingeklappte Bereiche per Finger öffnen. |
+| [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Ansicht auf echter GPU und mit Touch prüfen, negative Koordinaten, alle Schnittachsen (S02). |
+| [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Mojang-Download und Blockformen in Firefox/Safari und auf echten Geräten (S06). |
 | [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Ausschnitt aus einer Kopie deiner Modpack-Welt übernehmen. |
-| [MODEL-01](#model-01) | 3D-Export | 🧩 Implementiert · Abnahme offen 7/8 | P2 | „Export und Datenmodell fertigstellen“ | Eine 3MF in Bambu Studio oder Cura öffnen und einmal drucken (S05-Rest); Blender und PrusaSlicer sind automatisch geprüft. |
+| [MODEL-01](#model-01) | 3D-Export | 🧩 Implementiert · Abnahme offen 7/8 | P2 | „Große Testphase vorbereiten und betreuen“ | Eine 3MF in Bambu Studio oder Cura öffnen und einmal drucken (S05-Rest); Blender und PrusaSlicer sind automatisch geprüft. |
 
 Abgeschlossen oder zurückgestellt: UI-01 (geprüft), UI-02 (geprüft).
 
@@ -82,16 +82,16 @@ Abgeschlossen oder zurückgestellt: UI-01 (geprüft), UI-02 (geprüft).
 
 | ID | Paket | Status | Prio | Arbeitsstrang | Nur Philipp |
 |---|---|---|---|---|---|
-| [BASE-01](#base-01) | Basisplaner | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Basisplaner mit einer echten Basis aus eurer Welt abnehmen (S06). |
-| [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Treppenhaus, Torhaus-Wehrgang und Hafen im Spiel. |
-| [GEN-03](#gen-03) | Kolosseum aus Philipps Bauplan | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Kolosseum exportieren und im Spiel aufstellen (BIB-14). |
-| [GROSS-01](#gross-01) | Großprojekte in der Bibliothek | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Großprojekte und die sechs Großbauten im Spiel ansehen (BIB-13).<br>BIB-21/BIB-22: Großprojekt auf einem echten Bauplatz am Wasser und eigenes Großprojekt aus einer Sammlung planen. |
-| [LIB-02](#lib-02) | Eigene Sammlungen, Ordner und Kategorien | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Browser und Geräte automatisch abnehmen“ | Rückmeldung zur Bedienung der Sammlungen. |
-| [LIB-03](#lib-03) | Eigene Ensembles und Generatorvorlagen speichern | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Browser und Geräte automatisch abnehmen“ | Eigene Ensembles und Generatorvorlagen ausprobieren. |
-| [LIB-04](#lib-04) | Gebäudebibliothek v3 | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Redstone-Bauten im Spiel abnehmen. |
-| [LIB-05](#lib-05) | Bibliothek im Stil der Vorlagen | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Einige neu gezeichnete Gebäude im Spiel ansehen (S08). |
-| [LIB-06](#lib-06) | Bibliotheksbeiträge | 🧩 Implementiert · Abnahme offen 5/7 | P1 | „Hochgeladene Bauobjekte fest in Bibliothek übernehmen“ | Eigenes Bauwerk einreichen und das Paket hochladen (BIB-15/16). |
-| [SPLIT-01](#split-01) | Gebäude aus großen Modellen herauslösen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Echte Litematic-Basen zum Herauslösen bereitstellen (S05). |
+| [BASE-01](#base-01) | Basisplaner | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Basisplaner mit einer echten Basis aus eurer Welt abnehmen (S06). |
+| [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Treppenhaus, Torhaus-Wehrgang und Hafen im Spiel. |
+| [GEN-03](#gen-03) | Kolosseum aus Philipps Bauplan | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Kolosseum exportieren und im Spiel aufstellen (BIB-14). |
+| [GROSS-01](#gross-01) | Großprojekte in der Bibliothek | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Große Testphase vorbereiten und betreuen“ | Großprojekte und die sechs Großbauten im Spiel ansehen (BIB-13).<br>BIB-21/BIB-22: Großprojekt auf einem echten Bauplatz am Wasser und eigenes Großprojekt aus einer Sammlung planen. |
+| [LIB-02](#lib-02) | Eigene Sammlungen, Ordner und Kategorien | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Rückmeldung zur Bedienung der Sammlungen. |
+| [LIB-03](#lib-03) | Eigene Ensembles und Generatorvorlagen speichern | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Eigene Ensembles und Generatorvorlagen ausprobieren. |
+| [LIB-04](#lib-04) | Gebäudebibliothek v3 | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Redstone-Bauten im Spiel abnehmen. |
+| [LIB-05](#lib-05) | Bibliothek im Stil der Vorlagen | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Große Testphase vorbereiten und betreuen“ | Einige neu gezeichnete Gebäude im Spiel ansehen (S08). |
+| [LIB-06](#lib-06) | Bibliotheksbeiträge | 🧩 Implementiert · Abnahme offen 5/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Eigenes Bauwerk einreichen und das Paket hochladen (BIB-15/16). |
+| [SPLIT-01](#split-01) | Gebäude aus großen Modellen herauslösen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Echte Litematic-Basen zum Herauslösen bereitstellen (S05). |
 
 Abgeschlossen oder zurückgestellt: LIB-01 (geprüft), GEN-01 (geprüft), WORLD-02 (geprüft), BUILD-05 (geprüft).
 
@@ -101,18 +101,18 @@ Abgeschlossen oder zurückgestellt: LIB-01 (geprüft), GEN-01 (geprüft), WORLD-
 
 | ID | Paket | Status | Prio | Arbeitsstrang | Nur Philipp |
 |---|---|---|---|---|---|
-| [BUILD-06](#build-06) | Bauführung im Spiel | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Projekt, Produktion und Weltkarte vertiefen“ | Bauführung mit Mod-Aufnahme auf deinem Server; Druck- und Handyansicht. |
-| [PROJ-01](#proj-01) | Projektplanung für große Projekte | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Projekt, Produktion und Weltkarte vertiefen“ | Reiter „Planung“ abnehmen (PROJ-09…11). |
-| [PROJ-02](#proj-02) | Projektplanung vertieft | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Projekt, Produktion und Weltkarte vertiefen“ | Basisplan, Material abwarten und Anteil der Bautage im Reiter „Planung“ abnehmen (PROJ-16…18). |
-| [PROJ-03](#proj-03) | Planung Runde 3 | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Projekt, Produktion und Weltkarte vertiefen“ | Im Reiter „Planung“ eine Abwesenheit eintragen und zwei Basispläne vergleichen (PROJ-20). |
-| [PROJ-04](#proj-04) | Reihenfolge zwischen Projekten | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Projekt, Produktion und Weltkarte vertiefen“ | Zwei Projekte nacheinander planen (erst Lager, dann Burg) und den Starthinweis prüfen (PROJ-21). |
-| [PROJ-05](#proj-05) | Bauleute-Konto und Bauleute aus dem Spiel | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Projekt, Produktion und Weltkarte vertiefen“ | Team übernehmen, Konto je Bauleute und Bauzettel prüfen, am besten mit einem Mitspieler im Team-Raum (PROJ-23). |
-| [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Projekt, Produktion und Weltkarte vertiefen“ | Versionsupdates auf echten Geräten (QA-02). |
-| [PROD-01](#prod-01) | Produktionsdaten | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Projekt, Produktion und Weltkarte vertiefen“ | Reiter „Produktion“ abnehmen (PROJ-12). |
-| [PROD-02](#prod-02) | Deckung und Engpässe | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Projekt, Produktion und Weltkarte vertiefen“ | Engpässe und Zeitplanvergleich prüfen (PROJ-13). |
-| [PROD-03](#prod-03) | Verarbeitung und Logistik | 🧩 Implementiert · Abnahme offen 4/4 | P2 | „Projekt, Produktion und Weltkarte vertiefen“ | — |
-| [PROD-04](#prod-04) | Anbindung der Produktion | 🧩 Implementiert · Abnahme offen 4/5 | P2 | „Mehrspieler und Server automatisch abnehmen“ | — |
-| [PROD-05](#prod-05) | Erträge aus geprüften Lagerkisten | 🧩 Implementiert · Abnahme offen 6/6 | P2 | „Mehrspieler und Server automatisch abnehmen“ | — |
+| [BUILD-06](#build-06) | Bauführung im Spiel | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Bauführung mit Mod-Aufnahme auf deinem Server; Druck- und Handyansicht. |
+| [PROJ-01](#proj-01) | Projektplanung für große Projekte | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Reiter „Planung“ abnehmen (PROJ-09…11). |
+| [PROJ-02](#proj-02) | Projektplanung vertieft | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Basisplan, Material abwarten und Anteil der Bautage im Reiter „Planung“ abnehmen (PROJ-16…18). |
+| [PROJ-03](#proj-03) | Planung Runde 3 | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Im Reiter „Planung“ eine Abwesenheit eintragen und zwei Basispläne vergleichen (PROJ-20). |
+| [PROJ-04](#proj-04) | Reihenfolge zwischen Projekten | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Große Testphase vorbereiten und betreuen“ | Zwei Projekte nacheinander planen (erst Lager, dann Burg) und den Starthinweis prüfen (PROJ-21). |
+| [PROJ-05](#proj-05) | Bauleute-Konto und Bauleute aus dem Spiel | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Große Testphase vorbereiten und betreuen“ | Team übernehmen, Konto je Bauleute und Bauzettel prüfen, am besten mit einem Mitspieler im Team-Raum (PROJ-23). |
+| [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Versionsupdates auf echten Geräten (QA-02). |
+| [PROD-01](#prod-01) | Produktionsdaten | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Große Testphase vorbereiten und betreuen“ | Reiter „Produktion“ abnehmen (PROJ-12). |
+| [PROD-02](#prod-02) | Deckung und Engpässe | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Große Testphase vorbereiten und betreuen“ | Engpässe und Zeitplanvergleich prüfen (PROJ-13). |
+| [PROD-03](#prod-03) | Verarbeitung und Logistik | 🧩 Implementiert · Abnahme offen 4/4 | P2 | „Große Testphase vorbereiten und betreuen“ | — |
+| [PROD-04](#prod-04) | Anbindung der Produktion | 🧩 Implementiert · Abnahme offen 4/5 | P2 | „Große Testphase vorbereiten und betreuen“ | — |
+| [PROD-05](#prod-05) | Erträge aus geprüften Lagerkisten | 🧩 Implementiert · Abnahme offen 6/6 | P2 | „Große Testphase vorbereiten und betreuen“ | — |
 
 Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 
@@ -122,22 +122,22 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 
 | ID | Paket | Status | Prio | Arbeitsstrang | Nur Philipp |
 |---|---|---|---|---|---|
-| [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo im Team-Raum | 🧩 Implementiert · Abnahme offen 2/2 | P0 | „Team-Raum bei gleichzeitigen Änderungen absichern“ | — |
-| [COOP-01](#coop-01) | Teambau im Planer | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mehrspieler und Server automatisch abnehmen“ | Mit Mitspielern TEAMBAU-01…05.<br>Weg für den Live-Abgleich ohne Herunter- und Hochladen wählen. |
-| [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte i… | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Mehrspieler und Server automatisch abnehmen“ | TEAMBAU-09: aktuelle Mod und aktuelles Plugin (ab 0.10.0) zusammen auf deinem Server. |
-| [COOP-04](#coop-04) | Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams z… | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Mehrspieler und Server automatisch abnehmen“ | TEAMBAU-07/08 mit echten Spielern. |
-| [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Mehrspieler und Server automatisch abnehmen“ | LAGER-01…09 mit echten Spielern.<br>LAGER-11: Lagerstand im Materialfenster der Mod. |
-| [COOP-06](#coop-06) | Teamplanung im Planer | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mehrspieler und Server automatisch abnehmen“ | TEAMBAU-21…24 mit Mitspielern an einem großen Bau. |
-| [COOP-07](#coop-07) | Team live ohne Dateien | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Mehrspieler und Server automatisch abnehmen“ | TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
-| [COOP-09](#coop-09) | Team live im Alltag | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mehrspieler und Server automatisch abnehmen“ | TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
-| [COOP-10](#coop-10) | Client zuerst | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Mehrspieler und Server automatisch abnehmen“ | TEAMBAU-27 mit Mitspielern: Mod 0.15.0, Team live, ohne Plugin bauen und Kiste öffnen. |
-| [COOP-11](#coop-11) | Verlauf verdichten | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mehrspieler und Server automatisch abnehmen“ | TEAMBAU-28: einen echten Teamstand verdichten und mit einem Mitspieler abgleichen. |
-| [LINK-04](#link-04) | Planer | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Mehrspieler und Server automatisch abnehmen“ | Testplan-Bereich LINK durchgehen. |
-| [LINK-05](#link-05) | Zweiter Weg über den Team-Raum | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Mehrspieler und Server automatisch abnehmen“ | Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern. |
-| [OPS-04](#ops-04) | Team-Raum betreiben | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Team-Raum sichern und wiederherstellen“ | Testfall TEAMBAU-31 mit zwei Geräten: sichern, wiederherstellen, löschen und zurückholen. |
-| [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Abschnitte mehreren Spielern zuweisen“ | — |
-| [WORLD-SHARE-01](#world-share-01) | Weltplan und Server-Karte nur über den Team-Raum | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Weltplan und Server-Karte über den Team-Raum“ | Mit dem Paper-Plugin und BlueMap oder Dynmap prüfen, ob die Marker des Weltplans ohne Datei auf der Server-Karte erscheinen und gesperrte Bauplätze geschützt sind (KARTE-10..12). |
-| [COOP-08](#coop-08) | Ertragskisten | 🧩 Implementiert · Abnahme offen 4/5 | P2 | „Mehrspieler und Server automatisch abnehmen“ | LAGER-01…09 mit echten Spielern. |
+| [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo im Team-Raum | 🧩 Implementiert · Abnahme offen 2/2 | P0 | „Große Testphase vorbereiten und betreuen“ | — |
+| [COOP-01](#coop-01) | Teambau im Planer | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Mit Mitspielern TEAMBAU-01…05.<br>Weg für den Live-Abgleich ohne Herunter- und Hochladen wählen. |
+| [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte i… | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Große Testphase vorbereiten und betreuen“ | TEAMBAU-09: aktuelle Mod und aktuelles Plugin (ab 0.10.0) zusammen auf deinem Server. |
+| [COOP-04](#coop-04) | Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams z… | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Große Testphase vorbereiten und betreuen“ | TEAMBAU-07/08 mit echten Spielern. |
+| [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | LAGER-01…09 mit echten Spielern.<br>LAGER-11: Lagerstand im Materialfenster der Mod. |
+| [COOP-06](#coop-06) | Teamplanung im Planer | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | TEAMBAU-21…24 mit Mitspielern an einem großen Bau. |
+| [COOP-07](#coop-07) | Team live ohne Dateien | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Mod-Abnahmen im Spiel automatisieren“ | TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
+| [COOP-09](#coop-09) | Team live im Alltag | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
+| [COOP-10](#coop-10) | Client zuerst | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | TEAMBAU-27 mit Mitspielern: Mod 0.15.0, Team live, ohne Plugin bauen und Kiste öffnen. |
+| [COOP-11](#coop-11) | Verlauf verdichten | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | TEAMBAU-28: einen echten Teamstand verdichten und mit einem Mitspieler abgleichen. |
+| [LINK-04](#link-04) | Planer | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Testplan-Bereich LINK durchgehen. |
+| [LINK-05](#link-05) | Zweiter Weg über den Team-Raum | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern. |
+| [OPS-04](#ops-04) | Team-Raum betreiben | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Testfall TEAMBAU-31 mit zwei Geräten: sichern, wiederherstellen, löschen und zurückholen. |
+| [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Mitbauer in Mod und Hologramm zeigen“ | — |
+| [WORLD-SHARE-01](#world-share-01) | Weltplan und Server-Karte nur über den Team-Raum | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Mit dem Paper-Plugin und BlueMap oder Dynmap prüfen, ob die Marker des Weltplans ohne Datei auf der Server-Karte erscheinen und gesperrte Bauplätze geschützt sind (KARTE-10..12). |
+| [COOP-08](#coop-08) | Ertragskisten | 🧩 Implementiert · Abnahme offen 4/5 | P2 | „Große Testphase vorbereiten und betreuen“ | LAGER-01…09 mit echten Spielern. |
 
 Abgeschlossen oder zurückgestellt: COOP-02 (geprüft).
 
@@ -147,7 +147,7 @@ Abgeschlossen oder zurückgestellt: COOP-02 (geprüft).
 
 | ID | Paket | Status | Prio | Arbeitsstrang | Nur Philipp |
 |---|---|---|---|---|---|
-| [SIZE-01](#size-01) | Volumenlimit für große Builds | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Großen Plan (über 1 Mio. Blöcke) im eigenen Spiel einblenden und herumlaufen: Bildrate, ferne Blöcke als Kisten (MOD-11). |
+| [SIZE-01](#size-01) | Volumenlimit für große Builds | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Großen Plan (über 1 Mio. Blöcke) im eigenen Spiel einblenden und herumlaufen: Bildrate, ferne Blöcke als Kisten (MOD-11). |
 
 <a id="bereich-mod"></a>
 
@@ -155,20 +155,20 @@ Abgeschlossen oder zurückgestellt: COOP-02 (geprüft).
 
 | ID | Paket | Status | Prio | Arbeitsstrang | Nur Philipp |
 |---|---|---|---|---|---|
-| [FALLBACK-01](#fallback-01) | Ausweichwege über alle Verbindungen | 🚧 In Arbeit 4/5 | P1 | „Mod, Server und Client mit Fallbacks ausbauen“ | Abnahme LINK-09: mit Team live kurz das Internet trennen, Minecraft neu starten, Teamstand und „Baustand holen (bester Weg)“ prüfen. |
-| [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mehrspieler und Server automatisch abnehmen“ | Mehrspieler-Abnahme auf server.lmnt-gaming.net (S04). |
-| [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Mod-Oberfläche und Hologramm automatisch abnehmen“ | Zusammen mit MAP-03-S06. |
-| [GAME-05](#game-05) | NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Teambau und Befehle in der Mod ausbauen“ | — |
-| [GAME-06](#game-06) | Server-Plugin direkt mit dem Team-Raum (Mod/Plugin 0.26.0) | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Server-Plugin direkt mit dem Team-Raum verbinden“ | Auf dem eigenen Server mit Plugin 0.26.0 den Abschnittsschutz aus dem Planer prüfen (LINK-14). |
-| [GAME-07](#game-07) | Bauplaner-Mod 2.0 | 🧩 Implementiert · Abnahme offen 10/11 | P1 | „Mod-Oberfläche und Hologramm automatisch abnehmen“ | Hologramm, Abschnitte und Röntgensicht auf server.lmnt-gaming.net (S05). |
-| [GAME-12](#game-12) | Mod einfacher bedienen (Mod 0.23.0) | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Mod-Oberfläche und Hologramm automatisch abnehmen“ | Menü J, Meldungen oben rechts, Baufenster und Befehle auf Englisch im Modpack prüfen (MOD-25 bis MOD-28). |
-| [LINK-03](#link-03) | Mod | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mod-Oberfläche und Hologramm automatisch abnehmen“ | Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“. |
-| [LINK-07](#link-07) | Ohne Server-Datei | 🚧 In Arbeit 5/6 | P1 | „Verbindung ohne Server-Datei neu bauen“ | — |
-| [LINK-10](#link-10) | Anbindung geprüft und gehärtet | 🧩 Implementiert · Abnahme offen 6/6 | P1 | „Anbindung von Mod, Team-Raum und Planer prüfen“ | Abnahme LINK-10: offline in mehreren Abschnitten bauen, wieder verbinden – alle Messungen genau einmal im Planer; mit Plugin bleibt die Raumverbindung stehen. |
-| [LINK-11](#link-11) | Alles über das Internet | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Alle Systeme online verbinden“ | Abnahme LINK-12: als Bauleitung „Mein Spiel verbinden“, mit der Mod auf den Server – der Server verbindet sich selbst mit dem Team-Raum, Abschnittsschutz greift.<br>Abnahme LINK-13: alle Dateiwege nur noch zugeklappt unter „Notfall“. |
-| [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2 | 🧩 Implementiert · Abnahme offen 5/5 | P2 | „Mod-Oberfläche und Hologramm automatisch abnehmen“ | Mitspieler-Pfeile auf der Live-Karte mit einem zweiten Spieler. |
-| [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0 | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Mod-Oberfläche und Hologramm automatisch abnehmen“ | Befehlsseite im J-Menü zusammen mit dem Plugin auf deinem Server (MOD-16). |
-| [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher | 🚧 In Arbeit 2/4 | P2 | „Mod-Werkzeuge und Planer-Anbindung erweitern“ | — |
+| [FALLBACK-01](#fallback-01) | Ausweichwege über alle Verbindungen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Mod-Abnahmen im Spiel automatisieren“ | Abnahme LINK-09: mit Team live kurz das Internet trennen, Minecraft neu starten, Teamstand und „Baustand holen (bester Weg)“ prüfen. |
+| [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mod-Abnahmen im Spiel automatisieren“ | Mehrspieler-Abnahme auf server.lmnt-gaming.net (S04). |
+| [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Zusammen mit MAP-03-S06. |
+| [GAME-05](#game-05) | NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Große Testphase vorbereiten und betreuen“ | — |
+| [GAME-06](#game-06) | Server-Plugin direkt mit dem Team-Raum (Mod/Plugin 0.26.0) | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Auf dem eigenen Server mit Plugin 0.26.0 den Abschnittsschutz aus dem Planer prüfen (LINK-14). |
+| [GAME-07](#game-07) | Bauplaner-Mod 2.0 | 🧩 Implementiert · Abnahme offen 10/11 | P1 | „Mod-Abnahmen im Spiel automatisieren“ | Hologramm, Abschnitte und Röntgensicht auf server.lmnt-gaming.net (S05). |
+| [GAME-12](#game-12) | Mod einfacher bedienen (Mod 0.23.0) | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Menü J, Meldungen oben rechts, Baufenster und Befehle auf Englisch im Modpack prüfen (MOD-25 bis MOD-28). |
+| [LINK-03](#link-03) | Mod | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“. |
+| [LINK-07](#link-07) | Ohne Server-Datei | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Mod-Abnahmen im Spiel automatisieren“ | LINK-07 auf #/testphase: im eigenen Spiel ohne Server-Datei „Mein Spiel verbinden“ und Teamstand im Spiel sehen. |
+| [LINK-10](#link-10) | Anbindung geprüft und gehärtet | 🧩 Implementiert · Abnahme offen 6/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Abnahme LINK-10: offline in mehreren Abschnitten bauen, wieder verbinden – alle Messungen genau einmal im Planer; mit Plugin bleibt die Raumverbindung stehen. |
+| [LINK-11](#link-11) | Alles über das Internet | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Abnahme LINK-12: als Bauleitung „Mein Spiel verbinden“, mit der Mod auf den Server – der Server verbindet sich selbst mit dem Team-Raum, Abschnittsschutz greift.<br>Abnahme LINK-13: alle Dateiwege nur noch zugeklappt unter „Notfall“. |
+| [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2 | 🧩 Implementiert · Abnahme offen 5/5 | P2 | „Große Testphase vorbereiten und betreuen“ | Mitspieler-Pfeile auf der Live-Karte mit einem zweiten Spieler. |
+| [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0 | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Große Testphase vorbereiten und betreuen“ | Befehlsseite im J-Menü zusammen mit dem Plugin auf deinem Server (MOD-16). |
+| [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher | 🚧 In Arbeit 2/4 | P2 | „Mod auf Modrinth veröffentlichen“ | — |
 
 <a id="bereich-plugin"></a>
 
@@ -176,10 +176,10 @@ Abgeschlossen oder zurückgestellt: COOP-02 (geprüft).
 
 | ID | Paket | Status | Prio | Arbeitsstrang | Nur Philipp |
 |---|---|---|---|---|---|
-| [GAME-04](#game-04) | Paper-Plugin der Bauplaner-Brücke (serverseitig, mehrere Minecraft-Versionen) | 🚧 In Arbeit 3/4 | P1 | „Mehrspieler und Server automatisch abnehmen“ | Plugin-Abnahme auf deinem Paper-Server (S04). |
-| [LAGER-01](#lager-01) | Optionale Truhen-/Lagerintegration | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Mehrspieler und Server automatisch abnehmen“ | Geprüfte Lagerkisten auf dem Paper-Server einrichten und den Bestand im Planer übernehmen (LAGERKISTEN.md). |
-| [LINK-02](#link-02) | Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstell… | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Mehrspieler und Server automatisch abnehmen“ | LINK-11: Plan aus „Bauen“ auf den Server legen. |
-| [LINK-06](#link-06) | Weitere Steuerung ohne Befehle | 🧩 Implementiert · Abnahme offen 2/2 | P2 | „Mehrspieler und Server automatisch abnehmen“ | — |
+| [GAME-04](#game-04) | Paper-Plugin der Bauplaner-Brücke (serverseitig, mehrere Minecraft-Versionen) | 🚧 In Arbeit 3/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Plugin-Abnahme auf deinem Paper-Server (S04). |
+| [LAGER-01](#lager-01) | Optionale Truhen-/Lagerintegration | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Geprüfte Lagerkisten auf dem Paper-Server einrichten und den Bestand im Planer übernehmen (LAGERKISTEN.md). |
+| [LINK-02](#link-02) | Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstell… | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Mod-Abnahmen im Spiel automatisieren“ | LINK-11: Plan aus „Bauen“ auf den Server legen. |
+| [LINK-06](#link-06) | Weitere Steuerung ohne Befehle | 🧩 Implementiert · Abnahme offen 2/2 | P2 | „Mod-Abnahmen im Spiel automatisieren“ | — |
 
 Abgeschlossen oder zurückgestellt: LINK-01 (geprüft).
 
@@ -197,11 +197,11 @@ Abgeschlossen oder zurückgestellt: LINK-01 (geprüft).
 
 | ID | Paket | Status | Prio | Arbeitsstrang | Nur Philipp |
 |---|---|---|---|---|---|
-| [GFX-03](#gfx-03) | Große Szenen flüssig bedienen | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Browser und Geräte automatisch abnehmen“ | Ein großes Modell mit Wasser oder Glas im Betrachter drehen und Blöcke anklicken: flüssig und der richtige Block (S04). |
-| [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Export und Datenmodell fertigstellen“ | — |
-| [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Browser und Geräte automatisch abnehmen“ | Olympus auf deinem Rechner, dazu Firefox/Safari (S06). |
-| [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 9/9 | P1 | „Leistung bei großen Szenen steigern“ | — |
-| [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server | 🚧 In Arbeit 3/3 | P1 | „Browser und Geräte automatisch abnehmen“ | — |
+| [GFX-03](#gfx-03) | Große Szenen flüssig bedienen | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Ein großes Modell mit Wasser oder Glas im Betrachter drehen und Blöcke anklicken: flüssig und der richtige Block (S04). |
+| [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | — |
+| [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Olympus auf deinem Rechner, dazu Firefox/Safari (S06). |
+| [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 9/9 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | — |
+| [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | GERAET-03 auf #/testphase: auf dem iPad (Safari) den Planer einmal laden, dann im Flugmodus neu öffnen; einmal die Mod über https://bauplaner.pages.dev/Minecraft-Bauplaner/ verbinden. |
 
 Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF-03 (geprüft).
 
@@ -211,14 +211,14 @@ Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF
 
 | ID | Paket | Status | Prio | Arbeitsstrang | Nur Philipp |
 |---|---|---|---|---|---|
-| [ARCH-02](#arch-02) | Planmodell | 🧩 Implementiert · Abnahme offen 6/7 | P0 | „Export und Datenmodell fertigstellen“ | Datencheck unter #/system mit deinen eigenen, lange gewachsenen Browserdaten (Stichprobe zu S05; automatisch mit drei alten Ständen geprüft). |
-| [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3 | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Einen Bau mit Spielprüfung ohne Hinweise nachbauen und Verbindungen vergleichen (S07). |
-| [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Geänderte Gebäude (Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen (S06). |
-| [CORE-04](#core-04) | Planer-Kernmodule prüfen und überarbeiten | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Planer-Kernmodule prüfen und überarbeiten“ | Projekt mit Nachfolger und Bauplatz löschen; Blockeditor mit Änderungen verlassen; Truhe mit verzaubertem Schwert umsortieren (CORE-04-S05). |
+| [ARCH-02](#arch-02) | Planmodell | 🧩 Implementiert · Abnahme offen 6/7 | P0 | „Große Testphase vorbereiten und betreuen“ | Datencheck unter #/system mit deinen eigenen, lange gewachsenen Browserdaten (Stichprobe zu S05; automatisch mit drei alten Ständen geprüft). |
+| [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3 | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Einen Bau mit Spielprüfung ohne Hinweise nachbauen und Verbindungen vergleichen (S07). |
+| [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Geänderte Gebäude (Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen (S06). |
+| [CORE-04](#core-04) | Planer-Kernmodule prüfen und überarbeiten | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Projekt mit Nachfolger und Bauplatz löschen; Blockeditor mit Änderungen verlassen; Truhe mit verzaubertem Schwert umsortieren (CORE-04-S05). |
 | [DOC-02](#doc-02) | Repository übersichtlich | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Git-Repo übersichtlich überarbeiten“ | README und Doku-Index auf GitHub ansehen: Ist auf einen Blick klar, was das Projekt ist? |
-| [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
-| [MAT-03](#mat-03) | Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Module und Systeme komplex ausarbeiten“ | — |
-| [STRUCT-01](#struct-01) | Dateistruktur sauber neu ordnen | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Dateistruktur sauber neu ordnen“ | — |
+| [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Große Testphase vorbereiten und betreuen“ | — |
+| [MAT-03](#mat-03) | Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Große Testphase vorbereiten und betreuen“ | — |
+| [STRUCT-01](#struct-01) | Dateistruktur sauber neu ordnen | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Große Testphase vorbereiten und betreuen“ | — |
 
 Abgeschlossen oder zurückgestellt: CORE-01 (geprüft), CORE-02 (geprüft), CORE-03 (geprüft), STORE-01 (geprüft), MAT-01 (geprüft), ARCH-01 (geprüft), STORE-02 (geprüft), PROFILE-01 (geprüft), NBT-01 (geprüft), FORMAT-01 (geprüft), FORMAT-02 (geprüft), MAT-04 (geprüft), DIFF-01 (geprüft), GAME-01 (geprüft), ENTITY-01 (geprüft).
 
@@ -228,8 +228,8 @@ Abgeschlossen oder zurückgestellt: CORE-01 (geprüft), CORE-02 (geprüft), CORE
 
 | ID | Paket | Status | Prio | Arbeitsstrang | Nur Philipp |
 |---|---|---|---|---|---|
-| [QA-04](#qa-04) | Große Testphase | 🧩 Implementiert · Abnahme offen 4/6 | P0 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Testphase mit weiteren Testern: erst die Kernfälle auf #/testphase. |
-| [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | 🚧 In Arbeit 1/2 | P1 | „Browser und Geräte automatisch abnehmen“ | Bereich „Geräte und Browser“ (GERAET-01 … 06) auf #/testphase auf deinem PC (Chrome/Edge und Firefox) und deinem Handy durchgehen und das Protokoll schicken (QA-02-S02). |
+| [QA-04](#qa-04) | Große Testphase | 🧩 Implementiert · Abnahme offen 4/6 | P0 | „Große Testphase vorbereiten und betreuen“ | Testphase mit weiteren Testern: erst die Kernfälle auf #/testphase. |
+| [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | 🚧 In Arbeit 1/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Bereich „Geräte und Browser“ (GERAET-01 … 06) auf #/testphase auf deinem PC (Chrome/Edge und Firefox) und deinem Handy durchgehen und das Protokoll schicken (QA-02-S02). |
 
 Abgeschlossen oder zurückgestellt: OPS-01 (geprüft), PLAN-01 (geprüft), DOC-01 (geprüft), QA-01 (geprüft), QA-03 (geprüft), OPS-02 (geprüft), OPS-03 (geprüft), LICENSE-01 (geprüft).
 
@@ -298,6 +298,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **COOP-05** · LAGER-11: Lagerstand im Materialfenster der Mod.
 - **GAME-12** · Menü J, Meldungen oben rechts, Baufenster und Befehle auf Englisch im Modpack prüfen (MOD-25 bis MOD-28).
 - **LINK-03** · Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“.
+- **LINK-07** · LINK-07 auf #/testphase: im eigenen Spiel ohne Server-Datei „Mein Spiel verbinden“ und Teamstand im Spiel sehen.
 - **EDIT-06** · Truhe und Schild mit Inhalt im Spiel laden (WERK-09).
 - **FALLBACK-01** · Abnahme LINK-09: mit Team live kurz das Internet trennen, Minecraft neu starten, Teamstand und „Baustand holen (bester Weg)“ prüfen.
 - **LINK-10** · Abnahme LINK-10: offline in mehreren Abschnitten bauen, wieder verbinden – alle Messungen genau einmal im Planer; mit Plugin bleibt die Raumverbindung stehen.
@@ -311,6 +312,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **QA-02** · Bereich „Geräte und Browser“ (GERAET-01 … 06) auf #/testphase auf deinem PC (Chrome/Edge und Firefox) und deinem Handy durchgehen und das Protokoll schicken (QA-02-S02).
 - **UX-01** · START-12 auf dem iPad: Projektreiter waagerecht wischen, eingeklappte Bereiche per Finger öffnen.
 - **PERF-04** · Olympus auf deinem Rechner, dazu Firefox/Safari (S06).
+- **PERF-06** · GERAET-03 auf #/testphase: auf dem iPad (Safari) den Planer einmal laden, dann im Flugmodus neu öffnen; einmal die Mod über https://bauplaner.pages.dev/Minecraft-Bauplaner/ verbinden.
 - **VIEW-01** · Ansicht auf echter GPU und mit Touch prüfen, negative Koordinaten, alle Schnittachsen (S02).
 - **VIEW-02** · Mojang-Download und Blockformen in Firefox/Safari und auf echten Geräten (S06).
 - **GFX-01** · Licht und Schatten auf echten GPUs, Firefox/Safari und Handy (S06).
@@ -367,7 +369,6 @@ Arbeit, für die gerade kein laufender Arbeitsstrang zuständig ist. Zum Verteil
 
 | ID | Bereich | Prio | Status | Offen ohne Bearbeiter |
 |---|---|---|---|---|
-| [QA-04](#qa-04) | Testphase, Qualität und Betrieb | P0 | 🧩 Implementiert · Abnahme offen | Der Arbeitsstrang „Große Testphase vorbereiten und betreuen“ ist beendet; die rund 30 Pakete, bei denen nur Philipps Abnahme fehlt, haben keinen aktiven Arbeitsstrang für Diagnose und Fehlerbehebung. |
 
 ## Eingänge ohne eigenes Paket
 
@@ -375,10 +376,10 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 
 | ID | Eingang | Von | Bereich | Zustand | Arbeitsstrang | Bezug |
 |---|---|---|---|---|---|---|
-| IN-01 | Plan kommt nicht richtig vom Planer ins Spiel; das große Bauprojekt läuft weiter nicht sauber. | Philipp, 2026-11-03 | Volumenlimit und Übertragung großer Pläne | zugeteilt | „Volumenlimit für große Builds aufheben“ | SIZE-01 |
+| IN-01 | Plan kommt nicht richtig vom Planer ins Spiel; das große Bauprojekt läuft weiter nicht sauber. | Philipp, 2026-11-03 | Volumenlimit und Übertragung großer Pläne | übernommen | „Große Testphase vorbereiten und betreuen“ | SIZE-01 |
 | IN-02 | Teambau live statt Teampaket herunter- und hochladen; einfacher und komplexer überarbeiten. | Philipp, 2026-11-03 | Teambau live | übernommen | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | COOP-01, COOP-07 |
 | IN-03 | Befehle und Status von Mod und Plugin im J-Menü per Klick – als GAME-10 übernommen (Mod 0.11.0). | Philipp, 2026-11-03 | Client-Mod | übernommen | „Teambau und Befehle in der Mod ausbauen“ | GAME-10 |
-| IN-04 | Client-Mod in mehreren Minecraft-Versionen und Launchern; bisher gibt es Fabric/NeoForge nur für 26.3 (Paper-Plugin läuft 1.18.2–26.3). Entscheidung Philipp 04.11.: neueste Version und vor allem die gespielte (Fabric 26.3). | Philipp, 2026-10-27 | Client-Mod | zugeteilt | „Teambau und Befehle in der Mod ausbauen“ | GAME-02, GAME-05, GAME-11 |
+| IN-04 | Client-Mod in mehreren Minecraft-Versionen und Launchern; bisher gibt es Fabric/NeoForge nur für 26.3 (Paper-Plugin läuft 1.18.2–26.3). Entscheidung Philipp 04.11.: neueste Version und vor allem die gespielte (Fabric 26.3). | Philipp, 2026-10-27 | Client-Mod | übernommen | „Mod auf Modrinth veröffentlichen“ | GAME-02, GAME-05, GAME-11 |
 | IN-05 | Reale Orte aus Kartendaten (OSM) – zurückgestellt, bis die Lizenzfrage geklärt ist. | Projektleitung, 2026-11-02 | Planer | zurückgestellt | — | LICENSE-01 |
 | IN-06 | Seit 01.11. ohne Bearbeiter: die Pakete PROFILE-01, NBT-01, MAT-02/04, DIFF-01, PERF-02/03, FORMAT-01, QA-02. | Projektleitung, 2026-11-01 | Kern, Minecraft-Daten und Dateiformate | übernommen | „Liegengebliebene Datenpakete abarbeiten“ | PROFILE-01, NBT-01, MAT-02, MAT-04, DIFF-01, PERF-02, PERF-03, FORMAT-01, QA-02 |
 | IN-07 | Alte Issues #2 (B16), #3 (B17) und #4 (S4) sind noch offen, obwohl VIEW-02, LIB-02/03 und STORE-02 auf main liegen: prüfen und schließen. | GitHub, 2026-10-31 | Testphase, Qualität und Betrieb | übernommen | „Offene Punkte prüfen und Roadmap neu ordnen“ | VIEW-02, LIB-02, LIB-03, STORE-02 |
@@ -386,12 +387,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 ## Aktiver Arbeitsblock
 
 - **QA-02 · Echte GPU-, Safari- und iPhone-Abnahme** — 🚧 In Arbeit, 1/2 Teilschritte. Nächster Schritt: Protokolle der Tester in docs/testing/GERAETEMATRIX.md eintragen und Befunde beheben.
-- **PROFILE-01 · Ein verbindliches Java-Versionsprofil** — ✅ Im beschriebenen Umfang geprüft, 3/3 Teilschritte. Nächster Schritt: Erledigt; ältere Datei in der Oberfläche in DATEI-02.
-- **NBT-01 · Semantische BlockEntity-Transformationen** — ✅ Im beschriebenen Umfang geprüft, 3/3 Teilschritte. Nächster Schritt: Erledigt; Stichprobe in DATEI-08.
-- **FORMAT-01 · Schem v3 an echten Referenzwerkzeugen abnehmen** — ✅ Im beschriebenen Umfang geprüft, 2/2 Teilschritte. Nächster Schritt: Erledigt; Stichprobe mit Philipps Modpack in DATEI-08.
 - **MAT-02 · Versionierte Item-/Rezeptauflösung vervollständigen** — 🧩 Implementiert · Abnahme offen, 3/3 Teilschritte. Nächster Schritt: Abnahme in der Testphase: Rohstoffliste eines großen Bauwerks mit gewählter Holzart und Brennstoff mit dem Spiel vergleichen.
-- **MAT-04 · Kupfer mit Oxidation und Wachsstatus** — ✅ Im beschriebenen Umfang geprüft, 2/2 Teilschritte. Nächster Schritt: Erledigt; Glas/Beton/Terrakotta und Oberfläche in PROJ-14.
-- **DIFF-01 · Verschiebungserkennung und BlockEntity-Diff** — ✅ Im beschriebenen Umfang geprüft, 3/3 Teilschritte. Nächster Schritt: Erledigt; Oberfläche in BIB-02.
 - **GAME-02 · Fabric-Brücke kompilieren und im Spiel abnehmen** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Philipp testet die aktuelle .jar auf server.lmnt-gaming.net und meldet Ergebnis/Fehler (Anleitung ANLEITUNG_SPIELTEST.md).
 - **GAME-07 · Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server)** — 🧩 Implementiert · Abnahme offen, 10/11 Teilschritte. Nächster Schritt: Philipp prüft 0.19.0 im echten Spiel: gesperrter Bauplatz grau, Hologramm nur in einer Gruppe (Testfall MOD-21); danach Stufe 7.
 - **GAME-08 · Bauplaner-Mod Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten im Spiel (marks2), Mitspieler für die Karte (GET /v1/players), hello.protocol 2** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Philipp prüft Protokoll 3 im echten Spiel (TESTPLAN MOD-17); Forge und Paper ohne Live-Verbindung.
@@ -402,20 +398,18 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **MAP-06 · Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players)** — 🧩 Implementiert · Abnahme offen, 7/8 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag).
 - **SIZE-01 · Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Rest von MOD-11 im eigenen Spiel (Bildrate auf echter Grafikkarte). Folgepunkt Leistung: Werkstatt, Projekt anlegen, Export und Senden blockieren bei 1,5 Mio. Blöcken die Seite 4–10 s (in den Hintergrundrechner verlagern); Mod-Zahlen mit Tausenderpunkt.
 - **COOP-01 · Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp mit Mitspielern (TEAMBAU-01…05).
-- **COOP-02 · Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll** — ✅ Im beschriebenen Umfang geprüft, 4/4 Teilschritte. Nächster Schritt: Regressionen bei Plugin-Änderungen mit scripts/mod/test_multiplayer.sh.
 - **COOP-03 · Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-09 auf Philipps Server mit Mod 0.10.0 und Paper-Plugin mit Teamkanal; Lagerkisten (COOP-04) über TeamChannel.decorate/broadcastStore.
 - **COOP-04 · Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung in COOP-05 (geprüfte Lagerkisten, docs/architecture/LAGERKISTEN.md).
 - **PROJ-01 · Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel.
-- **GAME-09 · Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** — 🚧 In Arbeit, 4/5 Teilschritte. Nächster Schritt: Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind.
+- **GAME-09 · Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** — 🚧 In Arbeit, 4/5 Teilschritte. Nächster Schritt: Modrinth prüft das Projekt weiter (Status processing, am 07.11.2026 nachgesehen); alle Versionen bis 0.26.0, Texte, Galerie und Offenlegungen sind aktuell (modrinth_publish.mjs plan). Kein Handlungsbedarf außer Abwarten.
 - **GAME-10 · Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme MOD-16 auf Philipps Server mit Paper-Plugin.
-- **GAME-11 · Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** — 🚧 In Arbeit, 2/4 Teilschritte. Nächster Schritt: Fabric 26.4 ist vorbereitet (Snapshot, kein Release). Erscheint 26.4: Versionen in fabric-26.4/gradle.properties auf das Release setzen, Spieltest BAUPLANER_MC=26.4, dann #/mod und Modrinth je Version (S03); NeoForge 26.4 sobald NeoForge Builds hat.
+- **GAME-11 · Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** — 🚧 In Arbeit, 2/4 Teilschritte. Nächster Schritt: 26.4 ist am 07.11.2026 noch Snapshot 7 (piston-meta). Bei Erscheinen: fabric-26.4/gradle.properties auf das Release setzen, Spieltest BAUPLANER_MC=26.4, #/mod und Modrinth je Version.
 - **COOP-07 · Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05).
 - **PROD-01 · Produktionsdaten: Katalog von 34 Farmarten mit Richtwerten je Einheit, Bedingungen, Reichweite, Verbrauch und Bauplan; Farmliste je Projekt (Anzahl, Zustand, Ort, Bauteil, Kartenpunkt) und Ertragsbuch, das ins Baustellen-Lager bucht und gemessene Raten liefert** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme PROJ-12; später Erträge aus geprüften Lagerkisten (COOP-05) ins Ertragsbuch.
 - **PROD-02 · Deckung und Engpässe: Restbedarf des Sammelplans gegen laufende Farmen und Handarbeit (gemeinsame Warteschlange, gieriger Ausgleich), Engpass, Materialbereitschaft je Abschnitt in Spieltagen, „Lohnt sich eine Farm?“ mit Amortisation aus Bauplan-Kosten** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme PROJ-13.
 - **PROD-03 · Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Abnahme PROJ-12/13; Ofenstraße im Spiel prüfen (Trichterwege der Module).
 - **PROD-04 · Anbindung der Produktion: Farmen aus Projekt-Bauteilen mit Baufortschritt, Farmpunkte der Weltkarte übernehmen und eintragen, bester AFK-Platz nach Simulationsdistanz, Materialbereitschaft gegen Zeitplan der Planung, Sammelaufträge je Bauleute (TEAM-03-S02), Produktionsblatt als Text** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme PROJ-13; danach Farmerträge aus Mod/Plugin.
 - **PROD-05 · Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung** — 🧩 Implementiert · Abnahme offen, 6/6 Teilschritte. Nächster Schritt: Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen.
-- **LINK-01 · Plugin richtet sich selbst ein und lässt sich per Klick koppeln (link.json, Server-ID, Kopplung nur OP/Bauleitung über den Teamkanal)** — ✅ Im beschriebenen Umfang geprüft, 4/4 Teilschritte. Nächster Schritt: Regressionen mit test_bridge_paper_link.sh und test_multiplayer.sh.
 - **LINK-02 · Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte)** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Abnahme LINK-02 und LINK-11.
 - **LINK-03 · Mod: Live-Dienst startet selbst, Planer per Klick im Spiel zulassen, Teamfreigabe als Knopf, Server-Wege weiterreichen (Mod 0.12.0)** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme LIVE-01 in Philipps Modpack.
 - **LINK-04 · Planer: Bereich „Spiel und Server verbinden – ohne Befehle“ (#/mod), Server koppeln und einstellen, Team und Raum per Knopf** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme durch Philipp.
@@ -423,12 +417,12 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **LINK-06 · Weitere Steuerung ohne Befehle: Plan mit Anker von der Weltkarte auf den Server und Serveraufnahme per Klick zurück in den Planer** — 🧩 Implementiert · Abnahme offen, 2/2 Teilschritte. Nächster Schritt: Abnahme durch Philipp (Testplan LINK-05, LINK-06; Paper-Plugin 0.13.0 auf dem Server).
 - **COOP-09 · Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme mit Mitspielern (TEAMBAU-25).
 - **PROJ-02 · Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05, PROJ-16…18).
-- **LINK-07 · Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten** — 🚧 In Arbeit, 5/6 Teilschritte. Nächster Schritt: Team-Arbeitsstrang deployt den Raum (Aufnahmen, Positionen); Modrinth 0.15.0; Abnahme LINK-07/LINK-08 durch Philipp.
+- **LINK-07 · Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: Abnahme LINK-07 automatisieren (Block C), Rest im eigenen Spiel durch Philipp.
 - **TERRAIN-03 · Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte** — 🧩 Implementiert · Abnahme offen, 7/8 Teilschritte. Nächster Schritt: Abnahme PROJ-19, BIB-19 und BIB-20 im Spiel (Treppen, Brücken, Wegenetz der Basis auf echtem Gelände).
 - **GFX-02 · Darstellung und Leistung, Runde 2: Biomfarben, leuchtende Blockentities (Leuchtfeuer-Strahl, Endportal, Magma), GPU-Upload großer Szenen in Stücken** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Nur noch Abnahme auf echter GPU (S04); Firefox/Safari-Engine und Spielbildabgleich automatisch geprüft (Block 5).
 - **EDIT-06 · Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: EDIT-06-S05: Philipp prüft das Bauen im 3D-Bild auf PC und iPad (WERK-08) und lädt eine Truhe/ein Schild mit Inhalt im Spiel (WERK-09).
 - **STRUCT-01 · Dateistruktur sauber neu ordnen: Fachordner im Kern und in der Oberfläche, Skripte, Tests und Doku nach Bereich, Ordnerkarte docs/STRUKTUR.md** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Durchsicht der Ordnerkarte durch Philipp; parallele Arbeitsstränge ziehen neue Dateien mit dem Codemod nach.
-- **UX-01 · Bedienung des Planers vereinfachen (Struktur und Abläufe)** — 🚧 In Arbeit, 6/6 Teilschritte. Nächster Schritt: Philipps Abnahme START-10..13 im Browser und auf dem iPad. Optik übernimmt „Planer-Oberfläche schön neu gestalten“.
+- **UX-01 · Bedienung des Planers vereinfachen (Struktur und Abläufe)** — 🧩 Implementiert · Abnahme offen, 6/6 Teilschritte. Nächster Schritt: Abnahme START-10/11 im Browser und START-12 auf dem iPad (Philipp); simple-ui.e2e in drei Engines grün.
 - **UI-03 · Design-System: saubere, einheitliche und schön angepasste Planer-Oberfläche** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme START-20/21 durch Philipp am iPad; gruppierte Projektreiter aus „Bedienung vereinfachen“ und Anleitung optisch mitziehen; Werte an das Mod-Menü weitergeben.
 - **OPS-04 · Team-Raum betreiben: Sicherung, Wiederherstellung, Aufbewahrung, Zustand** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-31 mit zwei Geräten (sichern, wiederherstellen, löschen und zurückholen).
 - **DOC-02 · Repository übersichtlich: README als Überblick, Doku-Index, Funktionsstand und Prüfstand neu, interne Arbeitsnotizen und Verlauf aus dem Repository** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Durchsicht von README und Doku-Index durch Philipp.
@@ -525,7 +519,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [UI-02](#ui-02) | App-Hülle, Navigation und Handyoberfläche überarbeiten | ✅ Im beschriebenen Umfang geprüft | 4/4 | UI-01, QA-01 | ausstehend | ausstehend |
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart | 🧩 Implementiert · Abnahme offen | 6/7 | PERF-01, MODEL-01, ARCH-02 | ausstehend | ausstehend |
 | [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund | 🧩 Implementiert · Abnahme offen | 9/9 | PERF-04 | ausstehend | ausstehend |
-| [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server: Offline-Speicher (Service Worker) und kostenlose zweite Adresse auf Cloudflare Pages | 🚧 In Arbeit | 3/3 | PERF-05 | ausstehend | ausstehend |
+| [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server: Offline-Speicher (Service Worker) und kostenlose zweite Adresse auf Cloudflare Pages | 🧩 Implementiert · Abnahme offen | 3/3 | PERF-05 | ausstehend | ausstehend |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen | 5/6 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material | 🧩 Implementiert · Abnahme offen | 6/7 | VIEW-02, BUILD-01, MAT-01 | ausstehend | ausstehend |
 | [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel | 🧩 Implementiert · Abnahme offen | 6/7 | BLOCK-01, LIB-04, UPDATE-01 | ausstehend | ausstehend |
@@ -608,7 +602,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 | ID | Arbeitspaket | Status | Schritte | Abhängigkeiten | Main | Pages-Quelle |
 |---|---|---|---:|---|---|---|
-| [UX-01](#ux-01) | Bedienung des Planers vereinfachen (Struktur und Abläufe) | 🚧 In Arbeit | 6/6 | UI-02, GUIDE-01 | ausstehend | ausstehend |
+| [UX-01](#ux-01) | Bedienung des Planers vereinfachen (Struktur und Abläufe) | 🧩 Implementiert · Abnahme offen | 6/6 | UI-02, GUIDE-01 | ausstehend | ausstehend |
 | [TEAM-01](#team-01) | Backendvertrag, Datenbank und Payloadspeicher | ⏳ Offen | 0/2 | ARCH-01, FORMAT-01, STORE-02, LICENSE-01 | ausstehend | ausstehend |
 | [AUTH-01](#auth-01) | Konten, Rechte und Übernahme lokaler Projekte | ⏳ Offen | 0/2 | TEAM-01 | ausstehend | ausstehend |
 | [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo im Team-Raum | 🧩 Implementiert · Abnahme offen | 2/2 | AUTH-01, UPDATE-01 | ausstehend | ausstehend |
@@ -636,8 +630,8 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [COOP-09](#coop-09) | Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-07 | ausstehend | ausstehend |
 | [COOP-10](#coop-10) | Client zuerst: Baustand und Kisteninhalt laut Spiel (section.seen, store.seen) im Teamstand, ungeprüft getrennt von Servermessungen | 🧩 Implementiert · Abnahme offen | 6/7 | COOP-07, COOP-09 | ausstehend | ausstehend |
 | [COOP-11](#coop-11) | Verlauf verdichten: Bauleitung ersetzt Messungen bis zu einem Stichtag durch Summen (team.digest), gleicher Teamstand, Merge ohne Doppelzählung, Produktion und Team live lesen mit | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-01, COOP-05, COOP-08, COOP-09 | ausstehend | ausstehend |
-| [LINK-07](#link-07) | Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten | 🚧 In Arbeit | 5/6 | LINK-06, COOP-07 | ausstehend | ausstehend |
-| [FALLBACK-01](#fallback-01) | Ausweichwege über alle Verbindungen: Teamstand offline in der Mod, HTTP statt WebSocket, offline gemerkte Messungen, Baustand über den besten Weg (Spiel → Team-Raum → Server → Datei) | 🚧 In Arbeit | 4/5 | LINK-07, COOP-10 | ausstehend | ausstehend |
+| [LINK-07](#link-07) | Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten | 🧩 Implementiert · Abnahme offen | 6/7 | LINK-06, COOP-07 | ausstehend | ausstehend |
+| [FALLBACK-01](#fallback-01) | Ausweichwege über alle Verbindungen: Teamstand offline in der Mod, HTTP statt WebSocket, offline gemerkte Messungen, Baustand über den besten Weg (Spiel → Team-Raum → Server → Datei) | 🧩 Implementiert · Abnahme offen | 5/6 | LINK-07, COOP-10 | ausstehend | ausstehend |
 | [LINK-10](#link-10) | Anbindung geprüft und gehärtet: Sendungen über den WebSocket nacheinander (Mod und Plugin), Messungen bis zur Bestätigung gemerkt, Team-Raum mit Ping ohne Aufwecken und sauberem Schließen, Planer ohne gestapelte Abfrage-Schleifen | 🧩 Implementiert · Abnahme offen | 6/6 | FALLBACK-01, LINK-07 | ausstehend | ausstehend |
 | [LINK-11](#link-11) | Alles über das Internet: Server-Plugin bekommt die Team-Infos von Mod und Planer selbst über den Team-Raum, Dateiwege nur noch als versteckter Notfall (Mod/Plugin 0.21.0) | 🧩 Implementiert · Abnahme offen | 5/6 | LINK-10, COOP-07 | ausstehend | ausstehend |
 | [GUIDE-01](#guide-01) | Anleitung „Wie geh ich es an?“: eigener Reiter mit Wegen nach Ziel, jeder Schritt mit Grafik, kurzem Satz und Link an die passende Stelle | 🧩 Implementiert · Abnahme offen | 4/5 | UI-02, GAME-11, TERRAIN-04, LINK-11 | ausstehend | ausstehend |
@@ -851,7 +845,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### ARCH-02
 
-**Planmodell: Verweisgraph, kompakter Blockdatenspeicher und Migrationsregeln** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Grundstruktur des Planers erweitern“ · Arbeitsstrang: „Export und Datenmodell fertigstellen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Planmodell: Verweisgraph, kompakter Blockdatenspeicher und Migrationsregeln** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Grundstruktur des Planers erweitern“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] ARCH-02-S01: Bestand aller gespeicherten Datensätze, Teilschemata und Verweise dokumentieren (PLAN_MODEL).
 - [x] ARCH-02-S02: Blockzellen gepackt speichern (bp-cells-1, bitgenau, IndexedDB-Migration 4, Sicherungsformat 3).
@@ -936,7 +930,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### QA-02
 
-**Echte GPU-, Safari- und iPhone-Abnahme** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Arbeitsstrang „Liegengebliebene Datenpakete abarbeiten“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Echte GPU-, Safari- und iPhone-Abnahme** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Arbeitsstrang „Liegengebliebene Datenpakete abarbeiten“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] QA-02-S01: Geräte-/Browsermatrix und reproduzierbare Aufgaben definieren.
 - [ ] QA-02-S02: Dateiimport, IndexedDB, Touch, Themes und Layer auf echten Geräten prüfen.
@@ -1022,7 +1016,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### UX-01
 
-**Bedienung des Planers vereinfachen (Struktur und Abläufe)** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Arbeitsstrang „Bedienung des Planers vereinfachen“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Bedienung des Planers vereinfachen (Struktur und Abläufe)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Bedienung des Planers vereinfachen“ · Arbeitsstrang: „Planer-Abnahmen ohne Nachweis automatisieren“ · Aktualisiert: 2026-11-07T12:31:42.554Z
 
 - [x] UX-01-S01: Hauptnavigation auf vier Bereiche (Projekte, Bibliothek, Weltkarte, Spiel); Datei-Wege Betrachter und Weltimport nur noch in Fußzeile und Schnellsuche.
 - [x] UX-01-S02: Zwölf Projektreiter in vier Schritten (Gestalten, Bauen, Organisieren, Teilen) mit einem Kurzsatz je Reiter; Ids, Beschriftungen und Routen unverändert.
@@ -1033,7 +1027,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Ein neuer Nutzer findet von der Startseite in höchstens zwei Klicks zu jedem Hauptablauf; jede Seite zeigt eine Hauptaktion zuerst; Datei-Wege sind als Notfall eingeklappt; keine Funktion entfällt; bestehende Browsertests bleiben grün.
 
-**Nächste Aktion:** Philipps Abnahme START-10..13 im Browser und auf dem iPad. Optik übernimmt „Planer-Oberfläche schön neu gestalten“.
+**Nächste Aktion:** Abnahme START-10/11 im Browser und START-12 auf dem iPad (Philipp); simple-ui.e2e in drei Engines grün.
 
 **Nur Philipp:** Im Planer abnehmen: Testphase START-10..13: vier Hauptbereiche, Projektschritte mit Kurzsatz, eingeklappte Experten- und Datei-Wege im Browser prüfen. Auf echten Geräten und Browsern: START-12 auf dem iPad: Projektreiter waagerecht wischen, eingeklappte Bereiche per Finger öffnen.
 
@@ -1203,7 +1197,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAT-02
 
-**Versionierte Item-/Rezeptauflösung vervollständigen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Liegengebliebene Datenpakete abarbeiten“ · Arbeitsstrang: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Versionierte Item-/Rezeptauflösung vervollständigen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Liegengebliebene Datenpakete abarbeiten“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] MAT-02-S01: Vorhandene Regeln mit Profilreport abgleichen.
 - [x] MAT-02-S02: Mehrblockobjekte, Rezeptalternativen, Rest-/Brennstoffbilanzen profilgenau prüfen.
@@ -1223,7 +1217,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAT-03
 
-**Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Arbeitsstrang: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T11:03:24.121Z
+**Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] MAT-03-S01: 50 gezielte Materialsätze und Property-/BlockEntity-Sperren vorhanden.
 - [x] MAT-03-S02: Alte 174 Gebäude-Payloadhashes unverändert nachgewiesen.
@@ -1302,7 +1296,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-02
 
-**Zellindizes, Chunkdaten und selektive Neuberechnung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gesamtsystem auf Performance und Stabilität optimieren“ · Arbeitsstrang: „Export und Datenmodell fertigstellen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Zellindizes, Chunkdaten und selektive Neuberechnung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gesamtsystem auf Performance und Stabilität optimieren“ · Arbeitsstrang: „Planer-Abnahmen ohne Nachweis automatisieren“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] PERF-02-S01: Kosten von owners/Strings/Übertragungen messen.
 - [x] PERF-02-S02: Index-/Chunkstrategie nur mit identischem semantischem Ergebnis einführen.
@@ -1342,7 +1336,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-04
 
-**Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Große Modelle flüssig berechnen“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Große Modelle flüssig berechnen“ · Arbeitsstrang: „Planer-Abnahmen ohne Nachweis automatisieren“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] PERF-04-S01: Gemeinsame Auftragsschicht: ein Worker je Auftrag, Fortschritt, Abbrechen per terminate, Zeitlimit, Rückfall ohne Worker; Zellen als übertragbare Spalten.
 - [x] PERF-04-S02: Litematic-Import und Speichern großer Versionen (Prüfsumme, ID, Packen, Kennwerte) im Worker; versiegelte Payloads ohne erneute Kopie.
@@ -1368,7 +1362,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-05
 
-**Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gesamtsystem auf Performance und Stabilität optimieren“ · Arbeitsstrang: „Leistung bei großen Szenen steigern“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gesamtsystem auf Performance und Stabilität optimieren“ · Arbeitsstrang: „Planer-Abnahmen ohne Nachweis automatisieren“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] PERF-05-S01: Messbasis und priorisierter Befund (Ladezeiten, Pakete, CPU-Brennpunkte, Fehlerbehandlung) in PERFORMANCE_AUDIT.md; Messskript scripts/perf/measure_start.mjs.
 - [x] PERF-05-S02: Mitgelieferter Katalog als Datei beim Bauen (assets/catalog-<key>.json), Worker lädt sie bei fehlendem Katalogspeicher, Rückfall auf Erzeugen; Erststart 5,2 s → 1,4 s.
@@ -1394,7 +1388,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-06
 
-**Mehr Leistung ohne eigenen Server: Offline-Speicher (Service Worker) und kostenlose zweite Adresse auf Cloudflare Pages** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Arbeitsstrang „Einfachsten Weg zu mehr Leistung finden“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Mehr Leistung ohne eigenen Server: Offline-Speicher (Service Worker) und kostenlose zweite Adresse auf Cloudflare Pages** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Einfachsten Weg zu mehr Leistung finden“ · Arbeitsstrang: „Planer-Abnahmen ohne Nachweis automatisieren“ · Aktualisiert: 2026-11-07T12:31:42.554Z
 
 - [x] PERF-06-S01: Offline-Speicher: sw.js aus dem Build (Programmdateien mit Inhalts-Hash, Startseite erst Netz), Start ohne Internet, nach Updates nur geänderte Dateien, Karte im Systemcheck zum Ausschalten, Notbremse.
 - [x] PERF-06-S02: Zweite Adresse auf Cloudflare Pages (Gratis-Tarif) aus demselben Build, eigene Cache-Regeln; GitHub Pages bleibt. Live: https://bauplaner.pages.dev/Minecraft-Bauplaner/ (Brotli, assets ein Jahr unveränderlich); publish_pages.sh lädt mit hoch, wenn die Zugangsdaten da sind.
@@ -1402,9 +1396,11 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Zweiter Start lädt keine Programmdatei aus dem Netz, ohne Internet startet die zuletzt geladene Fassung. Neue Veröffentlichung kommt beim nächsten Laden an; alte Programmdateien werden entfernt. Ausschalten im Systemcheck entfernt Service Worker und Speicher dauerhaft; Notbremse über sw.js möglich. Automatisierte Browser bleiben ohne Testschalter unberührt; alle Tests grün.
 
-**Nächste Aktion:** Abnahme: Safari/iPad und Firefox (Offline-Speicher); Verbindung Mod ↔ Planer einmal über https://bauplaner.pages.dev/Minecraft-Bauplaner/ im echten Spiel.
+**Nächste Aktion:** Abnahme GERAET-03 (Safari/iPad echtes Gerät, Mod über die Cloudflare-Adresse im eigenen Spiel). Browserteil in Chromium, Firefox und WebKit automatisch geprüft (offline.e2e, 07.11. 6/6 Läufe grün).
 
-**Prüfstand:** Chromium im Cloud-Container; Safari/iPad und Firefox offen.
+**Nur Philipp:** Auf echten Geräten und Browsern: GERAET-03 auf #/testphase: auf dem iPad (Safari) den Planer einmal laden, dann im Flugmodus neu öffnen; einmal die Mod über https://bauplaner.pages.dev/Minecraft-Bauplaner/ verbinden.
+
+**Prüfstand:** offline.e2e in Chromium, Firefox und WebKit grün (Block 5 Geräte, 07.11.), Chromium erneut 6/6 Läufe grün; echtes iPad und Mod über pages.dev offen.
 
 **Nachweise:** [tests/e2e/offline.e2e.mjs](../tests/e2e/offline.e2e.mjs) — Chromium: Installation, Laden aus dem Speicher, Start offline, alte Dateien weg, Ausschalten.; [tests/unit/tooling/service-worker.test.mjs](../tests/unit/tooling/service-worker.test.mjs) — Manifest ohne Katalogdatei, Version folgt dem Inhalt, Notbremse, Publisher erlaubt sw.js.; [docs/architecture/betrieb/OFFLINE.md](architecture/betrieb/OFFLINE.md) — Regeln, Grenzen, Notbremse, Cloudflare-Plan.
 
@@ -1414,7 +1410,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### VIEW-01
 
-**Vorhandenen Viewer vollständig abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T01:02:09.889Z
+**Vorhandenen Viewer vollständig abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Arbeitsstrang: „Planer-Abnahmen ohne Nachweis automatisieren“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] VIEW-01-S01: Orbit, Freiflug, Schnitte, Picking, Touch, Kulling und Softwarefallback vorhanden.
 - [ ] VIEW-01-S02: Aktuelle GPU-/Touch-Prüfung mit negativen Koordinaten und allen Schnittachsen.
@@ -1435,7 +1431,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### VIEW-02
 
-**Minecraft-nahe zustandsabhängige Blockformen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Blockdarstellung“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Minecraft-nahe zustandsabhängige Blockformen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Blockdarstellung“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] VIEW-02-S01: B16-Dateizuständigkeit vor Beginn prüfen.
 - [x] VIEW-02-S02: Treppen, Stufen, Zäune, Mauern und Glas nach Zuständen darstellen.
@@ -1460,7 +1456,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### BLOCK-01
 
-**Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Echte Minecraft-Blocklogik einbauen“ · Arbeitsstrang: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Echte Minecraft-Blocklogik einbauen“ · Arbeitsstrang: „Planer-Abnahmen ohne Nachweis automatisieren“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] BLOCK-01-S01: Blockfakten aus dem echten 26.3-Server (Berichte + Prüfprogramm): alle 1286 Blöcke, 35.723 Zustände, Stützflächen, Halt, Items, Stapelgrößen, Tags.
 - [x] BLOCK-01-S02: Verbindungen wie im Spiel (Zäune, Mauern hoch/niedrig/Pfosten, Scheiben/Gitter, Treppenformen, Tore, Schneegras, Pilzblöcke); 3.060 Spielvektoren gleich.
@@ -1486,7 +1482,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### BLOCK-02
 
-**Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Schwebende Blöcke im Katalog reparieren“ · Arbeitsstrang: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Schwebende Blöcke im Katalog reparieren“ · Arbeitsstrang: „Planer-Abnahmen ohne Nachweis automatisieren“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] BLOCK-02-S01: Gemeinsame Bauregel gameReady(): Laternen ohne Halt hängen an iron_chain bis zur nächsten Decke, danach alle Verbindungen wie im Spiel (settlePayload); gilt für jedes Katalog-Gebäude und jeden Generator.
 - [x] BLOCK-02-S02: Alte Block-ID chain durch iron_chain ersetzt (in 26.3 gibt es chain nicht mehr): 152 Katalog- und alle Generator-Ketten.
@@ -1512,7 +1508,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GFX-01
 
-**Grafik vertiefen: Minecraft-Licht, Eckschatten, Sonne mit Schatten, Nacht, Spawnprüfung, sortiertes Glas und 32³-Abschnitte für große Modelle** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Grafik der Blockdarstellung vertiefen“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Grafik vertiefen: Minecraft-Licht, Eckschatten, Sonne mit Schatten, Nacht, Spawnprüfung, sortiertes Glas und 32³-Abschnitte für große Modelle** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Grafik der Blockdarstellung vertiefen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] GFX-01-S01: Licht wie im Spiel: Leuchtwerte je Blockzustand, Himmels- und Blocklicht mit Dämpfung, weiches Licht und Eckschatten je Eckpunkt.
 - [x] GFX-01-S02: Lichtmodi Tag/Sonne/Nacht/Flach im Shader ohne Neuaufbau; Sonnenschatten nach Uhrzeit; Menü „Licht“ mit Speicherung im Browser.
@@ -1537,7 +1533,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GFX-02
 
-**Darstellung und Leistung, Runde 2: Biomfarben, leuchtende Blockentities (Leuchtfeuer-Strahl, Endportal, Magma), GPU-Upload großer Szenen in Stücken** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Darstellung und Leistung weiter verbessern“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Darstellung und Leistung, Runde 2: Biomfarben, leuchtende Blockentities (Leuchtfeuer-Strahl, Endportal, Magma), GPU-Upload großer Szenen in Stücken** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Darstellung und Leistung weiter verbessern“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] GFX-02-S01: Biomfarben für Gras, Laub und Wasser (Ebene, Wald, Dschungel, Taiga, Savanne, Sumpf, Kirschhain …) im Grafikmenü, umschaltbar im Shader ohne Neuaufbau; Standbilder bleiben Ebene.
 - [x] GFX-02-S02: Leuchtende Blockentities: Leuchtfeuer-Strahl mit Pyramidenprüfung, Glasfarben und Sperre durch feste Blöcke; Endportal/Endtransitportal und Magma/aktive Sculk-Sensoren voll hell wie im Spiel.
@@ -1560,7 +1556,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GFX-03
 
-**Große Szenen flüssig bedienen: Glas und Wasser je Bild sortiert, schnelles und richtiges Anklicken, Sichtfeld zuerst hochladen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Leistung bei großen Szenen steigern“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Große Szenen flüssig bedienen: Glas und Wasser je Bild sortiert, schnelles und richtiges Anklicken, Sichtfeld zuerst hochladen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Leistung bei großen Szenen steigern“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] GFX-03-S01: Durchscheinende Flächen im Betrachter je Bild sortiert (höchstens 250 000 Flächen, Sichtfeld und Nähe zuerst, erneut erst nach Bewegung um ¼ Block oder 2 % des Abstands); schnellere Sortierung ohne Vergleichsfunktion.
 - [x] GFX-03-S02: Anklicken prüft Abschnitte in Strahlreihenfolge und hört nach dem nächsten Treffer auf (gleiches Ergebnis); Fehler behoben: auf sortiertem Glas/Wasser wurde oft ein falscher Block gewählt.
@@ -1583,7 +1579,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MODEL-01
 
-**3D-Export: Bauteile, Projekte und Anlagen als OBJ/MTL, glTF/GLB, STL und 3MF (Ansichtsmodell mit Blockformen/Texturen, wasserdichte Druckhülle mit Maßstab, Füllen, Aushöhlen, Farben)** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Bauten als 3D-Modell exportieren“ · Arbeitsstrang: „Export und Datenmodell fertigstellen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**3D-Export: Bauteile, Projekte und Anlagen als OBJ/MTL, glTF/GLB, STL und 3MF (Ansichtsmodell mit Blockformen/Texturen, wasserdichte Druckhülle mit Maßstab, Füllen, Aushöhlen, Farben)** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Bauten als 3D-Modell exportieren“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] MODEL-01-S01: Neutrales Dreiecksnetz und Schreiber OBJ/MTL, GLB (Textur eingebettet), STL, 3MF mit Farben; ZIP-Schreiber.
 - [x] MODEL-01-S02: Ansichtsmodell aus buildBlockMesh: Blockformen, Glas getrennt, Texturen oder Farben, eingebackene Helligkeit, Lage.
@@ -1610,7 +1606,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### EDIT-01
 
-**Mehrfachauswahl und sichtbare Freiraumhüllen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Vollständigen Block-Builder bauen“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Mehrfachauswahl und sichtbare Freiraumhüllen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Vollständigen Block-Builder bauen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] EDIT-01-S01: Auswahlvertrag und atomare Gruppenoperationen definieren.
 - [x] EDIT-01-S02: Freiraum-/Konflikthüllen und Undo/Redo ergänzen.
@@ -1631,7 +1627,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### EDIT-02
 
-**Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Vollständigen Block-Builder bauen“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Vollständigen Block-Builder bauen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] EDIT-02-S01: Entwurfsvertrag mit invertierbaren Zelländerungen, Undo/Redo und Speichern als neue AssetVersion.
 - [x] EDIT-02-S02: Werkzeuge: Setzen, Abbauen, Pipette, Ersetzen, Quader/Hohlkörper/Wände, Kugel, Zylinder, Linie, Fläche füllen, Drehen, Kopieren/Einfügen/Verschieben.
@@ -1655,7 +1651,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### EDIT-03
 
-**Werkstatt vertiefen: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht und Tastenkürzel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Werkstatt zum Bauen ausbauen“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Werkstatt vertiefen: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht und Tastenkürzel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Werkstatt zum Bauen ausbauen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] EDIT-03-S01: Muster-Pinsel (Mischung mit Gewichten und Lücken, Verlauf entlang Achse oder radial, Schachbrett, Streifen) deterministisch für Setzen, Formen, Füllen, Auswahlfüllung und Ersetzen; Vorlagen.
 - [x] EDIT-03-S02: Formen Bogen (rund, spitz, flach; Pfosten, Tiefe, Wand mit Öffnung), Pyramide/Walmdach, Kegel, Mauerzug aus der Linie.
@@ -1679,7 +1675,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### EDIT-04
 
-**Kreativwerkzeuge aus dem Planer-Vergleich: Symmetrie, Kurven, Naturwerkzeuge, Oberflächenmaske, Farbpaletten, Bild → Blöcke** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Ideen aus anderen Planern übernehmen“ · Arbeitsstrang: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Kreativwerkzeuge aus dem Planer-Vergleich: Symmetrie, Kurven, Naturwerkzeuge, Oberflächenmaske, Farbpaletten, Bild → Blöcke** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Ideen aus anderen Planern übernehmen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] EDIT-04-S01: Gap-Analyse: andere Planer und Bautools gegen unsere Module, Auswahl und Vorschläge für eigene Arbeitsstränge (docs/project/PLANER_VERGLEICH.md).
 - [x] EDIT-04-S02: Symmetrie (Spiegeln X/Z, 2-/4-fach drehen, Achse auf Zellmitte oder -grenze) mit Zustandsdrehung über transformBlockState für alle Pinsel-Werkzeuge.
@@ -1706,7 +1702,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### EDIT-05
 
-**Auswahl- und Formwerkzeuge aus Editor-Mods: Zauberauswahl, Auswahl wachsen/schrumpfen/einpassen, Stapeln, Extrudieren, Ellipsoid/Torus/Spirale, Entities ziehen mit** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Vorschläge aus der Planer-Analyse umsetzen“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Auswahl- und Formwerkzeuge aus Editor-Mods: Zauberauswahl, Auswahl wachsen/schrumpfen/einpassen, Stapeln, Extrudieren, Ellipsoid/Torus/Spirale, Entities ziehen mit** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Vorschläge aus der Planer-Analyse umsetzen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] EDIT-05-S01: Zauberauswahl (zusammenhängend: gleicher Zustand, gleicher Block, Blockfamilie, alles Feste; Ebene oder 3D) als Zellauswahl; wachsen, schrumpfen, an Inhalt anpassen.
 - [x] EDIT-05-S02: Auswahloperationen auf Zellauswahlen: füllen/Muster, leeren, kopieren, verschieben, drehen, spiegeln, ersetzen.
@@ -1732,7 +1728,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### UPDATE-01
 
-**Kontrollierte Versionsupdates mit lokalen Overrides** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Updates und neue Versionen anzeigen“ · Arbeitsstrang: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Kontrollierte Versionsupdates mit lokalen Overrides** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Updates und neue Versionen anzeigen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] UPDATE-01-S01: Updateplan mit Geometrie/Material/Anschluss-/Aufgabendiff erstellen.
 - [x] UPDATE-01-S02: Bewusst übernehmen, einfrieren und zurückkehren ermöglichen.
@@ -1753,7 +1749,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LIB-02
 
-**Eigene Sammlungen, Ordner und Kategorien** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Sammlungen und Vorlagen“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Eigene Sammlungen, Ordner und Kategorien** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Sammlungen und Vorlagen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] LIB-02-S01: B17-Dateizuständigkeit prüfen; Datenmodell und Sicherung erweitern.
 - [x] LIB-02-S02: Sammlungen/Kategorien mit Migration und leerem Zustand nutzbar machen.
@@ -1774,7 +1770,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LIB-03
 
-**Eigene Ensembles und Generatorvorlagen speichern** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Sammlungen und Vorlagen“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Eigene Ensembles und Generatorvorlagen speichern** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Sammlungen und Vorlagen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] LIB-03-S01: Vorlagen referenzieren feste Versionen bzw. versionierte Generatorparameter.
 - [x] LIB-03-S02: Speichern, Bearbeiten, Wiederherstellen und Projektübernahme umsetzen.
@@ -1884,7 +1880,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TERRAIN-03
 
-**Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gelände, Wege und Küste ausbauen“ · Arbeitsstrang: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gelände, Wege und Küste ausbauen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] TERRAIN-03-S01: Geländewerkzeuge: Aufschütten (nur Mulden bis zur Zielhöhe), Abtragen (nur über der Zielhöhe), Rampe mit gleichmäßiger Steigung, Breite und weichem Übergang.
 - [x] TERRAIN-03-S02: Wegstufen: Treppen (bergauf, über die ganze Breite) oder Halbstufen an jedem Höhenwechsel um einen Block, neun Materialfamilien, keine Treppen ins Leere nach späteren Änderungen; Dateiformat BPTDES01 mit optionalem Stufenfeld.
@@ -1911,7 +1907,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TERRAIN-04
 
-**Gelände direkt aus der Mod: Geländegedächtnis, Übernahme ohne Dateien, blockgenaue Prüfung aus dem Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gelände direkt aus der Mod übernehmen“ · Arbeitsstrang: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Gelände direkt aus der Mod: Geländegedächtnis, Übernahme ohne Dateien, blockgenaue Prüfung aus dem Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gelände direkt aus der Mod übernehmen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] TERRAIN-04-S01: Mod 0.20.0: Geländegedächtnis (gesehene Chunks mit Biom, je Welt/Server auf dem PC gespeichert), GET /v1/terrain, /v1/terrain/known, /bauplaner gelaende an|aus|vergessen.
 - [x] TERRAIN-04-S02: Mod 0.20.0: GET /v1/box liest einen Weltbereich blockgenau aus den geladenen Chunks (bis 2 Mio. Zellen, in Scheiben je Tick).
@@ -1935,7 +1931,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TERRAIN-05
 
-**Gelände-Werkzeuge auf dem Projektgelände: Verwittern, Formstempel, Fluss und Maske für alle Werkzeuge mit geschützten Bauplätzen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Alle Bereiche in Blöcken weiterbauen“ · Arbeitsstrang: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Gelände-Werkzeuge auf dem Projektgelände: Verwittern, Formstempel, Fluss und Maske für alle Werkzeuge mit geschützten Bauplätzen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Alle Bereiche in Blöcken weiterbauen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] TERRAIN-05-S01: Verwittern: thermische Erosion bis zur Hanggrenze und Regenrinnen, mengengleich, als Pinsel und für die ganze Fläche.
 - [x] TERRAIN-05-S02: Formstempel Hügel, Berg, Krater, Mulde und Plateau mit Größe und Höhe in einem Klick.
@@ -1960,7 +1956,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### BUILD-06
 
-**Bauführung im Spiel: Schichtführung, Tagesziele, Packlisten, Druck-/Handyansicht, Spielfortschritt** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Bauanleitung fürs Spiel vertiefen“ · Arbeitsstrang: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Bauführung im Spiel: Schichtführung, Tagesziele, Packlisten, Druck-/Handyansicht, Spielfortschritt** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Bauanleitung fürs Spiel vertiefen“ · Arbeitsstrang: „Planer-Abnahmen ohne Nachweis automatisieren“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] BUILD-06-S01: Schichtführung: Reihen/Rechtecke je Schritt mit Koordinaten relativ zum Anker und in Weltkoordinaten; Anker aus Weltlage oder Spielaufnahme.
 - [x] BUILD-06-S02: Shulker-Packliste je Bauabschnitt und Bautag in Reihenfolge des ersten Bedarfs.
@@ -1984,7 +1980,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GEN-02
 
-**Weitere Generatoren und Dachdetails** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Neue Gebäudegeneratoren ergänzen“ · Arbeitsstrang: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Weitere Generatoren und Dachdetails** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Neue Gebäudegeneratoren ergänzen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] GEN-02-S01: Treppenhaus, Kirche und Hafen als getrennte Generatoren spezifizieren.
 - [x] GEN-02-S02: Dachtreppen-Eckformen und Anschlüsse profilgenau erzeugen.
@@ -2008,7 +2004,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-01
 
-**Weltlage und begehbare Projektkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Weltkarte“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Weltlage und begehbare Projektkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Weltkarte“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] MAP-01-S01: B15-Konzept und generischer Livekarten-/Markeradapter vorhanden.
 - [x] MAP-01-S02: B15-Reservierung vor Übernahme abgleichen.
@@ -2056,7 +2052,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-04
 
-**Weltbuilder vertiefen: Löschen und Entfernen für alle Objekte der Weltkarte, Mehrfachauswahl, Kontextmenü, gemeinsames Rückgängig, Duplizieren/Drehen/Spiegeln, Wegecken, Ebenen, Objektliste** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Weltbuilder mit Löschen vertiefen“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Weltbuilder vertiefen: Löschen und Entfernen für alle Objekte der Weltkarte, Mehrfachauswahl, Kontextmenü, gemeinsames Rückgängig, Duplizieren/Drehen/Spiegeln, Wegecken, Ebenen, Objektliste** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Weltbuilder mit Löschen vertiefen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] MAP-04-S01: Löschen/Entfernen für alle Objekte: Entf-Taste, Auswahlleiste, Kontextmenü, Listenzeilen; Projekte nur von der Karte nehmen.
 - [x] MAP-04-S02: Mehrfachauswahl (Umschalt/Strg-Klick, Rahmen, Strg+A) und gemeinsames Rückgängig für Weltplan und Projektlagen.
@@ -2082,7 +2078,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-02
 
-**Gespeicherte Kartenziele und konkrete Provideradapter: mehrere Server-Karten speichern und teilen, echte Marker für BlueMap (marker-sets) und Dynmap (dmarker-Befehle), Markerdatei als Weltplan-Punkte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Module und Systeme komplex ausarbeiten“ · Arbeitsstrang: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Gespeicherte Kartenziele und konkrete Provideradapter: mehrere Server-Karten speichern und teilen, echte Marker für BlueMap (marker-sets) und Dynmap (dmarker-Befehle), Markerdatei als Weltplan-Punkte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Module und Systeme komplex ausarbeiten“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] MAP-02-S01: URL-/Markerformate anhand Primärquellen pro Provider verifizieren (BlueMap-Wiki Markers, Dynmap-Wiki Using markers/Commands, squaremap/Pl3xMap README: nur API).
 - [x] MAP-02-S02: Gespeicherte Ziele (bis 20, Kartenliste als Datei), UI-Dateiadapter und eigene Markerdateien (Import als Weltplan-Punkte, Export mit Punkten), BlueMap-marker-sets und Dynmap-Befehle aus Projekten, Bauplätzen, Wegen, Zonen und Punkten.
@@ -2122,7 +2118,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-02
 
-**Fabric-Brücke kompilieren und im Spiel abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Fabric-Mod 26.3 bauen und testen“ · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Fabric-Brücke kompilieren und im Spiel abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Fabric-Mod 26.3 bauen und testen“ · Arbeitsstrang: „Mod-Abnahmen im Spiel automatisieren“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] GAME-02-S01: Versionsneutraler Java-Kern mit Tests und Fabric-Quelladapter vorhanden.
 - [x] GAME-02-S02: Loader-/Versionsstand anhand offizieller Quellen prüfen und Build ermöglichen.
@@ -2146,7 +2142,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-07
 
-**Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Teambau und Befehle in der Mod ausbauen“ · Arbeitsstrang: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Teambau und Befehle in der Mod ausbauen“ · Arbeitsstrang: „Mod-Abnahmen im Spiel automatisieren“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] GAME-07-S01: Versionsneutraler Mod-Kern: Blockzustände, Vergleichsregeln wie gameCheck.ts, Platzierung mit Drehen/Spiegeln, Planmodell, Live-Abgleich, Platzierungsspeicher; JUnit-Tests.
 - [x] GAME-07-S02: Fabric 26.3: Planmenü, Tasten, Platzieren/Verschieben/Drehen/Spiegeln, Rahmen, Speicherung je Server/Welt.
@@ -2176,7 +2172,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-08
 
-**Bauplaner-Mod Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten im Spiel (marks2), Mitspieler für die Karte (GET /v1/players), hello.protocol 2** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Teambau und Befehle in der Mod ausbauen“ · Arbeitsstrang: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Bauplaner-Mod Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten im Spiel (marks2), Mitspieler für die Karte (GET /v1/players), hello.protocol 2** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Teambau und Befehle in der Mod ausbauen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] GAME-08-S01: WorldMarks: Art zone (category, points 3–256), Felder layer/color an allen Einträgen, Punktarten notiz/gefahr/rohstoff/spawn/aussicht; feature marks2 in hello.features.
 - [x] GAME-08-S02: MarksRenderer: Zonen als gefüllte Fläche auf Bodenhöhe mit Rand, Name in der HUD-Zeile, Farbe aus color, Ebenen im Spiel ein-/ausblenden (/bauplaner ebenen).
@@ -2200,7 +2196,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-03
 
-**Optionale lokale Verbindung und Anzeige im Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Live-Karte mit Spielanbindung neu bauen“ · Arbeitsstrang: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Optionale lokale Verbindung und Anzeige im Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Live-Karte mit Spielanbindung neu bauen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] GAME-03-S01: Loopback-Sicherheitsvertrag mit expliziter Kopplung definieren.
 - [x] GAME-03-S02: Planübertragung und Bestätigungen getrennt von Weltänderungen umsetzen.
@@ -2242,7 +2238,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### BACKUP-02
 
-**Sicherungserinnerung und Abschnittsrevisionen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Sicherungen erweitern“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Sicherungserinnerung und Abschnittsrevisionen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Sicherungen erweitern“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] BACKUP-02-S01: Letzte erfolgreiche Sicherung mit Datenänderungen vergleichen.
 - [x] BACKUP-02-S02: Abschnittsstand reproduzierbar einfrieren und wiederfinden.
@@ -2301,7 +2297,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TEAM-02
 
-**Geordnete Operationen, Reconnect und Team-Undo im Team-Raum** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Team-Raum bei gleichzeitigen Änderungen absichern“ · Arbeitsstrang: „Team-Raum bei gleichzeitigen Änderungen absichern“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Geordnete Operationen, Reconnect und Team-Undo im Team-Raum** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Team-Raum bei gleichzeitigen Änderungen absichern“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] TEAM-02-S01: Operation-ID (Ereignis-ID + Stapel-ID), Revisionsprüfung je Gegenstand (Abschnitt, Kiste, Notiz, Mitglied) mit Lesestand des Schritts, Stapel als Transaktion, Wiederholung ohne Doppelbuchung; alte Räume lernen ihre Gegenstände aus dem Protokoll.
 - [x] TEAM-02-S02: Planer: sauberes Wiederverbinden (Herzschlag, Zeitlimits, Wiederholung ohne Antwort, gestreute Pausen, Tab/Netz zurück), Hinweis „war schneller“, Team-Rückgängig über geprüfte Gegenschritte; Tests für konkurrierende Änderungen.
@@ -2320,7 +2316,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TEAM-03
 
-**Gemeinsame Aufgaben, Abschnitte und Sammelplanung: mehrere Spieler je Abschnitt und Sammelauftrag, versionierte Zuständigkeiten und Buchungen, live über den Team-Raum** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Abschnitte mehreren Spielern zuweisen“ · Arbeitsstrang: „Abschnitte mehreren Spielern zuweisen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Gemeinsame Aufgaben, Abschnitte und Sammelplanung: mehrere Spieler je Abschnitt und Sammelauftrag, versionierte Zuständigkeiten und Buchungen, live über den Team-Raum** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Abschnitte mehreren Spielern zuweisen“ · Arbeitsstrang: „Mitbauer in Mod und Hologramm zeigen“ · Aktualisiert: 2026-11-07T12:31:42.554Z
 
 - [x] TEAM-03-S01: Zuständigkeiten und Lagerbuchungen versionieren: Version je Abschnitt, Sammelauftrag und Buchung; Änderungen auf überholter Version wirken nicht und stehen mit „Trotzdem so übernehmen“ in den Hinweisen; Buchungen korrigieren/stornieren (contribution.fix).
 - [x] TEAM-03-S02: Abschnitte und Sammelaufträge mehreren Spielern zuweisen: section.crew/join/leave (Verantwortliche + bis zu 7 Mitbauer), gather.assign; Zeitplan, Fortschritt, Planung und Paper-Plugin (Abschnitts- und Lagerschutz) berücksichtigen Mitbauer.
@@ -2328,7 +2324,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Planung, manuelle Bestätigung und Spielnachweis bleiben getrennt. Kein stiller Verlust und kein Überschreiben fremder Zuständigkeiten: überholte Änderungen werden sichtbar abgelehnt, alle Geräte entscheiden gleich. Ereignisse ohne Version (ältere Mod/Plugin) wirken wie bisher.
 
-**Nächste Aktion:** Abnahme TEAMBAU-30 durch Philipp; Plugin-Faltung kommt mit der nächsten Plugin-Version.
+**Nächste Aktion:** Plugin-Faltung der Mitbauer ist seit Plugin 0.25.0 ausgeliefert. Offen: Mod zeigt Mitbauer je Abschnitt (Block D), Abnahme TEAMBAU-30 (Block B).
 
 **Prüfstand:** Einheits-, Browser- und Plugin-Tests grün; Abnahme TEAMBAU-30 offen.
 
@@ -2340,7 +2336,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-04
 
-**Paper-Plugin der Bauplaner-Brücke (serverseitig, mehrere Minecraft-Versionen)** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Arbeitsstrang „Bauplaner-Anbindung für Paper bauen“ · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Paper-Plugin der Bauplaner-Brücke (serverseitig, mehrere Minecraft-Versionen)** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Arbeitsstrang „Bauplaner-Anbindung für Paper bauen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] GAME-04-S01: Paper-Plugin: Plan laden, Anker je Plan (für alle Spieler), Aufnahme der ganzen Serverwelt mit Nachladen vorhandener Chunks ohne Geländeerzeugung, Rechte, Konsole.
 - [x] GAME-04-S02: Auf echten Paper-Servern 1.18.2, 1.20.6, 1.21.4, 1.21.11 und 26.3 automatisch geprüft (scripts/test_bridge_paper.sh).
@@ -2363,7 +2359,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-05
 
-**NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Teambau und Befehle in der Mod ausbauen“ · Arbeitsstrang: „Teambau und Befehle in der Mod ausbauen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Teambau und Befehle in der Mod ausbauen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] GAME-05-S01: Gemeinsame Befehlslogik BridgeSession/BridgeHost im Kern, von allen Loadern genutzt, mit Tests.
 - [x] GAME-05-S02: NeoForge-Adapter 26.3 bauen und im echten Client prüfen.
@@ -2401,7 +2397,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-06
 
-**Server-Plugin direkt mit dem Team-Raum (Mod/Plugin 0.26.0): unterschriebene Ereignisse der Bauleitung, Ereignis-ID und wiederholbare Verarbeitung, Abschnittsschutz nach Team-Rollen aus dem Raum** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Server-Plugin direkt mit dem Team-Raum verbinden“ · Arbeitsstrang: „Server-Plugin direkt mit dem Team-Raum verbinden“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Server-Plugin direkt mit dem Team-Raum (Mod/Plugin 0.26.0): unterschriebene Ereignisse der Bauleitung, Ereignis-ID und wiederholbare Verarbeitung, Abschnittsschutz nach Team-Rollen aus dem Raum** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Server-Plugin direkt mit dem Team-Raum verbinden“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:31:42.554Z
 
 - [x] GAME-06-S01: Signierte Ereignisse, Ereignis-ID und wiederholbare Verarbeitung (aus GAME-04-S02): Bauleitung unterschreibt im Planer und in der Mod (HMAC aus dem Verwaltungsschlüssel, eventSig.ts/EventSig.java, gemeinsamer Prüfvektor), Plugin bekommt den Schlüssel mit dem Server-Link (l), merkt Ankunftsnummern, jede ID wirkt einmal, gleiche ID mit anderem Inhalt ersetzt nichts.
 - [x] GAME-06-S02: EventTrust im Plugin: Bauleitung bestätigt die Vergangenheit (team.trust), danach keine unterschriftslosen Ereignisse im Namen oder mit Rechten der Bauleitung und keine fremden Spielernamen; /bp team raum pruefen; Planer zeigt weiter alles.
@@ -2414,7 +2410,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nur Philipp:** Im Spiel an deinem PC: Auf dem eigenen Server mit Plugin 0.26.0 den Abschnittsschutz aus dem Planer prüfen (LINK-14).
 
-**Prüfstand:** Unit-, Plugin- und echte Servertests grün; Abnahme mit echten Spielern offen (LINK-14).
+**Prüfstand:** Unit-, Plugin- und echte Servertests grün; Abnahme mit echten Spielern offen (LINK-14). 07.11.: team-room.e2e 10/10 grün nach Fix (lokale Schritte gehen beim Speichern einer Raum-Antwort nicht verloren).
 
 **Nachweise:** [tests/unit/team/event-sig.test.mjs](../tests/unit/team/event-sig.test.mjs) — Prüfvektor, Team/Inhalt/Schlüssel, nur eigene Ereignisse, team.protect/team.trust, unterschriebene Fassung beim Zusammenführen, Server-Link mit l.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/team/EventSigTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/team/EventSigTest.java) — Gleicher Vektor in Java, Zahlen/Zeichen wie JavaScript, Link der Mod mit l.; [mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/EventTrustTest.java](../mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/EventTrustTest.java) — Vergangenheit bestätigt, vier Fälschungen abgewiesen, Planer ungefiltert, Regeln des Abschnittsschutzes.; [scripts/mod/bridge_papersigned.mjs](../scripts/mod/bridge_papersigned.mjs) — Echter Paper-Server 1.21.11 und 26.3 mit wrangler-Team-Raum: Schutz sperren/team aus dem Raum, 4 Fälschungen in /bp team raum pruefen, Neustart gleich, schutz-quelle server.
 
@@ -2424,7 +2420,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LAGER-01
 
-**Optionale Truhen-/Lagerintegration** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Optionale Truhen-/Lagerintegration** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] LAGER-01-S01: Inventar-/NBT-Rechte und Herkunft der Aufnahme festlegen.
 - [x] LAGER-01-S02: Bestand mit Zeitpunkt, Konflikten und ausdrücklicher Übernahme anzeigen.
@@ -2445,7 +2441,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### OPS-04
 
-**Team-Raum betreiben: Sicherung, Wiederherstellung, Aufbewahrung, Zustand** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Team-Raum sichern und wiederherstellen“ · Arbeitsstrang: „Team-Raum sichern und wiederherstellen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Team-Raum betreiben: Sicherung, Wiederherstellung, Aufbewahrung, Zustand** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Team-Raum sichern und wiederherstellen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] OPS-04-S01: Überwachung (öffentlicher und Raum-Zustand), Datenmigration (Format v1, alte Räume ohne Umbau), Aufbewahrung (48 h alle, 30 Tage täglich, ungenutzte Räume nach 365 Tagen löschen, Tresor 90 Tage) und Wiederanlauf (Proben, Rücksprung, Point-in-Time-Recovery als zweite Linie) festgelegt: docs/architecture/team/TEAM_BACKUP.md.
 - [x] OPS-04-S02: Wiederherstellung mit getrenntem Speicher getestet: Tresor als eigenes Durable Object je Raum, Planstände/Dokumente einmal nach SHA-256, Sicherung per Alarm; Wiederherstellen ohne Verlust (Nummern laufen weiter, Planer reichen ihre Schritte über die neue Marke nach), gelöschter Raum mit alten Links zurück; Einheiten, echter Worker lokal und Browser.
@@ -2504,7 +2500,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LIB-04
 
-**Gebäudebibliothek v3: Inhalte in alle Richtungen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Bibliothek erweitern“ · Arbeitsstrang: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Gebäudebibliothek v3: Inhalte in alle Richtungen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Bibliothek erweitern“ · Arbeitsstrang: „Planer-Abnahmen ohne Nachweis automatisieren“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] LIB-04-S01: Neue Kategorien/Stile/Funktionen, Möbel- und Zustandshelfer (furnish.ts) passend zu den B7-Regeln von main.
 - [x] LIB-04-S02: Neue Themen-Sets: Interieur, Garten, Natur, Stadt, Küste, Fahrzeuge, Untergrund, Nether/End, Hof, Technik, Fantasy, Epochen.
@@ -2550,7 +2546,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LIB-05
 
-**Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Bibliothek im Stil der Vorlagen neu gestalten“ · Arbeitsstrang: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Bibliothek im Stil der Vorlagen neu gestalten“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] LIB-05-S01: 31 Vorlagen (4 brauchbare der 5 hochgeladenen, 27 freie von minemev.com) vermessen: Detailblöcke, umgedrehte Treppen, Fassadenrelief, Fenster, Dächer; Regeln in BAUSTIL.md. Dateien nur als Studienmaterial, nicht im Repository.
 - [x] LIB-05-S02: Baukasten build/style.ts: Mischungen, Looks, Fenster mit Läden/Sturz/Blumenkasten, Tür, Dächer mit Überstand/Traufkasten/Ortgang und Quergiebeln, house(), ladderUp, hangLantern; designMetrics.
@@ -2577,7 +2573,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LIB-06
 
-**Bibliotheksbeiträge: eigene Bauwerke (Importe, Werkstatt, Generator) als festen Katalogeintrag für alle einreichen – Beitragspaket mit Prüfsumme und Rechtebestätigung, GitHub-Formular, Übernahme-Skript, Auslieferung wie mitgelieferte Gebäude** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Hochgeladene Bauobjekte fest in Bibliothek übernehmen“ · Arbeitsstrang: „Hochgeladene Bauobjekte fest in Bibliothek übernehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Bibliotheksbeiträge: eigene Bauwerke (Importe, Werkstatt, Generator) als festen Katalogeintrag für alle einreichen – Beitragspaket mit Prüfsumme und Rechtebestätigung, GitHub-Formular, Übernahme-Skript, Auslieferung wie mitgelieferte Gebäude** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Hochgeladene Bauobjekte fest in Bibliothek übernehmen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] LIB-06-S01: Paketformat minecraft-bauplaner/bibliotheksbeitrag v1: Angaben, Rechtebestätigung, Nutzungsrechte, Version in Sicherungsform, Vorschaubild ohne Texturen, Prüfsumme; Prüfung mit Inhalts-Hash und Größengrenzen.
 - [x] LIB-06-S02: Fester Katalog: Register und Eintragsmodule unter community/, je Beitrag ein nachgeladener Chunk; Auslieferung über Katalogabgleich (neu, neue Fassung als 2.0), kaputter Beitrag stoppt den Start nicht.
@@ -2603,7 +2599,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### BASE-01
 
-**Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Basisanlagen wie im Bild planen“ · Arbeitsstrang: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Basisanlagen wie im Bild planen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] BASE-01-S01: Funktionskatalog mit Lagewünschen, Affinitäten, Katalogbauteilen, Alternativen, freiem Bauplatz und Bauphasen.
 - [x] BASE-01-S02: Spielprüfungen auf echten Blöcken: Verzauberungsstufe (Vanilla-Regel), Bewässerung, Arbeitsblöcke/Betten, Lagerplatz, Schmiede, Kochstelle, Gehege, Stege im Wasser.
@@ -2628,7 +2624,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### SPLIT-01
 
-**Gebäude aus großen Modellen herauslösen: Gebäude, Felder, Gehege und Wegenetz erkennen, einzeln oder zusammen als Bauteile speichern, als Projekt an alter Stelle aufteilen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Basisanlagen wie im Bild planen“ · Arbeitsstrang: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Gebäude aus großen Modellen herauslösen: Gebäude, Felder, Gehege und Wegenetz erkennen, einzeln oder zusammen als Bauteile speichern, als Projekt an alter Stelle aufteilen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Basisanlagen wie im Bild planen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] SPLIT-01-S01: Säulenanalyse: Bodenhöhe (mit Auffüllen unter Gebäuden), Natur/Flach/Gebaut je Zelle, Kernsäulen, Rand, Flächen nach Kategorie.
 - [x] SPLIT-01-S02: Funktionserkennung je Teil (Zaubertisch, Amboss, Truhen, Ackerboden, Zaun, Wegblöcke) und Benennung.
@@ -2654,7 +2650,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GROSS-01
 
-**Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gelände, Wege und Küste ausbauen“ · Arbeitsstrang: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gelände, Wege und Küste ausbauen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] GROSS-01-S01: Lückenanalyse der Größenstufen (Gebäude ≤ 25 × 25, Ensembles, Anlagen, Basisplaner) und Datenmodell Großprojekt (Quartiere, Einheiten slot/ensemble/anlage, Phasen, Straßen), abgestimmt mit Projektmodul- und Großprojekt-Arbeitsstrang.
 - [x] GROSS-01-S02: Engine: deterministisches Rasterlayout aus echten Grundflächen, Türen zur Straße, Straßennetz als eigenes Bauteil (vier Stile, Laternen, Ring, Aussparung in Quartieren über mehrere Zellen), AnlagePlan-kompatible Vorschau, Übernahme mit Abschnitten je Phase.
@@ -2681,7 +2677,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-05
 
-**Planung auf der Live-Karte vertiefen: Baustand aus dem Spiel (Mod 0.7.1, GET /v1/scan), Ebenen und Abweichungen auf der Karte, bestätigte Schritte abhaken, Bauabschnitte wählen, Weltplan automatisch abgleichen, Hologramm und BlueMap aus dem Kontextmenü** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Planung auf der Live-Karte vertiefen“ · Arbeitsstrang: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Planung auf der Live-Karte vertiefen: Baustand aus dem Spiel (Mod 0.7.1, GET /v1/scan), Ebenen und Abweichungen auf der Karte, bestätigte Schritte abhaken, Bauabschnitte wählen, Weltplan automatisch abgleichen, Hologramm und BlueMap aus dem Kontextmenü** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Planung auf der Live-Karte vertiefen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] MAP-05-S01: Mod 0.7.1: GET /v1/scan liefert die Planbox des Hologramms als bauplaner-scan-Aufnahme in Plankoordinaten (auch gedreht/gespiegelt), hello.features.
 - [x] MAP-05-S02: Karte: Baustand holen (auch alle 20 s), Vergleich wie Spielaufnahme, Speicherung im Projektverlauf, Ebenen mit Filter, Abweichungen als Spalten auf der Draufsicht, bestätigte Schritte abhaken mit Rückgängig.
@@ -2705,7 +2701,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-06
 
-**Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Weltkarte in die Tiefe ausbauen“ · Arbeitsstrang: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Weltkarte in die Tiefe ausbauen“ · Arbeitsstrang: „Planer-Abnahmen ohne Nachweis automatisieren“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] MAP-06-S01: Plan und Vertrag: Stufen festgelegt, Mod-Protokoll 2 (hello.features marks2/players) als Entwurf in LIVE_LINK.md, GAME-08 für den Mod-Arbeitsstrang angelegt.
 - [x] MAP-06-S02: Weltplan-Schema 2: Zonen (Polygon, Art, Fläche), Ebene und Farbe je Eintrag, neue Punktarten; Schema 1 lesbar, Umkehrungen, Sicherung.
@@ -2732,7 +2728,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-07
 
-**Gedrehte und gespiegelte Projektlagen auf der Weltkarte: dieselbe Regel wie das Hologramm der Mod, gedrehtes Hologramm übernehmen, Plan gedreht ins Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Module und Systeme komplex ausarbeiten“ · Arbeitsstrang: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Gedrehte und gespiegelte Projektlagen auf der Weltkarte: dieselbe Regel wie das Hologramm der Mod, gedrehtes Hologramm übernehmen, Plan gedreht ins Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Module und Systeme komplex ausarbeiten“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] MAP-07-S01: Weltlage mit optionaler Drehung/Spiegelung (turns 1–3, mirror), Regel wie Placement.java (Spiegeln X, dann (x,z)→(−z,x) auf Blockpositionen), Blockzustände über den Voxelkern.
 - [x] MAP-07-S02: Weltkarte zeichnet gedreht (Zellen, Zustände, Grenzen, Überschneidungen, placementsJson); R/Kontextmenü/Spiegeln drehen Projekte um ihre Nordwestecke; Weltlage-Formular mit Drehung.
@@ -2755,7 +2751,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### QA-04
 
-**Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Große Testphase vorbereiten und betreuen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Große Testphase vorbereiten und betreuen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:31:42.554Z
 
 - [x] QA-04-S01: Testplan (eine Quelle: testplan.ts → TESTPLAN.md) mit Kern-/vertieften Fällen für alle Planer-Bereiche und die Mod.
 - [x] QA-04-S02: Seite #/testphase: Checklisten mit Protokoll im Browser, Protokoll-Export, Fehlerbericht mit automatischer Diagnose (Umgebung, Fehlerprotokoll, Konsole, Seiten) und GitHub-Issue-Vorbelegung.
@@ -2766,11 +2762,9 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Jeder Kernfall ist ohne Vorwissen nachspielbar und nennt ein beobachtbares Ergebnis. Ein Fehlerbericht aus dem Planer enthält Build, Browser, Grafik und Fehlerprotokoll, aber keine Projektdaten. Der Mod-Diagnosebericht nennt Version, Loader, Modliste, Tastenkonflikte und Hologramm-Zustand; Benutzerordner und Adressen sind geschwärzt.
 
-**Nächste Aktion:** Testphase starten, sobald die laufenden Arbeitsstränge gemerged sind und die Mod mit diagnose veröffentlicht ist.
+**Nächste Aktion:** Testphase starten, sobald die laufenden Arbeitsstränge gemerged sind und die Mod mit diagnose veröffentlicht ist. Diagnose und Fehlerbehebung der offenen Fälle übernehmen ab 07.11. die Threads „Planer-Abnahmen ohne Nachweis automatisieren“ und „Mod-Abnahmen im Spiel automatisieren“.
 
 **Nur Philipp:** Auf deinem Server mit Mitspielern: Testphase mit weiteren Testern: erst die Kernfälle auf #/testphase.
-
-**Verwaist (ohne Bearbeiter):** Der Arbeitsstrang „Große Testphase vorbereiten und betreuen“ ist beendet; die rund 30 Pakete, bei denen nur Philipps Abnahme fehlt, haben keinen aktiven Arbeitsstrang für Diagnose und Fehlerbehebung.
 
 **Prüfstand:** Abnahme durch Tester steht aus (ist Zweck der Testphase).
 
@@ -2782,7 +2776,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GEN-03
 
-**Kolosseum aus Philipps Bauplan: Arena-Generator, Bauset Antike und Großprojekt Kolosseum-Viertel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Großprojekt ausarbeiten“ · Arbeitsstrang: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Kolosseum aus Philipps Bauplan: Arena-Generator, Bauset Antike und Großprojekt Kolosseum-Viertel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Großprojekt ausarbeiten“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] GEN-03-S01: Bauplan aus Philipps Vorlage übernehmen (81 × 61, vier Etagen à 8, Ellipsen-Ringe, Arena, 8 Sitzreihen, 4 Tore, Hypogäum Y 55–63, Materialien).
 - [x] GEN-03-S02: Generator „Arena“ (ovale Ringe nach Tiefe, Bögen nach Bogenlänge, Wandelgang mit Treppen, zwei Ränge auf Gewölben, Tore mit Wegeanschluss weg_5, Hypogäum, Velarium) mit sechs Vorlagen.
@@ -2807,7 +2801,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### SIZE-01
 
-**Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Volumenlimit für große Builds aufheben“ · Arbeitsstrang: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Volumenlimit für große Builds aufheben“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] SIZE-01-S01: Bestandsaufnahme aller harten Größen-/Blockgrenzen in Planer und Mod, Messung von Speicher und Zeit bei 1–4 Mio. Zellen.
 - [x] SIZE-01-S02: Planer: zentrale Grenzen in sizeLimits.ts, Importe ohne Kopie (adoptPayload), Luft ab 250.000 Zellen Box unausgewählt, Werkstatt 4 Mio./1 Mio. je Schritt mit linearer Umkehrung und Rückgängig-Budget, Export/Aufnahmen bis 16,7 Mio. Box, Größenhinweise.
@@ -2832,7 +2826,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-01
 
-**Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] COOP-01-S01: Konzept TEAMBAU.md: Rollen, Ereignismodell, Konfliktregeln, Austauschwege, Plugin, Mod, Nachweis, Lager, Freigabe, Einstieg, was nur Philipp tun kann.
 - [x] COOP-01-S02: Domäne team.ts: Ereignisse, Prüfung, Faltung mit Rechten, Zusammenführen, Meldecode, Teampaket, Statustext, Serverdatei, Planübernahme; site.team in checkSite.
@@ -2877,7 +2871,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-03
 
-**Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Teambau in der Mod“ · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Teambau in der Mod“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] COOP-03-S01: Vertrag mit dem Mod-Arbeitsstrang abstimmen (Vorschlag TEAMBAU.md §7).
 - [x] COOP-03-S02: Mod, Plugin und Website umsetzen, Spieltest.
@@ -2899,7 +2893,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-04
 
-**Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] COOP-04-S01: Zähler je Spieler mit Datenschutzschalter.
 - [x] COOP-04-S02: Lagerkisten lesen und Lieferungen buchen ohne Doppelzählung.
@@ -2922,7 +2916,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-05
 
-**Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Server-Plugin mit geprüften Lagerkisten“ · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Server-Plugin mit geprüften Lagerkisten“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] COOP-05-S01: Konzept LAGERKISTEN.md, reine Regeln StoreLedger/StoreIndex mit Unit-Tests.
 - [x] COOP-05-S02: StorageModule: Markieren, Schutzstufen bei Klicks/Trichtern/Explosionen/Abbau/Anbau, Buchungen je Öffnen, Prüfen gegen Sollstand, Siegeln, Bedarf, Verlauf.
@@ -2947,7 +2941,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-06
 
-**Teamplanung im Planer: Arbeitspakete, Zuteilung, Zeitplan, Material je Spieler, Fortschritt mit Hinweisen, Konflikthilfe, Planstand-Vergleich, Übergabe und Abwesenheit** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gemeinsames Bauen im Planer vertiefen“ · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Teamplanung im Planer: Arbeitspakete, Zuteilung, Zeitplan, Material je Spieler, Fortschritt mit Hinweisen, Konflikthilfe, Planstand-Vergleich, Übergabe und Abwesenheit** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gemeinsames Bauen im Planer vertiefen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] COOP-06-S01: Domäne teamPlan.ts: Arbeitspakete teilen, Abhängigkeiten, Zuteilungsvorschlag, Zeitplan, Material je Spieler, Fortschritt/Achtung, Konflikthilfe, Planstand-Vergleich, Rechteübersicht.
 - [x] COOP-06-S02: Teamprotokoll: section.handover/accept/decline, member.away, issue.ack; Bedarf je Abschnitt in der Serverdatei.
@@ -2971,7 +2965,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROJ-01
 
-**Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Projektmodul vertiefen“ · Arbeitsstrang: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Projektmodul vertiefen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] PROJ-01-S01: Datensatz project.site.program (Bauleute, Meilensteine, Abhängigkeiten azyklisch, Zuweisungen, Start, Bautage je Woche) mit Prüfung, Rückgängig über site.set, Sicherung und Datencheck.
 - [x] PROJ-01-S02: Zeitplan: Spur je Bauleute, gemeinsames Tempo bei geteilten Abschnitten, Abhängigkeiten, kritischer Pfad, Kalender mit Bautagen je Woche, Meilensteinstatus und Bedarf je Meilenstein/Bauleute.
@@ -2995,7 +2989,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-09
 
-**Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Arbeitsstrang „Mod auf Modrinth veröffentlichen“ · Arbeitsstrang: „Mod auf Modrinth veröffentlichen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Arbeitsstrang „Mod auf Modrinth veröffentlichen“ · Arbeitsstrang: „Mod auf Modrinth veröffentlichen“ · Aktualisiert: 2026-11-07T12:31:42.554Z
 
 - [x] GAME-09-S01: Projektdaten: project.json (Slug, Titel, Kurztext, Kategorien, Seiten, Lizenz, Links, Loader, Abhängigkeit Fabric API), DESCRIPTION.md Englisch + Deutsch, Icon 512 px, 6 Bilder aus den Spieltests.
 - [x] GAME-09-S02: scripts/modrinth_publish.mjs check|plan|create|sync|release: Dateien aus releases.json mit SHA-256-Vergleich, Änderungsliste aus CHANGELOG.md je Version, Token nur aus MODRINTH_TOKEN; Offline-Prüfung in npm test, Ablauf gegen nachgebaute API geprüft.
@@ -3005,7 +2999,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Das Projekt ist auf Modrinth sichtbar und im Modrinth-Launcher für Fabric und NeoForge 26.3 installierbar; Fabric zieht die Fabric API mit. Nur auf der Website geprüfte .jar (gleiche SHA-256) werden hochgeladen; Forge bleibt draußen, bis es im Spiel geprüft ist. Kein Token im Repo, in Logs oder im Chat.
 
-**Nächste Aktion:** Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind.
+**Nächste Aktion:** Modrinth prüft das Projekt weiter (Status processing, am 07.11.2026 nachgesehen); alle Versionen bis 0.26.0, Texte, Galerie und Offenlegungen sind aktuell (modrinth_publish.mjs plan). Kein Handlungsbedarf außer Abwarten.
 
 **Prüfstand:** Echte API: Projekt, 6 Bilder, 3 Versionen und Einreichung erfolgreich; kein Werkzeugname im Livetext (geprüft 03.11.2026). Freigabe durch Modrinth offen.
 
@@ -3017,7 +3011,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-10
 
-**Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Teambau in der Mod“ · Arbeitsstrang: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Teambau in der Mod“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] GAME-10-S01: Befehlskatalog im Mod-Kern (CommandCatalog, CommandContext, ReplyLog) mit den Befehlen von Mod und Paper-Plugin (/bp), mit dem Plugin-Arbeitsstrang abgeglichen; JUnit liest die Plugin-Befehle aus den Quellen, damit ein neuer Befehl ohne Knopf auffällt.
 - [x] GAME-10-S02: Befehlsseite „Befehle & Status“ (Knopf im Plan-Menü, /bauplaner befehle): Reiter je Gruppe, Statusübersicht, Eingabefelder, ausgegraute Knöpfe mit Grund, Antworten von Mod und Server; Fabric + NeoForge.
@@ -3040,7 +3034,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-11
 
-**Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Arbeitsstrang „Mod auf Minecraft 26.4 vorbereiten“ · Arbeitsstrang: „Mod-Werkzeuge und Planer-Anbindung erweitern“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Arbeitsstrang „Mod auf Minecraft 26.4 vorbereiten“ · Arbeitsstrang: „Mod auf Modrinth veröffentlichen“ · Aktualisiert: 2026-11-07T12:31:42.554Z
 
 - [x] GAME-11-S01: Versionsmatrix festlegen: welche Minecraft-Versionen und Loader (Philipps Server, verbreitete Modpacks), was der Kern schon versionsneutral abdeckt. Entschieden (Philipp 04.11.): 26.3 zuerst, danach jeweils die neueste Version; keine ältere Matrix.
 - [ ] GAME-11-S02: Zweite Minecraft-Version (Fabric und NeoForge) als eigener Adapter über mod-core und eine Versionsfassade, ohne 26.3 zu verändern. Fabric 26.4 vorbereitet (fabric-26.4 gegen 26.4-snapshot-7, Regeln statt Kopien); NeoForge folgt, sobald es 26.4-Builds gibt.
@@ -3049,7 +3043,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Die Mod läuft in mindestens einer weiteren Minecraft-Version mit Hologramm, Platzierhilfe, Website-Verbindung, Teambau und Befehlsseite. #/mod und Modrinth bieten je Version und Loader die passende Datei an.
 
-**Nächste Aktion:** Fabric 26.4 ist vorbereitet (Snapshot, kein Release). Erscheint 26.4: Versionen in fabric-26.4/gradle.properties auf das Release setzen, Spieltest BAUPLANER_MC=26.4, dann #/mod und Modrinth je Version (S03); NeoForge 26.4 sobald NeoForge Builds hat.
+**Nächste Aktion:** 26.4 ist am 07.11.2026 noch Snapshot 7 (piston-meta). Bei Erscheinen: fabric-26.4/gradle.properties auf das Release setzen, Spieltest BAUPLANER_MC=26.4, #/mod und Modrinth je Version.
 
 **Prüfstand:** S04 Launcher-Anleitung fertig. 26.4: Build und Spieltest gegen 26.4-snapshot-7 in der Cloud; Release erst mit 26.4.
 
@@ -3061,7 +3055,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-12
 
-**Mod einfacher bedienen (Mod 0.23.0): animiertes Menü als Seitenleiste, Meldungskarten oben rechts statt Chat, kompaktes Baufenster, alle Befehle und Texte auf Deutsch und Englisch** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Mod einfacher bedienen, Menü und Befehle zweisprachig“ · Arbeitsstrang: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Mod einfacher bedienen (Mod 0.23.0): animiertes Menü als Seitenleiste, Meldungskarten oben rechts statt Chat, kompaktes Baufenster, alle Befehle und Texte auf Deutsch und Englisch** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Mod einfacher bedienen, Menü und Befehle zweisprachig“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] GAME-12-S01: Befehle zweisprachig: /bauplaner (deutsche Wörter) und /buildplanner (englische Wörter), gemischte Zeilen gehen auch; Tab-Vervollständigung folgt der Spielsprache (CommandWords, CommandLang); JUnit prüft, dass jedes deutsche Befehlswort ein englisches hat.
 - [x] GAME-12-S02: Alle Texte der Mod Deutsch/Englisch (Lang.t), Sprache folgt dem Spiel oder /bauplaner sprache deutsch|englisch|auto; Befehlsseite und Katalog in beiden Sprachen.
@@ -3086,7 +3080,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-07
 
-**Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Arbeitsstrang: „Mod-Abnahmen im Spiel automatisieren“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] COOP-07-S01: Konzept TEAM_LIVE.md: Varianten, Raumprotokoll team-room v1, Schlüssel und Rollen, Ablauf, Offline, Aufteilung.
 - [x] COOP-07-S02: Sync-Kern teamSync.ts: Postausgang, Stapel, Cursor, Einladungs- und Server-Link; Pakete ohne Schlüssel.
@@ -3112,7 +3106,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-08
 
-**Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion)** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Server-Plugin mit geprüften Lagerkisten“ · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion)** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Server-Plugin mit geprüften Lagerkisten“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] COOP-08-S01: Zweck ertrag, store.config.farm, store.yield (nur Server) in team.ts und TeamLog/StoreIndex; farms in der Serverdatei (production.serverFarms).
 - [x] COOP-08-S02: Plugin misst Ertrag und Laufzeit, /bauplaner lager farm, Info mit Rate; Trichterbuchungen gebündelt (lager.trichter-buendeln-sekunden).
@@ -3136,7 +3130,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROD-01
 
-**Produktionsdaten: Katalog von 34 Farmarten mit Richtwerten je Einheit, Bedingungen, Reichweite, Verbrauch und Bauplan; Farmliste je Projekt (Anzahl, Zustand, Ort, Bauteil, Kartenpunkt) und Ertragsbuch, das ins Baustellen-Lager bucht und gemessene Raten liefert** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Produktion und Anbindung im Planer ausbauen“ · Arbeitsstrang: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Produktionsdaten: Katalog von 34 Farmarten mit Richtwerten je Einheit, Bedingungen, Reichweite, Verbrauch und Bauplan; Farmliste je Projekt (Anzahl, Zustand, Ort, Bauteil, Kartenpunkt) und Ertragsbuch, das ins Baustellen-Lager bucht und gemessene Raten liefert** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Produktion und Anbindung im Planer ausbauen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] PROD-01-S01: Farmarten mit Raten, covers, inputs, Bauplan/Aufwand, Reichweitenart.
 - [x] PROD-01-S02: Datensatz site.production mit Prüfung, Rückgängig über site.set, Sicherung, Bereinigung.
@@ -3159,7 +3153,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROD-02
 
-**Deckung und Engpässe: Restbedarf des Sammelplans gegen laufende Farmen und Handarbeit (gemeinsame Warteschlange, gieriger Ausgleich), Engpass, Materialbereitschaft je Abschnitt in Spieltagen, „Lohnt sich eine Farm?“ mit Amortisation aus Bauplan-Kosten** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Produktion und Anbindung im Planer ausbauen“ · Arbeitsstrang: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Deckung und Engpässe: Restbedarf des Sammelplans gegen laufende Farmen und Handarbeit (gemeinsame Warteschlange, gieriger Ausgleich), Engpass, Materialbereitschaft je Abschnitt in Spieltagen, „Lohnt sich eine Farm?“ mit Amortisation aus Bauplan-Kosten** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Produktion und Anbindung im Planer ausbauen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] PROD-02-S01: Deckung je Rohstoff mit Weg Farm/Hand/offen und Engpass.
 - [x] PROD-02-S02: Bereitschaft je Abschnitt kumulativ in Bau-Reihenfolge, Vergleich mit Baubeginn aus planProgram.
@@ -3182,7 +3176,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROD-03
 
-**Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Produktion und Anbindung im Planer ausbauen“ · Arbeitsstrang: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Produktion und Anbindung im Planer ausbauen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] PROD-03-S01: SectionPlan.smelts/cookTicks aus dem Rezeptbaum.
 - [x] PROD-03-S02: Ofen- und Brennstoffplan inkl. Netto-Seetang.
@@ -3203,7 +3197,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROD-04
 
-**Anbindung der Produktion: Farmen aus Projekt-Bauteilen mit Baufortschritt, Farmpunkte der Weltkarte übernehmen und eintragen, bester AFK-Platz nach Simulationsdistanz, Materialbereitschaft gegen Zeitplan der Planung, Sammelaufträge je Bauleute (TEAM-03-S02), Produktionsblatt als Text** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Produktion und Anbindung im Planer ausbauen“ · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Anbindung der Produktion: Farmen aus Projekt-Bauteilen mit Baufortschritt, Farmpunkte der Weltkarte übernehmen und eintragen, bester AFK-Platz nach Simulationsdistanz, Materialbereitschaft gegen Zeitplan der Planung, Sammelaufträge je Bauleute (TEAM-03-S02), Produktionsblatt als Text** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Produktion und Anbindung im Planer ausbauen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] PROD-04-S01: detectFarms aus Katalog-Bauteilen und Anleitungsfortschritt.
 - [x] PROD-04-S02: Weltkarte: farmsOnMap mit guessFarmType, Punkte eintragen, Bauplatz als Standardort.
@@ -3225,7 +3219,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROD-05
 
-**Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Produktion und Anbindung im Planer ausbauen“ · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Produktion und Anbindung im Planer ausbauen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] PROD-05-S01: FarmEntry.chest (geprüft, rückgängig machbar über updateFarm).
 - [x] PROD-05-S02: teamChests/chestYield: store.yield bevorzugt, sonst Trichterbuchungen mit Lückenregel 5 min.
@@ -3269,7 +3263,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LINK-02
 
-**Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Anbindung von Planer, Mod und Server neu denken“ · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Anbindung von Planer, Mod und Server neu denken“ · Arbeitsstrang: „Mod-Abnahmen im Spiel automatisieren“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] LINK-02-S01: Format und Unterschrift in Plugin und Planer gleich (gemeinsamer Prüfvektor).
 - [x] LINK-02-S02: Operationen status, config, team, room, plan, rename, invite, forget; config nur Liste, alles oder nichts, Teamkanal ausgenommen.
@@ -3292,7 +3286,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LINK-03
 
-**Mod: Live-Dienst startet selbst, Planer per Klick im Spiel zulassen, Teamfreigabe als Knopf, Server-Wege weiterreichen (Mod 0.12.0)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Anbindung von Planer, Mod und Server neu denken“ · Arbeitsstrang: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Mod: Live-Dienst startet selbst, Planer per Klick im Spiel zulassen, Teamfreigabe als Knopf, Server-Wege weiterreichen (Mod 0.12.0)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Anbindung von Planer, Mod und Server neu denken“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] LINK-03-S01: /v1/pair/ask mit Frage im Spiel (Banner, eigene Frage-Ansicht im J-Menü mit Später), Schlüssel einmal, 3 Minuten, höchstens 3.
 - [x] LINK-03-S02: Teamkanal-Freigabe als Knopf, Regel „nur freiwillig je Server“ bleibt.
@@ -3316,7 +3310,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LINK-04
 
-**Planer: Bereich „Spiel und Server verbinden – ohne Befehle“ (#/mod), Server koppeln und einstellen, Team und Raum per Knopf** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Anbindung von Planer, Mod und Server neu denken“ · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Planer: Bereich „Spiel und Server verbinden – ohne Befehle“ (#/mod), Server koppeln und einstellen, Team und Raum per Knopf** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Anbindung von Planer, Mod und Server neu denken“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] LINK-04-S01: Drei Schritte Spiel → Server → Kopplung, Einstellungsformular aus dem Schema, Geräte, Umbenennen.
 - [x] LINK-04-S02: „Planstand auf den Server legen“ und „Server mit dem Raum verbinden“ über Steuernachrichten.
@@ -3339,7 +3333,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LINK-05
 
-**Zweiter Weg über den Team-Raum: Steuernachrichten ohne Mod (iPad), weiteres Gerät per Link freigeben** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Anbindung von Planer, Mod und Server neu denken“ · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Zweiter Weg über den Team-Raum: Steuernachrichten ohne Mod (iPad), weiteres Gerät per Link freigeben** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Anbindung von Planer, Mod und Server neu denken“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] LINK-05-S01: Raum: POST /control (Formprüfung, Weiterleitung an die Plugin-Verbindung, Antwort, 20 s, 409 ohne Server), serverOnline.
 - [x] LINK-05-S02: Plugin: control über RoomLink, gleiche Prüfung wie auf dem Mod-Weg.
@@ -3363,7 +3357,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LINK-06
 
-**Weitere Steuerung ohne Befehle: Plan mit Anker von der Weltkarte auf den Server und Serveraufnahme per Klick zurück in den Planer** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Anbindung von Planer, Mod und Server neu denken“ · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Weitere Steuerung ohne Befehle: Plan mit Anker von der Weltkarte auf den Server und Serveraufnahme per Klick zurück in den Planer** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Arbeitsstrang „Anbindung von Planer, Mod und Server neu denken“ · Arbeitsstrang: „Mod-Abnahmen im Spiel automatisieren“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] LINK-06-S01: Plan-Upload mit Anker aus der Weltkarte („⇪ Auf den Server legen“, über Mod oder Team-Raum).
 - [x] LINK-06-S02: Serveraufnahme als Steueraktion scan (list/start/fetch/cancel), Reiter „Bauen“ → „⇩ Auf dem Server aufnehmen“, Paper-Plugin 0.13.0.
@@ -3382,7 +3376,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-09
 
-**Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] COOP-09-S01: Chip im Projektkopf und Meldungen der anderen in jedem Reiter (ohne Flut beim Nachholen).
 - [x] COOP-09-S02: Anwesenheit mit eigenem Abschnitt in Arbeit.
@@ -3406,7 +3400,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-10
 
-**Client zuerst: Baustand und Kisteninhalt laut Spiel (section.seen, store.seen) im Teamstand, ungeprüft getrennt von Servermessungen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Client zuerst: Baustand und Kisteninhalt laut Spiel (section.seen, store.seen) im Teamstand, ungeprüft getrennt von Servermessungen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] COOP-10-S01: Ereignisse section.seen und store.seen mit Prüfung und Recht Helfer (team.ts, TeamLog.java).
 - [x] COOP-10-S02: Faltung: neuester Stand je Abschnitt, gesehener Kisteninhalt, Bestand laut Spiel nur ohne Serverzählung.
@@ -3432,7 +3426,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-11
 
-**Verlauf verdichten: Bauleitung ersetzt Messungen bis zu einem Stichtag durch Summen (team.digest), gleicher Teamstand, Merge ohne Doppelzählung, Produktion und Team live lesen mit** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Module und Systeme komplex ausarbeiten“ · Arbeitsstrang: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Verlauf verdichten: Bauleitung ersetzt Messungen bis zu einem Stichtag durch Summen (team.digest), gleicher Teamstand, Merge ohne Doppelzählung, Produktion und Team live lesen mit** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Module und Systeme komplex ausarbeiten“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] COOP-11-S01: Ereignis team.digest (Teile unter 4 KB, Prüfung), Lauf in Kraft (vollständig, spätester Stichtag, Bauleitung zum Stichtag), Faltung überspringt Ersetztes.
 - [x] COOP-11-S02: compactTeam: Summen je Mitglied/Abschnitt/Kiste/Farm, neueste Zählung bleibt, erledigte Notizen und alte Ablehnungen entfallen; Gleichheitsprüfung vor dem Speichern.
@@ -3456,7 +3450,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROJ-02
 
-**Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Projektmodul vertiefen“ · Arbeitsstrang: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Projektmodul vertiefen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] PROJ-02-S01: Zeitplan ab heute bei Startdatum in der Vergangenheit; Bautage zwischen Daten nach Bautagen je Woche (buildingDaysBetween).
 - [x] PROJ-02-S02: Planung ↔ Produktion: waitForMaterial, planProgramWithMaterial (Bereitschaft → frühester Beginn, materialWait), Produktion vergleicht mit demselben Zeitplan.
@@ -3480,7 +3474,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROJ-03
 
-**Planung Runde 3: Abwesenheiten je Bauleute nach Datum, mehrere Basispläne mit Namen und Vergleich, „abwesend bis“ aus dem Team in die Planung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Module und Systeme komplex ausarbeiten“ · Arbeitsstrang: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Planung Runde 3: Abwesenheiten je Bauleute nach Datum, mehrere Basispläne mit Namen und Vergleich, „abwesend bis“ aus dem Team in die Planung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Module und Systeme komplex ausarbeiten“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] PROJ-03-S01: Abwesenheiten je Bauleute (von–bis, Grund; geordnet, zusammengeführt, höchstens 24, höchstens ein Jahr); Zeitplan rechnet Tag für Tag um Abwesenheiten herum, gemeinsame Abschnitte bauen weiter.
 - [x] PROJ-03-S02: Basisplan-Verlauf: bis zu 8 frühere Basispläne mit Namen, Vergleichen (aktiv schalten), Umbenennen, Entfernen, Verwerfen holt den vorigen zurück; Bereinigung beim Entfernen eines Abschnitts.
@@ -3503,7 +3497,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROJ-04
 
-**Reihenfolge zwischen Projekten: „erst nach“ anderen Projekten, frühester Start aus dem Basisplan der Vorgänger, Kreise abweisen, Pfeile auf der Weltkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Module und Systeme komplex ausarbeiten“ · Arbeitsstrang: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Reihenfolge zwischen Projekten: „erst nach“ anderen Projekten, frühester Start aus dem Basisplan der Vorgänger, Kreise abweisen, Pfeile auf der Weltkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Module und Systeme komplex ausarbeiten“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] PROJ-04-S01: program.after (Vorgängerprojekte mit Grund) mit Prüfung; projectOrder.ts: Verknüpfungen, Kreise, Stufen, Nachfolger, frühester Start aus dem aktiven Basisplan.
 - [x] PROJ-04-S02: Planung „Reihenfolge der Projekte“ (erst nach, Kreis-Hinweis, Start mit einem Klick korrigieren, Danach kommen) und Weltkarte (Pfeile, Detail).
@@ -3525,7 +3519,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROJ-05
 
-**Bauleute-Konto und Bauleute aus dem Spiel: Lagerbuchungen, Sammelzusagen und Saldo je Bauleute, Mitspieler aus dem Team und live aus dem Team-Raum in der Planung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Projekte untereinander verknüpfen“ · Arbeitsstrang: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Bauleute-Konto und Bauleute aus dem Spiel: Lagerbuchungen, Sammelzusagen und Saldo je Bauleute, Mitspieler aus dem Team und live aus dem Team-Raum in der Planung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Projekte untereinander verknüpfen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] PROJ-05-S01: builderAccounts: je Bauleute Restbedarf der Abschnitte gegen eigene und fremde Sammelzusagen, eingebracht (Beiträge, Einlagerungen), entnommen, Saldo; „Noch ohne Sammelzusage“ je Item; Kandidaten (Teammitglieder ohne Planung) und fremde Spieler im Team-Raum.
 - [x] PROJ-05-S02: Planung: Live-Abzeichen (im Spiel/Planer, abwesend), aufklappbares Konto mit Tabelle, Bauzettel mit Zusagen und Lagerbuchungen, Kasten „Bauleute aus dem Spiel“ mit „Team übernehmen“ und Rückgängig.
@@ -3547,20 +3541,23 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LINK-07
 
-**Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Arbeitsstrang „Anbindung von Planer, Mod und Server neu denken“ · Arbeitsstrang: „Verbindung ohne Server-Datei neu bauen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Anbindung von Planer, Mod und Server neu denken“ · Arbeitsstrang: „Mod-Abnahmen im Spiel automatisieren“ · Aktualisiert: 2026-11-07T12:31:42.554Z
 
 - [x] LINK-07-S01: RoomClient in mod-core: Kopf + Ereignisse aus dem Raum, Faltung mit dem TeamLog des Plugins, eigene Aktionen per append, Anwesenheit, Wiederverbinden.
 - [x] LINK-07-S02: Planer „Mein Spiel verbinden“/„Spiel trennen“ (POST /v1/room, Feature room).
 - [x] LINK-07-S03: Echter Spieltest Fabric 26.3 gegen einen laufenden Raum ohne Server.
 - [x] LINK-07-S04: Mitspieler-Positionen über den Raum: Anwesenheit mit Spielername und Position (alle 2 s nach Bewegung), im Planer unter „Gerade da“ (Mod 0.15.0).
 - [x] LINK-07-S05: Aufnahme per Klick über den Raum („Aufnahme im Spiel anfordern“, /bauplaner team aufnahme, PUT …/scans), section.seen und store.seen aus der Mod, Lagerkisten aus dem Raum (Mod 0.15.0).
-- [ ] LINK-07-S06: Release Mod 0.14.0/0.15.0 (Modrinth über den Arbeitsstrang „Mod auf Modrinth veröffentlichen“), Raum-Deploy durch den Team-Arbeitsstrang und Abnahme LINK-07/LINK-08.
+- [x] LINK-07-S06: Release Mod 0.14.0/0.15.0 (auf Modrinth) und Raum-Deploy durch den Team-Thread (04.11.2026).
+- [ ] LINK-07-S07: Abnahme LINK-07/LINK-08: Teambau ohne Server-Datei im echten Spiel.
 
 **Abnahme:** Teambau funktioniert auf einem Server ganz ohne Bauplaner-Datei. Was nur mit Server-Code geht, ist klar benannt; das Plugin bleibt freiwillig.
 
-**Nächste Aktion:** Team-Arbeitsstrang deployt den Raum (Aufnahmen, Positionen); Modrinth 0.15.0; Abnahme LINK-07/LINK-08 durch Philipp.
+**Nächste Aktion:** Abnahme LINK-07 automatisieren (Block C), Rest im eigenen Spiel durch Philipp.
 
-**Prüfstand:** Automatisch, gegen einen laufenden Raum und im echten Minecraft 26.3 geprüft; Raum-Deploy und Abnahme LINK-07/LINK-08 offen.
+**Nur Philipp:** Im Spiel an deinem PC: LINK-07 auf #/testphase: im eigenen Spiel ohne Server-Datei „Mein Spiel verbinden“ und Teamstand im Spiel sehen.
+
+**Prüfstand:** Automatisch gegen einen laufenden Raum und im echten Minecraft 26.3 geprüft; Raum ausgerollt (04.11.), Mod 0.15.0 und Nachfolger auf Modrinth. Abnahme LINK-07 offen.
 
 **Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java) — Mit BAUPLANER_ROOM gegen wrangler dev: live, Abschnitt aus dem Spiel im Raum, Notiz aus dem Planer im Spiel (04.11.2026).; [scripts/mod/test_bridge_ingame.sh](../scripts/mod/test_bridge_ingame.sh) — Minecraft 26.3 Fabric mit BAUPLANER_ROOM: live mit dem Raum, /bauplaner team nehmen 2 kommt im Raum an, ohne Server (04.11.2026).; [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — „Mein Spiel verbinden“ übergibt nur den Mitgliedsschlüssel (1400/390 px).; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java) — 0.15.0 gegen wrangler dev: Position kommt beim Planer an, Anforderung erreicht das Spiel, Aufnahme hochgeladen und byte-gleich geholt, section.seen im Protokoll (04.11.2026).; [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — Position unter „Gerade da“, „Aufnahme im Spiel anfordern“ lädt die Aufnahme aus dem Raum (1400 px und 390 px).; [tests/unit/team/team-room.test.mjs](../tests/unit/team/team-room.test.mjs) — Raum: Aufnahmen (gzip-Prüfung, 8 MB, neueste 12), Position nur bei where spiel.
 
@@ -3570,7 +3567,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### EDIT-06
 
-**Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Direkt im 3D-Bild bauen“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Direkt im 3D-Bild bauen“ · Arbeitsstrang: „Planer-Abnahmen ohne Nachweis automatisieren“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] EDIT-06-S01: Picking an 3D-Blockflächen (Zelle, Flächenrichtung, Zelle davor) und Bau-Geste im 3D-Bild mit Vorschau; Setzen/Abbauen per Klick und Ziehen.
 - [x] EDIT-06-S02: Formen und Auswahl im 3D aufziehen (Oberseite waagrecht, Seitenfläche als Wand), Gruppe mit dem Auswahl-Werkzeug im 3D-Bild verschieben.
@@ -3594,21 +3591,22 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### FALLBACK-01
 
-**Ausweichwege über alle Verbindungen: Teamstand offline in der Mod, HTTP statt WebSocket, offline gemerkte Messungen, Baustand über den besten Weg (Spiel → Team-Raum → Server → Datei)** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Arbeitsstrang „Mod, Server und Client mit Fallbacks ausbauen“ · Arbeitsstrang: „Mod, Server und Client mit Fallbacks ausbauen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Ausweichwege über alle Verbindungen: Teamstand offline in der Mod, HTTP statt WebSocket, offline gemerkte Messungen, Baustand über den besten Weg (Spiel → Team-Raum → Server → Datei)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Mod, Server und Client mit Fallbacks ausbauen“ · Arbeitsstrang: „Mod-Abnahmen im Spiel automatisieren“ · Aktualisiert: 2026-11-07T12:31:42.554Z
 
 - [x] FALLBACK-01-S01: Mod: Teamstand aus dem Raum in bauplaner/team/raum-stand.json (Kopf, Ereignisse, Cursor); nach Neustart offline sichtbar, beim Wiederverbinden nur der Rest.
 - [x] FALLBACK-01-S02: Mod: HTTP-Ausweg (GET/POST …/events) nach zwei WebSocket-Fehlschlägen bei erreichbarem Raum, alle 5 min neuer WebSocket-Versuch.
 - [x] FALLBACK-01-S03: Mod: section.seen/store.seen offline je Abschnitt/Kiste gemerkt (Zeit der Messung), beim Wiederverbinden nachgereicht.
 - [x] FALLBACK-01-S04: Planer: „Baustand holen (bester Weg)“ – eigenes Spiel → Team-Raum → Server-Plugin, jeder Fehlschlag mit Grund, Datei als letzter Ausweg.
-- [ ] FALLBACK-01-S05: Spieltest Mod 0.16.0, Release (Modrinth-Arbeitsstrang), Abnahme LINK-09.
+- [x] FALLBACK-01-S05: Spieltest Mod 0.16.0 (Fabric mit echtem Team-Raum, NeoForge) und Release über den Modrinth-Thread.
+- [ ] FALLBACK-01-S06: Abnahme LINK-09: Internet trennen, Neustart, Teamstand und „Baustand holen (bester Weg)“.
 
 **Abnahme:** Fällt ein Weg aus (Raum offline, WebSocket gesperrt, Plugin fehlt), arbeitet Mod oder Planer über den nächsten weiter und sagt, welcher Weg gerade gilt. Nichts geht verloren: eigene Aktionen und Messungen warten und gehen beim nächsten Kontakt raus.
 
-**Nächste Aktion:** Spieltest Mod 0.16.0, Release über den Modrinth-Arbeitsstrang, Abnahme LINK-09 durch Philipp.
+**Nächste Aktion:** Abnahme LINK-09 mit getrenntem Netz automatisieren (Block C).
 
 **Nur Philipp:** Im Spiel an deinem PC: Abnahme LINK-09: mit Team live kurz das Internet trennen, Minecraft neu starten, Teamstand und „Baustand holen (bester Weg)“ prüfen.
 
-**Prüfstand:** Mod-Kern gegen Raum-Ersatz ohne WebSocket und gegen den echten Team-Raum, Planer im Browser gegen den Mod-Simulator geprüft; Spieltest und Abnahme LINK-09 offen.
+**Prüfstand:** Spieltest 0.16.0 Fabric mit echtem Team-Raum und NeoForge bestanden (04.11.), 0.16.0 auf Modrinth; Abnahme LINK-09 offen.
 
 **Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java) — Raum-Ersatz ohne WebSocket: HTTP-Abfrage, Aktion/Notiz/Messung; Neustart ohne Netz mit gespeichertem Stand, Nachreichen, Cursor (04.11.2026).; [tests/e2e/game-progress.e2e.mjs](../tests/e2e/game-progress.e2e.mjs) — „Baustand holen (bester Weg)“ über das eigene Spiel; anderer Plan → alle Gründe und Datei-Ausweg (04.11.2026).; [scripts/mod/test_bridge_ingame.sh](../scripts/mod/test_bridge_ingame.sh) — Minecraft 26.3 Fabric (mit BAUPLANER_ROOM gegen den echten Team-Raum) und NeoForge bestanden mit Mod 0.16.0 (04.11.2026).
 
@@ -3618,7 +3616,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LINK-10
 
-**Anbindung geprüft und gehärtet: Sendungen über den WebSocket nacheinander (Mod und Plugin), Messungen bis zur Bestätigung gemerkt, Team-Raum mit Ping ohne Aufwecken und sauberem Schließen, Planer ohne gestapelte Abfrage-Schleifen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Anbindung von Mod, Team-Raum und Planer prüfen“ · Arbeitsstrang: „Anbindung von Mod, Team-Raum und Planer prüfen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Anbindung geprüft und gehärtet: Sendungen über den WebSocket nacheinander (Mod und Plugin), Messungen bis zur Bestätigung gemerkt, Team-Raum mit Ping ohne Aufwecken und sauberem Schließen, Planer ohne gestapelte Abfrage-Schleifen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Anbindung von Mod, Team-Raum und Planer prüfen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] LINK-10-S01: Mod und Plugin: alle WebSocket-Rahmen über WsQueue streng nacheinander (JDK erlaubt nur eine offene Sendung, zweite scheiterte still mit „Send pending“); Plugin trennte vorher bei gleichzeitiger Steuerantwort und Ereignissen.
 - [x] LINK-10-S02: Mod: section.seen/store.seen bleiben gemerkt, bis der Raum die Kennung beantwortet; über HTTP stilles Nachsenden nach 10 s.
@@ -3643,7 +3641,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LINK-11
 
-**Alles über das Internet: Server-Plugin bekommt die Team-Infos von Mod und Planer selbst über den Team-Raum, Dateiwege nur noch als versteckter Notfall (Mod/Plugin 0.21.0)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Alle Systeme online verbinden“ · Arbeitsstrang: „Alle Systeme online verbinden“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Alles über das Internet: Server-Plugin bekommt die Team-Infos von Mod und Planer selbst über den Team-Raum, Dateiwege nur noch als versteckter Notfall (Mod/Plugin 0.21.0)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Alle Systeme online verbinden“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] LINK-11-S01: Bestandsaufnahme: alle Stellen, an denen Dateien exportiert, kopiert oder eingefügt werden mussten (Teampaket, Meldecode, Serverdatei, Server-Link, Aufnahme-Datei, Plan-Ordner der Mod, Weltplan-/Kartenmarker) – AUTO_LINK §10.
 - [x] LINK-11-S02: Mod 0.21.0: „Mein Spiel verbinden“ gibt der Bauleitung auch den Serverschlüssel (Merkmal roomserver); auf einem Server mit Plugin übergibt die Mod den Team-Raum selbst (link.room über bauplaner:team, einmal je Verbindung und Raum).
@@ -3668,7 +3666,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### STRUCT-01
 
-**Dateistruktur sauber neu ordnen: Fachordner im Kern und in der Oberfläche, Skripte, Tests und Doku nach Bereich, Ordnerkarte docs/STRUKTUR.md** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Dateistruktur sauber neu ordnen“ · Arbeitsstrang: „Dateistruktur sauber neu ordnen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Dateistruktur sauber neu ordnen: Fachordner im Kern und in der Oberfläche, Skripte, Tests und Doku nach Bereich, Ordnerkarte docs/STRUKTUR.md** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Dateistruktur sauber neu ordnen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] STRUCT-01-S01: Codemod scripts/dev/restructure.mjs: verschiebt nach Liste und schreibt Importe, Markdown-Links, Pfade ab Wurzel und Roadmap-Umfang um; wiederholbar nach Rebase.
 - [x] STRUCT-01-S02: Stufe 2: packages/domain/src in Fachordner (core, catalog, base, materials, building, planning, world, team, data, versions), Web-CSS nach styles/, Team-Ansichten nach views/project/team/.
@@ -3712,7 +3710,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### CORE-04
 
-**Planer-Kernmodule prüfen und überarbeiten: Verbindungen zwischen Projekt, Planung, Werkstatt, Import/Export und Speicher sauber, gefundene Fehler behoben** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Planer-Kernmodule prüfen und überarbeiten“ · Arbeitsstrang: „Planer-Kernmodule prüfen und überarbeiten“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Planer-Kernmodule prüfen und überarbeiten: Verbindungen zwischen Projekt, Planung, Werkstatt, Import/Export und Speicher sauber, gefundene Fehler behoben** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Planer-Kernmodule prüfen und überarbeiten“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] CORE-04-S01: Projekt/Planung: „erst nach“ (PROJ-04) im Verweisgraphen und Datencheck; Löschen eines Projekts nennt und entfernt Nachfolger-Verweise und gibt Bauplätze der Weltkarte frei.
 - [x] CORE-04-S02: Projektsitzung: Aktionen bauen auf dem neuesten Stand (keine verlorenen Änderungen bei zwei Aktionen im selben Takt); Rückgängig/Wiederholen behalten live empfangene Teamereignisse.
@@ -3736,7 +3734,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### WORLD-SHARE-01
 
-**Weltplan und Server-Karte nur über den Team-Raum: Weltplan mit Bauplätzen, Gruppen und Sperren an alle Mods und das Paper-Plugin, Plugin schreibt BlueMap-/Dynmap-Marker selbst, Kartenliste geteilt, Dateiwege nur als Notfall** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Weltplan und Server-Karte über den Team-Raum“ · Arbeitsstrang: „Weltplan und Server-Karte über den Team-Raum“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Weltplan und Server-Karte nur über den Team-Raum: Weltplan mit Bauplätzen, Gruppen und Sperren an alle Mods und das Paper-Plugin, Plugin schreibt BlueMap-/Dynmap-Marker selbst, Kartenliste geteilt, Dateiwege nur als Notfall** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Weltplan und Server-Karte über den Team-Raum“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] WORLD-SHARE-01-S01: Team-Raum: geteilte Dokumente weltplan und karten (Revision, If-Match/409, ?known, Serverschlüssel nur lesen, Ankündigung per WebSocket).
 - [x] WORLD-SHARE-01-S02: Planer: „Weltplan im Team“ auf der Weltkarte, Dreiwege-Abgleich je Eintrag, Marker je Dimension mitgeschickt, Kartenliste geteilt; Datei-Knöpfe nur noch unter „Notfall ohne Team-Raum oder Plugin“.
@@ -3760,7 +3758,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GUIDE-01
 
-**Anleitung „Wie geh ich es an?“: eigener Reiter mit Wegen nach Ziel, jeder Schritt mit Grafik, kurzem Satz und Link an die passende Stelle** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Tutorial-Reiter „Wie geh ich es an?“ bauen“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Anleitung „Wie geh ich es an?“: eigener Reiter mit Wegen nach Ziel, jeder Schritt mit Grafik, kurzem Satz und Link an die passende Stelle** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Tutorial-Reiter „Wie geh ich es an?“ bauen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] GUIDE-01-S01: Sechs Wege nach Ziel (Erstes Projekt, Bibliothek, Mod, Hologramm, Gelände aus der Mod, Team) mit je 4–6 Schritten; jeder Schritt ein Satz (≤110 Zeichen), nur Online-/Mod-Wege.
 - [x] GUIDE-01-S02: Grafik je Schritt (Szene Planer/Spiel/Launcher, Symbol, Tastenkappe), animiert ohne reduced-motion, hell/dunkel über Theme-Tokens.
@@ -3784,7 +3782,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### UI-03
 
-**Design-System: saubere, einheitliche und schön angepasste Planer-Oberfläche** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Planer-Oberfläche schön neu gestalten“ · Arbeitsstrang: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Design-System: saubere, einheitliche und schön angepasste Planer-Oberfläche** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Planer-Oberfläche schön neu gestalten“ · Arbeitsstrang: „Planer-Abnahmen ohne Nachweis automatisieren“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] UI-03-S01: Design-Tokens (Abstände, Radien, Schrift, Schatten, Bewegung, Zustandsfarben) und Standardthema „Werkbank“ (Grasgrün/Gold, hell und dunkel).
 - [x] UI-03-S02: Gemeinsame Bausteine angeglichen: Knöpfe mit Blockkante, Felder, Karten, Hinweise, Chips, Segmente, Tabellen; aktiver Reiter mit Akzentstrich, Schrittgruppen aus UX-01 mitgestaltet.
@@ -3808,7 +3806,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### NAME-01
 
-**Neuer Produktname „LMNT — Build Studio“ auf Seite, Mod, Plugin und Modrinth** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „In „LMNT — Build Studio“ umbenennen“ · Arbeitsstrang: „In „LMNT — Build Studio“ umbenennen“ · Aktualisiert: 2026-11-07T12:19:01.724Z
+**Neuer Produktname „LMNT — Build Studio“ auf Seite, Mod, Plugin und Modrinth** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „In „LMNT — Build Studio“ umbenennen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
 
 - [x] NAME-01-S01: Seite: Titel, Kopf, Fußzeile, Fehlermeldungen, Hilfetexte, Exporte und Anleitung heißen „LMNT — Build Studio“ bzw. „Build Studio“.
 - [x] NAME-01-S02: Mod 0.24.0 und Paper-Plugin: Anzeigename „LMNT — Build Studio Bridge“, Menütitel, Tastengruppe, Chat-Vorsatz [Build Studio], Server-Kartensets „Build Studio: …“.
