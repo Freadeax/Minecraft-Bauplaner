@@ -6,6 +6,7 @@ import { errorText } from '../../../app/ui';
 import { createRoom, getPlan, putHeader, putPlan, readRoomUrl, rotateKey, saveRoomUrl, signKeyOf, useRoomConnection } from './roomClient';
 import type { ProjectSession } from '../session';
 import { TeamBackup } from './TeamBackup';
+import { AdminKeyChange, TeamAccessOpen, TeamAccessSave } from './TeamAccess';
 import { roomHeader, takePlan, teamPackageText } from './teamTransfer';
 import { control, currentPairedServer, gameLeaveRoom, gameRoomState, gameToRoom, reachableServer, rememberRoom } from '../../mod/serverClient';
 
@@ -173,6 +174,7 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
         <button className="primary" disabled={busy || !url.trim()} onClick={() => void goOnline()}>Live schalten</button></div>
       <small className="muted">Voreingestellt ist der Team-Raum des Build Studios. Einen eigenen kannst du einrichten (services/team-room/README.md) und hier eintragen; die Adresse merkt sich dieser Browser.</small>
     </> : <p className="muted">Die Bauleitung schaltet das Team live und schickt dir einen Einladungslink. Bis dahin geht der Austausch über Teampaket und Meldecode unten.</p>}
+    <TeamAccessOpen team={team} saveLive={saveLive} newDevice={newDeviceId} onMessage={onMessage} />
   </div>;
 
   const status = roomStatus(team as RoomTeam, room.connected);
@@ -234,7 +236,9 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
       <button disabled={busy} onClick={() => { saveLive(leaveLive(team as RoomTeam) as RoomTeam); onMessage('Live-Verbindung in diesem Browser getrennt. Der Team-Raum und die anderen bleiben unberührt.'); }}>Live trennen</button>
       {live.adminKey && <button disabled={busy} className="secondary" onClick={() => void renew('member')}>Einladung erneuern</button>}
       {live.adminKey && live.serverKey && <button disabled={busy} className="secondary" onClick={() => void renew('server')}>Server-Link erneuern</button>}
+      <AdminKeyChange team={team as RoomTeam} saveLive={saveLive} leaderEvent={leaderEvent} founderHere={founderHere} onDone={() => { autoServer.current = ''; }} onMessage={onMessage} />
     </div>
+    <TeamAccessSave session={session} team={team as RoomTeam} onMessage={onMessage} />
     {shown && <div className="team-shown">
       <p>{shown === 'invite' ? 'Diesen Link an alle Mitspieler schicken. Wer ihn öffnet, bekommt Plan und Teamstand und ist sofort live dabei.'
         : <>Einfacher geht es mit „Server mit dem Raum verbinden“, wenn der Server gekoppelt ist. Koppeln geht im Menü „Spiel“ mit einem Klick (als OP mit der Mod im Spiel). Nur ohne Kopplung: auf dem Server <code>/bauplaner team verbinden &lt;Link&gt;</code> eingeben (Konsole oder OP). Nicht weitergeben: Mit diesem Link schreibt man Messungen als Server.</>}</p>

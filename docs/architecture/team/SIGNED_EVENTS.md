@@ -76,7 +76,7 @@ Server-Hoheit: `config.yml` `team.schutz-quelle: raum` (Standard; die Einstellun
 | Team-Raum fälscht Ereignisse | kennt den Unterschriftsschlüssel nicht (im Raum liegt nur der Hash des Verwaltungsschlüssels) |
 | Schlüssel im Log | stehen nie in Chat oder Log |
 
-Grenzen: Ein Mitglied mit Einladung kann sich weiterhin im Raum als **anderes Mitglied** (nicht als Bauleitung) ausgeben, etwa eine Übernahme im Namen eines Baumeisters. Das bleibt im Verlauf mit Namen sichtbar; harte Identität je Mitglied bräuchte eigene Schlüssel je Gerät und ist nicht Teil von GAME-06. Zur Bauleitung beförderte Mitglieder haben keinen Verwaltungsschlüssel: Ihre Rollen- und Schutzänderungen aus dem Planer gelten auf dem Server nicht (im Spiel über das Plugin, Herkunft `server`, schon). Den Raum ersetzt das nicht: „Einladung erneuern“ sperrt Fremde aus (COOP-09).
+Grenzen: Ein Mitglied mit Einladung kann sich weiterhin im Raum als **anderes Mitglied** (nicht als Bauleitung) ausgeben, etwa eine Übernahme im Namen eines Baumeisters. Das bleibt im Verlauf mit Namen sichtbar; harte Identität je Mitglied bräuchte eigene Schlüssel je Gerät und ist nicht Teil von GAME-06. Zur Bauleitung beförderte Mitglieder haben keinen Verwaltungsschlüssel: Ihre Rollen- und Schutzänderungen aus dem Planer gelten auf dem Server nicht (im Spiel über das Plugin, Herkunft `server`, schon). Den Raum ersetzt das nicht: „Einladung erneuern“ sperrt Fremde aus (COOP-09). Ist der Verwaltungsschlüssel womöglich weitergegeben (ältere Sicherung), wechselt die Bauleitung ihn; der Planer bestätigt den bisherigen Stand mit dem neuen Unterschriftsschlüssel neu, höchstens bis vor das erste Ereignis, das der Server abgewiesen hatte ([TEAM_ACCESS.md](TEAM_ACCESS.md) §3).
 
 ## 6. Tests
 

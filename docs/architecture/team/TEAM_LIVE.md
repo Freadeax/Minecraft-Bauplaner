@@ -39,6 +39,7 @@ Ein Raum gehört zu genau einem Team (`teamId`). Alle Antworten sind JSON. Grenz
 | `PUT/GET /v1/rooms/{room}/header` | Abschnitte mit Weltboxen, Dimension, Bedarf (heute Inhalt der Serverdatei) für Plugin und Mod |
 | `PUT/GET /v1/rooms/{room}/doc/{weltplan\|karten}` | WORLD-SHARE-01: geteilte Dokumente (Weltplan mit Markern, Server-Webkarten), `rev`, `If-Match`, `?known=`, Serverschlüssel nur lesen, Push `{type:'doc'}`; siehe [WORLD_SHARE](../welt/WORLD_SHARE.md) |
 | `POST /v1/rooms/{room}/rotate?wer=member\|server` (admin) | neuer `memberKey` bzw. `serverKey`; alte Links werden ungültig, offene Verbindungen mit dem alten Schlüssel schließen mit 4403 |
+| `POST /v1/rooms/{room}/rotate?wer=admin` (admin) | neuer `adminKey` (BACKUP-03, [TEAM_ACCESS.md](TEAM_ACCESS.md)); der alte gilt sofort nicht mehr, Merkmal `admin-rotate` in `/v1/status` |
 
 - **Cursor** ist die Ankunftsnummer im Raum, nicht die Ereigniszeit. Die Faltung sortiert weiter nach `(at, id)`, der Cursor sagt nur „was habe ich schon“. Damit gehen Ereignisse mit älterer Zeit nicht verloren, etwa von einem Gerät, das offline war.
 - Der Raum **prüft nur Form und Größe** (`checkTeamEvent`), keine Rechte. Rechte bleiben die Faltung jedes Teilnehmers. Damit gilt dieselbe Wahrheit wie offline, und der Dienst bleibt dumm und billig.

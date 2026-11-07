@@ -1,8 +1,8 @@
 // Team-Raum client (COOP-07, docs/architecture/team/TEAM_LIVE.md): HTTP calls and the live connection.
 // The sync logic itself is pure (packages/domain/src/team/teamSync.ts); this file only moves bytes.
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { LINK_TIMING, afterRestore, confirm, deriveSignKey, ingest, linkDead, nextBatch, reconnectDelay, retryDelay, signBatch, trackOutbox } from '../../../../../../packages/domain/src/index.js';
-import type { AppendAnswer, Batch, FeedAnswer, RoomTeam, StaleStep, TeamEvent, TeamLive } from '../../../../../../packages/domain/src/index.js';
+import { LINK_TIMING, afterRestore, confirm, deriveSignKey, ingest, linkDead, nextBatch, numberPage, reconnectDelay, retryDelay, signBatch, trackOutbox } from '../../../../../../packages/domain/src/index.js';
+import type { AppendAnswer, Batch, FeedAnswer, RoomTeam, SeqEvent, StaleStep, TeamEvent, TeamLive } from '../../../../../../packages/domain/src/index.js';
 
 const URL_KEY = 'bauplaner.teamraum.adresse';
 /** Team-Raum of the project (Cloudflare worker bauplaner-team, services/team-room); own rooms can be entered instead. */
@@ -35,7 +35,19 @@ export const postBatch = (live: TeamLive, batch: Batch) => call<AppendAnswer>(li
 export const getFeed = (live: TeamLive) => call<FeedAnswer>(live.url, `/v1/rooms/${live.room}/events?after=${encodeURIComponent(live.cursor)}`, { key: live.key });
 export const putHeader = (live: TeamLive, header: unknown) => call<{ ok: true }>(live.url, `/v1/rooms/${live.room}/header`, { method: 'PUT', body: JSON.stringify(header), key: live.adminKey ?? live.key });
 /** New invitation key (who = member) or server key (who = server); only with the admin key. Old links stop working. */
-export const rotateKey = (live: TeamLive, who: 'member' | 'server') => call<{ memberKey?: string; serverKey?: string }>(live.url, `/v1/rooms/${live.room}/rotate?wer=${who}`, { method: 'POST', key: live.adminKey ?? live.key });
+export const rotateKey = (live: TeamLive, who: 'member' | 'server' | 'admin') => call<{ memberKey?: string; serverKey?: string; adminKey?: string }>(live.url, `/v1/rooms/${live.room}/rotate?wer=${who}`, { method: 'POST', key: live.adminKey ?? live.key });
+/** BACKUP-03: every event of the room with its arrival number (pages of 500, numbered like the server plugin does). */
+export async function allRoomEvents(live: TeamLive): Promise<SeqEvent[]> {
+  const out: SeqEvent[] = [];
+  let after = '';
+  for (let page = 0; page < 200; page++) {
+    const a = await call<FeedAnswer>(live.url, `/v1/rooms/${live.room}/events?after=${encodeURIComponent(after)}&limit=500`, { key: live.adminKey ?? live.key });
+    out.push(...numberPage(a.events as TeamEvent[], a.cursor));
+    if (!a.more || a.cursor === after) return out;
+    after = a.cursor;
+  }
+  return out;
+}
 export const getHeader = <T>(live: Pick<TeamLive, 'url' | 'room' | 'key'>) => call<T>(live.url, `/v1/rooms/${live.room}/header`, { key: live.key });
 
 // OPS-04: Sicherung und Wiederherstellung (docs/architecture/team/TEAM_BACKUP.md); everything with the admin key.

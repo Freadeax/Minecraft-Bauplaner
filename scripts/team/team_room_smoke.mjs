@@ -45,5 +45,16 @@ const back = new Uint8Array(await (await fetch(`${base}/v1/rooms/${room}/plan/${
 assert.equal(createHash('sha256').update(back).digest('hex'), sha);
 assert.equal((await call(`/v1/rooms/${room}/header`, { method: 'PUT', body: JSON.stringify({ teamId: 'team_smoke', sections: [] }) }, adminKey)).status, 200);
 assert.equal((await call(`/v1/rooms/${room}/header`, {}, memberKey)).body.teamId, 'team_smoke');
+// BACKUP-03: change of the admin key (services that offer it): the old key is refused afterwards, the member key stays.
+const features = (await call('/v1/status')).body.features ?? [];
+let rekey = '';
+if (features.includes('admin-rotate')) {
+  const r = await call(`/v1/rooms/${room}/rotate?wer=admin`, { method: 'POST' }, adminKey);
+  assert.equal(r.status, 200); assert.ok(r.body.adminKey && r.body.adminKey !== adminKey);
+  assert.equal((await call(`/v1/rooms/${room}/header`, { method: 'PUT', body: JSON.stringify({ teamId: 'team_smoke', sections: [] }) }, adminKey)).status, 401, 'alter Verwaltungsschlüssel abgewiesen');
+  assert.equal((await call(`/v1/rooms/${room}/header`, { method: 'PUT', body: JSON.stringify({ teamId: 'team_smoke', sections: [] }) }, r.body.adminKey)).status, 200);
+  assert.equal((await call(`/v1/rooms/${room}/header`, {}, memberKey)).status, 200, 'Einladung gilt weiter');
+  rekey = ', Wechsel des Verwaltungsschlüssels';
+}
 a.ws.close(); b.ws.close();
-console.log(`Team-Raum ${base}: Raum ${room}, Anhängen, Live-Push an zweite Verbindung, Anwesenheit, Planstand ${plan.length} Bytes, Kopfdaten – in Ordnung.`);
+console.log(`Team-Raum ${base}: Raum ${room}, Anhängen, Live-Push an zweite Verbindung, Anwesenheit, Planstand ${plan.length} Bytes, Kopfdaten${rekey} – in Ordnung.`);

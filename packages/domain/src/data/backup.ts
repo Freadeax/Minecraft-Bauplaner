@@ -13,6 +13,7 @@ import { projectVersionIds } from './planGraph.js';
 import { checkTerrainReference } from '../world/terrainSurvey.js';
 import { packVersionForFile, unpackVersionFromFile } from './versionStorage.js';
 import { checkTerrainDesignReference } from '../world/terrainDesign.js';
+import { hasTeamAccess, keepTeamAccess, withoutTeamAccess } from '../team/teamAccess.js';
 
 /** Original files a project refers to: game recordings, the terrain survey (TERRAIN-01), the terrain design and the survey it was made on (TERRAIN-02). */
 const projectOriginals = (p: Pick<Project, 'scanHistory' | 'terrain' | 'terrainDesign'>): string[] => [...new Set([...(p.scanHistory ?? []).map(s => s.sha256), ...(p.terrain ? [p.terrain.sha256] : []),
@@ -93,6 +94,11 @@ export interface Backup {
   readonly templates: readonly LibraryTemplate[];
   /** Weltplan entries (sites, paths, points) of a full backup; empty when none. */
   readonly worldPlanItems: readonly WorldItem[];
+  /**
+   * BACKUP-03: names of projects that still carry Team-Raum keys (files written before 07.11.2026). New backups never
+   * do (`withoutTeamAccess`); the restore names them so the Bauleitung can change the keys if the file was passed on.
+   */
+  readonly teamAccessIn: readonly string[];
 }
 
 /** Rejects records written by a newer app and unknown old schemas. */
@@ -186,7 +192,8 @@ export async function createBackup(source: BackupSource, scope: 'project' | 'all
   }
   const worldPlanItems = scope === 'all' ? [...(source.worldPlan?.items ?? [])].sort(byId) : [];
   const library = collections.length || templates.length || worldPlanItems.length;
-  const content: BackupContent = { projects: [...projects].sort(byId), assets: [...assets].sort(byId), versions: versions.sort(byId), originals: originals.sort((a, b) => a.sha256 < b.sha256 ? -1 : 1),
+  // BACKUP-03: a backup is meant to be copied around, the keys of a Team-Raum are not (separate sealed „Team-Zugang“).
+  const content: BackupContent = { projects: projects.map(withoutTeamAccess).sort(byId), assets: [...assets].sort(byId), versions: versions.sort(byId), originals: originals.sort((a, b) => a.sha256 < b.sha256 ? -1 : 1),
     ...(library && { collections, templates }), ...(worldPlanItems.length > 0 && { worldPlanItems }) };
   return {
     format: BACKUP_FORMAT, formatVersion: library ? BACKUP_FORMAT_VERSION_LIBRARY : BACKUP_FORMAT_VERSION, schemaVersion: DOMAIN_SCHEMA_VERSION, createdAt: new Date().toISOString(), scope,
@@ -363,7 +370,8 @@ export async function readBackup(text: string): Promise<Backup> {
   return Object.freeze({ createdAt: str(raw.createdAt, 'Sicherungszeit'), scope: raw.scope === 'project' ? 'project' as const : 'all' as const,
     projects: deepFreeze(projects), assets: deepFreeze(assets), versions: deepFreeze([...versions.values()]),
     originals: Object.freeze(originals.map(o => Object.freeze(o))), missingOriginals: deepFreeze(missingOriginals),
-    collections: deepFreeze(collections), templates: deepFreeze(templates), worldPlanItems: deepFreeze(worldPlanItems) });
+    collections: deepFreeze(collections), templates: deepFreeze(templates), worldPlanItems: deepFreeze(worldPlanItems),
+    teamAccessIn: Object.freeze(projects.filter(hasTeamAccess).map(p => p.name)) });
 }
 
 /** What the target store already holds. */
@@ -404,9 +412,9 @@ export interface RestorePlan {
   readonly worldPlanItems: readonly LibraryRecordPlan<WorldItem>[];
 }
 
-/** Content equality ignoring storage revision and save time. */
+/** Content equality ignoring storage revision, save time and the local Team-Raum block (never in new backups). */
 function sameProject(a: Project, b: Project): boolean {
-  const strip = (p: Project) => canonicalJson({ ...p, revision: 0, updatedAt: '' });
+  const strip = (p: Project) => canonicalJson({ ...withoutTeamAccess(p), revision: 0, updatedAt: '' });
   return strip(a) === strip(b);
 }
 
@@ -467,7 +475,7 @@ export function buildRestore(plan: RestorePlan, choices: Readonly<Record<string,
     if (p.status === 'new') { projects.push({ project: p.project, baseRevision: 0 }); summary.push(`„${p.project.name}“ wird neu angelegt.`); continue; }
     const choice = choices[p.project.id] ?? 'copy';
     if (choice === 'skip') summary.push(`„${p.project.name}“: lokale Fassung bleibt, Sicherung übersprungen.`);
-    else if (choice === 'replace') { projects.push({ project: p.project, baseRevision: p.local!.revision }); summary.push(`„${p.project.name}“: lokale Fassung wird ausdrücklich durch die Sicherung ersetzt.`); }
+    else if (choice === 'replace') { projects.push({ project: keepTeamAccess(p.project, p.local), baseRevision: p.local!.revision }); summary.push(`„${p.project.name}“: lokale Fassung wird ausdrücklich durch die Sicherung ersetzt.`); }
     else {
       const name = `${p.project.name} (Wiederhergestellt ${stamp})`.slice(0, 120);
       projects.push({ project: { ...p.project, id: newId('project'), name }, baseRevision: 0 });
@@ -507,6 +515,7 @@ export function buildRestore(plan: RestorePlan, choices: Readonly<Record<string,
   if (worldPlanItems.length) summary.push(`Weltplan: ${worldPlanItems.length} Eintrag/Einträge ergänzt (Bauplätze, Wege, Punkte; lokale Einträge unverändert).`);
   const sameRecords = [...plan.collections, ...plan.templates].filter(r => r.status === 'same').length;
   if (sameRecords) summary.push(`${sameRecords} Sammlung(en)/Vorlage(n) bereits identisch vorhanden – übersprungen.`);
+  if (plan.backup.teamAccessIn.length) summary.push(`Achtung: Diese ältere Sicherung enthält Zugangsschlüssel eines Team-Raums (${plan.backup.teamAccessIn.map(n => `„${n}“`).join(', ')}). Wurde die Datei weitergegeben, im Reiter Team → Team live „Verwaltungsschlüssel wechseln“ und eine neue Einladung erstellen.`);
   if (plan.newOriginals.length) summary.push(`${plan.newOriginals.length} Originaldatei(en) ergänzt.`);
   if (plan.backup.missingOriginals.length) summary.push(`${plan.backup.missingOriginals.length} Originaldatei(en) waren schon bei der Sicherung nicht vorhanden.`);
   return { assets, versions: plan.newVersions, originals: plan.newOriginals, projects, collections, templates, worldPlanItems, summary };

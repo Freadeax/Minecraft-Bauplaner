@@ -146,6 +146,8 @@ export { TEAM_SCHEMA_VERSION, MAX_TEAM_EVENTS, TEAM_ROLES, TEAM_ROLE_LABEL, TEAM
   REPORT_CODE_PREFIX, MAX_REPORT_CODE, encodeReportCode, decodeReportCode, TEAM_PACKAGE_FORMAT, TEAM_PACKAGE_VERSION, buildTeamPackage, teamPackageFileName, readTeamPackage,
   teamStatusText, TEAM_SERVER_FORMAT, teamServerFile, teamServerFileName, headerFingerprint, readTeamServerFile, programBuilders, teamContextOf, takeOverPlan, joinedOnly, STORE_PURPOSES, STORE_PROTECTIONS, teamIntoProgram, SERVER_ONLY_KINDS, whereInPlan, digestInfo, coveredByDigest, effectiveEvents, foldTeam, MAX_CREW, PROTECT_MODES, PROTECT_MODE_LABEL } from './team/team.js';
 export { compactTeam, compactBefore, digestProjection, DIGEST_PART_CHARS } from './team/teamDigest.js';
+export { hasTeamAccess, teamAccessKinds, withoutTeamAccess, keepTeamAccess, teamAccessOf, checkPassword, sealTeamAccess, peekTeamAccess, openTeamAccess, restoreTeamAccess, teamAccessFileName, retrustAfterRekey, numberPage, TEAM_ACCESS_FORMAT, TEAM_ACCESS_VERSION, TEAM_ACCESS_ITERATIONS, MIN_PASSWORD } from './team/teamAccess.js';
+export type { TeamAccess, SeqEvent, Retrust } from './team/teamAccess.js';
 export { canonical as canonicalEvent, deriveSignKey, signatureOf, signEvent, verifyEvent, signBatch, SIGN_KEY, SIGN_KEY_INFO, SIGN_CONTEXT } from './team/eventSig.js';
 export type { CompactionPlan, CompactionOptions } from './team/teamDigest.js';
 export { LIVE_FEATURE_TEAM, teamLinkState, TEAM_LINK_WAY_TEXT, readLiveTeam, readLiveTeamPull, teamLinkProblem, teamLinkText } from './team/teamLink.js';

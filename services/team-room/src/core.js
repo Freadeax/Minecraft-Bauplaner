@@ -414,10 +414,15 @@ export class RoomCore {
     return { epoch, events: events.length, cursor: String(this.top()) };
   }
 
-  /** New invitation key (who = 'member') or new server key (who = 'server'); old connections with it are closed by the caller. */
+  /**
+   * New invitation key (who = 'member'), new server key (who = 'server') or new admin key (who = 'admin', BACKUP-03: after
+   * a key may have leaked, e.g. in an old backup); old connections with it are closed by the caller. The vault keeps
+   * the hashes of the time of each backup; a restore into an existing room never changes its keys.
+   */
   async rotate(who = 'member') {
     const r = this.store.getMeta('room'), key = randomKey();
     if (who === 'server') { this.store.setMeta('room', { ...r, server: await sha256(key) }); return { serverKey: key }; }
+    if (who === 'admin') { this.store.setMeta('room', { ...r, admin: await sha256(key), adminChangedAt: new Date().toISOString() }); return { adminKey: key }; }
     this.store.setMeta('room', { ...r, member: await sha256(key) });
     return { memberKey: key };
   }

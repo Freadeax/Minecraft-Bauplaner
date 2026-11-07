@@ -38,7 +38,7 @@ Alle Dokumente von LMNT — Build Studio nach Bereich. Für den Gesamtüberblick
 
 **Welt** (`architecture/welt/`): [Weltkarte](architecture/welt/WORLDMAP.md) · [Weltbuilder](architecture/welt/WORLD_BUILDER.md) · [Livekarten](architecture/welt/LIVEMAP.md) · [Gelände](architecture/welt/TERRAIN.md) · [Landschaft](architecture/welt/LANDSCAPE.md) · [Weltimport](architecture/welt/WORLD_IMPORT.md) · [Weltplan teilen](architecture/welt/WORLD_SHARE.md)
 
-**Team** (`architecture/team/`): [Teambau](architecture/team/TEAMBAU.md) · [Team live](architecture/team/TEAM_LIVE.md) · [Live-Verbindung zur Mod](architecture/team/LIVE_LINK.md) · [Server ohne Befehle](architecture/team/AUTO_LINK.md) · [Ausweichwege](architecture/team/FALLBACKS.md) · [Unterschriebene Ereignisse](architecture/team/SIGNED_EVENTS.md) · [Lagerkisten](architecture/team/LAGERKISTEN.md) · [Team-Raum betreiben](architecture/team/TEAM_BACKUP.md)
+**Team** (`architecture/team/`): [Teambau](architecture/team/TEAMBAU.md) · [Team live](architecture/team/TEAM_LIVE.md) · [Live-Verbindung zur Mod](architecture/team/LIVE_LINK.md) · [Server ohne Befehle](architecture/team/AUTO_LINK.md) · [Ausweichwege](architecture/team/FALLBACKS.md) · [Unterschriebene Ereignisse](architecture/team/SIGNED_EVENTS.md) · [Lagerkisten](architecture/team/LAGERKISTEN.md) · [Team-Raum betreiben](architecture/team/TEAM_BACKUP.md) · [Team-Zugang und Schlüsselwechsel](architecture/team/TEAM_ACCESS.md)
 
 **Mod** (`architecture/mod/`): [Spielbrücke](architecture/mod/MOD_BRIDGE.md) · [Hologramm und Live-Abgleich](architecture/mod/MOD_HOLOGRAM.md) · Bauen und Testen: [mods/bauplaner-bridge](../mods/bauplaner-bridge/README.md)
 

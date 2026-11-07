@@ -38,6 +38,10 @@ Weil Instanzen nur feste Versionen referenzieren und `site` Teil des Projekts is
 
 **Als eigenes Projekt öffnen** (`snapshotProjectContent`) legt eine unabhängige Kopie mit den eingefrorenen Instanzen, Verbindungen, dem Abschnitt und den damals gesetzten Haken an. Die Haken tragen den alten Geometrie-Hash: Wo sich die Geometrie ohne die übrigen Bauteile ändert (z. B. eine Überschneidung entfällt), erscheint der Schritt prüfbedürftig, nie still erledigt.
 
+## Keine Team-Schlüssel in Sicherungen (BACKUP-03)
+
+Projekt- und Gesamtsicherungen enthalten seit 07.11.2026 keine Schlüssel eines Team-Raums: `createBackup` entfernt `site.team.live`. Den Zugang sichert die Bauleitung getrennt und verschlüsselt als Team-Zugang-Datei; ältere Sicherungen mit Schlüsseln werden gelesen und bei der Wiederherstellung benannt. Vertrag und Verschlüsselung: [TEAM_ACCESS.md](../team/TEAM_ACCESS.md).
+
 ## Grenzen
 
 - Ob eine Sicherungsdatei den Browser verlassen hat, ist technisch nicht feststellbar; die App sagt das ausdrücklich.

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TeamOpen } from './project/team/TeamOpen';
-import { applyOperation, applyWorldPlanOp, backupFileName, cellCount, buildRestore, createBackup, createEnsembleProject, createProject, findUpdates, latestReleaseId, latestVersions, summarizeUpdates, MAX_BACKUP_BYTES, missingMembers, newInstance, planRestore, programSummary, projectRemoval, readBackup, resolveProject, serializeBackup, siteOf, ENSEMBLES } from '../../../../packages/domain/src/index.js';
+import { applyOperation, applyWorldPlanOp, backupFileName, cellCount, buildRestore, createBackup, createEnsembleProject, createProject, findUpdates, hasTeamAccess, latestReleaseId, latestVersions, summarizeUpdates, MAX_BACKUP_BYTES, missingMembers, newInstance, planRestore, programSummary, projectRemoval, readBackup, resolveProject, serializeBackup, siteOf, ENSEMBLES } from '../../../../packages/domain/src/index.js';
 import type { Ensemble, Instance, Project, ProjectChoice, RestorePlan } from '../../../../packages/domain/src/index.js';
 import { useApp } from '../app/context';
 import type { StorageInfo } from '../app/repository';
@@ -43,9 +43,10 @@ export function ProjectsView() {
       const file = await createBackup({ projects: projects ?? [], assets: library.assets, versions: library.versions, getOriginal: sha => repo.getOriginal(sha), collections, templates, ...(worldPlan && { worldPlan }) },
         scope, project ? [project.id] : undefined);
       const fileName = backupFileName(file);
+      const withRoom = (scope === 'all' ? projects ?? [] : project ? [project] : []).some(hasTeamAccess);
       download(fileName, serializeBackup(file), 'application/json');
       const ledgerError = await recordBackupReceipt(repo, file, 'download', fileName);
-      setMessage(`Sicherungsdatei erzeugt und zum Herunterladen übergeben: ${file.projects.length} Projekt(e), ${file.assets.length} Bauteil(e), ${file.versions.length} Version(en), ${file.originals.length} Originaldatei(en)${file.collections?.length || file.templates?.length ? `, ${file.collections?.length ?? 0} Sammlung(en), ${file.templates?.length ?? 0} Vorlage(n)` : ''}${file.worldPlanItems?.length ? `, ${file.worldPlanItems.length} Weltplan-Eintrag/Einträge` : ''}${file.missingOriginals.length ? ` – ${file.missingOriginals.length} Original(e) lokal nicht vorhanden` : ''}. Bitte prüfen, ob „${fileName}“ im Download-Ordner liegt, und eine Kopie außerhalb dieses Browsers ablegen.${ledgerError ? ` ${ledgerError}` : ''}`);
+      setMessage(`Sicherungsdatei erzeugt und zum Herunterladen übergeben: ${file.projects.length} Projekt(e), ${file.assets.length} Bauteil(e), ${file.versions.length} Version(en), ${file.originals.length} Originaldatei(en)${file.collections?.length || file.templates?.length ? `, ${file.collections?.length ?? 0} Sammlung(en), ${file.templates?.length ?? 0} Vorlage(n)` : ''}${file.worldPlanItems?.length ? `, ${file.worldPlanItems.length} Weltplan-Eintrag/Einträge` : ''}${file.missingOriginals.length ? ` – ${file.missingOriginals.length} Original(e) lokal nicht vorhanden` : ''}. Bitte prüfen, ob „${fileName}“ im Download-Ordner liegt, und eine Kopie außerhalb dieses Browsers ablegen.${withRoom ? ' Zugangsschlüssel des Team-Raums sind nicht enthalten; dafür im Reiter Team → Team live „Team-Zugang sichern“.' : ''}${ledgerError ? ` ${ledgerError}` : ''}`);
     } catch (e) { setMessage(`Sicherung fehlgeschlagen: ${errorText(e)}`); }
     finally { setBusy(false); }
   };

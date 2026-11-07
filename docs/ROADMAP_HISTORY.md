@@ -478,3 +478,38 @@ Mod-/Spiel-Abnahmen automatisiert: Abnahme-Ablauf im echten 26.3-Client, Netzabb
 - `scripts/mod/test_multiplayer_client.sh`
 - `tests/e2e/file-fallback.e2e.mjs`
 
+## 2026-11-07T18:58:50.082Z · progress
+
+**Aufgaben:** BACKUP-03
+
+Projekt- und Gesamtsicherungen ohne Team-Raum-Schlüssel, verschlüsselter Team-Zugang (PBKDF2 + AES-GCM), Wechsel des Verwaltungsschlüssels im Raum mit Neu-Bestätigung für den Server nur bis vor die erste abgewiesene Fälschung; Unit 9/9, Browsertest team-access und Team-Suiten grün, echter Worker unter wrangler dev geprüft; Ausrollen des Dienstes offen
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| BACKUP-03 | 🧩 Implementiert · Abnahme offen | 3/4 | Team-Raum-Dienst mit dem neuen Wechselweg ausrollen (bis dahin meldet der Planer „zu alte Version“ und empfiehlt einen neuen Raum). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/ProjectsView.tsx`
+- `apps/web/src/views/project/team/TeamAccess.tsx`
+- `apps/web/src/views/project/team/TeamRoom.tsx`
+- `apps/web/src/views/project/team/roomClient.ts`
+- `docs/README.md`
+- `docs/TESTING.md`
+- `docs/architecture/kern/BACKUPS.md`
+- `docs/architecture/team/SIGNED_EVENTS.md`
+- `docs/architecture/team/TEAM_ACCESS.md`
+- `docs/architecture/team/TEAM_LIVE.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/data/backup.ts`
+- `packages/domain/src/data/backupStatus.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/team/team.ts`
+- `packages/domain/src/team/teamAccess.ts`
+- `scripts/team/team_room_smoke.mjs`
+- `services/team-room/src/core.js`
+- `services/team-room/src/index.js`
+- `tests/e2e/team-access.e2e.mjs`
+- `tests/unit/data/backup-secrets.test.mjs`
+

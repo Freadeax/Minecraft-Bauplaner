@@ -44,6 +44,7 @@ Diese Läufe starten echte Minecraft-Clients oder Paper-Server (kopflos) und sin
 | Mod im Spiel (Abnahmen Mod und Anbindung) | Fabric und NeoForge 26.3 grün; Tasten, Platzierhilfe, Gerüst, Gruppen, Diagnose, Netzabbruch zum Team-Raum (`BAUPLANER_ROOM=start scripts/mod/test_bridge_ingame.sh`); echter Client auf Paper 26.3 (`test_multiplayer_client.sh`) |
 | Team-Raum live | Status, Rauchprobe, Sicherungsprobe und `team-room.e2e` gegen den echten Dienst |
 | Abnahmen Block B (17 Testfälle) | `planer-abnahmen`, `team-abnahmen` (echter Team-Raum per `wrangler dev`, 2–3 Browser), `werkstatt-abnahme`: 17/17 in Chromium, Firefox und WebKit; `scripts/library/test_contribution_live.mjs` (Beitrag bis in den Export) und `test_bridge_paper_bots.sh weltplan` (gesperrter Bauplatz, Paper 1.21.11 und 26.1.2) grün |
+| Sicherungen ohne Team-Schlüssel (BACKUP-03) | `tests/unit/data/backup-secrets.test.mjs` 9/9, `tests/e2e/team-access.e2e.mjs` grün (Chromium): Projekt- und Gesamtsicherung ohne Einladungs-, Verwaltungs- und Serverschlüssel, Team-Zugang verschlüsselt, Verwaltungsschlüssel gewechselt |
 
 **Offen** sind Prüfungen, die nur Menschen leisten können: echte Mitspieler auf einem eigenen Server, echte iPhones und iPads, Bedienung und Gestaltung. Sie stehen als Testfälle unter [`#/testphase`](https://freadeax.github.io/Minecraft-Bauplaner/#/testphase) und im [Testplan](testing/TESTPLAN.md). Welche Testfälle automatisch nachgewiesen sind, steht dort unter „Automatische Abnahmen“.
 

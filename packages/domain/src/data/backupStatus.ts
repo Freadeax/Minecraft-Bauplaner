@@ -3,6 +3,7 @@ import type { Collection, LibraryTemplate } from '../catalog/collections.js';
 import { canonicalJson, newId, sha256Hex } from '../core/hash.js';
 import { DomainError } from '../core/types.js';
 import type { Asset, Project } from '../core/types.js';
+import { withoutTeamAccess } from '../team/teamAccess.js';
 
 /**
  * Sicherungsstand (BACKUP-02-S01). The app records a receipt for every backup
@@ -69,7 +70,8 @@ export function checkBackupLedger(raw: unknown): BackupLedger {
 
 /** Content fingerprint of a stored record, independent of its storage revision. */
 export async function recordFingerprint(record: object): Promise<string> {
-  const { revision: _revision, ...rest } = record as Record<string, unknown>;
+  // BACKUP-03: backups hold no Team-Raum block; its read position moves all the time and is no change of the plan.
+  const { revision: _revision, ...rest } = withoutTeamAccess(record as Pick<Project, 'site'>) as Record<string, unknown>;
   return sha256Hex(canonicalJson(rest));
 }
 

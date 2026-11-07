@@ -820,6 +820,8 @@ const NEED: Readonly<Record<TeamEventKind, TeamRole>> = {
   'section.crew': 'meister', 'section.join': 'helfer', 'section.leave': 'helfer', 'gather.assign': 'meister', 'contribution.fix': 'helfer', 'team.protect': 'leitung', 'team.trust': 'leitung',
 };
 export const canTeam = (role: TeamRole | undefined, action: TeamAction): boolean => RANK[role ?? 'gast'] >= RANK[NEED[action]];
+/** Minimum role of an event kind (unknown kinds: undefined), as `TeamLog.need` in the server plugin. */
+export const teamKindNeed = (kind: string): TeamRole | undefined => (NEED as Record<string, TeamRole>)[kind];
 
 const mentionRe = /@([A-Za-zÄÖÜäöüß0-9_.-]{2,40})/g;
 

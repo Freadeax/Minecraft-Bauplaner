@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T14:44:36.135Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T18:58:50.082Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-07T14:44:36.135Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 2 |
 | 🚧 In Arbeit | 4 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 98 |
+| 🧩 Implementiert · Abnahme offen | 99 |
 | ✅ Im beschriebenen Umfang geprüft | 35 |
 | ⏸ Zurückgestellt | 3 |
 
@@ -28,7 +28,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Arbeitsstrang
 | [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 29 | 0 | 29 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 0 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
-| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 16 | 0 | 14 | 1 |
+| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 17 | 0 | 14 | 1 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 14 | 0 | 12 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 4 | 0 | 3 | 1 |
@@ -122,6 +122,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 
 | ID | Paket | Status | Prio | Arbeitsstrang | Nur Philipp |
 |---|---|---|---|---|---|
+| [BACKUP-03](#backup-03) | Sicherungen ohne Team-Schlüssel, Team-Zugang verschlüsselt, Verwaltungsschlüssel wechseln | 🧩 Implementiert · Abnahme offen 3/4 | P0 | „Schlüssel aus Sicherungen entfernen“ | — |
 | [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo im Team-Raum | 🧩 Implementiert · Abnahme offen 2/2 | P0 | „Große Testphase vorbereiten und betreuen“ | — |
 | [COOP-01](#coop-01) | Teambau im Planer | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Mit Mitspielern TEAMBAU-01…05.<br>Weg für den Live-Abgleich ohne Herunter- und Hochladen wählen. |
 | [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte i… | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Große Testphase vorbereiten und betreuen“ | TEAMBAU-09: aktuelle Mod und aktuelles Plugin (ab 0.10.0) zusammen auf deinem Server. |
@@ -426,6 +427,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **UI-03 · Design-System: saubere, einheitliche und schön angepasste Planer-Oberfläche** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme START-20/21 durch Philipp am iPad; gruppierte Projektreiter aus „Bedienung vereinfachen“ und Anleitung optisch mitziehen; Werte an das Mod-Menü weitergeben.
 - **OPS-04 · Team-Raum betreiben: Sicherung, Wiederherstellung, Aufbewahrung, Zustand** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-31 mit zwei Geräten (sichern, wiederherstellen, löschen und zurückholen).
 - **DOC-02 · Repository übersichtlich: README als Überblick, Doku-Index, Funktionsstand und Prüfstand neu, interne Arbeitsnotizen und Verlauf aus dem Repository** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Durchsicht von README und Doku-Index durch Philipp.
+- **BACKUP-03 · Sicherungen ohne Team-Schlüssel, Team-Zugang verschlüsselt, Verwaltungsschlüssel wechseln** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Team-Raum-Dienst mit dem neuen Wechselweg ausrollen (bis dahin meldet der Planer „zu alte Version“ und empfiehlt einen neuen Raum).
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -603,6 +605,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | ID | Arbeitspaket | Status | Schritte | Abhängigkeiten | Main | Pages-Quelle |
 |---|---|---|---:|---|---|---|
 | [UX-01](#ux-01) | Bedienung des Planers vereinfachen (Struktur und Abläufe) | 🧩 Implementiert · Abnahme offen | 6/6 | UI-02, GUIDE-01 | ausstehend | ausstehend |
+| [BACKUP-03](#backup-03) | Sicherungen ohne Team-Schlüssel, Team-Zugang verschlüsselt, Verwaltungsschlüssel wechseln | 🧩 Implementiert · Abnahme offen | 3/4 | BACKUP-02, OPS-04, GAME-06 | ausstehend | ausstehend |
 | [TEAM-01](#team-01) | Backendvertrag, Datenbank und Payloadspeicher | ⏳ Offen | 0/2 | ARCH-01, FORMAT-01, STORE-02, LICENSE-01 | ausstehend | ausstehend |
 | [AUTH-01](#auth-01) | Konten, Rechte und Übernahme lokaler Projekte | ⏳ Offen | 0/2 | TEAM-01 | ausstehend | ausstehend |
 | [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo im Team-Raum | 🧩 Implementiert · Abnahme offen | 2/2 | AUTH-01, UPDATE-01 | ausstehend | ausstehend |
@@ -2254,6 +2257,27 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/unit/data/backup-reminder.test.mjs](../tests/unit/data/backup-reminder.test.mjs) — Belege aus Dateiinhalt, Revision ignoriert, Hinweis/fällig nach Alter, Projekt- vs. Gesamtsicherung, eigene Bibliothek, Prüfen per Hash, Protokollgrenze; Stände einfrieren, jede Abweichungsart, Zurücksetzen reproduziert Fingerabdruck, Undo, Sperre bei fehlender Version, Kopie als Projekt.; [tests/e2e/backup-reminder.e2e.mjs](../tests/e2e/backup-reminder.e2e.mjs) — Chromium 1400/390 px: Erinnerung ohne Cloudbehauptung, Alles sichern, Datei prüfen (gültig/manipuliert), Projektkopf-Chip, Neuladen; Einfrieren, Warnung im Editor, Abweichung, Zurücksetzen mit Vorschau, entfernter Abschnitt wiederfinden, als Projekt öffnen.; [docs/architecture/kern/BACKUPS.md](architecture/kern/BACKUPS.md) — Vertrag, Ehrlichkeitsregeln und Grenzen.
 
 **Dateiumfang:** `packages/domain/src/data/backupStatus.ts`, `packages/domain/src/building/sectionSnapshots.ts`, `packages/domain/src/building/site.ts`, `apps/web/src/views/BackupPanel.tsx`, `apps/web/src/views/project/`, `docs/architecture/kern/BACKUPS.md`. **Abhängigkeiten:** STORE-01, BUILD-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### BACKUP-03
+
+**Sicherungen ohne Team-Schlüssel, Team-Zugang verschlüsselt, Verwaltungsschlüssel wechseln** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Schlüssel aus Sicherungen entfernen“ · Arbeitsstrang: „Schlüssel aus Sicherungen entfernen“ · Aktualisiert: 2026-11-07T18:58:50.082Z
+
+- [x] BACKUP-03-S01: Projekt- und Gesamtsicherung ohne Mitglieds-, Verwaltungs- und Serverschlüssel; Vergleich, Ersetzen und Erinnerung ohne Live-Block; ältere Sicherungen mit Schlüsseln werden benannt.
+- [x] BACKUP-03-S02: Team-Zugang als eigene, mit Passwort verschlüsselte Datei (PBKDF2 + AES-GCM) sichern und wieder öffnen.
+- [x] BACKUP-03-S03: Verwaltungsschlüssel im Team-Raum wechseln; Server-Bestätigung mit neuem Unterschriftsschlüssel höchstens bis vor die erste abgewiesene Fälschung.
+- [ ] BACKUP-03-S04: Neue Team-Raum-Version mit `rotate?wer=admin` ausrollen und live prüfen.
+
+**Abnahme:** Keine Sicherungsdatei enthält Raumschlüssel im Klartext; Wiederherstellung verliert keinen Zugang und keinen Teamschritt; alter Verwaltungsschlüssel nach dem Wechsel wirkungslos.
+
+**Nächste Aktion:** Team-Raum-Dienst mit dem neuen Wechselweg ausrollen (bis dahin meldet der Planer „zu alte Version“ und empfiehlt einen neuen Raum).
+
+**Prüfstand:** Node- und Chromium-Browsertests mit dem Raumkern; der ausgerollte Dienst kennt den Wechsel erst nach dem Ausrollen.
+
+**Nachweise:** [tests/unit/data/backup-secrets.test.mjs](../tests/unit/data/backup-secrets.test.mjs) — Sicherungen ohne Schlüssel (Projekt/Gesamt), Vergleich gleich, Ersetzen behält Zugang, Altdatei mit Warnung, Fingerabdruck, Versiegeln/Öffnen/falsches Passwort/geänderter Kopf, Wechsel im Raum, neue Bestätigung bis vor die erste Fälschung, Spielernamen, Rundreise.; [tests/e2e/team-access.e2e.mjs](../tests/e2e/team-access.e2e.mjs) — Chromium 1400 px: heruntergeladene Gesamt- und Projektsicherung ohne Schlüssel, Wechsel des Verwaltungsschlüssels, Team-Zugang versiegelt und nach Live trennen wieder geöffnet.; [docs/architecture/team/TEAM_ACCESS.md](architecture/team/TEAM_ACCESS.md) — Regeln, Dateiformat, Wechselablauf und Grenzen.
+
+**Dateiumfang:** `packages/domain/src/team/teamAccess.ts`, `packages/domain/src/data/backup.ts`, `packages/domain/src/data/backupStatus.ts`, `apps/web/src/views/project/team/TeamAccess.tsx`, `apps/web/src/views/project/team/TeamRoom.tsx`, `apps/web/src/views/project/team/roomClient.ts`, `services/team-room/src/`, `docs/architecture/team/TEAM_ACCESS.md`. **Abhängigkeiten:** BACKUP-02, OPS-04, GAME-06. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

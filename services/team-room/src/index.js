@@ -28,7 +28,7 @@ export default {
       if (parts[0] !== 'v1') return json({ protocol: PROTOCOL, version: VERSION, hint: 'Team-Raum von LMNT — Build Studio. Siehe docs/architecture/team/TEAM_LIVE.md.' }, 200, h);
       // OPS-04: public state of the service (no room data; the planner's Zustand line and the smoke test read it).
       if (parts.length === 2 && parts[1] === 'status') return json({ ok: true, protocol: PROTOCOL, version: VERSION, at: new Date().toISOString(),
-        features: ['guards', 'docs', 'scans', 'control', 'backups'], retention: RETENTION, deployment: env.CF_VERSION_METADATA?.id ?? null }, 200, { ...h, 'Cache-Control': 'no-store' });
+        features: ['guards', 'docs', 'scans', 'control', 'backups', 'admin-rotate'], retention: RETENTION, deployment: env.CF_VERSION_METADATA?.id ?? null }, 200, { ...h, 'Cache-Control': 'no-store' });
       if (parts.length === 2 && parts[1] === 'rooms' && request.method === 'POST') {
         const room = `r_${randomKey(12)}`;
         const stub = env.ROOMS.get(env.ROOMS.idFromName(room));
@@ -193,7 +193,7 @@ export class TeamRoom extends DurableObject {
       }
       if (path === 'rotate' && request.method === 'POST') {
         await this.core.auth(bearer(request), 'admin');
-        const who = url.searchParams.get('wer') === 'server' ? 'server' : 'member';
+        const wer = url.searchParams.get('wer'), who = wer === 'server' || wer === 'admin' ? wer : 'member';
         const r = await this.core.rotate(who); this.closeRole(who); await this.changed(); return json(r, 200);
       }
       return json({ error: 'nicht-gefunden', message: 'Unbekannte Adresse.' }, 404);
