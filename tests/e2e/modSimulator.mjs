@@ -315,7 +315,7 @@ export function startModSimulator(port, options = {}) {
       if (route === 'POST /v1/room') {
         const b = JSON.parse(body.toString());
         if (b.off) { state.room = null; return send(200, { ok: true, text: 'Team-Raum getrennt. Die Mod spricht mit keinem Raum mehr.' }); }
-        if (!/^https:\/\//.test(b.url) || !b.room || !b.key || !b.member) return send(400, { error: 'Der Team-Raum muss über https erreichbar sein.' });
+        if (!/^https:\/\/|^http:\/\/(127\.0\.0\.1|localhost)[:/]/.test(b.url) || !b.room || !b.key || !b.member) return send(400, { error: 'Der Team-Raum muss über https erreichbar sein.' });
         state.room = b;
         return send(200, { ok: true, text: 'Spiel mit dem Team-Raum verbunden.' });
       }

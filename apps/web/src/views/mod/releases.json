@@ -1220,6 +1220,53 @@
       "releasedAt": "2026-11-07",
       "sourceCommit": "d85f9594e24198085623c35c257351ab922a3f56",
       "tested": "Paper 26.3 mit echtem 26.3-Client (Teamkanal, Platzierhilfe auf dem Server) grün"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.28.0.jar",
+      "modVersion": "0.28.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 685489,
+      "sha256": "d963915162de0a188347a3740be8f7d886fb22e40cd7bd3000ff03cbaafb6358",
+      "releasedAt": "2026-11-07",
+      "sourceCommit": "5961a9fe46d6fff4bf3abe3094c27b74b8d10c37",
+      "tested": "07.11.2026, Mod 0.28.0 aus dem Quellstand: Java-Tests (mod-core, core, paper) grün; Paper 1.21.11 und 26.3 echt: unterschriebene Ereignisse mit Ed25519-Prüfschlüssel, Team-Raum, Kopplung, Teambau grün; Planer-Browser-Tests gegen wrangler dev grün"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.28.0.jar",
+      "modVersion": "0.28.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 680545,
+      "sha256": "e0df787338859ad0e462b88bbf4d05b33c2317c88d82b58e8c502f39c3b20542",
+      "releasedAt": "2026-11-07",
+      "sourceCommit": "5961a9fe46d6fff4bf3abe3094c27b74b8d10c37",
+      "tested": "07.11.2026, Mod 0.28.0 aus dem Quellstand: Java-Tests (mod-core, core, paper) grün; Paper 1.21.11 und 26.3 echt: unterschriebene Ereignisse mit Ed25519-Prüfschlüssel, Team-Raum, Kopplung, Teambau grün; Planer-Browser-Tests gegen wrangler dev grün"
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.28.0.jar",
+      "modVersion": "0.28.0",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 336699,
+      "sha256": "63abab53e16ee43f9f2620df0beab9a678a6c7d835ad0b2c2d2635c8e6f6a8ba",
+      "releasedAt": "2026-11-07",
+      "sourceCommit": "5961a9fe46d6fff4bf3abe3094c27b74b8d10c37",
+      "tested": "07.11.2026, Mod 0.28.0 aus dem Quellstand: Java-Tests (mod-core, core, paper) grün; Paper 1.21.11 und 26.3 echt: unterschriebene Ereignisse mit Ed25519-Prüfschlüssel, Team-Raum, Kopplung, Teambau grün; Planer-Browser-Tests gegen wrangler dev grün"
     }
   ]
 }

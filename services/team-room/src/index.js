@@ -27,7 +27,7 @@ export default {
       if (parts[0] !== 'v1') return json({ protocol: PROTOCOL, version: VERSION, hint: 'Team-Raum von LMNT — Build Studio. Siehe docs/architecture/team/TEAM_LIVE.md.' }, 200, h);
       // OPS-04: public state of the service (no room data; the planner's Zustand line and the smoke test read it).
       if (parts.length === 2 && parts[1] === 'status') return json({ ok: true, protocol: PROTOCOL, version: VERSION, at: new Date().toISOString(),
-        features: ['guards', 'docs', 'scans', 'control', 'backups', 'admin-rotate'], retention: RETENTION, deployment: env.CF_VERSION_METADATA?.id ?? null }, 200, { ...h, 'Cache-Control': 'no-store' });
+        features: ['guards', 'docs', 'scans', 'control', 'backups', 'admin-rotate', 'identity'], retention: RETENTION, deployment: env.CF_VERSION_METADATA?.id ?? null }, 200, { ...h, 'Cache-Control': 'no-store' });
       if (parts.length === 2 && parts[1] === 'rooms' && request.method === 'POST') {
         // Creating is open to everyone (no account) – so it is limited per address and for the whole service.
         if (!originAllowed(request.headers.get('Origin'), env.ALLOWED_ORIGINS)) return json({ error: 'herkunft', message: 'Räume legt nur der Planer an.' }, 403, h);
@@ -142,8 +142,23 @@ export class TeamRoom extends DurableObject {
       if (ops) return ops;
       if (path === 'create' && request.method === 'POST') {
         const body = await readJson(request, ABUSE.body.create, { empty: true }).catch(e => { if (e instanceof RoomError) throw e; return {}; });
-        return json(await this.core.create({ room: url.searchParams.get('room'), teamId: body.teamId, name: body.name }), 201);
+        return json(await this.core.create({ room: url.searchParams.get('room'), teamId: body.teamId, name: body.name, founder: body.founder, leaderKey: body.leaderKey }), 201);
       }
+      // TEAM-SEC-01 (docs/architecture/team/TEAM_IDENTITY.md): own keys per member.
+      if (path === 'join' && request.method === 'POST') {
+        const s = await this.authed(request);
+        if (s.role !== 'member') throw new RoomError(400, 'nur-einladung', 'Beitreten geht mit dem Einladungsschlüssel.');
+        const r = await this.core.join(await readJson(request, ABUSE.body.small)); await this.changed(); return json(r, 201);
+      }
+      if (path === 'keys' && request.method === 'POST') { const r = await this.core.addKey(await this.authed(request), await readJson(request, ABUSE.body.small, { empty: true })); await this.changed(); return json(r, 201); }
+      if (path === 'keys' && request.method === 'GET') return json({ keys: this.core.listKeys(await this.authed(request)) }, 200);
+      if (path.startsWith('keys/') && request.method === 'DELETE') {
+        const r = this.core.revokeKey(await this.authed(request), path.slice(5));
+        for (const ws of this.ctx.getWebSockets()) if (ws.deserializeAttachment()?.keyId === r.revoked) { try { ws.close(4403, 'schluessel-widerrufen'); } catch { /* closed */ } }
+        await this.changed(); return json(r, 200);
+      }
+      if (/^members\/[^/]+\/approve$/.test(path) && request.method === 'POST') { const r = this.core.approve(await this.authed(request), decodeURIComponent(path.split('/')[1])); await this.changed(); return json(r, 200); }
+      if (path === 'identity' && request.method === 'POST') { await this.authed(request, 'admin'); const r = this.core.setIdentity(await readJson(request, ABUSE.body.identity)); await this.changed(); return json(r, 200); }
       if (path === 'live') {
         if (request.headers.get('Upgrade') !== 'websocket') return json({ error: 'websocket', message: 'Nur WebSocket.' }, 426);
         this.core.info();
@@ -172,11 +187,11 @@ export class TeamRoom extends DurableObject {
         return json(await this.relay.ask(frame => ws.send(JSON.stringify(frame)), message), 200);
       }
       if (path === 'events' && request.method === 'POST') {
-        const role = await this.authed(request);
+        const session = await this.authed(request);
         const body = await readJson(request, ABUSE.body.events);
-        const answer = this.core.append(body, role);
-        if (answer.added?.length) { this.broadcast({ type: 'events', events: answer.added, cursor: answer.cursor }); await this.changed(); }
-        const { added: _a, ...out } = answer;
+        const answer = this.core.append(body, session);
+        if (answer.added?.length) { this.broadcast({ type: 'events', events: answer.added, seqs: answer.seqs, cursor: answer.cursor }); await this.changed(); }
+        const { added: _a, seqs: _s, ...out } = answer;
         return json(out, 200);
       }
       if (path === 'events' && request.method === 'GET') {
@@ -211,7 +226,7 @@ export class TeamRoom extends DurableObject {
       if (path.startsWith('doc/')) {
         const name = path.slice(4);
         if (request.method === 'PUT') {
-          const role = await this.authed(request);
+          const { role } = await this.authed(request);
           const meta = await this.core.putDoc(name, await readText(request, ABUSE.body.doc), { by: url.searchParams.get('by'), ifMatch: request.headers.get('If-Match')?.replace(/"/g, '') }, role);
           this.broadcast({ type: 'doc', name, rev: meta.rev, by: meta.by, at: meta.at });
           await this.changed();
@@ -237,10 +252,11 @@ export class TeamRoom extends DurableObject {
    * Checks the key of a request; only then the use counts as activity that pushes the deletion of an unused room
    * back (P1 Härtung: anonymous requests – wrong key, no key – never keep a room alive).
    */
+  /** TEAM-SEC-01: the session of the key (role, and for an own key the member and key id). */
   async authed(request, need) {
-    const role = await this.core.auth(bearer(request), need);
+    const session = await this.core.session(bearer(request), need);
     await this.activity();
-    return role;
+    return session;
   }
 
   // ------------------------------------------------------------ OPS-04: Sicherung, Wiederherstellung, Aufbewahrung
@@ -369,9 +385,11 @@ export class TeamRoom extends DurableObject {
     try { msg = JSON.parse(typeof raw === 'string' ? raw : new TextDecoder().decode(raw)); } catch { return ws.send(JSON.stringify({ type: 'error', error: 'json' })); }
     try {
       if (msg.type === 'hello') {
-        const role = await this.core.auth(msg.key);
-        const presence = cleanPresence(msg, undefined, role);
-        ws.serializeAttachment({ authed: true, role, presence, ...(att.addr && { addr: att.addr }) });
+        const session = await this.core.session(msg.key);
+        const role = session.role;
+        // TEAM-SEC-01: with an own key (or the admin key of a known founder) the presence shows who the key belongs to.
+        const presence = cleanPresence(session.member ? { ...msg, member: session.member } : msg, undefined, role);
+        ws.serializeAttachment({ authed: true, role, presence, ...(session.member && { member: session.member }), ...(session.keyId && { keyId: session.keyId }), ...(att.addr && { addr: att.addr }) });
         await this.activity();
         ws.send(JSON.stringify({ type: 'welcome', ...this.core.info() }));
         let feed;
@@ -382,10 +400,12 @@ export class TeamRoom extends DurableObject {
       }
       if (!att.authed) return ws.send(JSON.stringify({ type: 'error', error: 'schluessel-fehlt', message: 'Zuerst hello mit Schlüssel senden.' }));
       if (msg.type === 'append') {
-        const answer = this.core.append(msg, att.role);
-        const { added, ...out } = answer;
+        // The key may have been revoked since hello (other room instance): the attachment carries the key id, the store decides.
+        if (att.keyId && !this.core.listKeys({ role: 'admin' }).some(k => k.id === att.keyId)) { ws.close(4403, 'schluessel-widerrufen'); return; }
+        const answer = this.core.append(msg, { role: att.role, ...(att.member && { member: att.member }), ...(att.keyId && { keyId: att.keyId }) });
+        const { added, seqs, ...out } = answer;
         ws.send(JSON.stringify({ type: 'appended', batch: msg.batch, ...out }));
-        if (added?.length) { this.broadcast({ type: 'events', events: added, cursor: answer.cursor }); await this.changed(); }
+        if (added?.length) { this.broadcast({ type: 'events', events: added, seqs, cursor: answer.cursor }); await this.changed(); }
         return;
       }
       if (msg.type === 'presence') { ws.serializeAttachment({ ...att, presence: cleanPresence({ ...att.presence, ...msg, member: att.presence.member, device: att.presence.device, since: att.presence.since }, undefined, att.role) }); this.sendPresence(); return; }

@@ -2,7 +2,21 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
-## Unveröffentlicht
+## 0.28.0 – 2026-11-07
+
+**Team roles can no longer be faked / Team-Rollen lassen sich nicht mehr vortäuschen**
+
+- Team room: every member now gets an own key. The room takes the author from the key, not from the event, and checks the role: nobody with the invitation can write in the name of the Bauleitung or of another member any more, and nobody makes themselves Baumeister.
+- The game gets its own device key from the planner (“Connect my game”), never the invitation or the admin key.
+- The mod only shows checked changes: steps in the Bauleitung's name need its signature or the room's check.
+- Bauleitung: your game signs with a new Ed25519 key. The server plugin only gets the public key – it can check the Bauleitung's signature but never make one. Open the planner once as Bauleitung; it switches the room and the server over by itself.
+- Server plugin: takes the public key from the server link (`p`) and deletes the old signing key. Baumeister steps from before the room checked authors need the Bauleitung's confirmation.
+
+- Team-Raum: Jedes Mitglied bekommt jetzt einen eigenen Schlüssel. Der Raum nimmt den Absender aus dem Schlüssel, nicht aus dem Ereignis, und prüft die Rolle: Mit der Einladung kann niemand mehr im Namen der Bauleitung oder eines anderen Mitglieds schreiben, und niemand macht sich selbst zum Baumeister.
+- Das Spiel bekommt vom Planer („Mein Spiel verbinden“) einen eigenen Geräteschlüssel, nie die Einladung oder den Verwaltungsschlüssel.
+- Die Mod zeigt nur geprüfte Änderungen: Schritte im Namen der Bauleitung brauchen ihre Unterschrift oder die Prüfung des Raums.
+- Bauleitung: Dein Spiel unterschreibt mit einem neuen Ed25519-Schlüssel. Das Server-Plugin bekommt nur den öffentlichen Prüfschlüssel – es kann die Unterschrift der Bauleitung prüfen, aber nie selbst eine erzeugen. Öffne den Planer einmal als Bauleitung; er stellt Raum und Server von selbst um.
+- Server-Plugin: übernimmt den Prüfschlüssel aus dem Server-Link (`p`) und löscht den alten Unterschriftsschlüssel. Baumeister-Schritte aus der Zeit, bevor der Raum Absender prüfte, brauchen die Bestätigung der Bauleitung.
 
 **Share your position and scans separately / Position und Aufnahmen getrennt freigeben**
 

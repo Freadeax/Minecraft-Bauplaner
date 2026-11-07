@@ -10,7 +10,7 @@ import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { openSampleProject, openStorage } from './start.mjs';
 import { RoomCore, MemoryStore, RoomError, cleanPresence, randomKey } from '../../services/team-room/src/core.js';
-import { deriveSignKey, verifyEvent } from '../../dist/domain/src/index.js';
+import { deriveLeaderSeed, leaderPublicKey, verifyLeaderEvent } from '../../dist/domain/src/index.js';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -37,11 +37,11 @@ function fakeService() {
     const json = (body, status = 200) => route.fulfill({ status, headers: { ...cors, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     const key = (req.headers().authorization ?? '').replace(/^Bearer\s+/i, '');
     try {
-      if (parts.join('/') === 'v1/status') return json({ ok: true, protocol: 'team-room', version: 1, features: ['guards', 'docs', 'scans', 'control', 'backups', 'admin-rotate'] });
+      if (parts.join('/') === 'v1/status') return json({ ok: true, protocol: 'team-room', version: 1, features: ['guards', 'docs', 'scans', 'control', 'backups', 'admin-rotate', 'identity'] });
       if (parts.join('/') === 'v1/rooms' && req.method() === 'POST') {
         const id = `r_${randomKey(9)}`, core = new RoomCore(new MemoryStore());
         rooms.set(id, core);
-        const body = req.postDataJSON(), made = await core.create({ room: id, teamId: body.teamId, name: body.name });
+        const body = req.postDataJSON(), made = await core.create({ room: id, teamId: body.teamId, name: body.name, founder: body.founder, leaderKey: body.leaderKey });
         keys.set(id, made);
         return json(made, 201);
       }
@@ -54,9 +54,9 @@ function fakeService() {
         const wer = url.searchParams.get('wer');
         return json(await core.rotate(wer === 'server' || wer === 'admin' ? wer : 'member'));
       }
+      if (rest === 'identity' && req.method() === 'POST') { await core.auth(key, 'admin'); return json(core.setIdentity(req.postDataJSON())); }
       if (rest === 'events' && req.method() === 'POST') {
-        const role = await core.auth(key);
-        const { added, ...out } = core.append(req.postDataJSON(), role);
+        const { added, ...out } = await core.append(req.postDataJSON(), await core.session(key));
         if (added?.length) broadcast(id, { type: 'events', events: added, cursor: out.cursor });
         return json(out);
       }
@@ -81,12 +81,12 @@ function fakeService() {
       const msg = JSON.parse(String(raw));
       try {
         if (msg.type === 'hello') {
-          s.role = await core.auth(msg.key); s.authed = true; s.presence = cleanPresence(msg);
+          s.session = await core.session(msg.key); s.authed = true; s.presence = cleanPresence(msg);
           ws.send(JSON.stringify({ type: 'welcome', ...core.info() }));
           let feed, after = msg.after ?? '';
           do { feed = core.since(after); ws.send(JSON.stringify({ type: 'events', ...feed })); after = feed.cursor; } while (feed.more);
         } else if (msg.type === 'append' && s.authed) {
-          const { added, ...out } = core.append(msg, s.role);
+          const { added, ...out } = await core.append(msg, s.session);
           ws.send(JSON.stringify({ type: 'appended', batch: msg.batch, ...out }));
           if (added?.length) broadcast(id, { type: 'events', events: added, cursor: out.cursor });
         }
@@ -153,8 +153,11 @@ test('Sicherungen ohne Team-Schlüssel, Team-Zugang verschlüsselt, Verwaltungss
   const newAdmin = stored[0];
   assert.notEqual(newAdmin, keys.adminKey);
   assert.equal(await core.auth(newAdmin, 'admin'), 'admin');
-  assert.equal(await verifyEvent(await deriveSignKey(newAdmin), trusts[1].teamId ?? core.info().teamId, trusts[1]), true, 'signed with the new key');
-  assert.equal(await verifyEvent(await deriveSignKey(keys.adminKey), core.info().teamId, trusts[1]), false);
+  // TEAM-SEC-01: signed with Ed25519; the room knows the new public key.
+  const newPub = await leaderPublicKey(await deriveLeaderSeed(newAdmin)), oldPub = await leaderPublicKey(await deriveLeaderSeed(keys.adminKey));
+  assert.equal(await verifyLeaderEvent(newPub, core.info().teamId, trusts[1]), true, 'signed with the new key');
+  assert.equal(await verifyLeaderEvent(oldPub, core.info().teamId, trusts[1]), false);
+  assert.equal(core.info().identity.leaderKey, newPub, 'the room checks with the new public key');
 
   // ---- Save the access sealed with a password, go offline in this browser, come back with the file.
   const save = liveBlock.getByTestId('team-access-save');

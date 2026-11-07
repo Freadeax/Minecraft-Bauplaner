@@ -151,4 +151,68 @@ public final class EventSig {
     }
 
     private static String b64(byte[] b) { return Base64.getUrlEncoder().withoutPadding().encodeToString(b); }
+
+    // ------------------------------------------------------------------ TEAM-SEC-01: Ed25519 (docs/architecture/team/TEAM_IDENTITY.md §4)
+    // With the HMAC key above, whoever can check can also sign – the plugin had to hold it. Now the Bauleitung signs with an
+    // Ed25519 key derived from the admin key (seed = HMAC(adminKey, "bauplaner-leitung/ed25519/v1")); the plugin, the mods of
+    // the members and the planners get only the public key (link parameter p). Same vector as tests/unit/team/team-identity.test.mjs.
+
+    public static final String SEED_INFO = "bauplaner-leitung/ed25519/v1";
+    public static final String CONTEXT_ED = "bauplaner-team-event/v2";
+    /** base64url of a 64-byte Ed25519 signature. */
+    public static final String SIG_ED_PATTERN = "[A-Za-z0-9_-]{86}";
+    private static final byte[] PKCS8 = { 0x30, 0x2e, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x04, 0x22, 0x04, 0x20 };
+    private static final byte[] SPKI = { 0x30, 0x2a, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x03, 0x21, 0x00 };
+
+    /** Ed25519 seed of the Bauleitung from the admin key (only on the Bauleitung's devices). */
+    public static String deriveSeed(String adminKey) { return b64(hmac(adminKey.getBytes(StandardCharsets.UTF_8), SEED_INFO)); }
+
+    private static byte[] unb64(String s) { return Base64.getUrlDecoder().decode(s); }
+    private static byte[] concat(byte[] a, byte[] b) { byte[] o = java.util.Arrays.copyOf(a, a.length + b.length); System.arraycopy(b, 0, o, a.length, b.length); return o; }
+
+    private static java.security.PrivateKey privateKey(String seed) throws GeneralSecurityException {
+        byte[] raw = unb64(seed);
+        if (raw.length != 32) throw new GeneralSecurityException("Schlüssel der Bauleitung ungültig");
+        return java.security.KeyFactory.getInstance("Ed25519").generatePrivate(new java.security.spec.PKCS8EncodedKeySpec(concat(PKCS8, raw)));
+    }
+
+    /** Public key (32 bytes base64url) to a seed. The JDK has no "public from private", so the key pair is generated from the seed. */
+    public static String publicKey(String seed) {
+        byte[] raw = unb64(seed);
+        if (raw.length != 32) throw new IllegalArgumentException("Schlüssel der Bauleitung ungültig");
+        try {
+            java.security.KeyPairGenerator g = java.security.KeyPairGenerator.getInstance("Ed25519");
+            g.initialize(java.security.spec.NamedParameterSpec.ED25519, new java.security.SecureRandom() {
+                @Override public void nextBytes(byte[] bytes) { System.arraycopy(raw, 0, bytes, 0, Math.min(raw.length, bytes.length)); }
+            });
+            byte[] spki = g.generateKeyPair().getPublic().getEncoded();
+            return b64(java.util.Arrays.copyOfRange(spki, spki.length - 32, spki.length));
+        } catch (GeneralSecurityException e) { throw new IllegalStateException(e); }
+    }
+
+    private static byte[] edText(String teamId, Map<String, Object> event) { return (CONTEXT_ED + "\n" + teamId + "\n" + canonical(withoutSig(event))).getBytes(StandardCharsets.UTF_8); }
+
+    /** Copy with an Ed25519 {@code sig} (deterministic like HMAC: a resend stays "known"). */
+    public static Map<String, Object> signedEd(String seed, String teamId, Map<String, Object> event) {
+        try {
+            java.security.Signature s = java.security.Signature.getInstance("Ed25519");
+            s.initSign(privateKey(seed));
+            s.update(edText(teamId, event));
+            Map<String, Object> out = new java.util.LinkedHashMap<>(withoutSig(event));
+            out.put("sig", b64(s.sign()));
+            return out;
+        } catch (GeneralSecurityException e) { throw new IllegalStateException(e); }
+    }
+
+    /** Whether the event carries a valid Ed25519 signature of this public key. */
+    public static boolean verifyEd(String publicKey, String teamId, Map<String, Object> event) {
+        if (publicKey == null || !publicKey.matches(KEY_PATTERN) || !(event.get("sig") instanceof String sig) || !sig.matches(SIG_ED_PATTERN)) return false;
+        try {
+            java.security.PublicKey k = java.security.KeyFactory.getInstance("Ed25519").generatePublic(new java.security.spec.X509EncodedKeySpec(concat(SPKI, unb64(publicKey))));
+            java.security.Signature s = java.security.Signature.getInstance("Ed25519");
+            s.initVerify(k);
+            s.update(edText(teamId, event));
+            return s.verify(unb64(sig));
+        } catch (GeneralSecurityException | IllegalArgumentException e) { return false; }
+    }
 }

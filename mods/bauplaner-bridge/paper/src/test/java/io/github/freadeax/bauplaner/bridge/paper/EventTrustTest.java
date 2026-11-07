@@ -103,4 +103,61 @@ class EventTrustTest {
         assertNull(ProtectRules.blocked("frei", null, "b_tom", "helfer", "team"));
         assertNull(ProtectRules.blocked("nacharbeit", null, "b_tom", "helfer", "alle"));
     }
+
+    // ------------------------------------------------------------------ TEAM-SEC-01
+    static final String SEED = EventSig.deriveSeed("adminKeyForTests_0123456789abcdefXYZ");
+    static final String PUB = EventSig.publicKey(SEED);
+    static JsonObject signEd(JsonObject e) {
+        Map<String, Object> m = EventSig.signedEd(SEED, "team_vec", Json.obj(Json.parse(TeamLog.GSON.toJson(e)), "e"));
+        return JsonParser.parseString(Json.write(m)).getAsJsonObject();
+    }
+
+    @Test
+    void publicKeyChecksAndTheRoomCheckedAuthors() {
+        TeamLog t = TeamLog.parse(HEADER);
+        room(t, ev("b_lea", "member.join", "\"member\":\"b_lea\",\"name\":\"Lea\",\"player\":\"LeaMC\""));
+        JsonObject oldHmac = room(t, sign(ev("b_philipp", "member.role", "\"member\":\"b_lea\",\"role\":\"meister\"")));
+        // Forged in the legacy window (before the room checked authors): in Philipp's name and as Baumeister Lea.
+        JsonObject forged = room(t, ev("b_philipp", "member.role", "\"member\":\"b_tom\",\"role\":\"leitung\""));
+        JsonObject fakeVerify = room(t, ev("b_lea", "section.verify", "\"section\":\"s1\",\"ok\":true"));
+        // The Bauleitung's upgrade: Ed25519-signed confirmation up to 4, without the forged step.
+        room(t, signEd(ev("b_philipp", "team.trust", "\"upTo\":\"4\",\"except\":[\"" + forged.get("id").getAsString() + "\"]")));
+        // From 6 on the room checked authors: Lea's real verify counts; Philipp's unsigned step still needs his signature.
+        JsonObject realVerify = room(t, ev("b_lea", "section.verify", "\"section\":\"s2\",\"ok\":true"));
+        JsonObject unsigned = room(t, ev("b_philipp", "team.protect", "\"mode\":\"aus\""));
+        JsonObject signedProtect = room(t, signEd(ev("b_philipp", "team.protect", "\"mode\":\"sperren\"")));
+        // An HMAC signature made with the old key (what a plugin holding it could forge) no longer counts.
+        JsonObject hmacNow = room(t, sign(ev("b_philipp", "member.role", "\"member\":\"b_tom\",\"role\":\"meister\"")));
+
+        EventTrust trust = new EventTrust(t, KEY, PUB, EventTrust.of(seqs), 6);
+        assertTrue(trust.active()); assertTrue(trust.ed());
+        assertEquals(4, trust.upTo);
+        TeamLog.View v = t.view(trust);
+        assertFalse(v.untrusted.containsKey(oldHmac.get("id").getAsString()), "alte HMAC-Schritte bestätigt");
+        assertEquals("meister", v.role("b_lea"));
+        assertEquals("gast", v.role("b_tom"), "weder gefälschte Bauleitung noch HMAC-Fälschung");
+        assertTrue(v.untrusted.containsKey(forged.get("id").getAsString()));
+        assertFalse(v.untrusted.containsKey(fakeVerify.get("id").getAsString()), "vor der Bestätigung, nicht ausgenommen: bestätigt");
+        assertFalse(v.untrusted.containsKey(realVerify.get("id").getAsString()));
+        assertTrue(v.untrusted.containsKey(unsigned.get("id").getAsString()));
+        assertFalse(v.untrusted.containsKey(signedProtect.get("id").getAsString()));
+        assertTrue(v.untrusted.containsKey(hmacNow.get("id").getAsString()));
+        assertEquals("sperren", v.protectMode);
+    }
+
+    @Test
+    void baumeisterStepsFromBeforeTheCheckNeedConfirmation() {
+        TeamLog t = TeamLog.parse(HEADER);
+        room(t, signEd(ev("b_philipp", "team.trust", "\"upTo\":\"1\"")));
+        JsonObject legacy = room(t, ev("b_lea", "section.verify", "\"section\":\"s1\",\"ok\":true"));
+        JsonObject claim = room(t, ev("b_tom", "section.claim", "\"section\":\"s2\""));
+        TeamLog.View v = t.view(new EventTrust(t, null, PUB, EventTrust.of(seqs), 10));
+        assertTrue(v.untrusted.containsKey(legacy.get("id").getAsString()));
+        assertFalse(v.untrusted.containsKey(claim.get("id").getAsString()), "Helferschritte wie bisher");
+        // Room from before TEAM-SEC-01 (checkedFrom unknown): as before GAME-06 rules.
+        assertFalse(t.view(new EventTrust(t, null, PUB, EventTrust.of(seqs), -1)).untrusted.containsKey(legacy.get("id").getAsString()));
+        // A public key in the link drops the old HMAC key.
+        assertNull(RoomLink.parse("https://x/#/team/beitreten?raum=https%3A%2F%2Fr.example&id=r_abc&s=srv&l=" + KEY + "&p=" + PUB).get().signKey());
+        assertEquals(PUB, RoomLink.parse("https://x/#/team/beitreten?raum=https%3A%2F%2Fr.example&id=r_abc&s=srv&p=" + PUB).get().leaderKey());
+    }
 }

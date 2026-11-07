@@ -107,7 +107,7 @@ export type TeamEventBody =
   /** GAME-06 (SIGNED_EVENTS.md): section protection on the server (Bauleitung); free = who may build in free sections. */
   | { readonly kind: 'team.protect'; readonly mode: ProtectMode; readonly free?: ProtectFree }
   /** GAME-06: the Bauleitung vouches for every room event up to this arrival number (written before signatures existed). */
-  | { readonly kind: 'team.trust'; readonly upTo: string };
+  | { readonly kind: 'team.trust'; readonly upTo: string; readonly except?: readonly string[] };
 /** Most players per section (owner + Mitbauer) and per split gather order. */
 export const MAX_CREW = 8;
 
@@ -376,7 +376,10 @@ export function checkTeamEvent(raw: unknown): TeamEvent {
       if (!PROTECT_MODES.includes(raw.mode as ProtectMode)) fail(`${where}: Schutzstufe unbekannt`);
       if (raw.free !== undefined && raw.free !== 'alle' && raw.free !== 'team') fail(`${where}: freie Abschnitte alle oder team`);
       break;
-    case 'team.trust': if (typeof raw.upTo !== 'string' || !/^\d{1,15}$/.test(raw.upTo)) fail(`${where}: Ankunftsnummer ungültig`); break;
+    case 'team.trust': if (typeof raw.upTo !== 'string' || !/^\d{1,15}$/.test(raw.upTo)) fail(`${where}: Ankunftsnummer ungültig`);
+      // TEAM-SEC-01: ids the Bauleitung does not vouch for (forged before the room checked authors).
+      if (raw.except !== undefined && (!Array.isArray(raw.except) || raw.except.length > 50 || raw.except.some(x => typeof x !== 'string' || !/^[A-Za-z0-9_.:-]{1,64}$/.test(x)))) fail(`${where}: Ausnahmen ungültig`);
+      break;
     default: break; // newer kinds: kept as they are
   }
   return raw as unknown as TeamEvent;
@@ -819,6 +822,8 @@ const NEED: Readonly<Record<TeamEventKind, TeamRole>> = {
   'section.seen': 'helfer', 'store.seen': 'helfer', 'team.digest': 'leitung',
   'section.crew': 'meister', 'section.join': 'helfer', 'section.leave': 'helfer', 'gather.assign': 'meister', 'contribution.fix': 'helfer', 'team.protect': 'leitung', 'team.trust': 'leitung',
 };
+/** TEAM-SEC-01: the same table the Team-Raum checks (services/team-room/src/core.js NEED, compared in a test). */
+export const TEAM_NEED: Readonly<Record<TeamEventKind, TeamRole>> = NEED;
 export const canTeam = (role: TeamRole | undefined, action: TeamAction): boolean => RANK[role ?? 'gast'] >= RANK[NEED[action]];
 /** Minimum role of an event kind (unknown kinds: undefined), as `TeamLog.need` in the server plugin. */
 export const teamKindNeed = (kind: string): TeamRole | undefined => (NEED as Record<string, TeamRole>)[kind];
@@ -949,8 +954,14 @@ export function foldTeam(team: TeamState, ctx: TeamContext, opts: { until?: { at
     }
   };
 
+  // TEAM-SEC-01 (TEAM_IDENTITY.md §5): events this browser could not verify, and events a team.trust of the Bauleitung
+  // with an Ed25519 signature (86 characters; checked when it came in) refuses to vouch for, are left out.
+  const skip = new Set<string>(Object.keys((team as { live?: { held?: Record<string, string> } }).live?.held ?? {}));
+  for (const e of team.events) if (e.kind === 'team.trust' && e.by === team.founder && /^[A-Za-z0-9_-]{86}$/.test(String((e as { sig?: unknown }).sig ?? '')))
+    for (const x of (e as { except?: readonly string[] }).except ?? []) skip.add(x);
   for (const event of team.events) {
     if (opts.until && compareEvents(event, opts.until) > 0) break;
+    if (skip.has(event.id)) continue;
     if (!isKnownEvent(event)) { unknownKinds++; continue; }
     if (dg && coveredByDigest(event, dg)) continue;
     if (event.kind === 'team.digest') {

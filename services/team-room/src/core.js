@@ -38,6 +38,32 @@ export function subjectsOf(e) {
 }
 const KIND = /^[a-z][a-z0-9.]{1,39}$/;
 
+/**
+ * TEAM-SEC-01 (docs/architecture/team/TEAM_IDENTITY.md): who wrote an event is no longer what the event claims but
+ * what the key says. Every member gets an own key (POST join with the invitation), bound to its member id; the admin
+ * key is the founder. The room checks `by` against that and the kind against the author's role (same table as
+ * `TEAM_NEED` in team.ts, compared in tests/unit/team/team-identity.test.mjs). Roles change only through member.role
+ * events of a Bauleitung that the room itself accepted.
+ */
+export const ROLES = Object.freeze(['leitung', 'meister', 'helfer', 'gast']);
+const RANK = Object.freeze({ leitung: 3, meister: 2, helfer: 1, gast: 0 });
+export const NEED = Object.freeze({
+  'member.join': 'gast', 'member.role': 'leitung', 'member.player': 'gast', 'section.claim': 'helfer', 'section.assign': 'meister',
+  'section.release': 'helfer', 'section.done': 'helfer', 'section.verify': 'meister', contribution: 'helfer', 'gather.claim': 'helfer',
+  'note.add': 'gast', 'note.resolve': 'helfer', 'plan.release': 'leitung',
+  'build.tally': 'gast', 'member.tally': 'gast', 'store.chest': 'meister', 'store.count': 'gast',
+  'store.config': 'meister', 'store.seal': 'meister', 'store.move': 'gast', 'store.check': 'gast', 'store.yield': 'gast',
+  'section.handover': 'helfer', 'section.accept': 'helfer', 'section.decline': 'helfer', 'member.away': 'gast', 'issue.ack': 'meister',
+  'section.seen': 'helfer', 'store.seen': 'helfer', 'team.digest': 'leitung',
+  'section.crew': 'meister', 'section.join': 'helfer', 'section.leave': 'helfer', 'gather.assign': 'meister', 'contribution.fix': 'helfer', 'team.protect': 'leitung', 'team.trust': 'leitung',
+});
+/** Kinds unknown to this room version need a Baumeister: a new kind never gives a helper more than before. */
+const needOf = kind => NEED[kind] ?? 'meister';
+const SELF_KINDS = new Set(['member.join', 'member.player', 'member.tally', 'member.away']);
+export const IDENTITY_LIMITS = Object.freeze({ members: 200, keysPerMember: 8, label: 60 });
+const LEADER_KEY = /^[A-Za-z0-9_-]{43}$/;
+const today = () => new Date().toISOString().slice(0, 10);
+
 /** A guard cursor as number; null (no check) when missing or not a cursor of this room (e.g. after a reset). */
 function baseOf(v, last) {
   if (v === undefined || v === null || v === '') return null;
@@ -131,12 +157,16 @@ export class RoomCore {
   get created() { return !!this.store.getMeta('room'); }
 
   /** Creates the room once; returns the keys (only now in clear text). */
-  async create({ room, teamId, name }) {
+  async create({ room, teamId, name, founder, leaderKey }) {
     if (this.created) throw new RoomError(409, 'raum-vorhanden', 'Diesen Raum gibt es schon.');
     if (typeof teamId !== 'string' || !ID.test(teamId)) throw new RoomError(400, 'team-id', 'Team-ID ungültig.');
+    if (founder !== undefined && (typeof founder !== 'string' || !ID.test(founder))) throw new RoomError(400, 'gruender', 'Gründer-ID ungültig.');
     const adminKey = randomKey(), memberKey = randomKey(), serverKey = randomKey();
+    // TEAM-SEC-01: a planner that names the founder gets a room that checks authors from the first event on, and
+    // the invitation only lets people join (strict). Rooms of older planners stay as they were until upgraded.
     this.store.setMeta('room', { room, teamId, name: String(name ?? 'Team').slice(0, 120), createdAt: new Date().toISOString(),
-      admin: await sha256(adminKey), member: await sha256(memberKey), server: await sha256(serverKey) });
+      admin: await sha256(adminKey), member: await sha256(memberKey), server: await sha256(serverKey),
+      ...(founder && { founder, strict: true, checkedFrom: 1 }), ...(typeof leaderKey === 'string' && LEADER_KEY.test(leaderKey) && { leaderKey }) });
     return { room, teamId, adminKey, memberKey, serverKey };
   }
 
@@ -146,7 +176,13 @@ export class RoomCore {
     const docs = {};
     for (const n of DOC_NAMES) { const d = this.store.getMeta(`doc:${n}`); if (d) docs[n] = d.rev; }
     const epoch = this.store.getMeta('epoch');
-    return { protocol: PROTOCOL, version: VERSION, room: r.room, teamId: r.teamId, name: r.name, createdAt: r.createdAt, events: this.store.count(), cursor: String(this.top()), header: !!this.store.getMeta('header'), docs, guards: true, backups: true, ...(epoch && { epoch }) };
+    return { protocol: PROTOCOL, version: VERSION, room: r.room, teamId: r.teamId, name: r.name, createdAt: r.createdAt, events: this.store.count(), cursor: String(this.top()), header: !!this.store.getMeta('header'), docs, guards: true, backups: true, identity: this.identity(), ...(epoch && { epoch }) };
+  }
+
+  /** TEAM-SEC-01: what the room checks (public to every key holder: no secrets, only the founder id and the public key). */
+  identity() {
+    const r = this.store.getMeta('room') ?? {};
+    return { founder: r.founder ?? null, strict: !!r.strict, checkedFrom: r.checkedFrom ? String(r.checkedFrom) : null, leaderKey: r.leaderKey ?? null };
   }
 
   /**
@@ -160,18 +196,187 @@ export class RoomCore {
   }
 
   /**
-   * 'admin' | 'server' | 'member'; throws 401/403. The server key (Paper plugin) may write events with
-   * origin "server" (build.tally, store.count); it is no admin. The admin key may do everything.
+   * 'admin' | 'server' | 'member' | 'person'; throws 401/403. The server key (Paper plugin) may write events with
+   * origin "server" (build.tally, store.count); it is no admin. The admin key may do everything. 'member' is the shared
+   * invitation, 'person' a member's own key (TEAM-SEC-01, {@link session} tells whose).
    */
-  async auth(key, need = 'member') {
+  async auth(key, need = 'member') { return (await this.session(key, need)).role; }
+
+  /** The session of a key: {role, member?, keyId?}. member = the id the room binds the key to (founder for the admin key). */
+  async session(key, need = 'member') {
     const r = this.store.getMeta('room');
     if (!r) throw new RoomError(404, 'raum-fehlt', 'Diesen Team-Raum gibt es nicht (mehr).');
     if (typeof key !== 'string' || !key) throw new RoomError(401, 'schluessel-fehlt', 'Schlüssel fehlt.');
     const h = await sha256(key);
-    if (h === r.admin) return 'admin';
-    if (r.server && h === r.server && need !== 'admin') return 'server';
-    if (h === r.member && need === 'member') return 'member';
-    throw new RoomError(h === r.member ? 403 : 401, h === r.member ? 'nur-bauleitung' : 'schluessel-falsch', h === r.member ? 'Das darf nur die Bauleitung.' : 'Der Schlüssel passt nicht (Einladung erneuert?).');
+    if (h === r.admin) return { role: 'admin', ...(r.founder && { member: r.founder }) };
+    if (r.server && h === r.server && need !== 'admin') return { role: 'server' };
+    if (h === r.member && need === 'member') return { role: 'member' };
+    const own = this.keyByHash(h);
+    if (own && need === 'member') {
+      if (own.key.lastUsed !== today()) { own.key.lastUsed = today(); this.store.setMeta('members', own.members); }
+      return { role: 'person', member: own.member, keyId: own.key.id };
+    }
+    const member = h === r.member || !!own;
+    throw new RoomError(member ? 403 : 401, member ? 'nur-bauleitung' : 'schluessel-falsch', member ? 'Das darf nur die Bauleitung.' : 'Der Schlüssel passt nicht (Einladung erneuert oder Schlüssel widerrufen?).');
+  }
+
+  members() { return this.store.getMeta('members') ?? {}; }
+  keyByHash(h) {
+    const members = this.members();
+    for (const [member, m] of Object.entries(members)) for (const key of m.keys ?? []) if (key.hash === h) return { members, member, key };
+    return null;
+  }
+  /** Role the room knows for a member: founder = Bauleitung; an unconfirmed take-over of a higher role counts as helper. */
+  roleOf(member) {
+    const r = this.store.getMeta('room') ?? {};
+    if (member && member === (r.founder ?? this.store.getMeta('header')?.founder)) return 'leitung';
+    const m = this.members()[member];
+    const role = ROLES.includes(m?.role) ? m.role : 'helfer';
+    return m?.pending && RANK[role] > RANK.helfer ? 'helfer' : role;
+  }
+  /** Whether this session may act as Bauleitung for key management (admin key or own key of a Bauleitung). */
+  leads(s) { return s.role === 'admin' || (s.role === 'person' && this.roleOf(s.member) === 'leitung'); }
+
+  /**
+   * Why the room refuses this event from this session, or null. Admin key: the founder (and may pass on what others
+   * wrote earlier, e.g. the log of the file era). Own key: `by` must be the key's member and the kind needs the role.
+   * Shared invitation (old mods/planners): never the founder, never a member with an own key, never more than a helper –
+   * and in strict rooms not at all.
+   */
+  authorFault(e, s) {
+    if (s.role === 'admin' || s.role === 'server') return null;
+    const r = this.store.getMeta('room') ?? {};
+    const founder = r.founder ?? this.store.getMeta('header')?.founder;
+    const need = SELF_KINDS.has(e.kind) && e.member === e.by ? 'gast' : (e.kind === 'member.join' || e.kind === 'member.player') ? 'leitung' : needOf(e.kind);
+    if (s.role === 'person') {
+      if (e.by !== s.member) return `Absender passt nicht zum Schlüssel (angemeldet als ${s.member}, Ereignis von ${e.by}).`;
+      const role = this.roleOf(s.member);
+      if (RANK[role] < RANK[need]) return `${s.member} ist im Raum ${role}${this.members()[s.member]?.pending ? ' (Übernahme noch nicht von der Bauleitung bestätigt)' : ''} und darf ${e.kind} nicht.`;
+      return null;
+    }
+    if (r.strict) return 'Dieser Raum nimmt nur Ereignisse mit persönlichem Schlüssel an (Planer neu laden oder Mod aktualisieren).';
+    if (founder && e.by === founder) return 'Im Namen der Bauleitung nur mit ihrem Schlüssel.';
+    if (this.members()[e.by]?.keys?.length) return `${e.by} hat einen persönlichen Schlüssel – mit der Einladung darf niemand in diesem Namen schreiben.`;
+    if (RANK[this.roleOf(e.by)] > RANK.helfer) return 'Baumeister und Bauleitung schreiben nur mit persönlichem Schlüssel.';
+    if (RANK[need] > RANK.helfer) return `${e.kind} nur mit persönlichem Schlüssel (mindestens ${need}).`;
+    return null;
+  }
+
+  /** A member.role the room accepted changes its role table (Bauleitung only, checked before). */
+  noteRole(e) {
+    if (e.kind !== 'member.role' || typeof e.member !== 'string' || !ID.test(e.member) || !ROLES.includes(e.role)) return;
+    const members = this.members();
+    if (!members[e.member] && Object.keys(members).length >= IDENTITY_LIMITS.members) return;
+    members[e.member] = { ...(members[e.member] ?? { keys: [] }), role: e.role };
+    delete members[e.member].pending;
+    this.store.setMeta('members', members);
+  }
+
+  // ------------------------------------------------------------ TEAM-SEC-01: persönliche Schlüssel
+
+  /**
+   * Joining with the invitation: binds a new own key to `member`. The founder's id is never handed out this way (it
+   * belongs to the admin key); an id that already has a key is taken. An id the room knows as Baumeister/Bauleitung is
+   * bound but stays a helper until a Bauleitung confirms it (`approve`), so the invitation alone never gives more.
+   */
+  async join({ member, label } = {}) {
+    if (typeof member !== 'string' || !ID.test(member)) throw new RoomError(400, 'mitglied', 'Mitglieds-ID ungültig.');
+    const r = this.store.getMeta('room');
+    if (member === (r.founder ?? this.store.getMeta('header')?.founder)) throw new RoomError(403, 'gruender', 'Die Bauleitung meldet sich mit ihrem Verwaltungsschlüssel an.');
+    const members = this.members();
+    if (members[member]?.keys?.length) throw new RoomError(409, 'mitglied-vergeben', 'Für dieses Mitglied gibt es schon einen Schlüssel. Ein weiteres Gerät bekommt ihn über „Gerät hinzufügen“ – oder die Bauleitung widerruft den alten.');
+    if (!members[member] && Object.keys(members).length >= IDENTITY_LIMITS.members) throw new RoomError(409, 'raum-voll', `Höchstens ${IDENTITY_LIMITS.members} Mitglieder je Raum.`);
+    const role = ROLES.includes(members[member]?.role) ? members[member].role : 'helfer';
+    const pending = RANK[role] > RANK.helfer;
+    const { key, entry } = await this.newKey(label);
+    members[member] = { ...(members[member] ?? {}), keys: [entry], ...(pending && { pending: true }) };
+    if (!pending) delete members[member].pending;
+    this.store.setMeta('members', members);
+    return { member, key, keyId: entry.id, role, pending };
+  }
+
+  async newKey(label) {
+    const key = randomKey();
+    return { key, entry: { id: `k_${randomKey(6)}`, hash: await sha256(key), label: typeof label === 'string' && label.trim() ? label.trim().slice(0, IDENTITY_LIMITS.label) : 'Gerät', createdAt: new Date().toISOString(), lastUsed: today() } };
+  }
+
+  /** Another device of the same member (the mod of a player, a second browser). Admin key = the founder. */
+  async addKey(s, { label } = {}) {
+    const member = s.member;
+    if (!member || (s.role !== 'person' && s.role !== 'admin')) throw new RoomError(403, 'nur-persoenlich', 'Weitere Geräte nur mit persönlichem Schlüssel (oder als Bauleitung mit dem Verwaltungsschlüssel, sobald der Raum den Gründer kennt).');
+    const members = this.members();
+    const m = members[member] ?? { keys: [] };
+    if ((m.keys ?? []).length >= IDENTITY_LIMITS.keysPerMember) throw new RoomError(409, 'zu-viele-schluessel', `Höchstens ${IDENTITY_LIMITS.keysPerMember} Geräte je Mitglied – bitte einen alten Schlüssel widerrufen.`);
+    const { key, entry } = await this.newKey(label);
+    members[member] = { ...m, keys: [...(m.keys ?? []), entry] };
+    this.store.setMeta('members', members);
+    return { member, key, keyId: entry.id };
+  }
+
+  /** Keys without their hashes; a Bauleitung sees all, everybody else only their own. */
+  listKeys(s) {
+    const all = this.leads(s);
+    const out = [];
+    for (const [member, m] of Object.entries(this.members())) {
+      if (!all && member !== s.member) continue;
+      for (const k of m.keys ?? []) out.push({ id: k.id, member, label: k.label, createdAt: k.createdAt, lastUsed: k.lastUsed ?? null, pending: !!m.pending, role: this.roleOf(member) });
+    }
+    return out;
+  }
+
+  /** Revokes one key; a Bauleitung any, others only their own. Returns the member (the caller closes its sockets). */
+  revokeKey(s, keyId) {
+    const members = this.members();
+    for (const [member, m] of Object.entries(members)) {
+      const k = (m.keys ?? []).find(x => x.id === keyId);
+      if (!k) continue;
+      if (!this.leads(s) && member !== s.member) throw new RoomError(403, 'nur-bauleitung', 'Fremde Schlüssel widerruft nur die Bauleitung.');
+      members[member] = { ...m, keys: m.keys.filter(x => x.id !== keyId) };
+      this.store.setMeta('members', members);
+      return { ok: true, revoked: keyId, member };
+    }
+    throw new RoomError(404, 'schluessel-fehlt', 'Diesen Schlüssel gibt es nicht (mehr).');
+  }
+
+  /** A Bauleitung confirms that the member who took over this id is who they say (role becomes effective). */
+  approve(s, member) {
+    if (!this.leads(s)) throw new RoomError(403, 'nur-bauleitung', 'Das darf nur die Bauleitung.');
+    const members = this.members();
+    if (!members[member]) throw new RoomError(404, 'mitglied-fehlt', 'Dieses Mitglied kennt der Raum nicht.');
+    delete members[member].pending;
+    this.store.setMeta('members', members);
+    return { ok: true, member, role: this.roleOf(member) };
+  }
+
+  /**
+   * Upgrade of a room from before TEAM-SEC-01 (admin key only): names the founder, takes the roles the Bauleitung's
+   * planner sees (only for members the room has no role for yet), the public key of the Bauleitung and `strict`.
+   * From the next arrival number on the room checks authors (`checkedFrom`).
+   */
+  setIdentity({ founder, roles, leaderKey, strict } = {}) {
+    const r = this.store.getMeta('room');
+    const next = { ...r };
+    if (founder !== undefined) {
+      if (typeof founder !== 'string' || !ID.test(founder)) throw new RoomError(400, 'gruender', 'Gründer-ID ungültig.');
+      if (r.founder && r.founder !== founder) throw new RoomError(409, 'gruender', 'Dieser Raum gehört schon zu einem anderen Gründer.');
+      next.founder = founder;
+    }
+    if (!next.founder) throw new RoomError(400, 'gruender', 'Zuerst den Gründer nennen.');
+    if (!next.checkedFrom) next.checkedFrom = this.top() + 1;
+    if (leaderKey !== undefined) { if (typeof leaderKey !== 'string' || !LEADER_KEY.test(leaderKey)) throw new RoomError(400, 'pruefschluessel', 'Prüfschlüssel ungültig.'); next.leaderKey = leaderKey; }
+    if (strict !== undefined) next.strict = !!strict;
+    if (roles !== undefined) {
+      if (typeof roles !== 'object' || roles === null || Array.isArray(roles) || Object.keys(roles).length > IDENTITY_LIMITS.members) throw new RoomError(400, 'rollen', 'Rollen ungültig.');
+      const members = this.members();
+      for (const [id, role] of Object.entries(roles)) {
+        if (!ID.test(id) || !ROLES.includes(role) || id === next.founder || members[id]?.role) continue;
+        if (!members[id] && Object.keys(members).length >= IDENTITY_LIMITS.members) break;
+        members[id] = { ...(members[id] ?? { keys: [] }), role };
+      }
+      this.store.setMeta('members', members);
+    }
+    this.store.setMeta('room', next);
+    return this.identity();
   }
 
   /**
@@ -180,7 +385,9 @@ export class RoomCore {
    * event comes back in `stale` when another author changed one of its subjects after that cursor. The whole batch
    * is one transaction: an error in the middle stores nothing, the writer repeats it.
    */
-  append({ batch, events, guards }, role = 'member') {
+  append({ batch, events, guards }, session = 'member') {
+    const s = typeof session === 'string' ? { role: session } : session;
+    const role = s.role;
     if (typeof batch !== 'string' || !ID.test(batch)) throw new RoomError(400, 'stapel-id', 'Stapel-ID ungültig.');
     const known = this.store.getBatch(batch);
     if (known) return { ...known, repeated: true };
@@ -191,13 +398,16 @@ export class RoomCore {
       this.ensureSubjects();
       const last = this.top();
       const answer = { cursor: '', accepted: [], known: [], rejected: [], stale: [] };
-      const added = [];
+      const added = [], seqs = [];
       for (const e of events) {
         const problem = checkEventShape(e);
         const id = typeof e?.id === 'string' ? e.id.slice(0, 64) : '?';
         if (problem) { answer.rejected.push({ id, reason: problem }); continue; }
         if (e.origin === 'server' && role !== 'server') { answer.rejected.push({ id, reason: 'Nur der Server (Serverschlüssel) schreibt Ereignisse mit Herkunft „server“.' }); continue; }
         const row = this.store.eventById(e.id);
+        // A resent event the room has already is „known“ whoever resends it (a planner offers its log again after a restore).
+        const fault = row ? null : this.authorFault(e, s);
+        if (fault) { answer.rejected.push({ id: e.id, reason: fault }); continue; }
         if (row) {
           if (canonical(JSON.parse(row.json)) === canonical(e)) answer.known.push(e.id);
           else answer.rejected.push({ id: e.id, reason: 'Gleiche ID mit anderem Inhalt – das Ereignis im Raum bleibt.' });
@@ -211,13 +421,14 @@ export class RoomCore {
         }
         if (this.store.count() >= LIMITS.events) { answer.rejected.push({ id: e.id, reason: `Der Raum ist voll (${LIMITS.events} Ereignisse).` }); continue; }
         const seq = this.store.appendEvent(e.id, JSON.stringify(e), this.top() + 1);
-        for (const s of subjects) this.store.setSubject(s, seq, e.by);
-        answer.accepted.push(e.id); added.push(e);
+        for (const subject of subjects) this.store.setSubject(subject, seq, e.by);
+        this.noteRole(e);
+        answer.accepted.push(e.id); added.push(e); seqs.push(String(seq));
       }
       answer.cursor = String(this.top());
       if (!answer.stale.length) delete answer.stale;
       this.store.setBatch(batch, answer);
-      return { ...answer, added };
+      return { ...answer, added, seqs };
     };
     return this.store.transaction ? this.store.transaction(run) : run();
   }
@@ -241,7 +452,7 @@ export class RoomCore {
     const from = reset ? 0 : n;
     const rows = this.store.since(from, Math.max(1, Math.min(LIMITS.page, Number(limit) || LIMITS.page)));
     const cursorOut = rows.length ? String(rows[rows.length - 1].seq) : String(from);
-    return { events: rows.map(r => JSON.parse(r.json)), cursor: cursorOut, more: rows.length ? rows[rows.length - 1].seq < this.store.lastSeq() : false, ...(reset && { reset: true }) };
+    return { events: rows.map(r => JSON.parse(r.json)), seqs: rows.map(r => String(r.seq)), cursor: cursorOut, more: rows.length ? rows[rows.length - 1].seq < this.store.lastSeq() : false, ...(reset && { reset: true }) };
   }
 
   setHeader(header) {
@@ -356,7 +567,8 @@ export class RoomCore {
   stateKey() {
     const r = this.store.getMeta('room'), h = this.store.getMeta('header');
     return [this.top(), this.store.count(), h?.updatedAt ?? '', (this.store.getMeta('plans') ?? []).join(','),
-      DOC_NAMES.map(n => this.store.getMeta(`doc:${n}`)?.rev ?? 0).join(','), r ? `${r.member}.${r.server}.${r.admin}`.slice(0, 200) : '', this.store.getMeta('epoch') ?? ''].join('|');
+      DOC_NAMES.map(n => this.store.getMeta(`doc:${n}`)?.rev ?? 0).join(','), r ? `${r.member}.${r.server}.${r.admin}.${r.founder ?? ''}.${r.strict ? 1 : 0}.${r.leaderKey ?? ''}`.slice(0, 300) : '', this.store.getMeta('epoch') ?? '',
+      JSON.stringify(this.store.getMeta('members') ?? {}).length].join('|');
   }
 
   /**
@@ -378,7 +590,7 @@ export class RoomCore {
     }
     const header = this.store.getMeta('header');
     const head = { format: BACKUP_FORMAT, version: 1, at: now, room, floor: this.top(), cursor: String(this.top()), events: events.length,
-      ...(header && { header }), plans, docs, ...(this.store.getMeta('epoch') && { epoch: this.store.getMeta('epoch') }), stateKey: this.stateKey() };
+      ...(header && { header }), ...(this.store.getMeta('members') && { members: this.store.getMeta('members') }), plans, docs, ...(this.store.getMeta('epoch') && { epoch: this.store.getMeta('epoch') }), stateKey: this.stateKey() };
     return { head, events, blobs };
   }
 
@@ -400,7 +612,11 @@ export class RoomCore {
       for (const n of DOC_NAMES) { this.store.deletePlan(`doc:${n}`); this.store.deleteMeta(`doc:${n}`); }
       this.store.replaceEvents(events);
       this.store.clearSubjects(); this.store.clearBatches(); this.store.deleteMeta('subjects');
-      this.store.setMeta('room', keepKeys && current ? { ...head.room, admin: current.admin, member: current.member, server: current.server } : head.room);
+      this.store.setMeta('room', keepKeys && current ? { ...head.room, admin: current.admin, member: current.member, server: current.server,
+        ...(current.founder && { founder: current.founder, strict: current.strict, checkedFrom: current.checkedFrom, leaderKey: current.leaderKey }) } : head.room);
+      // TEAM-SEC-01: own keys and roles stay those of today when the room still exists (nobody is locked out or gets a revoked key back).
+      const members = keepKeys && current ? this.store.getMeta('members') : head.members;
+      if (members) this.store.setMeta('members', members); else this.store.deleteMeta('members');
       if (head.header) this.store.setMeta('header', head.header); else this.store.deleteMeta('header');
       for (const sha of head.plans) this.store.putPlan(sha, chunked(blobs.get(sha)));
       this.store.setMeta('plans', head.plans);

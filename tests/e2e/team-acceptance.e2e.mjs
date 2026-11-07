@@ -39,12 +39,16 @@ async function device(viewport, opts = {}) {
   });
   const p = await context.newPage();
   p.setDefaultTimeout(20_000);
+  // TEAM-SEC-01: the keys this browser uses (the test writes like a real Bauleitung or a real mod, never with the invitation).
+  const keys = {};
+  p.on('request', r => { const auth = r.headers().authorization; if (auth && /\/(header|identity)$/.test(new URL(r.url()).pathname) && r.method() !== 'GET') keys.admin = auth.replace(/^Bearer /, ''); });
+  p.on('response', async r => { if (/\/join$/.test(new URL(r.url()).pathname) && r.ok()) { try { keys.own = (await r.json()).key; } catch { /* closed */ } } });
   const errors = [], answers = [];
   p.on('pageerror', e => errors.push(e.message));
   // Offline phases make the browser log failed fetches and socket errors; those are expected.
   p.on('console', m => { if (m.type() === 'error' && !/clipboard|Failed to load resource|WebSocket|ERR_INTERNET_DISCONNECTED|net::/i.test(m.text())) errors.push(m.text()); });
   p.on('dialog', d => void d.accept(answers.shift() ?? ''));
-  return { p, context, errors, answers, link };
+  return { p, context, errors, answers, link, keys };
 }
 const nav = (p, name) => p.getByRole('navigation', { name: 'Projektbereiche' }).getByRole('link', { name }).click();
 const area = (p, name) => p.getByRole('navigation', { name: 'Teambereiche' }).getByRole('button', { name }).click();
@@ -279,8 +283,13 @@ test('Team live mit drei Geräten gegen den echten Team-Raum: einladen, gleichze
   // ---- TEAMBAU-27: Annas Mod im Spiel, Server ohne Plugin – Baustand und Kisteninhalt „laut Spiel … ungeprüft“.
   const fundament = sectionId('Fundament');
   const chest = teamEvent(philipp, { kind: 'store.chest', chest: 'kiste_team1', name: 'Teamkiste', pos: [10, 64, 20], dimension: 'minecraft:overworld' }, new Date().toISOString());
-  assert.deepEqual((await post(roomId, memberKey, `b_${chest.id}`, [chest])).accepted, [chest.id], 'Bauleitung markiert die Teamkiste');
-  const mod = await modClient(room.url, roomId, memberKey, { member: anna, player: 'Anna_MC', pos: { x: 12, y: 64, z: -3, dim: 'minecraft:overworld' } });
+  // TEAM-SEC-01: with the invitation the room takes nothing in the Bauleitung's name – only with its own key.
+  assert.match((await post(roomId, memberKey, `b_x${chest.id}`, [chest])).rejected[0].reason, /persönlichem Schlüssel/, 'Einladung schreibt nicht als Bauleitung');
+  assert.deepEqual((await post(roomId, A.keys.admin, `b_${chest.id}`, [chest])).accepted, [chest.id], 'Bauleitung markiert die Teamkiste');
+  // Anna's game gets its own device key, as „Mein Spiel verbinden“ does.
+  const modKey = (await (await fetch(`${room.url}/v1/rooms/${roomId}/keys`, { method: 'POST', headers: { Authorization: `Bearer ${B.keys.own}`, 'Content-Type': 'application/json' }, body: '{"label":"Minecraft"}' })).json()).key;
+  assert.ok(modKey, 'Geräteschlüssel für die Mod');
+  const mod = await modClient(room.url, roomId, modKey, { member: anna, player: 'Anna_MC', pos: { x: 12, y: 64, z: -3, dim: 'minecraft:overworld' } });
   await liveBlock(a).getByRole('list', { name: 'Gerade da' }).getByText(/Anna_MC/).first().waitFor();
   const seen = teamEvent(anna, { kind: 'section.seen', section: fundament, placed: 72, total: 100, missing: [{ item: 'minecraft:stone', count: 28 }] }, new Date().toISOString());
   const storeSeen = teamEvent(anna, { kind: 'store.seen', chest: 'kiste_team1', items: [{ item: 'minecraft:oak_log', count: 48 }, { item: 'minecraft:stone', count: 9 }] }, new Date(Date.now() + 5).toISOString());
@@ -317,8 +326,8 @@ test('Team live mit drei Geräten gegen den echten Team-Raum: einladen, gleichze
   const cfg = history.splice(1, 1);
   const sent = await post(roomId, serverKey, `b_hist${Date.now()}`, history);
   assert.equal(sent.accepted.length, history.length, JSON.stringify(sent.rejected ?? sent).slice(0, 400));
-  // The yield chest purpose is the Bauleitung's step (member key).
-  assert.equal((await post(roomId, memberKey, `b_cfg${Date.now()}`, cfg)).accepted.length, 1);
+  // The yield chest purpose is the Bauleitung's step (its own key; TEAM-SEC-01).
+  assert.equal((await post(roomId, A.keys.admin, `b_cfg${Date.now()}`, cfg)).accepted.length, 1);
   const proofA = a.getByRole('region', { name: 'Baunachweis und Lager' });
   const book = proofA.getByRole('region', { name: 'Ertragsbuch' });
   await book.locator('tr[data-yield="farm_kaktus"]').getByText('300 cactus').waitFor();
@@ -369,10 +378,17 @@ test('Team live mit drei Geräten gegen den echten Team-Raum: einladen, gleichze
   assert.equal(await eventCount(c2), await eventCount(a), 'nach dem Wiederverbinden gleicher Stand');
   assert.equal(await c2.getByRole('region', { name: 'Notizen am Bau' }).getByText('Während Ben weg war').count(), 1);
 
-  // ---- TEAMBAU-25: Einladung erneuern – der alte Link lässt niemanden mehr hinein.
+  // ---- TEAMBAU-25: Einladung erneuern – der alte Link lässt niemanden mehr hinein. TEAM-SEC-01: wer schon drin ist,
+  // hat einen eigenen Schlüssel und bleibt; ausgesperrt wird ein Mitglied, indem die Bauleitung seinen Schlüssel widerruft.
   await liveBlock(a).getByRole('button', { name: 'Einladung erneuern' }).click();
   const fresh = await liveBlock(a).getByLabel('Einladungslink').inputValue();
   assert.notEqual(fresh, link);
+  await b.waitForTimeout(1500);
+  assert.equal(await liveBlock(b).locator('[data-state=live]').count(), 1, 'Anna bleibt mit ihrem eigenen Schlüssel verbunden');
+  const auth = { Authorization: `Bearer ${A.keys.admin}` };
+  const listed = (await (await fetch(`${room.url}/v1/rooms/${roomId}/keys`, { headers: auth })).json()).keys;
+  assert.ok(listed.some(k => k.member === anna) && listed.some(k => k.member === ben), JSON.stringify(listed));
+  for (const k of listed.filter(k => k.member === anna)) assert.equal((await fetch(`${room.url}/v1/rooms/${roomId}/keys/${k.id}`, { method: 'DELETE', headers: auth })).status, 200);
   await liveBlock(b).getByText(/kennt diesen Schlüssel nicht mehr/).waitFor();
   const D = await device({ width: 1280, height: 800 });
   await D.p.goto(link);

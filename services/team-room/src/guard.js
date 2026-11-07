@@ -18,6 +18,8 @@ export const ABUSE = Object.freeze({
     doc: LIMITS.docBytes,
     control: CONTROL.bytes + 16 * 1024,
     small: 4 * 1024,
+    // TEAM-SEC-01: founder, public key and up to 200 member roles.
+    identity: 32 * 1024,
   }),
   /** One WebSocket message (an append frame carries at most one batch). */
   messageBytes: 1024 * 1024,

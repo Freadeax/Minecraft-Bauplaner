@@ -12,7 +12,7 @@ const t = () => new Date(clock += 60_000).toISOString();
 
 function sync(room, team) {
   let batch;
-  while ((batch = nextBatch(team))) team = confirm(team, room.append(batch)).team;
+  while ((batch = nextBatch(team))) team = confirm(team, room.append(batch, team.live.adminKey ? 'admin' : 'member')).team;
   let feed;
   do { feed = room.since(team.live.cursor); team = ingest(team, feed).team; } while (feed.more);
   return team;

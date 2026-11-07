@@ -313,7 +313,7 @@ export async function gameShare(share: GameShare): Promise<string | null> {
   return liveApi.roomSet(link.port, link.token, { share });
 }
 
-export async function gameToRoom(room: ServerRoom, member: { id: string; name?: string }, teamName: string, serverKey?: string, signKey?: string): Promise<string> {
+export async function gameToRoom(room: ServerRoom, member: { id: string; name?: string }, teamName: string, serverKey?: string, leader?: { seed: string; pub: string }): Promise<string> {
   const link = await gameLink();
   if (!liveCan(link.hello, 'room')) throw new LiveError(`Die Mod ${link.hello.mod.version} kann noch nicht direkt mit dem Team-Raum sprechen – Mod 0.14.0 oder neuer installieren.`, 426);
   // LINK-11: the Bauleitung's game also gets the server key; on a server with the plugin the mod hands the room
@@ -321,8 +321,9 @@ export async function gameToRoom(room: ServerRoom, member: { id: string; name?: 
   const handOver = !!serverKey && liveCan(link.hello, 'roomserver');
   const text = await liveApi.roomSet(link.port, link.token, { url: room.url, room: room.room, key: room.key, member: member.id, ...(member.name && { memberName: member.name }), teamName, device: 'Minecraft', ...(handOver && { serverKey }),
     ...(liveCan(link.hello, 'roomshare') && { share: readGameShare() }),
-    // GAME-06: with it the game signs the Bauleitung's events and hands the key to the plugin (link parameter l).
-    ...(handOver && signKey && liveCan(link.hello, 'roomsign') && { signKey }) });
+    // TEAM-SEC-01: the Bauleitung's game signs its events with Ed25519 (seed) and hands only the public key to the plugin
+    // (link parameter p). Mods before 0.28.0 (no feature roomsign2) get no key at all: the old HMAC key let the plugin sign.
+    ...(handOver && leader && liveCan(link.hello, 'roomsign2') && { leaderSeed: leader.seed, leaderKey: leader.pub }) });
   return handOver ? `${text} Bist du als Bauleitung (OP) mit diesem Spiel auf dem Server mit Build-Studio-Plugin, verbindet die Mod den Server von selbst mit dem Team-Raum.` : text;
 }
 

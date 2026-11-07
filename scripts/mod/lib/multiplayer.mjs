@@ -271,6 +271,12 @@ export async function room(base, { teamId, name }) {
     async feed() { const all = []; let after = ''; for (;;) { const p = (await call(`/v1/rooms/${id}/events?after=${after}`, {}, memberKey)).body; all.push(...p.events); after = p.cursor; if (!p.more) return all; } },
     async info() { return (await call(`/v1/rooms/${id}`, {}, memberKey)).body; },
     async control(msg, key = memberKey) { return call(`/v1/rooms/${id}/control`, { method: 'POST', body: JSON.stringify(msg) }, key); },
+    /** A device key of its own, as „Mein Spiel verbinden“ hands it to the mod (never the invitation or the admin key). */
+    async deviceKey(key = adminKey, label = 'Minecraft') {
+      const r = await call(`/v1/rooms/${id}/keys`, { method: 'POST', body: JSON.stringify({ label }) }, key);
+      assert.equal(r.status, 201, JSON.stringify(r.body));
+      return r.body.key;
+    },
   };
 }
 

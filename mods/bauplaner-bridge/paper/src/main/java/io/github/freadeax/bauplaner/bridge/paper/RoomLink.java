@@ -75,6 +75,10 @@ final class RoomLink implements TeamUplink {
         String teamId, cursor, status = "verbindet …";
         /** GAME-06: signing key of the Bauleitung (link parameter l), null = the room's events are not checked. */
         String signKey;
+        /** TEAM-SEC-01: Ed25519 public key of the Bauleitung (link parameter p); replaces signKey, the plugin can only check. */
+        String leaderKey;
+        /** TEAM-SEC-01: first arrival number whose author the room checked (from its welcome), -1 = unknown. */
+        long checkedFrom = -1;
         /** GAME-06: arrival number in the room per event id (file team/&lt;teamId&gt;.room.seq). */
         final Map<String, Long> seqs = new HashMap<>();
         final LinkedHashSet<String> outbox = new LinkedHashSet<>();
@@ -103,7 +107,9 @@ final class RoomLink implements TeamUplink {
      * Room address, id and server key from a planner link ({@code …#/team/beitreten?raum=URL&id=RID&s=KEY}); GAME-06:
      * optionally {@code &l=SIGNKEY}, the Bauleitung's signing key (never the admin key).
      */
-    record Link(String base, String rid, String key, String signKey) {}
+    record Link(String base, String rid, String key, String signKey, String leaderKey) {
+        Link(String base, String rid, String key, String signKey) { this(base, rid, key, signKey, null); }
+    }
 
     static Optional<Link> parse(String link) {
         int q = link.indexOf('?');
@@ -113,12 +119,15 @@ final class RoomLink implements TeamUplink {
             int eq = part.indexOf('=');
             if (eq > 0) p.put(part.substring(0, eq), URLDecoder.decode(part.substring(eq + 1), StandardCharsets.UTF_8));
         }
-        String base = p.get("raum"), rid = p.get("id"), key = p.get("s"), sign = p.get("l");
+        String base = p.get("raum"), rid = p.get("id"), key = p.get("s"), sign = p.get("l"), pub = p.get("p");
         if (sign != null && !sign.matches(io.github.freadeax.bauplaner.mod.team.EventSig.KEY_PATTERN)) sign = null;
+        if (pub != null && !pub.matches(io.github.freadeax.bauplaner.mod.team.EventSig.KEY_PATTERN)) pub = null;
+        // TEAM-SEC-01: with the public key the old HMAC key is not kept – whoever holds it could sign as the Bauleitung.
+        if (pub != null) sign = null;
         if (base == null || rid == null || key == null || key.isBlank() || !rid.matches("[A-Za-z0-9_-]{1,64}")) return Optional.empty();
         base = base.replaceAll("/+$", "");
         if (!base.startsWith("https://") && !base.startsWith("http://127.0.0.1") && !base.startsWith("http://localhost")) return Optional.empty();
-        return Optional.of(new Link(base, rid, key, sign));
+        return Optional.of(new Link(base, rid, key, sign, pub));
     }
 
     /** Starts the rooms saved in {@code team/*.room.json}. */
@@ -128,7 +137,9 @@ final class RoomLink implements TeamUplink {
                 try {
                     JsonObject j = JsonParser.parseString(Files.readString(f, StandardCharsets.UTF_8)).getAsJsonObject();
                     Room r = new Room(TeamLog.str(j, "raum"), TeamLog.str(j, "id"), TeamLog.str(j, "key"), TeamLog.str(j, "device"));
-                    r.teamId = TeamLog.str(j, "teamId"); r.cursor = TeamLog.str(j, "cursor"); r.signKey = TeamLog.str(j, "signKey");
+                    r.teamId = TeamLog.str(j, "teamId"); r.cursor = TeamLog.str(j, "cursor"); r.signKey = TeamLog.str(j, "signKey"); r.leaderKey = TeamLog.str(j, "leaderKey");
+                    if (r.leaderKey != null) r.signKey = null;
+                    if (j.has("checkedFrom")) r.checkedFrom = j.get("checkedFrom").getAsLong();
                     for (JsonElement x : TeamLog.array(j, "outbox")) r.outbox.add(x.getAsString());
                     rooms.put(r.teamId, r);
                     loadSeqs(r);
@@ -148,7 +159,9 @@ final class RoomLink implements TeamUplink {
         j.addProperty("raum", r.base); j.addProperty("id", r.rid); j.addProperty("key", r.key); j.addProperty("device", r.device);
         j.addProperty("teamId", r.teamId);
         if (r.cursor != null) j.addProperty("cursor", r.cursor);
-        if (r.signKey != null) j.addProperty("signKey", r.signKey);
+        if (r.signKey != null && r.leaderKey == null) j.addProperty("signKey", r.signKey);
+        if (r.leaderKey != null) j.addProperty("leaderKey", r.leaderKey);
+        if (r.checkedFrom > 0) j.addProperty("checkedFrom", r.checkedFrom);
         JsonArray o = new JsonArray(); r.outbox.forEach(o::add); j.add("outbox", o);
         try {
             Path tmp = r.file().resolveSibling(r.file().getFileName() + ".tmp");
@@ -165,7 +178,7 @@ final class RoomLink implements TeamUplink {
         if (l.isEmpty()) return CompletableFuture.completedFuture("Das ist kein Server-Link aus dem Planer (Reiter „Team“ → „Live“, Link mit raum, id und s).");
         byte[] b = new byte[8]; new SecureRandom().nextBytes(b);
         Room r = new Room(l.get().base(), l.get().rid(), l.get().key(), "srv_" + HexFormat.of().formatHex(b));
-        r.signKey = l.get().signKey();
+        r.signKey = l.get().signKey(); r.leaderKey = l.get().leaderKey();
         return header(r).thenApply(header -> {
             String teamId = TeamLog.str(header, "teamId");
             Room old = rooms.remove(teamId);
@@ -194,8 +207,13 @@ final class RoomLink implements TeamUplink {
         Optional<Link> l = parse(link.trim());
         if (l.isEmpty()) return false;
         for (Room r : rooms.values()) if (!r.stopped && r.base.equals(l.get().base()) && r.rid.equals(l.get().rid()) && r.key.equals(l.get().key())) {
-            String sign = l.get().signKey();
-            if (sign != null && !sign.equals(r.signKey)) {
+            String sign = l.get().signKey(), pub = l.get().leaderKey();
+            if (pub != null && !pub.equals(r.leaderKey)) {
+                r.leaderKey = pub; r.signKey = null;
+                save(r);
+                teams.trustChanged();
+                plugin.getLogger().info(PREFIX + "Prüfschlüssel der Bauleitung (Ed25519) übernommen – der alte Unterschriftsschlüssel ist gelöscht.");
+            } else if (pub == null && r.leaderKey == null && sign != null && !sign.equals(r.signKey)) {
                 r.signKey = sign;
                 save(r);
                 teams.trustChanged();
@@ -209,13 +227,13 @@ final class RoomLink implements TeamUplink {
     /** GAME-06: what the server lets into its fold for this team (null without room). */
     EventTrust trust(TeamLog team) {
         Room r = rooms.get(team.teamId);
-        return r == null ? null : new EventTrust(team, r.signKey, r.seqs::get);
+        return r == null ? null : new EventTrust(team, r.signKey, r.leaderKey, r.seqs::get, r.checkedFrom);
     }
 
     /** Changes when the signing key or the known arrival numbers change (view cache). */
     String trustStamp(String teamId) {
         Room r = rooms.get(teamId);
-        return r == null ? "" : (r.signKey == null ? "-" : Integer.toHexString(r.signKey.hashCode())) + ":" + r.seqs.size();
+        return r == null ? "" : (r.leaderKey != null ? "p" + Integer.toHexString(r.leaderKey.hashCode()) : r.signKey == null ? "-" : Integer.toHexString(r.signKey.hashCode())) + ":" + r.seqs.size() + ":" + r.checkedFrom;
     }
 
     // ------------------------------------------------------------------ arrival numbers (GAME-06)
@@ -291,11 +309,11 @@ final class RoomLink implements TeamUplink {
     String trustText(TeamLog team) {
         Room r = rooms.get(team.teamId);
         if (r == null) return "Ereignisse aus Teamdatei.";
-        if (r.signKey == null) return "Rollen und Schutz ungeprüft: der Server hat den Unterschriftsschlüssel der Bauleitung noch nicht (Bauleitung einmal mit der Mod 0.26.0+ beitreten oder im Planer „Server mit dem Raum verbinden“).";
+        if (r.signKey == null && r.leaderKey == null) return "Rollen und Schutz ungeprüft: der Server hat den Prüfschlüssel der Bauleitung noch nicht (Bauleitung einmal mit der Mod 0.28.0+ beitreten oder im Planer „Server mit dem Raum verbinden“).";
         EventTrust t = trust(team);
         if (!t.active()) return "Rollen und Schutz noch ungeprüft: die Bauleitung bestätigt den bisherigen Stand, sobald sie den Planer öffnet.";
         int n = teams.untrusted(team).size();
-        return "Rollen und Schutz geprüft (Unterschrift der Bauleitung) · Schutz " + teams.protectMode(team) + ", freie Abschnitte " + teams.protectFree(team)
+        return "Rollen und Schutz geprüft (" + (t.ed() ? "Prüfschlüssel der Bauleitung" : "alter Unterschriftsschlüssel – Planer der Bauleitung öffnen") + ") · Schutz " + teams.protectMode(team) + ", freie Abschnitte " + teams.protectFree(team)
                 + (n == 0 ? "." : " · " + n + " Ereignisse nicht übernommen (/bauplaner team raum pruefen).");
     }
 
@@ -476,6 +494,10 @@ final class RoomLink implements TeamUplink {
         switch (String.valueOf(TeamLog.str(m, "type"))) {
             case "welcome" -> {
                 r.backoff = 5; r.status = "verbunden, gleicht ab …";
+                // TEAM-SEC-01: from this arrival number on the room checked who wrote an event.
+                JsonObject id = m.has("identity") && m.get("identity").isJsonObject() ? m.getAsJsonObject("identity") : null;
+                String from = id == null ? null : TeamLog.str(id, "checkedFrom");
+                if (from != null && from.matches("\\d{1,15}") && Long.parseLong(from) != r.checkedFrom) { r.checkedFrom = Long.parseLong(from); save(r); teams.trustChanged(); }
                 // WORLD-SHARE-01: the team's Weltplan (markers on BlueMap/Dynmap, optional lock protection).
                 WorldModule w = plugin instanceof BridgePlugin b ? b.worldModule() : null;
                 if (w != null) w.welcome(r.teamId, r.base, r.rid, r.key, m.has("docs") && m.get("docs").isJsonObject() ? m.getAsJsonObject("docs") : null);

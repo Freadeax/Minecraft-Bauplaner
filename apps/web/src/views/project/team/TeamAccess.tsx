@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { checkPassword, deriveSignKey, MIN_PASSWORD, openTeamAccess, peekTeamAccess, restoreTeamAccess, retrustAfterRekey, sealTeamAccess, teamAccessFileName, teamAccessOf } from '../../../../../../packages/domain/src/index.js';
 import type { RoomTeam, TeamEventBody, TeamState } from '../../../../../../packages/domain/src/index.js';
 import { download, errorText } from '../../../app/ui';
-import { allRoomEvents, rotateKey, serviceStatus } from './roomClient';
+import { allRoomEvents, leaderKeysOf, rotateKey, serviceStatus, setRoomIdentity } from './roomClient';
 import type { ProjectSession } from '../session';
 
 /**
@@ -89,10 +89,13 @@ export function AdminKeyChange({ team, saveLive, leaderEvent, founderHere, onDon
       if (!status?.features?.includes('admin-rotate')) throw new Error('Dieser Team-Raum-Dienst kann den Verwaltungsschlüssel noch nicht wechseln (zu alte Version). Bis dahin hilft ein neuer Raum: „Live trennen“ und neu live schalten.');
       // Read the past with the old key before it stops working.
       const events = await allRoomEvents(live);
-      const plan = await retrustAfterRekey(events, team, await deriveSignKey(live.adminKey!));
+      const plan = await retrustAfterRekey(events, team, await deriveSignKey(live.adminKey!), (await leaderKeysOf(live.adminKey!)).pub);
       const keys = await rotateKey(live, 'admin');
       if (!keys.adminKey) throw new Error('Der Team-Raum hat keinen neuen Schlüssel geschickt.');
-      saveLive({ ...team, live: { ...live, adminKey: keys.adminKey } });
+      const next = { ...live, adminKey: keys.adminKey };
+      // TEAM-SEC-01: the room learns the new public key (Planer, Mod and Server check signatures with it).
+      const identity = live.identity?.founder ? await setRoomIdentity(next, { founder: team.founder, leaderKey: (await leaderKeysOf(keys.adminKey)).pub }) : undefined;
+      saveLive({ ...team, live: { ...next, ...(identity && { identity }) } });
       if (founderHere) leaderEvent({ kind: 'team.trust', upTo: String(plan.upTo) });
       onDone();
       onMessage(`Verwaltungsschlüssel gewechselt. Der alte gilt nicht mehr.${founderHere ? ` Bisheriger Stand für den Server neu bestätigt (bis Nr. ${plan.upTo}${plan.firstRefused ? `; ab Nr. ${plan.firstRefused.seq} lag ein abgewiesenes Ereignis, das abgewiesen bleibt` : ''}).` : ''}${plan.lostSigned ? ` ${plan.lostSigned} spätere unterschriebene Änderung(en) bitte noch einmal setzen.` : ''} Neuen Team-Zugang sichern und „Mein Spiel verbinden“ einmal neu drücken, damit die Mod den neuen Unterschriftsschlüssel hat.`);

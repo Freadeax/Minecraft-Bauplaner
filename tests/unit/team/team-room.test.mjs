@@ -15,7 +15,7 @@ const t = () => new Date(clock += 60_000).toISOString();
 function sync(room, team) {
   let batch;
   while ((batch = nextBatch(team))) {
-    const answer = room.append(batch);
+    const answer = room.append(batch, team.live.adminKey ? 'admin' : 'member'); // the Bauleitung writes with its admin key
     team = confirm(team, answer).team;
   }
   let feed;

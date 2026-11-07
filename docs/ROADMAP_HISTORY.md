@@ -727,3 +727,56 @@ Durchgängiger Bauablauf: Baumodus für Tablet und Zweitbildschirm mit Packliste
 - `tests/e2e/hafen-ablauf.e2e.mjs`
 - `tests/unit/building/flow.test.mjs`
 
+## 2026-11-07T20:17:06.217Z · progress
+
+**Aufgaben:** TEAM-SEC-01
+
+Team-Raum nimmt den Absender aus dem Schlüssel und prüft Rollen; eigene Schlüssel je Mitglied und Gerät mit Widerruf; Unterschrift der Bauleitung mit Ed25519, Server bekommt nur den Prüfschlüssel; Planer/Mod/Plugin übernehmen nur Geprüftes; alte Räume stellt die Bauleitung mit team.trust samt Ausnahmen um. Unit 1066/1066, Java grün, Team-Browser-Tests grün (auch gegen wrangler dev), echter Paper 1.21.11/26.3 grün; Ausrollen und Modrinth offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TEAM-SEC-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Team-Raum gemeinsam mit HARDEN-01 ausrollen, Rauch-/Missbrauchsprobe gegen den echten Dienst, Mod/Plugin 0.28.0 auf Modrinth. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/views/mod/serverClient.ts`
+- `apps/web/src/views/project/team/TeamAccess.tsx`
+- `apps/web/src/views/project/team/TeamRoom.tsx`
+- `apps/web/src/views/project/team/roomClient.ts`
+- `docs/architecture/team/SIGNED_EVENTS.md`
+- `docs/architecture/team/TEAM_IDENTITY.md`
+- `docs/architecture/team/TEAM_LIVE.md`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/mod-core/build.gradle`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/EventSig.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/team/EventSigTest.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/EventTrust.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`
+- `mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/EventTrustTest.java`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/team/eventSig.ts`
+- `packages/domain/src/team/team.ts`
+- `packages/domain/src/team/teamAccess.ts`
+- `packages/domain/src/team/teamSync.ts`
+- `scripts/mod/bridge_multiplayer_client.mjs`
+- `scripts/mod/bridge_paperroom.mjs`
+- `scripts/mod/bridge_papersigned.mjs`
+- `scripts/mod/lib/multiplayer.mjs`
+- `services/team-room/src/core.js`
+- `services/team-room/src/guard.js`
+- `services/team-room/src/index.js`
+- `tests/e2e/modSimulator.mjs`
+- `tests/e2e/team-acceptance.e2e.mjs`
+- `tests/e2e/team-access.e2e.mjs`
+- `tests/e2e/team-room.e2e.mjs`
+- `tests/unit/data/backup-secrets.test.mjs`
+- `tests/unit/team/team-backup.test.mjs`
+- `tests/unit/team/team-concurrency.test.mjs`
+- `tests/unit/team/team-identity.test.mjs`
+- `tests/unit/team/team-room.test.mjs`
+

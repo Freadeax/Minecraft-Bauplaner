@@ -117,9 +117,9 @@ try {
   await run(as('Anna_MC', 'nehmen 1'), /Abschnitt 1 „Fundament“ gehört jetzt dir/);
   await run(as('Ben_MC', 'notiz info Gerüst steht'), /Notiz gespeichert/);
   await until('Serverereignisse im Raum', async () => (await feed()).filter(e => e.origin === 'server' && e.kind === 'section.claim').length === 1);
-  // A planner event comes down live.
+  // A planner event of the Bauleitung (written with its key) comes down live.
   const planner = teamEvent('bld_phil', { kind: 'section.assign', section: 'sec_dach', member: 'bld_ben' });
-  assert.deepEqual((await call(`/v1/rooms/${room}/events`, { method: 'POST', body: JSON.stringify({ batch: 'b_p1', events: [planner] }) }, memberKey)).body.rejected, []);
+  assert.deepEqual((await call(`/v1/rooms/${room}/events`, { method: 'POST', body: JSON.stringify({ batch: 'b_p1', events: [planner] }) }, adminKey)).body.rejected, []);
   await until('Planerereignis auf dem Server', async () => { const out = await run('bauplaner abschnitte', /3\. Dach[^\n]*/); return /3\. Dach[^\n]*Ben/.test(out); });
   // New plan: section renamed, the server reloads the header.
   assert.equal((await call(`/v1/rooms/${room}/header`, { method: 'PUT', body: JSON.stringify({ ...headerOnly, events: [], sections: headerOnly.sections.map(s => s.id === 'sec_dach' ? { ...s, name: 'Dachstuhl' } : s), plan: { sha: 'b'.repeat(64), revisionNumber: 2, at: new Date().toISOString() } }) }, adminKey)).status, 200);

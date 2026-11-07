@@ -29,7 +29,7 @@ before(async () => {
     try { if ((await fetch(BASE)).ok) break; } catch {}
     await new Promise(r => setTimeout(r, 200));
   }
-  mod = await startModSimulator(MOD_PORT, { protocol: 2, features: ['scan', 'marks2', 'players', 'bigplans', 'team', 'pairask', 'server', 'marks3', 'room', 'roomserver', 'roomsign'] });
+  mod = await startModSimulator(MOD_PORT, { protocol: 2, features: ['scan', 'marks2', 'players', 'bigplans', 'team', 'pairask', 'server', 'marks3', 'room', 'roomserver', 'roomsign', 'roomsign2'] });
   mod.state.tokens.add(MOD_TOKEN);
   browser = await chromium.launch();
 });
@@ -51,16 +51,28 @@ function fakeRooms() {
         const id = `r_${randomKey(9)}`, core = new RoomCore(new MemoryStore());
         rooms.set(id, core);
         const body = req.postDataJSON();
-        return json(await core.create({ room: id, teamId: body.teamId, name: body.name }), 201);
+        return json(await core.create({ room: id, teamId: body.teamId, name: body.name, founder: body.founder, leaderKey: body.leaderKey }), 201);
       }
       const core = rooms.get(parts[2]);
       if (!core) return json({ error: 'raum-fehlt', message: 'Diesen Team-Raum gibt es nicht (mehr).' }, 404);
       const rest = parts.slice(3).join('/');
       if (rest === '') { await core.auth(key); return json(core.info()); }
+      // TEAM-SEC-01: own keys and the room's identity, as in the worker.
+      if (rest === 'join' && req.method() === 'POST') {
+        if ((await core.session(key)).role !== 'member') return json({ error: 'nur-einladung' }, 400);
+        return json(await core.join(req.postDataJSON()), 201);
+      }
+      if (rest === 'keys' && req.method() === 'POST') return json(await core.addKey(await core.session(key), req.postDataJSON() ?? {}), 201);
+      if (rest === 'keys' && req.method() === 'GET') return json({ keys: core.listKeys(await core.session(key)) });
+      if (rest.startsWith('keys/') && req.method() === 'DELETE') {
+        const out = core.revokeKey(await core.session(key), rest.slice(5));
+        for (const s of sockets) if (s.room === parts[2] && s.session?.keyId === out.revoked) s.ws.close({ code: 4403, reason: 'schluessel-widerrufen' });
+        return json(out);
+      }
+      if (rest === 'identity' && req.method() === 'POST') { await core.auth(key, 'admin'); return json(core.setIdentity(req.postDataJSON())); }
       if (rest === 'events' && req.method() === 'POST') {
-        const role = await core.auth(key);
-        const { added, ...out } = core.append(req.postDataJSON(), role);
-        if (added.length) broadcast(parts[2], { type: 'events', events: added, cursor: out.cursor });
+        const { added, seqs, ...out } = core.append(req.postDataJSON(), await core.session(key));
+        if (added.length) broadcast(parts[2], { type: 'events', events: added, seqs, cursor: out.cursor });
         return json(out);
       }
       if (rest === 'events') { await core.auth(key); return json(core.since(url.searchParams.get('after') ?? '')); }
@@ -104,15 +116,15 @@ function fakeRooms() {
       const msg = JSON.parse(String(raw));
       try {
         if (msg.type === 'hello') {
-          s.role = await core.auth(msg.key); s.authed = true; s.presence = cleanPresence(msg);
+          s.session = await core.session(msg.key); s.role = s.session.role; s.authed = true; s.presence = cleanPresence(s.session.member ? { ...msg, member: s.session.member } : msg);
           ws.send(JSON.stringify({ type: 'welcome', ...core.info() }));
           let feed, after = msg.after ?? '';
           do { feed = core.since(after); ws.send(JSON.stringify({ type: 'events', ...feed })); after = feed.cursor; } while (feed.more);
           presence(id);
         } else if (msg.type === 'append' && s.authed) {
-          const { added, ...out } = core.append(msg, s.role);
+          const { added, seqs, ...out } = core.append(msg, s.session);
           ws.send(JSON.stringify({ type: 'appended', ...out }));
-          if (added.length) broadcast(id, { type: 'events', events: added, cursor: out.cursor });
+          if (added.length) broadcast(id, { type: 'events', events: added, seqs, cursor: out.cursor });
         } else if (msg.type === 'presence' && s.authed) { s.presence = cleanPresence({ ...s.presence, ...msg, member: s.presence.member, device: s.presence.device }); presence(id); }
         else if (msg.type === 'ask' && msg.what === 'scan' && s.authed) {
           let games = 0;
@@ -156,7 +168,8 @@ function remote(id, memberKey, serverKey) {
     return {
       header: async () => core.getHeader(),
       events: async () => core.since('').events,
-      append: async (role, batch) => { const { added, ...out } = core.append(batch, role); if (added.length) fake.broadcast(id, { type: 'events', events: added, cursor: out.cursor }); return out; },
+      // who: 'member' (invitation), 'server', or a member's own key (TEAM-SEC-01).
+      append: async (who, batch) => { const { added, seqs, ...out } = core.append(batch, who === 'member' || who === 'server' ? who : await core.session(who)); if (added.length) fake.broadcast(id, { type: 'events', events: added, seqs, cursor: out.cursor }); return out; },
     };
   }
   const call = async (path, key, init = {}) => (await fetch(`${REAL}/v1/rooms/${id}${path}`, { ...init, headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' } })).json();
@@ -164,7 +177,7 @@ function remote(id, memberKey, serverKey) {
     memberKey,
     header: () => call('/header', r.memberKey),
     events: async () => { let all = [], cursor = '', page; do { page = await call(`/events?after=${cursor}`, r.memberKey); all = all.concat(page.events); cursor = page.cursor; } while (page.more); return all; },
-    append: (role, batch) => call('/events', role === 'server' ? serverKey : r.memberKey, { method: 'POST', body: JSON.stringify(batch) }),
+    append: (who, batch) => call('/events', who === 'server' ? serverKey : who === 'member' ? r.memberKey : who, { method: 'POST', body: JSON.stringify(batch) }),
   };
   return r;
 }
@@ -216,9 +229,10 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await liveBlock(a).getByRole('button', { name: 'Link für den Server' }).click();
     // GAME-06: the link carries the Bauleitung's signing key (derived in the browser, a moment later).
     let serverLink = '';
-    for (let i = 0; i < 40 && !/&l=/.test(serverLink); i++) { serverLink = await liveBlock(a).getByLabel('Link für den Server').inputValue(); if (!/&l=/.test(serverLink)) await a.waitForTimeout(100); }
-    assert.match(serverLink, /&s=[\w-]+&l=[\w-]{43}$/);
-    const signKey = new URLSearchParams(serverLink.split('?')[1]).get('l');
+    for (let i = 0; i < 40 && !/&p=/.test(serverLink); i++) { serverLink = await liveBlock(a).getByLabel('Link für den Server').inputValue(); if (!/&p=/.test(serverLink)) await a.waitForTimeout(100); }
+    // TEAM-SEC-01: the server link carries only the Bauleitung's public key (p), never a key that can sign.
+    assert.match(serverLink, /&s=[\w-]+&p=[\w-]{43}$/);
+    const leaderKey = new URLSearchParams(serverLink.split('?')[1]).get('p');
     const q = new URLSearchParams(link.split('?')[1]), roomId = q.get('id');
     const room = remote(roomId, q.get('k'), new URLSearchParams(serverLink.split('?')[1]).get('s'));
     const header = await room.header();
@@ -248,7 +262,8 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await liveBlock(b).getByTestId('game-room').getByRole('button', { name: 'Neu prüfen' }).click();
     await liveBlock(b).getByTestId('game-room').filter({ hasText: 'über HTTP (Ausweichweg) · 2 Meldungen warten' }).waitFor();
     mod.state.room = { ...mod.state.room, mode: 'ws', pendingReports: 0 };
-    assert.equal(handed.url, ROOM); assert.equal(handed.room, roomId); assert.equal(handed.key, q.get('k'), 'Mitgliedsschlüssel, nie der Admin- oder Serverschlüssel');
+    assert.equal(handed.url, ROOM); assert.equal(handed.room, roomId); assert.notEqual(handed.key, q.get('k'), 'TEAM-SEC-01: ein eigener Geräteschlüssel, nie die Einladung, der Admin- oder Serverschlüssel');
+    if (!REAL) { const sb = await fake.rooms.get(roomId).session(handed.key); assert.equal(sb.role, 'person'); assert.equal(sb.member, handed.member); }
     assert.equal(handed.serverKey, undefined, 'a helper never gets the server key');
     assert.equal(handed.memberName, 'Anna'); assert.match(handed.member, /^bld_/);
 
@@ -289,9 +304,12 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await liveBlock(a).getByRole('button', { name: 'Mein Spiel verbinden' }).click();
     await a.getByText(/verbindet die Mod den Server von selbst mit dem Team-Raum/).first().waitFor();
     assert.equal(mod.state.room.serverKey, new URLSearchParams(serverLink.split('?')[1]).get('s'), 'Bauleitung: server key for the hand-over');
-    assert.equal(mod.state.room.signKey, signKey, 'GAME-06: the Bauleitung\'s game gets the signing key (never the admin key)');
-    assert.equal(handed.signKey, undefined, 'a helper never gets the signing key');
-    assert.equal(mod.state.room.key, q.get('k'));
+    assert.equal(mod.state.room.leaderKey, leaderKey, 'TEAM-SEC-01: the Bauleitung\'s game gets the public key …');
+    assert.match(mod.state.room.leaderSeed, /^[\w-]{43}$/, '… and its Ed25519 seed (never the admin key)');
+    assert.equal(mod.state.room.signKey, undefined, 'no HMAC key any more');
+    assert.equal(handed.leaderSeed, undefined, 'a helper never gets the seed');
+    assert.notEqual(mod.state.room.key, q.get('k'), 'the Bauleitung\'s game has its own device key too');
+    if (!REAL) assert.equal((await fake.rooms.get(roomId).session(mod.state.room.key)).member, mod.state.room.member);
     mod.state.room = annaRoom;
 
     // ---- GAME-06: the Bauleitung confirmed the past by itself and sets the section protection – both signed.
@@ -309,7 +327,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
       const trust = signed.filter(e => e.kind === 'team.trust'), protect = signed.filter(e => e.kind === 'team.protect');
       assert.equal(trust.length, 1, 'one confirmation per room');
       assert.equal(protect.length, 2);
-      for (const e of [...trust, ...protect]) assert.match(e.sig ?? '', /^[\w-]{43}$/, `${e.kind} signed`);
+      for (const e of [...trust, ...protect]) assert.match(e.sig ?? '', /^[\w-]{86}$/, `${e.kind} signed (Ed25519, TEAM-SEC-01)`);
       assert.ok(signed.filter(e => e.kind === 'section.claim' && e.sig === undefined).length >= 1, 'a helper\'s events stay unsigned');
       assert.equal(protect.at(-1).free, 'team');
     }
@@ -324,9 +342,10 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     assert.deepEqual((await room.append('server', { batch: `b_srv${Date.now()}`, events: [tally] })).accepted, [tally.id]);
     await a.getByRole('region', { name: 'Baunachweis und Lager' }).getByText('77').first().waitFor();
     await b.getByRole('region', { name: 'Baunachweis und Lager' }).getByText('77').first().waitFor();
-    // ---- Client first (COOP-10): a player's mod reports the build state with the member key, unverified.
+    // ---- Client first (COOP-10): a player's mod reports the build state with her own device key, unverified.
     const sighting = teamEvent(anna, { kind: 'section.seen', section: fundament, placed: 72, total: 100, missing: [{ item: 'minecraft:stone', count: 28 }] }, new Date().toISOString());
-    assert.deepEqual((await room.append('member', { batch: `b_seen${Date.now()}`, events: [sighting] })).accepted, [sighting.id]);
+    assert.equal((await room.append('member', { batch: `b_seen_inv${Date.now()}`, events: [sighting] })).rejected.length, 1, 'TEAM-SEC-01: not in Anna\'s name with the invitation');
+    assert.deepEqual((await room.append(handed.key, { batch: `b_seen${Date.now()}`, events: [sighting] })).accepted, [sighting.id]);
     await a.getByRole('region', { name: 'Baunachweis und Lager' }).locator('[data-seen]', { hasText: 'laut Spiel 72 %' }).waitFor();
     await b.getByRole('region', { name: 'Baunachweis und Lager' }).locator('[data-seen]', { hasText: 'ungeprüft' }).waitFor();
 
@@ -342,10 +361,21 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await liveBlock(b).getByRole('button', { name: 'Planstand übernehmen' }).waitFor({ state: 'detached' });
     await section(b, 'Dach').locator('.team-owner', { hasText: 'Philipp' }).waitFor();
 
-    // ---- COOP-08: the Bauleitung renews the invitation – the old key is locked out, the new link lets Anna back in.
+    // ---- COOP-08: the Bauleitung renews the invitation – the old link lets nobody new in. TEAM-SEC-01: Anna has her own
+    // key and stays; the Bauleitung locks her out by revoking her keys, the new link lets her back in.
     await liveBlock(a).getByRole('button', { name: 'Einladung erneuern' }).click();
     const fresh = await liveBlock(a).getByLabel('Einladungslink').inputValue();
     assert.notEqual(fresh, link);
+    await b.waitForTimeout(1000);
+    assert.equal(await liveBlock(b).locator('[data-state=live]').count(), 1, 'Anna stays with her own key');
+    const revoked = await a.evaluate(async ([base, id, member]) => {
+      const live = await new Promise(res => { const r = indexedDB.open('minecraft-bauplaner'); r.onsuccess = () => { const all = r.result.transaction('projects').objectStore('projects').getAll(); all.onsuccess = () => res(all.result.map(p => p.site?.team?.live).find(l => l?.room === id)); }; });
+      const auth = { Authorization: `Bearer ${live.adminKey}` };
+      const keys = (await (await fetch(`${base}/v1/rooms/${id}/keys`, { headers: auth })).json()).keys.filter(k => k.member === member);
+      for (const k of keys) await fetch(`${base}/v1/rooms/${id}/keys/${k.id}`, { method: 'DELETE', headers: auth });
+      return keys.length;
+    }, [REAL ?? ROOM, roomId, handed.member]);
+    assert.ok(revoked >= 1, 'Anna\'s keys revoked');
     await liveBlock(b).getByText(/kennt diesen Schlüssel nicht mehr/).waitFor();
     await b.goto(fresh);
     await b.getByRole('button', { name: 'Beitreten und Plan laden' }).click();

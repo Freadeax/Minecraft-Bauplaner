@@ -3,7 +3,7 @@ import { appendEvents, goLive, headerFingerprint, inviteLink, laterThan, leaveLi
 import type { ProtectFree, ProtectMode, RoomTeam, TeamEventBody, TeamState, TeamView } from '../../../../../../packages/domain/src/index.js';
 import { useApp } from '../../../app/context';
 import { errorText } from '../../../app/ui';
-import { createRoom, getPlan, putHeader, putPlan, readRoomUrl, rotateKey, saveRoomUrl, signKeyOf, useRoomConnection } from './roomClient';
+import { RoomError, addRoomKey, createRoom, getPlan, leaderKeysOf, putHeader, putPlan, readRoomUrl, rotateKey, saveRoomUrl, useRoomConnection } from './roomClient';
 import type { ProjectSession } from '../session';
 import { TeamBackup } from './TeamBackup';
 import { AdminKeyChange, TeamAccessOpen, TeamAccessSave } from './TeamAccess';
@@ -48,9 +48,22 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
     [anyPos, session.project, session.computation, team]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const saveLive = (next: RoomTeam) => session.replace(p => ({ ...p, site: { ...siteOf(p), team: next as TeamState } }));
-  // GAME-06: the Bauleitung's signing key (from the admin key, only in this browser); the server gets it with its link.
-  const [signKey, setSignKey] = useState<string | undefined>(undefined);
-  useEffect(() => { let on = true; setSignKey(undefined); if (live?.adminKey) void signKeyOf(live.adminKey).then(k => { if (on) setSignKey(k); }); return () => { on = false; }; }, [live?.adminKey]);
+  // TEAM-SEC-01: the Bauleitung's Ed25519 key (from the admin key, only in this browser). The server gets only the
+  // public key with its link (p), so the plugin can check the Bauleitung's signatures but never make one.
+  const [leaderKeys, setLeaderKeys] = useState<{ seed: string; pub: string } | undefined>(undefined);
+  useEffect(() => { let on = true; setLeaderKeys(undefined); if (live?.adminKey) void leaderKeysOf(live.adminKey).then(k => { if (on) setLeaderKeys(k); }).catch(() => undefined); return () => { on = false; }; }, [live?.adminKey]);
+  const signKey = leaderKeys?.pub;
+  /** TEAM-SEC-01: the game gets its own device key (made once, kept in this browser), never the invitation or the admin key. */
+  const gameKey = async (): Promise<string> => {
+    if (!live) throw new Error('Kein Team-Raum.');
+    if (live.gameKey) return live.gameKey;
+    if (!live.adminKey && !live.personal) return live.key;
+    try {
+      const k = (await addRoomKey(live, 'Minecraft')).key;
+      session.replace(p => { const t = siteOf(p).team as RoomTeam | undefined; return t?.live ? { ...p, site: { ...siteOf(p), team: { ...t, live: { ...t.live, gameKey: k } } as TeamState } } : p; });
+      return k;
+    } catch (e) { if (e instanceof RoomError && e.status === 404) return live.key; throw e; }
+  };
   const founderHere = !!live?.adminKey && me?.id === team.founder;
   /** A team event of the Bauleitung (signed on the way to the room, roomClient.signedBatch). */
   const leaderEvent = (body: TeamEventBody) => session.replace(p => {
@@ -75,7 +88,8 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
     const base = url.trim().replace(/\/+$/, '');
     if (!/^https:\/\//.test(base) && !/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(base)) throw new Error('Die Adresse des Team-Raums muss mit https:// beginnen.');
     saveRoomUrl(base);
-    const keys = await createRoom(base, team.teamId, team.name);
+    // TEAM-SEC-01: the room checks authors from the first event on; the public key follows once the admin key exists (secureRoom).
+    const keys = await createRoom(base, team.teamId, team.name, team.founder);
     const next = goLive(team, { url: base, room: keys.room, key: keys.memberKey, adminKey: keys.adminKey, serverKey: keys.serverKey }, newDeviceId());
     saveLive(next);
     await uploadPlan(next, true);
@@ -118,7 +132,7 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
     // (the plugin answers "same" and only takes the key over).
     if (!leads || !live?.serverKey || !room.connected || (serverHere && !signKey) || (live.adminKey && !signKey) || autoServer.current === live.room) return;
     autoServer.current = live.room;
-    const link = serverLink(pageBase(), live, live.serverKey, signKey);
+    const link = serverLink(pageBase(), live, live.serverKey, undefined, signKey);
     void reachableServer().then(async s => {
       if (!s) return;
       const answer = await s.send('room', { link });
@@ -157,7 +171,7 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
   const renew = (who: 'member' | 'server') => run(async () => {
     if (!live?.adminKey) return;
     const ok = window.confirm(who === 'member'
-      ? 'Neue Einladung: Alle bisherigen Einladungslinks werden ungültig, auch für Mitspieler, die schon drin sind. Wer weiter mitbauen soll, bekommt den neuen Link. Fortfahren?'
+      ? 'Neue Einladung: Der bisherige Einladungslink wird ungültig, mit ihm kommt niemand Neues mehr hinein. Wer schon drin ist, behält seinen eigenen Schlüssel; einzelne Mitglieder sperrst du aus, indem du ihren Zugang widerrufst. Fortfahren?'
       : 'Neuer Server-Link: Der Server verliert die Verbindung, bis er mit dem neuen Link (oder über „Server mit dem Raum verbinden“) wieder verbunden ist. Fortfahren?');
     if (!ok) return;
     const keys = await rotateKey(live, who);
@@ -191,7 +205,7 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
   };
   const label = status.state === 'live' ? 'live' : status.state === 'waiting' ? `sendet ${status.pending} …` : status.state === 'offline' ? `offline${status.pending ? ` · ${status.pending} warten` : ''}` : 'aus';
   const invite = inviteLink(pageBase(), live);
-  const server = live.serverKey ? serverLink(pageBase(), live, live.serverKey, signKey) : '';
+  const server = live.serverKey ? serverLink(pageBase(), live, live.serverKey, undefined, signKey) : '';
   return <div className="team-block team-room" role="region" aria-label="Team live">
     <div className="team-block-head"><h3>Team live <small>{live.url.replace(/^https?:\/\//, '')}</small></h3>
       <span className={`team-live-state ${status.state}`} role="status" data-state={status.state}>● {label}</span></div>
@@ -226,7 +240,7 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
     <GameShareControls game={game} onMessage={onMessage} onChanged={askGame} />
     <div className="team-buttons">
       <button className="primary" disabled={busy || !me} title={me ? 'Die Build-Studio-Mod in deinem Minecraft spricht dann selbst mit diesem Raum: Abschnitte, Meldungen und Notizen live im Spiel – ohne Plugin und ohne Datei auf dem Server.' : 'Zuerst oben „Ich bin“ wählen.'}
-        onClick={() => void run(async () => { onMessage(await gameToRoom({ url: live.url, room: live.room, key: live.key }, { id: me!.id, name: me!.name }, team.name, leads && live.adminKey ? live.serverKey : undefined, leads ? signKey : undefined)); askGame(); })}>Mein Spiel verbinden</button>
+        onClick={() => void run(async () => { onMessage(await gameToRoom({ url: live.url, room: live.room, key: await gameKey() }, { id: me!.id, name: me!.name }, team.name, leads && live.adminKey ? live.serverKey : undefined, leads && live.adminKey ? leaderKeys : undefined)); askGame(); })}>Mein Spiel verbinden</button>
       <button disabled={busy} className="secondary" title="Die Mod in deinem Minecraft trennt sich vom Team-Raum." onClick={() => void run(async () => { onMessage(await gameLeaveRoom()); askGame(); })}>Spiel trennen</button>
       <button disabled={busy} onClick={() => setShown(shown === 'invite' ? '' : 'invite')}>Einladungslink</button>
       {server && <button disabled={busy} title="Der gekoppelte Server verbindet sich selbst mit diesem Raum (LINK-04). Ohne Kopplung: Link für den Server." onClick={() => void run(async () => {

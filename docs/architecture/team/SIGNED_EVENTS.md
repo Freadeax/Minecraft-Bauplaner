@@ -1,5 +1,7 @@
 # Server-Plugin direkt mit dem Team-Raum – unterschriebene Ereignisse und Abschnittsschutz (GAME-06)
 
+> **Seit 07.11.2026 (TEAM-SEC-01, Mod/Plugin 0.28.0):** Die Bauleitung unterschreibt mit Ed25519, Server und Mitglieder bekommen nur den öffentlichen Prüfschlüssel (Link-Parameter `p` statt `l`), und der Team-Raum leitet den Absender aus dem Schlüssel ab. Siehe [TEAM_IDENTITY.md](TEAM_IDENTITY.md). Die HMAC-Beschreibung unten gilt nur noch für alte Unterschriften.
+
 Stand 06.11.2026, Mod/Plugin 0.26.0. Anlass: Ausbaurunde Philipp, 06.11.2026 („Vollständiges komplexes Weiterbauen in mehreren Blöcken in allen Bereichen“), Block 5: Das Paper-Plugin verarbeitet Team-Raum-Ereignisse mit Ereignis-ID, unterschrieben und wiederholbar, alles über das Internet, und setzt den Abschnittsschutz nach den Team-Rollen aus dem Raum durch. Das Plugin bleibt freiwillig (CLIENT FIRST), es gibt keinen Datei-Weg (NUR INTERNET).
 
 ## 1. Problem

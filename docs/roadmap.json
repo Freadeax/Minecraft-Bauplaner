@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T19:33:20.416Z",
+  "updatedAt": "2026-11-07T20:17:06.217Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -12584,6 +12584,98 @@
       "orphans": []
     },
     {
+      "id": "TEAM-SEC-01",
+      "title": "Team-Rollen gegen Vortäuschen absichern: Absender aus der Sitzung, eigene Schlüssel, Ed25519 für den Server",
+      "phase": "P4",
+      "priority": "P0",
+      "status": "implemented",
+      "owner": "Arbeitsstrang „Team-Rollen gegen Vortäuschen absichern“",
+      "dependencies": [
+        "COOP-07",
+        "GAME-06",
+        "BACKUP-03",
+        "HARDEN-01"
+      ],
+      "scope": [
+        "services/team-room/src/",
+        "packages/domain/src/team/",
+        "apps/web/src/views/project/team/",
+        "apps/web/src/views/mod/serverClient.ts",
+        "mods/bauplaner-bridge/",
+        "scripts/mod/",
+        "tests/unit/team/",
+        "tests/e2e/",
+        "docs/architecture/team/TEAM_IDENTITY.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "TEAM-SEC-01-S01",
+          "title": "Team-Raum nimmt den Absender aus dem Schlüssel und prüft die Rolle (NEED wie TEAM_NEED); Einladung nur noch lesen und beitreten (strict), in alten Räumen nie im Namen der Bauleitung oder mit Baumeister-Rechten.",
+          "done": true
+        },
+        {
+          "id": "TEAM-SEC-01-S02",
+          "title": "Eigener Schlüssel je Mitglied und Gerät (join, keys, widerrufen, Übernahme bestätigen); Planer tauscht die Einladung von selbst, die Mod bekommt einen eigenen Geräteschlüssel.",
+          "done": true
+        },
+        {
+          "id": "TEAM-SEC-01-S03",
+          "title": "Unterschrift der Bauleitung mit Ed25519; Server-Link und Plugin nur mit öffentlichem Prüfschlüssel (p), alter HMAC-Schlüssel wird gelöscht; Verwaltungsschlüssel wechseln gibt den neuen Prüfschlüssel weiter.",
+          "done": true
+        },
+        {
+          "id": "TEAM-SEC-01-S04",
+          "title": "Planer, Mod und Plugin übernehmen nur Geprüftes (Unterschrift, Ankunftsnummer ab checkedFrom oder team.trust ohne except); alte Räume stellt die Bauleitung mit einem unterschriebenen team.trust samt Ausnahmen um.",
+          "done": true
+        },
+        {
+          "id": "TEAM-SEC-01-S05",
+          "title": "Team-Raum ausrollen, Mod/Plugin 0.28.0 auf Modrinth, bestehende Räume beim nächsten Öffnen durch die Bauleitung umstellen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Ein mit der Einladung gesendetes member.role im Namen der Bauleitung wird vom Raum abgewiesen und erscheint in keinem Planer.",
+        "Ein Mitglied schreibt nur im eigenen Namen und nur, was seine Rolle erlaubt.",
+        "Das Plugin kann die Unterschrift der Bauleitung prüfen, aber nicht erzeugen.",
+        "Ein Mitglied lässt sich einzeln aussperren, ohne alle anderen neu einzuladen."
+      ],
+      "next": "Team-Raum gemeinsam mit HARDEN-01 ausrollen, Rauch-/Missbrauchsprobe gegen den echten Dienst, Mod/Plugin 0.28.0 auf Modrinth.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/unit/team/team-identity.test.mjs",
+          "note": "Angriff als Regression (Einladung, fremder Name, eigene Rolle), eigene Schlüssel, Widerruf, Umstellung alter Räume, Ed25519-Prüfvektor, screenFeed/upgradeTrust."
+        },
+        {
+          "path": "tests/e2e/team-acceptance.e2e.mjs",
+          "note": "Drei Geräte gegen wrangler dev: Kisten-Ereignis mit Einladung abgewiesen, Mod mit eigenem Geräteschlüssel, Widerruf sperrt ein Mitglied aus."
+        },
+        {
+          "path": "scripts/mod/bridge_papersigned.mjs",
+          "note": "Echter Paper 1.21.11 und 26.3: Prüfschlüssel p, 4 gefälschte Ereignisse abgewiesen, auch wenn der Raum sie durchließe."
+        },
+        {
+          "path": "docs/architecture/team/TEAM_IDENTITY.md",
+          "note": "Konzept, Routen, Migration, Grenzen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Automatisch geprüft (Node-Tests, Java-Tests, Browser-Tests gegen wrangler dev, echter Paper 1.21.11/26.3); Ausrollen und Spieltest im echten Minecraft offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-07T20:17:06.217Z",
+      "area": "TEAM",
+      "thread": "Team-Rollen gegen Vortäuschen absichern",
+      "philipp": [],
+      "orphans": []
+    },
+    {
       "id": "RELEASE-01",
       "title": "Browser-Schutz und Release-Check: Sicherheitsheader auf Cloudflare Pages, Einbettungsschutz auf GitHub Pages, Release-Prüfung, sicherer Schem/Litematic-Export, Browserliste in der Mod",
       "phase": "P4",
@@ -15159,6 +15251,65 @@
           "done": 6,
           "total": 6,
           "next": "Philipps Spieltest: Baumodus auf Tablet bzw. zweitem Bildschirm neben dem Spiel, Materialtausch in einem eigenen Projekt, Geländeschnitt an einer echten Küste."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T20:17:06.217Z",
+      "kind": "progress",
+      "items": [
+        "TEAM-SEC-01"
+      ],
+      "summary": "Team-Raum nimmt den Absender aus dem Schlüssel und prüft Rollen; eigene Schlüssel je Mitglied und Gerät mit Widerruf; Unterschrift der Bauleitung mit Ed25519, Server bekommt nur den Prüfschlüssel; Planer/Mod/Plugin übernehmen nur Geprüftes; alte Räume stellt die Bauleitung mit team.trust samt Ausnahmen um. Unit 1066/1066, Java grün, Team-Browser-Tests grün (auch gegen wrangler dev), echter Paper 1.21.11/26.3 grün; Ausrollen und Modrinth offen.",
+      "files": [
+        "apps/web/src/testing/autochecks.ts",
+        "apps/web/src/views/mod/serverClient.ts",
+        "apps/web/src/views/project/team/TeamAccess.tsx",
+        "apps/web/src/views/project/team/TeamRoom.tsx",
+        "apps/web/src/views/project/team/roomClient.ts",
+        "docs/architecture/team/SIGNED_EVENTS.md",
+        "docs/architecture/team/TEAM_IDENTITY.md",
+        "docs/architecture/team/TEAM_LIVE.md",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/mod-core/build.gradle",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/EventSig.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/team/EventSigTest.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/EventTrust.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java",
+        "mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/EventTrustTest.java",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/team/eventSig.ts",
+        "packages/domain/src/team/team.ts",
+        "packages/domain/src/team/teamAccess.ts",
+        "packages/domain/src/team/teamSync.ts",
+        "scripts/mod/bridge_multiplayer_client.mjs",
+        "scripts/mod/bridge_paperroom.mjs",
+        "scripts/mod/bridge_papersigned.mjs",
+        "scripts/mod/lib/multiplayer.mjs",
+        "services/team-room/src/core.js",
+        "services/team-room/src/guard.js",
+        "services/team-room/src/index.js",
+        "tests/e2e/modSimulator.mjs",
+        "tests/e2e/team-acceptance.e2e.mjs",
+        "tests/e2e/team-access.e2e.mjs",
+        "tests/e2e/team-room.e2e.mjs",
+        "tests/unit/data/backup-secrets.test.mjs",
+        "tests/unit/team/team-backup.test.mjs",
+        "tests/unit/team/team-concurrency.test.mjs",
+        "tests/unit/team/team-identity.test.mjs",
+        "tests/unit/team/team-room.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "TEAM-SEC-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Team-Raum gemeinsam mit HARDEN-01 ausrollen, Rauch-/Missbrauchsprobe gegen den echten Dienst, Mod/Plugin 0.28.0 auf Modrinth."
         }
       ]
     }

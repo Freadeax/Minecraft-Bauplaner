@@ -7,7 +7,8 @@
  * Pure functions; the page does the requests.
  */
 import { DomainError } from '../core/types.js';
-import { checkTeamEvent, compareEvents, mergeTeam } from './team.js';
+import { checkTeamEvent, compareEvents, mergeTeam, TEAM_NEED } from './team.js';
+import { verifyLeaderEvent } from './eventSig.js';
 import type { TeamEvent, TeamState } from './team.js';
 
 export const ROOM_PROTOCOL = 'team-room';
@@ -43,7 +44,19 @@ export interface TeamLive {
    * Bauleitung restored the room from a backup: this browser offers its own steps again (afterRestore).
    */
   readonly epoch?: string;
+  /**
+   * TEAM-SEC-01 (TEAM_IDENTITY.md): `key` is this member's own key (bound to its id in the room), not the shared
+   * invitation. The Bauleitung keeps the invitation in `key` and writes with `adminKey`.
+   */
+  readonly personal?: boolean;
+  /** TEAM-SEC-01: what the room checks (from its info): founder, from which arrival number it checks authors, public key. */
+  readonly identity?: RoomIdentity;
+  /** TEAM-SEC-01: events from the room this browser could not verify yet (id → arrival number); the fold leaves them out. */
+  readonly held?: Readonly<Record<string, string>>;
+  /** TEAM-SEC-01: own device key for the game (the mod) of this member, made once with „Mein Spiel verbinden“. */
+  readonly gameKey?: string;
 }
+export interface RoomIdentity { readonly founder: string | null; readonly strict?: boolean; readonly checkedFrom: string | null; readonly leaderKey: string | null }
 export type RoomTeam = TeamState & { readonly live?: TeamLive };
 
 /**
@@ -79,6 +92,11 @@ export function checkLive(raw: unknown): TeamLive {
   if (!Array.isArray(r.pending) || r.pending.length > 20_000 || r.pending.some(p => typeof p !== 'string')) fail('Postausgang ungültig');
   if (typeof r.device !== 'string' || !ROOM_ID.test(r.device)) fail('Geräte-ID ungültig');
   if (r.epoch !== undefined && (typeof r.epoch !== 'string' || r.epoch.length > 40)) fail('Wiederherstellungsstand ungültig');
+  if (r.personal !== undefined && typeof r.personal !== 'boolean') fail('Schlüsselart ungültig');
+  if (r.gameKey !== undefined && (typeof r.gameKey !== 'string' || !KEY.test(r.gameKey))) fail('Spielschlüssel ungültig');
+  if (r.held !== undefined && (typeof r.held !== 'object' || r.held === null || Array.isArray(r.held) || Object.keys(r.held).length > 20_000
+    || Object.values(r.held as object).some(v => typeof v !== 'string' || v.length > 20))) fail('Zurückgehaltene Ereignisse ungültig');
+  if (r.identity !== undefined && (typeof r.identity !== 'object' || r.identity === null)) fail('Raumprüfung ungültig');
   if (r.bases !== undefined && (typeof r.bases !== 'object' || r.bases === null || Array.isArray(r.bases)
     || Object.values(r.bases as object).some(v => typeof v !== 'string' || v.length > 80))) fail('Revisionsstände ungültig');
   return raw as TeamLive;
@@ -209,6 +227,8 @@ export function confirm(team: RoomTeam, answer: AppendAnswer, now = new Date().t
 /** Room answer to "events after cursor" (also the shape of a live push). */
 export interface FeedAnswer {
   readonly events: readonly unknown[];
+  /** TEAM-SEC-01: arrival number of each event (rooms from 07.11.2026 on). */
+  readonly seqs?: readonly string[];
   /** Position after these events; empty keeps the old one. */
   readonly cursor: string;
   readonly more?: boolean;
@@ -220,13 +240,88 @@ export interface FeedAnswer {
  * Takes events from the room into the local log. Cursor only moves forward. Events with the same id
  * and a different content are reported (the local one is kept, as in mergeTeam).
  */
-export function ingest(team: RoomTeam, feed: FeedAnswer, now = new Date().toISOString()): { team: RoomTeam; added: readonly TeamEvent[]; clashes: number; invalid: number } {
+export function ingest(team: RoomTeam, feed: FeedAnswer, now = new Date().toISOString(), screen?: Screen): { team: RoomTeam; added: readonly TeamEvent[]; clashes: number; invalid: number } {
   const valid: TeamEvent[] = [];
   let invalid = 0;
   for (const raw of feed.events) { try { valid.push(checkTeamEvent(raw)); } catch { invalid++; } }
   const m = mergeTeam(team, { ...team, events: valid.sort(compareEvents) });
+  let held: Record<string, string> | undefined = team.live?.held ? { ...team.live.held } : undefined;
+  if (screen && (Object.keys(screen.hold).length || screen.release.length)) {
+    held = { ...(held ?? {}), ...screen.hold };
+    for (const id of screen.release) delete held[id];
+  }
   const live = team.live ? { ...team.live, cursor: feed.reset && !feed.cursor ? '' : feed.cursor || team.live.cursor, lastContact: now, pending: present(m.team, team.live.pending) } : undefined;
-  return { team: { ...(m.team as RoomTeam), ...(live && { live }) }, added: m.added, clashes: m.clashes.length, invalid };
+  if (live) { delete (live as { held?: unknown }).held; if (held && Object.keys(held).length) (live as { held?: unknown }).held = held; }
+  const shown = held ? m.added.filter(e => !(e.id in held!)) : m.added;
+  return { team: { ...(m.team as RoomTeam), ...(live && { live }) }, added: shown, clashes: m.clashes.length, invalid };
+}
+
+// ---------------------------------------------------------------- TEAM-SEC-01: only verified changes
+
+/** What {@link screenFeed} decided: events to hold back (id → arrival number) and held ones now verified. */
+export interface Screen { readonly hold: Readonly<Record<string, string>>; readonly release: readonly string[] }
+
+const RANKS: Readonly<Record<string, number>> = { leitung: 3, meister: 2, helfer: 1, gast: 0 };
+/**
+ * Events that change rights or decide for others: everything in the founder's name and every kind that needs at least
+ * a Baumeister. Only these need a proof; the rest the fold judges by role as before.
+ */
+export function needsProof(e: TeamEvent, founder: string): boolean {
+  if (e.origin === 'server') return false;
+  if (e.by === founder) return true;
+  return (RANKS[(TEAM_NEED as Record<string, string>)[e.kind] ?? 'meister'] ?? 2) >= RANKS.meister!;
+}
+
+/** Valid trust confirmations: team.trust of the founder with an Ed25519 signature (upTo, except). */
+async function trusts(team: RoomTeam, extra: readonly TeamEvent[], key: string | null | undefined): Promise<{ upTo: number; except: Set<string> }[]> {
+  const out: { upTo: number; except: Set<string> }[] = [];
+  for (const e of [...team.events, ...extra]) {
+    if (e.kind !== 'team.trust' || e.by !== team.founder) continue;
+    if (!await verifyLeaderEvent(key, team.teamId, e)) continue;
+    const t = e as unknown as { upTo: string; except?: string[] };
+    out.push({ upTo: Number(t.upTo), except: new Set(t.except ?? []) });
+  }
+  return out;
+}
+
+/**
+ * TEAM-SEC-01 (TEAM_IDENTITY.md §5): which events of a room feed this planner takes into its fold. An event that needs
+ * a proof counts when it carries the Bauleitung's Ed25519 signature, when the room checked its author (arrival number
+ * from `identity.checkedFrom` on), or when a signed team.trust of the Bauleitung covers it (and does not except it).
+ * Everything else is merged into the log but held back (`live.held`) – a later team.trust can still release it.
+ */
+export async function screenFeed(team: RoomTeam, feed: FeedAnswer): Promise<Screen> {
+  const id = team.live?.identity;
+  const known = new Set(team.events.map(e => e.id));
+  const fresh: { e: TeamEvent; seq: string | undefined }[] = [];
+  feed.events.forEach((raw, i) => {
+    let e: TeamEvent;
+    try { e = checkTeamEvent(raw); } catch { return; }
+    if (!known.has(e.id) && needsProof(e, team.founder)) fresh.push({ e, seq: feed.seqs?.[i] });
+  });
+  const held = team.live?.held ?? {};
+  // A service before TEAM-SEC-01 (no identity): nothing to check against, everything as before.
+  if (!id) return { hold: {}, release: Object.keys(held) };
+  if (!fresh.length && !Object.keys(held).length) return { hold: {}, release: [] };
+  const all = await trusts(team, feed.events.flatMap(raw => { try { return [checkTeamEvent(raw)]; } catch { return []; } }), id?.leaderKey);
+  const covered = (eid: string, seq: string | undefined) => {
+    const n = Number(seq);
+    if (!seq || !Number.isSafeInteger(n)) return false;
+    if (id?.checkedFrom && n >= Number(id.checkedFrom)) return true;
+    return all.some(t => n <= t.upTo && !t.except.has(eid));
+  };
+  const hold: Record<string, string> = {};
+  for (const { e, seq } of fresh) {
+    if (covered(e.id, seq) || await verifyLeaderEvent(id?.leaderKey, team.teamId, e)) continue;
+    hold[e.id] = seq ?? '';
+  }
+  const byId = new Map(team.events.map(e => [e.id, e]));
+  const release: string[] = [];
+  for (const [eid, seq] of Object.entries(held)) {
+    const e = byId.get(eid);
+    if (!e || covered(eid, seq) || await verifyLeaderEvent(id?.leaderKey, team.teamId, e)) release.push(eid);
+  }
+  return { hold, release };
 }
 
 export type RoomStatus = { readonly state: 'off' } | { readonly state: 'live' | 'waiting' | 'offline'; readonly pending: number; readonly lastContact?: string };
@@ -269,8 +364,9 @@ export function inviteLink(pageBase: string, live: Pick<TeamLive, 'url' | 'room'
  * Link for the Paper plugin (`/bauplaner team verbinden <Link>`): same shape, the server key as `s`. GAME-06: the
  * Bauleitung adds its signing key as `l` (never the admin key), so the plugin can check the Bauleitung's signatures.
  */
-export function serverLink(pageBase: string, live: Pick<TeamLive, 'url' | 'room'>, serverKey: string, signKey?: string): string {
-  const q = new URLSearchParams({ raum: live.url, id: live.room, s: serverKey, ...(signKey && { l: signKey }) });
+export function serverLink(pageBase: string, live: Pick<TeamLive, 'url' | 'room'>, serverKey: string, signKey?: string, leaderKey?: string): string {
+  // TEAM-SEC-01: with the public key `p` the plugin checks Ed25519 signatures and cannot sign itself; the old `l` only for tests of old plugins.
+  const q = new URLSearchParams({ raum: live.url, id: live.room, s: serverKey, ...(signKey && { l: signKey }), ...(leaderKey && { p: leaderKey }) });
   return `${pageBase.replace(/#.*$/, '')}#/team/beitreten?${q.toString()}`;
 }
 export interface Invite { readonly url: string; readonly room: string; readonly key: string; readonly kind: 'member' | 'server' }
@@ -288,4 +384,33 @@ function hash(text: string): string {
   let h = 0xcbf29ce484222325n;
   for (let i = 0; i < text.length; i++) { h ^= BigInt(text.charCodeAt(i)); h = (h * 0x100000001b3n) & 0xffffffffffffffffn; }
   return h.toString(16).padStart(16, '0');
+}
+
+/**
+ * TEAM-SEC-01: the Bauleitung's confirmation when its planner upgrades an old room. `rows` = every event of the room
+ * with its arrival number. Before the room checked authors, anyone with the invitation could write in the founder's
+ * name; since GAME-06 the founder's planner signed everything it wrote (HMAC, `signKey`). So after the last earlier
+ * team.trust, every leader step in the founder's name without a valid old signature is excepted. Without an earlier
+ * team.trust (the Bauleitung never connected since GAME-06) only steps with a broken signature are excepted.
+ * At most 50 exceptions: beyond that the confirmation ends just before the 51st (the rest stays held back).
+ */
+export async function upgradeTrust(team: Pick<TeamState, 'teamId' | 'founder'>, rows: readonly { readonly event: unknown; readonly seq: string }[], signKey: string | undefined,
+  verifyOld: (signKey: string, teamId: string, e: TeamEvent) => Promise<boolean>): Promise<{ upTo: string; except: string[] }> {
+  const parsed = rows.flatMap(r => { try { return [{ e: checkTeamEvent(r.event), seq: Number(r.seq) }]; } catch { return []; } });
+  let before = -1;
+  for (const { e } of parsed) if (e.kind === 'team.trust' && e.by === team.founder) before = Math.max(before, Number((e as unknown as { upTo: string }).upTo));
+  const except: string[] = [];
+  let upTo = parsed.reduce((n, r) => Math.max(n, r.seq), 0);
+  for (const { e, seq } of [...parsed].sort((a, b) => a.seq - b.seq)) {
+    if (e.origin === 'server' || seq <= before) continue;
+    // Steps of other members are judged by the fold with the author's role; only the founder's name could be borrowed.
+    if (e.by !== team.founder) continue;
+    const sig = (e as unknown as { sig?: unknown }).sig;
+    const ok = typeof sig === 'string' && !!signKey && await verifyOld(signKey, team.teamId, e);
+    const suspicious = before < 0 ? typeof sig === 'string' && !ok : !ok;
+    if (!suspicious) continue;
+    if (except.length === 50) { upTo = seq - 1; break; }
+    except.push(e.id);
+  }
+  return { upTo: String(upTo), except };
 }

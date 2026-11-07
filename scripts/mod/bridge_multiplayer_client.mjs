@@ -25,8 +25,8 @@ const room = await openRoom(roomUrl, { teamId: team.teamId, name: team.name });
 const { events: _e, ...header } = file;
 await room.header({ ...header, events: [], plan: { sha: 'c'.repeat(64), revisionNumber: 1, at: new Date().toISOString() } });
 assert.deepEqual((await room.append(team.events)).rejected, []);
-// „Mein Spiel verbinden“ as Bauleitung: the planner hands room, member key and server key to the mod.
-writeFileSync(join(io, 'mp-room.json'), JSON.stringify({ url: room.base, room: room.id, key: room.memberKey, member: 'bld_phil', memberName: 'Philipp', teamName: team.name, device: 'Minecraft', serverKey: room.serverKey }));
+// „Mein Spiel verbinden“ as Bauleitung: the planner hands room, its own device key and server key to the mod.
+writeFileSync(join(io, 'mp-room.json'), JSON.stringify({ url: room.base, room: room.id, key: await room.deviceKey(), member: 'bld_phil', memberName: 'Philipp', teamName: team.name, device: 'Minecraft', serverKey: room.serverKey }));
 
 const dir = join(io, `paper-${version}`);
 mkdirSync(dir, { recursive: true });

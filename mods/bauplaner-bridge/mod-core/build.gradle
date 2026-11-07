@@ -19,10 +19,10 @@ dependencies {
 }
 
 // Team-Raum ohne Server-Datei (LINK-07): die Mod faltet das Teamprotokoll mit derselben Logik wie das Paper-Plugin.
-// TeamLog, StoreIndex und StoreLedger werden aus dem Plugin übernommen (nur das Paket wird umbenannt), damit beide nie auseinanderlaufen.
+// TeamLog, StoreIndex, StoreLedger und EventTrust (TEAM-SEC-01: nur geprüfte Änderungen) werden aus dem Plugin übernommen (nur das Paket wird umbenannt), damit beide nie auseinanderlaufen.
 def teamLog = tasks.register('teamLogSources', Sync) {
     from('../paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper') {
-        include 'TeamLog.java', 'StoreIndex.java', 'StoreLedger.java'
+        include 'TeamLog.java', 'StoreIndex.java', 'StoreLedger.java', 'EventTrust.java'
         filter { String line -> line.replace('package io.github.freadeax.bauplaner.bridge.paper;', 'package io.github.freadeax.bauplaner.mod.room;') }
     }
     into layout.buildDirectory.dir('generated/teamlog/io/github/freadeax/bauplaner/mod/room')

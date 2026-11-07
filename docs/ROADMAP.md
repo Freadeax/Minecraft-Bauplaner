@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T19:33:20.416Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T20:17:06.217Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-07T19:33:20.416Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 2 |
 | 🚧 In Arbeit | 5 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 103 |
+| 🧩 Implementiert · Abnahme offen | 104 |
 | ✅ Im beschriebenen Umfang geprüft | 35 |
 | ⏸ Zurückgestellt | 3 |
 
@@ -28,7 +28,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Arbeitsstrang
 | [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 29 | 0 | 29 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 11 | 0 | 11 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 13 | 0 | 10 | 1 |
-| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 18 | 0 | 14 | 1 |
+| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 19 | 0 | 14 | 1 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 14 | 0 | 12 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 4 | 0 | 3 | 1 |
@@ -126,6 +126,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 |---|---|---|---|---|---|
 | [BACKUP-03](#backup-03) | Sicherungen ohne Team-Schlüssel, Team-Zugang verschlüsselt, Verwaltungsschlüssel wechseln | 🧩 Implementiert · Abnahme offen 3/4 | P0 | „Schlüssel aus Sicherungen entfernen“ | — |
 | [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo im Team-Raum | 🧩 Implementiert · Abnahme offen 2/2 | P0 | „Große Testphase vorbereiten und betreuen“ | — |
+| [TEAM-SEC-01](#team-sec-01) | Team-Rollen gegen Vortäuschen absichern | 🧩 Implementiert · Abnahme offen 4/5 | P0 | „Team-Rollen gegen Vortäuschen absichern“ | — |
 | [COOP-01](#coop-01) | Teambau im Planer | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Mit Mitspielern TEAMBAU-01…05.<br>Weg für den Live-Abgleich ohne Herunter- und Hochladen wählen. |
 | [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte i… | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Große Testphase vorbereiten und betreuen“ | TEAMBAU-09: aktuelle Mod und aktuelles Plugin (ab 0.10.0) zusammen auf deinem Server. |
 | [COOP-04](#coop-04) | Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams z… | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Große Testphase vorbereiten und betreuen“ | TEAMBAU-07/08 mit echten Spielern. |
@@ -653,6 +654,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [NAME-01](#name-01) | Neuer Produktname „LMNT — Build Studio“ auf Seite, Mod, Plugin und Modrinth | 🧩 Implementiert · Abnahme offen | 3/4 | UI-03, GAME-12 | ausstehend | ausstehend |
 | [PRIV-01](#priv-01) | Datenschutz und Freigaben verständlich: was geht wohin, wer sieht es, Speicherstatus und Umzug | 🚧 In Arbeit | 6/8 | COOP-07, WORLD-SHARE-01, BACKUP-02 | ausstehend | ausstehend |
 | [HARDEN-01](#harden-01) | Importe und Team-Raum gegen Missbrauch härten | 🧩 Implementiert · Abnahme offen | 2/3 | TEAM-02 | ausstehend | ausstehend |
+| [TEAM-SEC-01](#team-sec-01) | Team-Rollen gegen Vortäuschen absichern: Absender aus der Sitzung, eigene Schlüssel, Ed25519 für den Server | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-07, GAME-06, BACKUP-03, HARDEN-01 | ausstehend | ausstehend |
 | [RELEASE-01](#release-01) | Browser-Schutz und Release-Check: Sicherheitsheader auf Cloudflare Pages, Einbettungsschutz auf GitHub Pages, Release-Prüfung, sicherer Schem/Litematic-Export, Browserliste in der Mod | 🧩 Implementiert · Abnahme offen | 5/7 | PERF-06, FORMAT-02, LINK-03 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
@@ -3936,6 +3938,28 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/unit/building/zip-limits.test.mjs](../tests/unit/building/zip-limits.test.mjs) — Nachgestellte Befunde: gespeicherter 128-KiB-Eintrag mit 10-Byte-Angabe, Entpack-Bombe, geteiltes Budget, Abbruch, PNG-Prüfung, GZIP-Grenzen.; [tests/unit/team/team-room-abuse.test.mjs](../tests/unit/team/team-room-abuse.test.mjs) — Größen beim Lesen, Origin, Adressen, Eimer, Erstellungsfenster, Quelltextregeln des Workers.; [scripts/team/team_room_abuse_smoke.mjs](../scripts/team/team_room_abuse_smoke.mjs) — Probe gegen wrangler dev: 403 fremde Seite, 404 create über Raum, 413, 4408 nach 10 s, 4401, 4413, 429 Raumflut.; [docs/architecture/team/TEAM_LIVE.md](architecture/team/TEAM_LIVE.md) — §15 Grenzen.
 
 **Dateiumfang:** `apps/web/src/blockmodels/zip.ts`, `apps/web/src/blockmodels/pack.ts`, `apps/web/src/blockmodels/assets.ts`, `apps/web/src/blockmodels/TexturePanel.tsx`, `apps/web/src/jobs/packJob.ts`, `apps/web/src/jobs/jobs.ts`, `apps/web/src/views/project/team/roomClient.ts`, `packages/domain/src/team/team.ts`, `packages/domain/src/index.ts`, `services/team-room/src/guard.js`, `services/team-room/src/index.js`, `services/team-room/wrangler.toml`, `services/team-room/README.md`, `scripts/team/team_room_abuse_smoke.mjs`, `tests/unit/building/zip-limits.test.mjs`, `tests/unit/team/team-room-abuse.test.mjs`, `docs/architecture/team/TEAM_LIVE.md`, `docs/architecture/team/TEAM_BACKUP.md`, `docs/architecture/formate/BLOCK_MODELS.md`. **Abhängigkeiten:** TEAM-02. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### TEAM-SEC-01
+
+**Team-Rollen gegen Vortäuschen absichern: Absender aus der Sitzung, eigene Schlüssel, Ed25519 für den Server** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Team-Rollen gegen Vortäuschen absichern“ · Arbeitsstrang: „Team-Rollen gegen Vortäuschen absichern“ · Aktualisiert: 2026-11-07T20:17:06.217Z
+
+- [x] TEAM-SEC-01-S01: Team-Raum nimmt den Absender aus dem Schlüssel und prüft die Rolle (NEED wie TEAM_NEED); Einladung nur noch lesen und beitreten (strict), in alten Räumen nie im Namen der Bauleitung oder mit Baumeister-Rechten.
+- [x] TEAM-SEC-01-S02: Eigener Schlüssel je Mitglied und Gerät (join, keys, widerrufen, Übernahme bestätigen); Planer tauscht die Einladung von selbst, die Mod bekommt einen eigenen Geräteschlüssel.
+- [x] TEAM-SEC-01-S03: Unterschrift der Bauleitung mit Ed25519; Server-Link und Plugin nur mit öffentlichem Prüfschlüssel (p), alter HMAC-Schlüssel wird gelöscht; Verwaltungsschlüssel wechseln gibt den neuen Prüfschlüssel weiter.
+- [x] TEAM-SEC-01-S04: Planer, Mod und Plugin übernehmen nur Geprüftes (Unterschrift, Ankunftsnummer ab checkedFrom oder team.trust ohne except); alte Räume stellt die Bauleitung mit einem unterschriebenen team.trust samt Ausnahmen um.
+- [ ] TEAM-SEC-01-S05: Team-Raum ausrollen, Mod/Plugin 0.28.0 auf Modrinth, bestehende Räume beim nächsten Öffnen durch die Bauleitung umstellen.
+
+**Abnahme:** Ein mit der Einladung gesendetes member.role im Namen der Bauleitung wird vom Raum abgewiesen und erscheint in keinem Planer. Ein Mitglied schreibt nur im eigenen Namen und nur, was seine Rolle erlaubt. Das Plugin kann die Unterschrift der Bauleitung prüfen, aber nicht erzeugen. Ein Mitglied lässt sich einzeln aussperren, ohne alle anderen neu einzuladen.
+
+**Nächste Aktion:** Team-Raum gemeinsam mit HARDEN-01 ausrollen, Rauch-/Missbrauchsprobe gegen den echten Dienst, Mod/Plugin 0.28.0 auf Modrinth.
+
+**Prüfstand:** Automatisch geprüft (Node-Tests, Java-Tests, Browser-Tests gegen wrangler dev, echter Paper 1.21.11/26.3); Ausrollen und Spieltest im echten Minecraft offen.
+
+**Nachweise:** [tests/unit/team/team-identity.test.mjs](../tests/unit/team/team-identity.test.mjs) — Angriff als Regression (Einladung, fremder Name, eigene Rolle), eigene Schlüssel, Widerruf, Umstellung alter Räume, Ed25519-Prüfvektor, screenFeed/upgradeTrust.; [tests/e2e/team-acceptance.e2e.mjs](../tests/e2e/team-acceptance.e2e.mjs) — Drei Geräte gegen wrangler dev: Kisten-Ereignis mit Einladung abgewiesen, Mod mit eigenem Geräteschlüssel, Widerruf sperrt ein Mitglied aus.; [scripts/mod/bridge_papersigned.mjs](../scripts/mod/bridge_papersigned.mjs) — Echter Paper 1.21.11 und 26.3: Prüfschlüssel p, 4 gefälschte Ereignisse abgewiesen, auch wenn der Raum sie durchließe.; [docs/architecture/team/TEAM_IDENTITY.md](architecture/team/TEAM_IDENTITY.md) — Konzept, Routen, Migration, Grenzen.
+
+**Dateiumfang:** `services/team-room/src/`, `packages/domain/src/team/`, `apps/web/src/views/project/team/`, `apps/web/src/views/mod/serverClient.ts`, `mods/bauplaner-bridge/`, `scripts/mod/`, `tests/unit/team/`, `tests/e2e/`, `docs/architecture/team/TEAM_IDENTITY.md`. **Abhängigkeiten:** COOP-07, GAME-06, BACKUP-03, HARDEN-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

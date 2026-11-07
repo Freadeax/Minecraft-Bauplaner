@@ -15,7 +15,7 @@ const t = () => new Date(clock += 60_000).toISOString();
 /** Sends the outbox; returns the team and the stale steps. */
 function send(room, team) {
   let batch; const stale = [];
-  while ((batch = nextBatch(team))) { const c = confirm(team, room.append(batch)); team = c.team; stale.push(...c.stale); }
+  while ((batch = nextBatch(team))) { const c = confirm(team, room.append(batch, team.live.adminKey ? 'admin' : 'member')); team = c.team; stale.push(...c.stale); }
   return { team, stale };
 }
 function read(room, team) {

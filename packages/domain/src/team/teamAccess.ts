@@ -18,7 +18,7 @@ import { checkLive, goLive } from './teamSync.js';
 import type { RoomTeam, TeamLive } from './teamSync.js';
 import type { TeamEvent, TeamState } from './team.js';
 import { teamKindNeed } from './team.js';
-import { verifyEvent } from './eventSig.js';
+import { verifyEvent, verifyLeaderEvent } from './eventSig.js';
 
 /** True when the project holds keys of a Team-Raum (live mode). */
 export function hasTeamAccess(project: Pick<Project, 'site'>): boolean {
@@ -202,10 +202,12 @@ const str = (e: TeamEvent, k: string): string | undefined => { const v = (e as u
  * new confirmation reaches up to the last event before the first one the server refused: the change of key never
  * lets a refused forgery in, and everything the server took stays taken.
  */
-export async function retrustAfterRekey(events: readonly SeqEvent[], team: Pick<TeamState, 'teamId' | 'founder'>, oldSignKey: string): Promise<Retrust> {
+export async function retrustAfterRekey(events: readonly SeqEvent[], team: Pick<TeamState, 'teamId' | 'founder'>, oldSignKey: string, oldLeaderKey?: string): Promise<Retrust> {
   const list = [...events].sort((a, b) => a.seq - b.seq);
   const valid = new Map<string, boolean>();
-  const signed = async (e: TeamEvent) => { let v = valid.get(e.id); if (v === undefined) valid.set(e.id, v = await verifyEvent(oldSignKey, team.teamId, e)); return v; };
+  // TEAM-SEC-01: signatures are Ed25519 (old public key) since 0.28.0, HMAC before.
+  const check = async (e: TeamEvent) => await verifyEvent(oldSignKey, team.teamId, e) || (!!oldLeaderKey && await verifyLeaderEvent(oldLeaderKey, team.teamId, e));
+  const signed = async (e: TeamEvent) => { let v = valid.get(e.id); if (v === undefined) valid.set(e.id, v = await check(e)); return v; };
   let oldUpTo = -1;
   for (const { event: e } of list) {
     if (e.kind !== 'team.trust' || e.by !== team.founder || !await signed(e)) continue;

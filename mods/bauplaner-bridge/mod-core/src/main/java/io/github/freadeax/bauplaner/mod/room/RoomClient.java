@@ -44,8 +44,9 @@ public final class RoomClient {
     /**
      * @param serverKey LINK-11: only for the Bauleitung – the room's server key, handed to the server plugin over the team
      *                  channel ({@code link.room}) so the server joins the room by itself. Stored like the key, never shown.
-     * @param signKey   GAME-06: only for the Bauleitung – its signing key (derived from the admin key in the planner). The mod
-     *                  signs its own events with it and hands it to the server plugin with the server link ({@code l}).
+     * @param signKey   TEAM-SEC-01: only for the Bauleitung – its Ed25519 seed (derived from the admin key in the planner, field
+     *                  {@code leaderSeed}). The mod signs its own events with it and hands only the public key to the server plugin
+     *                  ({@code p} in the server link). The old HMAC key of GAME-06 ({@code signKey}) is not taken any more.
      */
     public record Config(String url, String room, String key, String member, String memberName, String teamName, String device, String serverKey, String signKey) {
         public Config(String url, String room, String key, String member, String memberName, String teamName, String device) {
@@ -66,7 +67,7 @@ public final class RoomClient {
         public String serverLink() {
             if (serverKey == null) return null;
             java.util.function.Function<String, String> enc = v -> java.net.URLEncoder.encode(v, StandardCharsets.UTF_8);
-            return url + "/#/team/beitreten?raum=" + enc.apply(url) + "&id=" + enc.apply(room) + "&s=" + enc.apply(serverKey) + (signKey == null ? "" : "&l=" + enc.apply(signKey));
+            return url + "/#/team/beitreten?raum=" + enc.apply(url) + "&id=" + enc.apply(room) + "&s=" + enc.apply(serverKey) + (signKey == null ? "" : "&p=" + enc.apply(io.github.freadeax.bauplaner.mod.team.EventSig.publicKey(signKey)));
         }
     }
 
@@ -131,6 +132,10 @@ public final class RoomClient {
     private final List<JsonObject> events = new ArrayList<>();
     private String cursor = "";
     private TeamLog log;
+    /** TEAM-SEC-01: public key of the Bauleitung and first arrival number the room checked (from the welcome); arrival number per event. */
+    private String leaderKey;
+    private long checkedFrom = -1;
+    private final Map<String, Long> seqs = new java.util.HashMap<>();
     private Map<String, Object> state;
     private boolean dirty = true;
     private volatile List<Presence> presence = List.of();
@@ -245,7 +250,7 @@ public final class RoomClient {
         String teamName = m.get("teamName") instanceof String s ? s.substring(0, Math.min(80, s.length())) : null;
         String device = m.get("device") instanceof String s ? s.substring(0, Math.min(64, s.length())) : "Minecraft";
         String serverKey = m.get("serverKey") instanceof String s && !s.isBlank() ? Json.str(s, "Serverschlüssel", 200) : null;
-        String signKey = m.get("signKey") instanceof String s && s.matches(io.github.freadeax.bauplaner.mod.team.EventSig.KEY_PATTERN) ? s : null;
+        String signKey = m.get("leaderSeed") instanceof String s && s.matches(io.github.freadeax.bauplaner.mod.team.EventSig.KEY_PATTERN) ? s : null;
         return new Config(url, room, key, member, memberName, teamName, device, serverKey, signKey);
     }
 
@@ -260,7 +265,7 @@ public final class RoomClient {
             Map<String, Object> m = new LinkedHashMap<>(c.publicFields());
             m.put("key", c.key()); m.put("device", c.device());
             if (c.serverKey() != null) m.put("serverKey", c.serverKey());
-            if (c.signKey() != null) m.put("signKey", c.signKey());
+            if (c.signKey() != null) m.put("leaderSeed", c.signKey());
             m.put("teilen", shareFields());
             Path tmp = file.resolveSibling(file.getFileName() + ".tmp");
             Files.writeString(tmp, Json.write(m), StandardCharsets.UTF_8);
@@ -316,7 +321,7 @@ public final class RoomClient {
     }
 
     private void reset() {
-        header = null; events.clear(); eventIds.clear(); cursor = ""; log = null; state = null; dirty = true; presence = List.of();
+        header = null; events.clear(); eventIds.clear(); seqs.clear(); leaderKey = null; checkedFrom = -1; cursor = ""; log = null; state = null; dirty = true; presence = List.of();
         reports.clear(); syncedAt = 0; polling = false; wsFails = 0; docRevs.clear();
         if (cacheFile != null) { try { Files.deleteIfExists(cacheFile); } catch (IOException ignored) { } }
     }
@@ -459,6 +464,7 @@ public final class RoomClient {
                 boolean fromPoll = status == Status.POLL || polling;
                 welcomedGen = gen;
                 if (welcomeWait != null) { welcomeWait.cancel(false); welcomeWait = null; }
+                identity(m.has("identity") && m.get("identity").isJsonObject() ? m.getAsJsonObject("identity") : null);
                 status = Status.LIVE; attempts = 0; wsFails = 0; polling = false; lastError = null; syncedAt = System.currentTimeMillis();
                 if (first) notify.accept(fromPoll ? "Team-Raum wieder über den WebSocket verbunden."
                         : "Team live über den Team-Raum" + (config.teamName() != null ? " „" + config.teamName() + "“" : "") + " – ohne Server-Datei.");
@@ -526,7 +532,8 @@ public final class RoomClient {
                     log = new TeamLog(header);
                     for (JsonObject e : events) { try { log.add(e); } catch (RuntimeException ignored) { } }
                 }
-                state = RoomState.of(log, log.view(), config.member());
+                // TEAM-SEC-01: only verified changes – what the room checked, what the Bauleitung signed or confirmed.
+                state = RoomState.of(log, leaderKey == null ? log.view() : log.view(new EventTrust(log, null, leaderKey, seqs::get, checkedFrom)), config.member());
             } catch (RuntimeException e) {
                 lastError = "Teamstand aus dem Raum: " + e.getMessage();
                 state = null;
@@ -578,15 +585,15 @@ public final class RoomClient {
     }
 
     /**
-     * GAME-06: with the Bauleitung's signing key, the mod signs the events it writes in the founder's name (deterministic:
-     * a resend keeps the signature, the room answers "known"). Others' events and those without key stay as they are.
+     * GAME-06 / TEAM-SEC-01: with the Bauleitung's Ed25519 seed, the mod signs the events it writes in the founder's name
+     * (deterministic: a resend keeps the signature, the room answers "known"). Others' events and those without key stay as they are.
      */
     private List<Map<String, Object>> signed(List<Map<String, Object>> list) {
         Config c = config;
         TeamLog l = log;
         if (c == null || c.signKey() == null || l == null) return list;
         List<Map<String, Object>> out = new ArrayList<>(list.size());
-        for (Map<String, Object> e : list) out.add(l.founder.equals(e.get("by")) ? io.github.freadeax.bauplaner.mod.team.EventSig.signed(c.signKey(), l.teamId, e) : e);
+        for (Map<String, Object> e : list) out.add(l.founder.equals(e.get("by")) ? io.github.freadeax.bauplaner.mod.team.EventSig.signedEd(c.signKey(), l.teamId, e) : e);
         return out;
     }
 
@@ -701,7 +708,8 @@ public final class RoomClient {
 
     /** Takes a page of events (WebSocket push or HTTP poll); {@code reset}: the room no longer knows our cursor. */
     private void ingest(JsonObject m) {
-        if (m.has("reset") && m.get("reset").isJsonPrimitive() && m.get("reset").getAsBoolean()) { events.clear(); eventIds.clear(); log = null; }
+        if (m.has("reset") && m.get("reset").isJsonPrimitive() && m.get("reset").getAsBoolean()) { events.clear(); eventIds.clear(); seqs.clear(); log = null; }
+        noteSeqs(m);
         for (JsonElement e : TeamLog.array(m, "events")) {
             if (!e.isJsonObject()) continue;
             String id = TeamLog.str(e.getAsJsonObject(), "id");
@@ -714,6 +722,30 @@ public final class RoomClient {
         dirty = true;
         syncedAt = System.currentTimeMillis();
         scheduleSave();
+    }
+
+    /** TEAM-SEC-01: what the room checks (welcome or room info). */
+    private void identity(JsonObject id) {
+        if (id == null) return;
+        String key = TeamLog.str(id, "leaderKey"), from = TeamLog.str(id, "checkedFrom");
+        long f = from != null && from.matches("\\d{1,15}") ? Long.parseLong(from) : -1;
+        if (java.util.Objects.equals(key, leaderKey) && f == checkedFrom) return;
+        leaderKey = key != null && key.matches(io.github.freadeax.bauplaner.mod.team.EventSig.KEY_PATTERN) ? key : null;
+        checkedFrom = f; dirty = true; scheduleSave();
+    }
+
+    /** Arrival numbers of a page: from {@code seqs} (rooms since TEAM-SEC-01), else counted back from the cursor (pages are contiguous). */
+    private void noteSeqs(JsonObject m) {
+        JsonArray list = TeamLog.array(m, "events"), numbers = TeamLog.array(m, "seqs");
+        String c = TeamLog.str(m, "cursor");
+        for (int i = 0; i < list.size(); i++) {
+            if (!list.get(i).isJsonObject()) continue;
+            String id = TeamLog.str(list.get(i).getAsJsonObject(), "id");
+            long seq = -1;
+            if (numbers.size() == list.size() && numbers.get(i).isJsonPrimitive()) { try { seq = Long.parseLong(numbers.get(i).getAsString()); } catch (NumberFormatException ignored) { } }
+            else if (c != null && c.matches("\\d{1,15}")) seq = Long.parseLong(c) - (list.size() - 1 - i);
+            if (id != null && seq > 0) seqs.putIfAbsent(id, seq);
+        }
     }
 
     private void startPolling() {
@@ -817,6 +849,9 @@ public final class RoomClient {
         o.addProperty("url", config.url()); o.addProperty("room", config.room()); o.addProperty("member", config.member());
         o.addProperty("cursor", cursor); o.addProperty("syncedAt", syncedAt);
         o.add("header", header);
+        if (leaderKey != null) o.addProperty("leaderKey", leaderKey);
+        if (checkedFrom > 0) o.addProperty("checkedFrom", checkedFrom);
+        JsonObject sq = new JsonObject(); seqs.forEach(sq::addProperty); o.add("seqs", sq);
         JsonArray ev = new JsonArray(); for (JsonObject e : events) ev.add(e); o.add("events", ev);
         JsonArray rp = new JsonArray(); for (Map<String, Object> e : reports.values()) rp.add(JsonParser.parseString(Json.write(e))); o.add("reports", rp);
         String text = o.toString();
@@ -845,6 +880,9 @@ public final class RoomClient {
             }
             String c = TeamLog.str(o, "cursor");
             cursor = c == null ? "" : c;
+            leaderKey = TeamLog.str(o, "leaderKey");
+            checkedFrom = o.has("checkedFrom") ? o.get("checkedFrom").getAsLong() : -1;
+            if (o.has("seqs") && o.get("seqs").isJsonObject()) for (Map.Entry<String, JsonElement> x : o.getAsJsonObject("seqs").entrySet()) { try { seqs.put(x.getKey(), x.getValue().getAsLong()); } catch (RuntimeException ignored) { } }
             syncedAt = o.has("syncedAt") ? o.get("syncedAt").getAsLong() : 0;
             for (JsonElement e : TeamLog.array(o, "reports")) {
                 if (!e.isJsonObject()) continue;
@@ -854,7 +892,7 @@ public final class RoomClient {
             }
             dirty = true;
         } catch (IOException | RuntimeException e) {
-            header = null; events.clear(); eventIds.clear(); cursor = ""; reports.clear();
+            header = null; events.clear(); eventIds.clear(); seqs.clear(); cursor = ""; reports.clear();
             lastError = "Gespeicherter Teamstand nicht lesbar – kommt beim nächsten Kontakt neu: " + e.getMessage();
         }
     }

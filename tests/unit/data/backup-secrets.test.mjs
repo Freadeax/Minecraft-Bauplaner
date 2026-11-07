@@ -7,7 +7,7 @@ import {
   createBackup, serializeBackup, readBackup, planRestore, buildRestore, createSampleLibrary, createProject, applyOperation, emptySite, siteOf,
   createTeam, teamEvent, goLive, appendLocal, nextBatch, confirm, ingest, deriveSignKey, signEvent, canonicalJson, sha256Hex,
   hasTeamAccess, withoutTeamAccess, teamAccessOf, sealTeamAccess, openTeamAccess, peekTeamAccess, restoreTeamAccess, retrustAfterRekey, numberPage,
-  recordFingerprint, receiptForBackup, compareWithBackups, emptyLedger, addReceipt, BACKUP_FORMAT,
+  recordFingerprint, receiptForBackup, compareWithBackups, emptyLedger, addReceipt, BACKUP_FORMAT, deriveLeaderSeed, leaderPublicKey, signLeaderEvent,
 } from '../../../dist/domain/src/index.js';
 
 const lib = await createSampleLibrary();
@@ -117,7 +117,8 @@ test('after the change the new confirmation reaches up to the first event the se
   const team = createTeam({ name: 'Burg', founder: 'bld_phil', teamId: 'team_sec02c', at: '2026-11-07T18:00:00Z' });
   const keys = await room.create({ room: 'r_sec02c', teamId: team.teamId, name: team.name });
   const oldSign = await deriveSignKey(keys.adminKey);
-  const put = async (e, sign = false) => { room.append({ batch: `b_${e.id}`, events: [sign ? await signEvent(oldSign, team.teamId, e) : e] }); };
+  // History of an old room (before TEAM-SEC-01 the room took everything): written with the admin key.
+  const put = async (e, sign = false) => { await room.append({ batch: `b_${e.id}`, events: [sign ? await signEvent(oldSign, team.teamId, e) : e] }, 'admin'); };
   // Past before signatures, then the signed confirmation (team.trust up to 2), a signed role change, a member note.
   await put(teamEvent('bld_anna', { kind: 'member.join', member: 'bld_anna', name: 'Anna' }, t()));
   await put(teamEvent('bld_phil', { kind: 'note.add', noteId: 'n1', text: 'Start', tag: 'info' }, t()));
@@ -169,4 +170,23 @@ test('a live project round trip through backup and Team-Zugang ends in the same 
   assert.equal(await room.auth(again.live.adminKey, 'admin'), 'admin');
   assert.equal(again.events.length, lead.events.length);
   assert.ok(keys.adminKey);
+});
+
+test('TEAM-SEC-01: after the change, confirmations signed with Ed25519 (old public key) count like HMAC ones', async () => {
+  const team = { teamId: 'team_sec02e', founder: 'bld_phil' };
+  const oldAdmin = 'B'.repeat(43);
+  const seed = await deriveLeaderSeed(oldAdmin), pub = await leaderPublicKey(seed);
+  const trust = await signLeaderEvent(seed, team.teamId, teamEvent('bld_phil', { kind: 'team.trust', upTo: '1' }, t()));
+  const role = await signLeaderEvent(seed, team.teamId, teamEvent('bld_phil', { kind: 'member.role', member: 'bld_anna', role: 'meister' }, t()));
+  const events = [
+    { seq: 1, event: teamEvent('bld_anna', { kind: 'member.join', member: 'bld_anna', name: 'Anna' }, t()) },
+    { seq: 2, event: trust }, { seq: 3, event: role },
+    { seq: 4, event: teamEvent('bld_phil', { kind: 'member.role', member: 'bld_anna', role: 'leitung' }, t()) },
+  ];
+  const plan = await retrustAfterRekey(events, team, await deriveSignKey(oldAdmin), pub);
+  assert.equal(plan.oldUpTo, 1, 'the Ed25519 confirmation is recognised');
+  assert.equal(plan.upTo, 3, 'the Ed-signed role change counts, the unsigned one in the Bauleitung’s name stops it');
+  assert.equal(plan.firstRefused.seq, 4);
+  const hmacOnly = await retrustAfterRekey(events, team, await deriveSignKey(oldAdmin));
+  assert.equal(hmacOnly.oldUpTo, -1, 'without the public key the Ed signatures are unknown');
 });
