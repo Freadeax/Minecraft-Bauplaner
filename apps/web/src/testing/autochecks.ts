@@ -147,6 +147,7 @@ export const AUTO_CHECKS: readonly AutoCheck[] = [
     remaining: 'Im Planer den Reiter „Produktion“ mit der Farm ansehen und eine echte Farm auf Philipps Server über 30 min laufen lassen. Stichprobe auf Paper 26.3 mit dem eigenen Client (die Bot-Bibliothek kann 26.3 noch nicht; auf 26.3 läuft nur der Konsolentest).',
     command: 'scripts/mod/test_bridge_paper_bots.sh farm 1.21.11',
     evidence: '07.11.2026, Plugin aus dem Quellstand (COOP-08-S05): Paper 1.21.11 (Build 132), zwei Bot-Spieler, Team-Raum wrangler dev: 26 Zuckerrohr in 10 min = 156/h im Spiel und im Planer, grün in 680 s.',
+  },
   // Block 2 Unterthread „Gelände und Großprojekte im Spiel prüfen“ (07.11.2026): Sätze gelaende, basis, grossprojekte, grossprojekteGelaende
   {
     caseId: 'PROJ-06', scope: 'teil',
