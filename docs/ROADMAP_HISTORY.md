@@ -8665,3 +8665,30 @@ Block 1: Exporte im echten Spiel automatisch geprüft (Litematica 0.29.1, WorldE
 - `tests/unit/core/diff-shift.test.mjs`
 - `tests/unit/formats/entities.test.mjs`
 
+## 2026-11-07T01:21:51.439Z · progress
+
+**Aufgaben:** COOP-05, COOP-08, PROD-05, PROD-04, LAGER-01
+
+Block 4b: Lagerkisten und Ertragsfarm mit echten Spielern automatisch abgenommen (scripts/mod/test_bridge_paper_bots.sh: zwei mineflayer-Bots, Team-Raum wrangler dev; lager auf Paper 1.21.11 und 26.1.2, farm mit echter Zuckerrohrfarm auf 1.21.11: 156/h im Spiel und im Planer). Behoben: Lager-Aktionsleiste von Abschnittsanzeige überschrieben, Helfer konnte an Lager anbauen, Modus hinweis ohne Meldung an Baumeister, Planer nahm Server-Ertragsrate erst ab 1 h und rundete die Laufzeit. AUTO_CHECKS LAGER-01..05, -07, -10, -11 (teil). Grenzen: Paper 26.3 nur Konsolentest (mineflayer kann 26.3 nicht), Mod-Anzeige LAGER-11 und Planer-Oberfläche nicht im Test, Abnahme auf Philipps Server offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-05 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme LAGER-01…09 und LAGER-11 auf Philipps Server. |
+| COOP-08 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme LAGER-10 mit einer echten Farm; Ertragsbuch in TEAMBAU-28. |
+| PROD-05 | 🧩 Implementiert · Abnahme offen | 6/6 | Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen. |
+| PROD-04 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme PROJ-13; danach Farmerträge aus Mod/Plugin. |
+| LAGER-01 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme auf dem Paper-Server (Thread „Server-Plugin mit geprüften Lagerkisten“). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/autochecks.ts`
+- `docs/TESTING.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreWorld.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
+- `packages/domain/src/materials/productionPlan.ts`
+- `scripts/mod/bridge_paperbots.mjs`
+- `scripts/mod/test_bridge_paper_bots.sh`
+- `tests/unit/materials/production.test.mjs`
+

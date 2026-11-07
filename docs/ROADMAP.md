@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T01:12:24.706Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T01:21:51.439Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -112,7 +112,7 @@ Abgeschlossen oder zurückgestellt: LIB-01 (geprüft), GEN-01 (geprüft), WORLD-
 | [PROD-02](#prod-02) | Deckung und Engpässe | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Projekt, Produktion und Weltkarte vertiefen“ | Engpässe und Zeitplanvergleich prüfen (PROJ-13). |
 | [PROD-03](#prod-03) | Verarbeitung und Logistik | 🧩 Implementiert · Abnahme offen 4/4 | P2 | „Projekt, Produktion und Weltkarte vertiefen“ | — |
 | [PROD-04](#prod-04) | Anbindung der Produktion | 🧩 Implementiert · Abnahme offen 4/5 | P2 | „Mehrspieler und Server automatisch abnehmen“ | — |
-| [PROD-05](#prod-05) | Erträge aus geprüften Lagerkisten | 🧩 Implementiert · Abnahme offen 5/5 | P2 | „Mehrspieler und Server automatisch abnehmen“ | — |
+| [PROD-05](#prod-05) | Erträge aus geprüften Lagerkisten | 🧩 Implementiert · Abnahme offen 6/6 | P2 | „Mehrspieler und Server automatisch abnehmen“ | — |
 
 Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 
@@ -126,7 +126,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [COOP-01](#coop-01) | Teambau im Planer | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mehrspieler und Server automatisch abnehmen“ | Mit Mitspielern TEAMBAU-01…05.<br>Weg für den Live-Abgleich ohne Herunter- und Hochladen wählen (Rückfrage im Thread). |
 | [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte i… | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Mehrspieler und Server automatisch abnehmen“ | TEAMBAU-09: aktuelle Mod und aktuelles Plugin (ab 0.10.0) zusammen auf deinem Server. |
 | [COOP-04](#coop-04) | Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams z… | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Mehrspieler und Server automatisch abnehmen“ | TEAMBAU-07/08 mit echten Spielern. |
-| [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mehrspieler und Server automatisch abnehmen“ | LAGER-01…09 mit echten Spielern.<br>LAGER-11: Lagerstand im Materialfenster der Mod. |
+| [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Mehrspieler und Server automatisch abnehmen“ | LAGER-01…09 mit echten Spielern.<br>LAGER-11: Lagerstand im Materialfenster der Mod. |
 | [COOP-06](#coop-06) | Teamplanung im Planer | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mehrspieler und Server automatisch abnehmen“ | TEAMBAU-21…24 mit Mitspielern an einem großen Bau. |
 | [COOP-07](#coop-07) | Team live ohne Dateien | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Mehrspieler und Server automatisch abnehmen“ | TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
 | [COOP-09](#coop-09) | Team live im Alltag | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mehrspieler und Server automatisch abnehmen“ | TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
@@ -137,7 +137,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [OPS-04](#ops-04) | Team-Raum betreiben | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Team-Raum sichern und wiederherstellen“ | Ausrollen des Team-Raums mit Sicherung freigeben (S04).<br>Testfall TEAMBAU-31 mit zwei Geräten: sichern, wiederherstellen, löschen und zurückholen. |
 | [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Abschnitte mehreren Spielern zuweisen“ | — |
 | [WORLD-SHARE-01](#world-share-01) | Weltplan und Server-Karte nur über den Team-Raum | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Weltplan und Server-Karte über den Team-Raum“ | Mit dem Paper-Plugin und BlueMap oder Dynmap prüfen, ob die Marker des Weltplans ohne Datei auf der Server-Karte erscheinen und gesperrte Bauplätze geschützt sind (KARTE-10..12). |
-| [COOP-08](#coop-08) | Ertragskisten | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Mehrspieler und Server automatisch abnehmen“ | LAGER-01…09 mit echten Spielern. |
+| [COOP-08](#coop-08) | Ertragskisten | 🧩 Implementiert · Abnahme offen 4/5 | P2 | „Mehrspieler und Server automatisch abnehmen“ | LAGER-01…09 mit echten Spielern. |
 
 Abgeschlossen oder zurückgestellt: COOP-02 (geprüft).
 
@@ -413,7 +413,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **PROD-02 · Deckung und Engpässe: Restbedarf des Sammelplans gegen laufende Farmen und Handarbeit (gemeinsame Warteschlange, gieriger Ausgleich), Engpass, Materialbereitschaft je Abschnitt in Spieltagen, „Lohnt sich eine Farm?“ mit Amortisation aus Bauplan-Kosten** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme PROJ-13.
 - **PROD-03 · Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Abnahme PROJ-12/13; Ofenstraße im Spiel prüfen (Trichterwege der Module).
 - **PROD-04 · Anbindung der Produktion: Farmen aus Projekt-Bauteilen mit Baufortschritt, Farmpunkte der Weltkarte übernehmen und eintragen, bester AFK-Platz nach Simulationsdistanz, Materialbereitschaft gegen Zeitplan der Planung, Sammelaufträge je Bauleute (TEAM-03-S02), Produktionsblatt als Text** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme PROJ-13; danach Farmerträge aus Mod/Plugin.
-- **PROD-05 · Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen.
+- **PROD-05 · Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung** — 🧩 Implementiert · Abnahme offen, 6/6 Teilschritte. Nächster Schritt: Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen.
 - **LINK-01 · Plugin richtet sich selbst ein und lässt sich per Klick koppeln (link.json, Server-ID, Kopplung nur OP/Bauleitung über den Teamkanal)** — ✅ Im beschriebenen Umfang geprüft, 4/4 Teilschritte. Nächster Schritt: Regressionen mit test_bridge_paper_link.sh und test_multiplayer.sh.
 - **LINK-02 · Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte)** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Abnahme LINK-02 und LINK-11.
 - **LINK-03 · Mod: Live-Dienst startet selbst, Planer per Klick im Spiel zulassen, Teamfreigabe als Knopf, Server-Wege weiterreichen (Mod 0.12.0)** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme LIVE-01 in Philipps Modpack.
@@ -617,13 +617,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [DEFER-02](#defer-02) | Optionale Discord-Integration | ⏸ Zurückgestellt | 0/1 | AUTH-01 | ausstehend | ausstehend |
 | [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm | 🧩 Implementiert · Abnahme offen | 2/3 | COOP-02, GAME-08 | ausstehend | ausstehend |
 | [COOP-04](#coop-04) | Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-02, LAGER-01 | ausstehend | ausstehend |
-| [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-04 | ausstehend | ausstehend |
+| [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf | 🧩 Implementiert · Abnahme offen | 5/6 | COOP-04 | ausstehend | ausstehend |
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-03, COOP-05, GAME-07 | ausstehend | ausstehend |
 | [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher | 🚧 In Arbeit | 2/4 | GAME-07, GAME-10 | ausstehend | ausstehend |
 | [GAME-12](#game-12) | Mod einfacher bedienen (Mod 0.23.0): animiertes Menü als Seitenleiste, Meldungskarten oben rechts statt Chat, kompaktes Baufenster, alle Befehle und Texte auf Deutsch und Englisch | 🧩 Implementiert · Abnahme offen | 5/6 | GAME-07, GAME-10, GAME-11 | ausstehend | ausstehend |
 | [COOP-07](#coop-07) | Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel | 🧩 Implementiert · Abnahme offen | 6/7 | COOP-01, COOP-04 | ausstehend | ausstehend |
-| [COOP-08](#coop-08) | Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion) | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-05, PROD-01 | ausstehend | ausstehend |
-| [PROD-05](#prod-05) | Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung | 🧩 Implementiert · Abnahme offen | 5/5 | PROD-02, COOP-05, COOP-08 | ausstehend | ausstehend |
+| [COOP-08](#coop-08) | Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion) | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-05, PROD-01 | ausstehend | ausstehend |
+| [PROD-05](#prod-05) | Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung | 🧩 Implementiert · Abnahme offen | 6/6 | PROD-02, COOP-05, COOP-08 | ausstehend | ausstehend |
 | [LINK-01](#link-01) | Plugin richtet sich selbst ein und lässt sich per Klick koppeln (link.json, Server-ID, Kopplung nur OP/Bauleitung über den Teamkanal) | ✅ Im beschriebenen Umfang geprüft | 4/4 | COOP-02 | ausstehend | ausstehend |
 | [LINK-02](#link-02) | Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte) | 🧩 Implementiert · Abnahme offen | 4/4 | LINK-01 | ausstehend | ausstehend |
 | [LINK-03](#link-03) | Mod: Live-Dienst startet selbst, Planer per Klick im Spiel zulassen, Teamfreigabe als Knopf, Server-Wege weiterreichen (Mod 0.12.0) | 🧩 Implementiert · Abnahme offen | 4/5 | GAME-08, COOP-03 | ausstehend | ausstehend |
@@ -2416,7 +2416,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LAGER-01
 
-**Optionale Truhen-/Lagerintegration** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Optionale Truhen-/Lagerintegration** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T01:21:51.439Z
 
 - [x] LAGER-01-S01: Inventar-/NBT-Rechte und Herkunft der Aufnahme festlegen.
 - [x] LAGER-01-S02: Bestand mit Zeitpunkt, Konflikten und ausdrücklicher Übernahme anzeigen.
@@ -2912,13 +2912,14 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-05
 
-**Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Server-Plugin mit geprüften Lagerkisten“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Server-Plugin mit geprüften Lagerkisten“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T01:21:51.439Z
 
 - [x] COOP-05-S01: Konzept LAGERKISTEN.md, reine Regeln StoreLedger/StoreIndex mit Unit-Tests.
 - [x] COOP-05-S02: StorageModule: Markieren, Schutzstufen bei Klicks/Trichtern/Explosionen/Abbau/Anbau, Buchungen je Öffnen, Prüfen gegen Sollstand, Siegeln, Bedarf, Verlauf.
 - [x] COOP-05-S03: Planer: store.config/move/check/seal falten, Lagerkisten mit Status, Abweichung und Buchungen im Reiter Team.
 - [x] COOP-05-S04: Lagerstände über den Team-Raum an die Mod: Plugin-Zählung oder im Spiel gesehener Inhalt (mit * markiert), Spalte „Lager“ im Materialfenster, /bp lager mit Quelle.
 - [ ] COOP-05-S05: Abnahme LAGER-01…09 mit echten Spielern auf Philipps Server.
+- [x] COOP-05-S06: Automatische Abnahme LAGER-01..05, -07, -11 (Serverseite) mit zwei Bot-Spielern auf Paper 1.21.11/26.1.2 und Team-Raum (test_bridge_paper_bots.sh lager); behoben: Lager-Aktionsleiste überschrieben, Helfer konnte anbauen, Modus hinweis ohne Meldung an Baumeister.
 
 **Abnahme:** Jede Abweichung zwischen Zählung und Sollstand bleibt sichtbar, bis ein Baumeister siegelt; Buchungen je Spieler und Trichter stimmen mit dem Inhalt; das Plugin verändert nie Kisteninhalte.
 
@@ -2930,7 +2931,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [scripts/mod/bridge_paperlager.mjs](../scripts/mod/bridge_paperlager.mjs) — Echter Server 1.18.2, 1.21.4, 26.3: Abweichung, Siegel, Trichter, TNT, Doppelkiste, fehlende Kiste, Bedarf, Sammelauftrag, Neustart; Planer-Faltung = Server.; [tests/unit/team/lager.test.mjs](../tests/unit/team/lager.test.mjs) — Faltung, Rechte, Herkunft und Prüfung der neuen Arten.; [mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java](../mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java) — Unit-Tests der Rechte-Matrix, Differenzen, Prüfsumme und Faltung (StoreIndex).; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomStockTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomStockTest.java) — Raum-Faltung store.* und store.seen → Lagerstand der Mod, Summen je Dimension, fehlende Kisten ausgelassen.
 
-**Dateiumfang:** `mods/bauplaner-bridge/paper/`, `packages/domain/src/team/team.ts`, `apps/web/src/views/project/team/TeamProof.tsx`, `docs/architecture/team/LAGERKISTEN.md`, `scripts/mod/bridge_paperlager.mjs`, `apps/web/src/testing/testplan.ts`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/StoreStock.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomState.java`. **Abhängigkeiten:** COOP-04. **Alte IDs:** —.
+**Dateiumfang:** `mods/bauplaner-bridge/paper/`, `packages/domain/src/team/team.ts`, `apps/web/src/views/project/team/TeamProof.tsx`, `docs/architecture/team/LAGERKISTEN.md`, `scripts/mod/bridge_paperlager.mjs`, `apps/web/src/testing/testplan.ts`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/StoreStock.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomState.java`, `scripts/mod/bridge_paperbots.mjs`, `scripts/mod/test_bridge_paper_bots.sh`, `apps/web/src/testing/autochecks.ts`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreWorld.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`. **Abhängigkeiten:** COOP-04. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -3101,12 +3102,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-08
 
-**Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion)** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Server-Plugin mit geprüften Lagerkisten“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion)** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Server-Plugin mit geprüften Lagerkisten“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T01:21:51.439Z
 
 - [x] COOP-08-S01: Zweck ertrag, store.config.farm, store.yield (nur Server) in team.ts und TeamLog/StoreIndex; farms in der Serverdatei (production.serverFarms).
 - [x] COOP-08-S02: Plugin misst Ertrag und Laufzeit, /bauplaner lager farm, Info mit Rate; Trichterbuchungen gebündelt (lager.trichter-buendeln-sekunden).
 - [x] COOP-08-S03: Planer zeigt Ertragskisten im Reiter Team (Ertragsbuch: Items je Stunde, Laufzeit, Planwert der Farm); Reiter Produktion nutzt yields als gemessene Rate (PROD-05).
 - [ ] COOP-08-S04: Abnahme mit einer echten Farm auf Philipps Server (LAGER-10).
+- [x] COOP-08-S05: Automatische Abnahme LAGER-10 mit echter Zuckerrohrfarm (Beobachter, Kolben, Trichterlore) in eine Ertragskiste auf Paper 1.21.11 (test_bridge_paper_bots.sh farm).
 
 **Abnahme:** Ertragskiste (Zweck ertrag, Farm) misst Trichter- und Spielereinlagen und geladene Minuten; store.yield alle 30 min und beim Herunterfahren; Planer-Faltung yields gleich Plugin; Trichterbuchungen je Minute gebündelt; echte Paper-Server 1.18.2, 1.21.4, 26.3.
 
@@ -3118,7 +3120,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [scripts/mod/bridge_paperlager.mjs](../scripts/mod/bridge_paperlager.mjs) — Echter Server 1.18.2, 1.21.4, 26.3: Abweichung, Siegel, Trichter, TNT, Doppelkiste, fehlende Kiste, Bedarf, Sammelauftrag, Neustart; Planer-Faltung = Server.; [tests/unit/team/lager.test.mjs](../tests/unit/team/lager.test.mjs) — Faltung, Rechte, Herkunft und Prüfung der neuen Arten.; [mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java](../mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java) — Unit-Tests der Rechte-Matrix, Differenzen, Prüfsumme und Faltung (StoreIndex).
 
-**Dateiumfang:** `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndex.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreLedger.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`, `mods/bauplaner-bridge/paper/src/main/resources/config.yml`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`, `packages/domain/src/team/team.ts`, `packages/domain/src/materials/production.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/team/TeamProof.tsx`, `apps/web/src/views/project/team/TeamTab.tsx`, `apps/web/src/views/project/team/TeamLive.tsx`, `apps/web/src/views/project/team/teamTransfer.ts`, `apps/web/src/views/project/team/TeamExchange.tsx`, `apps/web/src/styles/team.css`, `apps/web/src/testing/testplan.ts`, `docs/architecture/team/LAGERKISTEN.md`, `docs/testing/TESTPLAN.md`, `tests/unit/team/lager.test.mjs`, `scripts/mod/bridge_paperlager.mjs`. **Abhängigkeiten:** COOP-05, PROD-01. **Alte IDs:** —.
+**Dateiumfang:** `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndex.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreLedger.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`, `mods/bauplaner-bridge/paper/src/main/resources/config.yml`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`, `packages/domain/src/team/team.ts`, `packages/domain/src/materials/production.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/team/TeamProof.tsx`, `apps/web/src/views/project/team/TeamTab.tsx`, `apps/web/src/views/project/team/TeamLive.tsx`, `apps/web/src/views/project/team/teamTransfer.ts`, `apps/web/src/views/project/team/TeamExchange.tsx`, `apps/web/src/styles/team.css`, `apps/web/src/testing/testplan.ts`, `docs/architecture/team/LAGERKISTEN.md`, `docs/testing/TESTPLAN.md`, `tests/unit/team/lager.test.mjs`, `scripts/mod/bridge_paperlager.mjs`, `scripts/mod/bridge_paperbots.mjs`, `scripts/mod/test_bridge_paper_bots.sh`, `apps/web/src/testing/autochecks.ts`. **Abhängigkeiten:** COOP-05, PROD-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -3191,7 +3193,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROD-04
 
-**Anbindung der Produktion: Farmen aus Projekt-Bauteilen mit Baufortschritt, Farmpunkte der Weltkarte übernehmen und eintragen, bester AFK-Platz nach Simulationsdistanz, Materialbereitschaft gegen Zeitplan der Planung, Sammelaufträge je Bauleute (TEAM-03-S02), Produktionsblatt als Text** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Anbindung der Produktion: Farmen aus Projekt-Bauteilen mit Baufortschritt, Farmpunkte der Weltkarte übernehmen und eintragen, bester AFK-Platz nach Simulationsdistanz, Materialbereitschaft gegen Zeitplan der Planung, Sammelaufträge je Bauleute (TEAM-03-S02), Produktionsblatt als Text** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T01:21:51.439Z
 
 - [x] PROD-04-S01: detectFarms aus Katalog-Bauteilen und Anleitungsfortschritt.
 - [x] PROD-04-S02: Weltkarte: farmsOnMap mit guessFarmType, Punkte eintragen, Bauplatz als Standardort.
@@ -3213,13 +3215,14 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROD-05
 
-**Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-07T01:21:51.439Z
 
 - [x] PROD-05-S01: FarmEntry.chest (geprüft, rückgängig machbar über updateFarm).
 - [x] PROD-05-S02: teamChests/chestYield: store.yield bevorzugt, sonst Trichterbuchungen mit Lückenregel 5 min.
 - [x] PROD-05-S03: Rate aus Sammeltruhe vor Ertragsbuch vor Richtwert; Hinweise bei entfernter Truhe und < 1 h.
 - [x] PROD-05-S04: suggestChests und Reiter: Truhe wählen, Ertrag anzeigen, „Als Sammeltruhe verknüpfen“.
 - [x] PROD-05-S05: Plugin schreibt store.yield für Kisten mit Zweck „ertrag“ (COOP-08, Lagerkisten-Thread).
+- [x] PROD-05-S06: Planer rechnet mit der Server-Ertragskiste ab 10 geladenen Minuten (wie /bp lager info) und ohne vorher gerundete Laufzeit; im Farmtest gegen echte store.yield geprüft.
 
 **Abnahme:** Eine verknüpfte Sammeltruhe ersetzt den Richtwert ab 1 h Laufzeit. Lesen der Truhe bucht nichts ins Lager oder Ertragsbuch.
 
@@ -3229,7 +3232,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/unit/materials/production.test.mjs](../tests/unit/materials/production.test.mjs) — PROD-05-Fall: Trichter-Rückfall, Vorschläge, Serverberichte, entfernte Truhe, keine Lagerbuchung.; [tests/e2e/production.e2e.mjs](../tests/e2e/production.e2e.mjs) — Server-Export mit Lagerkiste und zwei Ertragsmeldungen, Vorschlag, Verknüpfen, Rate 300 Eisen/h.; [docs/architecture/planer/PRODUCTION.md](architecture/planer/PRODUCTION.md) — Abschnitt Sammeltruhen aus dem Team-Lager.
 
-**Dateiumfang:** `packages/domain/src/materials/production.ts`, `packages/domain/src/materials/productionPlan.ts`, `apps/web/src/views/project/ProductionTab.tsx`, `tests/unit/materials/production.test.mjs`, `tests/e2e/production.e2e.mjs`, `docs/architecture/planer/PRODUCTION.md`. **Abhängigkeiten:** PROD-02, COOP-05, COOP-08. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/materials/production.ts`, `packages/domain/src/materials/productionPlan.ts`, `apps/web/src/views/project/ProductionTab.tsx`, `tests/unit/materials/production.test.mjs`, `tests/e2e/production.e2e.mjs`, `docs/architecture/planer/PRODUCTION.md`, `scripts/mod/bridge_paperbots.mjs`, `scripts/mod/test_bridge_paper_bots.sh`, `apps/web/src/testing/autochecks.ts`. **Abhängigkeiten:** PROD-02, COOP-05, COOP-08. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

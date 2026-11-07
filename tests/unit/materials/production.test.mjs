@@ -314,6 +314,14 @@ test('PROD-05: farm output from team storage chests – server yield reports, ho
   // Unassigning ("" = none) removes the link.
   const unassigned = { ...assigned, events: [...assigned.events, ev('k2', iso(4_000_000), { kind: 'store.config', chest: 'kiste-eisen', farm: '' })] };
   assert.equal(teamChests(unassigned).find(c => c.id === 'kiste-eisen').farm, undefined);
+
+  // LAGER-10: server reports count from 10 loaded minutes on (like /bauplaner lager info), hopper estimates from 1 h.
+  const short = m => ({ ...team, events: [...events, ev('k3', iso(0), { kind: 'store.config', chest: 'kiste-eisen', purpose: 'ertrag', farm: 'eisen' }),
+    ev(`y${m}`, iso(m * 60_000), { kind: 'store.yield', chest: 'kiste-eisen', farm: 'eisen', items: [{ item: 'minecraft:iron_ingot', count: m * 5 }], from: iso(0), until: iso(m * 60_000), minutes: m })] });
+  st = farmStatuses(productionOf(fresh), short(12)).find(f => f.farm.id === 'eisen');
+  assert.equal(st.rates[0].source, 'Lagerkiste'); assert.equal(st.rates[0].perHour, 300);
+  st = farmStatuses(productionOf(fresh), short(5)).find(f => f.farm.id === 'eisen');
+  assert.equal(st.rates[0].source, 'Richtwert'); assert.ok(st.issues.some(i => /erst [\d,]+ min Laufzeit gemeldet – ab 10 min rechnet/.test(i)), st.issues.join(' | '));
 });
 
 test('AFK hours without farm place or AFK spot are named as an unchecked assumption', () => {

@@ -730,6 +730,9 @@ final class TeamModule implements Listener {
     private void actionBars() {
         if (teams.isEmpty()) return;
         for (Player p : Bukkit.getOnlinePlayers()) {
+            // An open store keeps its own line (Lager, Abschnitt, Status, Rechte) while the window is open.
+            String store = storage.openStoreBar(p.getUniqueId());
+            if (store != null) { PaperCompat.actionBar(p, store); continue; }
             Location l = p.getLocation();
             Hit hit = at(PaperCompat.dimension(p.getWorld()), l.getBlockX(), l.getBlockY(), l.getBlockZ());
             if (hit == null) { lastBar.remove(p.getUniqueId()); continue; }

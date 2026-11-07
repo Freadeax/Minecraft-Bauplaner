@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T01:12:24.706Z",
+  "updatedAt": "2026-11-07T01:21:51.439Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -6661,7 +6661,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:21:51.439Z",
       "area": "PLUGIN",
       "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
@@ -8545,7 +8545,12 @@
         "scripts/mod/bridge_paperlager.mjs",
         "apps/web/src/testing/testplan.ts",
         "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/StoreStock.java",
-        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomState.java"
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomState.java",
+        "scripts/mod/bridge_paperbots.mjs",
+        "scripts/mod/test_bridge_paper_bots.sh",
+        "apps/web/src/testing/autochecks.ts",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreWorld.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java"
       ],
       "legacyIds": [],
       "steps": [
@@ -8573,6 +8578,11 @@
           "id": "COOP-05-S05",
           "title": "Abnahme LAGER-01…09 mit echten Spielern auf Philipps Server.",
           "done": false
+        },
+        {
+          "id": "COOP-05-S06",
+          "title": "Automatische Abnahme LAGER-01..05, -07, -11 (Serverseite) mit zwei Bot-Spielern auf Paper 1.21.11/26.1.2 und Team-Raum (test_bridge_paper_bots.sh lager); behoben: Lager-Aktionsleiste überschrieben, Helfer konnte anbauen, Modus hinweis ohne Meldung an Baumeister.",
+          "done": true
         }
       ],
       "acceptance": [
@@ -8606,7 +8616,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:21:51.439Z",
       "area": "TEAM",
       "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
@@ -9289,7 +9299,10 @@
         "docs/architecture/team/LAGERKISTEN.md",
         "docs/testing/TESTPLAN.md",
         "tests/unit/team/lager.test.mjs",
-        "scripts/mod/bridge_paperlager.mjs"
+        "scripts/mod/bridge_paperlager.mjs",
+        "scripts/mod/bridge_paperbots.mjs",
+        "scripts/mod/test_bridge_paper_bots.sh",
+        "apps/web/src/testing/autochecks.ts"
       ],
       "legacyIds": [],
       "steps": [
@@ -9312,6 +9325,11 @@
           "id": "COOP-08-S04",
           "title": "Abnahme mit einer echten Farm auf Philipps Server (LAGER-10).",
           "done": false
+        },
+        {
+          "id": "COOP-08-S05",
+          "title": "Automatische Abnahme LAGER-10 mit echter Zuckerrohrfarm (Beobachter, Kolben, Trichterlore) in eine Ertragskiste auf Paper 1.21.11 (test_bridge_paper_bots.sh farm).",
+          "done": true
         }
       ],
       "acceptance": [
@@ -9341,7 +9359,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:21:51.439Z",
       "area": "TEAM",
       "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
@@ -9608,7 +9626,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:21:51.439Z",
       "area": "PROJEKT",
       "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [],
@@ -9708,7 +9726,10 @@
         "apps/web/src/views/project/ProductionTab.tsx",
         "tests/unit/materials/production.test.mjs",
         "tests/e2e/production.e2e.mjs",
-        "docs/architecture/planer/PRODUCTION.md"
+        "docs/architecture/planer/PRODUCTION.md",
+        "scripts/mod/bridge_paperbots.mjs",
+        "scripts/mod/test_bridge_paper_bots.sh",
+        "apps/web/src/testing/autochecks.ts"
       ],
       "steps": [
         {
@@ -9735,6 +9756,11 @@
           "id": "PROD-05-S05",
           "title": "Plugin schreibt store.yield für Kisten mit Zweck „ertrag“ (COOP-08, Lagerkisten-Thread).",
           "done": true
+        },
+        {
+          "id": "PROD-05-S06",
+          "title": "Planer rechnet mit der Server-Ertragskiste ab 10 geladenen Minuten (wie /bp lager info) und ohne vorher gerundete Laufzeit; im Farmtest gegen echte store.yield geprüft.",
+          "done": true
         }
       ],
       "acceptance": [
@@ -9756,7 +9782,7 @@
           "note": "Abschnitt Sammeltruhen aus dem Team-Lager."
         }
       ],
-      "updatedAt": "2026-11-06T20:59:52.182Z"
+      "updatedAt": "2026-11-07T01:21:51.439Z"
     },
     {
       "phase": "P4",
@@ -26493,6 +26519,67 @@
           "done": 3,
           "total": 3,
           "next": "Erledigt; ältere Datei in der Oberfläche in DATEI-02."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T01:21:51.439Z",
+      "kind": "progress",
+      "items": [
+        "COOP-05",
+        "COOP-08",
+        "PROD-05",
+        "PROD-04",
+        "LAGER-01"
+      ],
+      "summary": "Block 4b: Lagerkisten und Ertragsfarm mit echten Spielern automatisch abgenommen (scripts/mod/test_bridge_paper_bots.sh: zwei mineflayer-Bots, Team-Raum wrangler dev; lager auf Paper 1.21.11 und 26.1.2, farm mit echter Zuckerrohrfarm auf 1.21.11: 156/h im Spiel und im Planer). Behoben: Lager-Aktionsleiste von Abschnittsanzeige überschrieben, Helfer konnte an Lager anbauen, Modus hinweis ohne Meldung an Baumeister, Planer nahm Server-Ertragsrate erst ab 1 h und rundete die Laufzeit. AUTO_CHECKS LAGER-01..05, -07, -10, -11 (teil). Grenzen: Paper 26.3 nur Konsolentest (mineflayer kann 26.3 nicht), Mod-Anzeige LAGER-11 und Planer-Oberfläche nicht im Test, Abnahme auf Philipps Server offen.",
+      "files": [
+        "apps/web/src/testing/autochecks.ts",
+        "docs/TESTING.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreWorld.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java",
+        "packages/domain/src/materials/productionPlan.ts",
+        "scripts/mod/bridge_paperbots.mjs",
+        "scripts/mod/test_bridge_paper_bots.sh",
+        "tests/unit/materials/production.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-05",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme LAGER-01…09 und LAGER-11 auf Philipps Server."
+        },
+        {
+          "id": "COOP-08",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme LAGER-10 mit einer echten Farm; Ertragsbuch in TEAMBAU-28."
+        },
+        {
+          "id": "PROD-05",
+          "status": "implemented",
+          "done": 6,
+          "total": 6,
+          "next": "Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen."
+        },
+        {
+          "id": "PROD-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme PROJ-13; danach Farmerträge aus Mod/Plugin."
+        },
+        {
+          "id": "LAGER-01",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme auf dem Paper-Server (Thread „Server-Plugin mit geprüften Lagerkisten“)."
         }
       ]
     }

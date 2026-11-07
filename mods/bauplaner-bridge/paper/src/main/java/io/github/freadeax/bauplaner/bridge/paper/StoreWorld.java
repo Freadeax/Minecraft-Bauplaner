@@ -61,6 +61,24 @@ final class StoreWorld {
         return out;
     }
 
+    /**
+     * The other half of a chest from its block data (facing and type). Needed while a chest is being placed: the
+     * neighbour's state is updated only after BlockPlaceEvent, so {@link #blocks} still sees two single chests.
+     */
+    static Block partner(Block b) {
+        if (!(b.getBlockData() instanceof org.bukkit.block.data.type.Chest c) || c.getType() == org.bukkit.block.data.type.Chest.Type.SINGLE) return null;
+        org.bukkit.block.BlockFace f = c.getFacing();
+        boolean left = c.getType() == org.bukkit.block.data.type.Chest.Type.LEFT;
+        org.bukkit.block.BlockFace side = switch (f) {
+            case NORTH -> left ? org.bukkit.block.BlockFace.EAST : org.bukkit.block.BlockFace.WEST;
+            case EAST -> left ? org.bukkit.block.BlockFace.SOUTH : org.bukkit.block.BlockFace.NORTH;
+            case SOUTH -> left ? org.bukkit.block.BlockFace.WEST : org.bukkit.block.BlockFace.EAST;
+            case WEST -> left ? org.bukkit.block.BlockFace.NORTH : org.bukkit.block.BlockFace.SOUTH;
+            default -> null;
+        };
+        return side == null ? null : b.getRelative(side);
+    }
+
     /** Block positions an inventory belongs to (both halves of a double chest); empty for non-block inventories. */
     static List<Pos> positions(Inventory inv) {
         List<Pos> out = new ArrayList<>();

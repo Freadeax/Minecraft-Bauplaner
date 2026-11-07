@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -83,6 +84,10 @@ final class StorageModule implements Listener {
         final Inventory inventory;
         TreeMap<String, Long> last;
         final TreeMap<String, Long> net = new TreeMap<>();
+        /** Status line of the open store; repeated while the window is open (the section line would replace it). */
+        String bar;
+        /** lager.modus hinweis: the player did something the protection level reserves for others (reported on closing). */
+        boolean beyondRights;
         Session(String teamId, String storeId, Inventory inventory, TreeMap<String, Long> last) { this.teamId = teamId; this.storeId = storeId; this.inventory = inventory; this.last = last; }
     }
 
@@ -391,6 +396,8 @@ final class StorageModule implements Listener {
             teams.append(team, e, Bukkit.getConsoleSender());
             addYield(team, s, in);
             if (p != null) say(p, "Gebucht im Lager „" + s.name + "“: " + StoreLedger.diffText(ses.net, 6) + ".");
+            // lager.modus hinweis: allowed, but Baumeister and Bauleitung learn about it (LAGER-03).
+            if (ses.beyondRights) alert(team, name + " hat im Lager „" + s.name + "“ trotz Schutz „" + s.protectionOr(defaultProtection()) + "“ gebucht: " + StoreLedger.diffText(ses.net, 6) + ".");
         }
         // Nobody else looks into the store: count and compare once.
         boolean others = sessions.values().stream().anyMatch(x -> x.storeId.equals(ses.storeId));
@@ -499,6 +506,12 @@ final class StorageModule implements Listener {
         return farms(team).stream().filter(f -> f[0].equals(id)).map(f -> f[1]).findFirst().orElse(id);
     }
 
+    /** Status line of the store the player has open, or null (TeamModule shows it instead of the section line). */
+    String openStoreBar(UUID player) {
+        Session ses = sessions.get(player);
+        return ses == null ? null : ses.bar;
+    }
+
     private UUID sessionOwner(Session ses) {
         for (Map.Entry<UUID, Session> e : sessions.entrySet()) if (e.getValue() == ses) return e.getKey();
         return null;
@@ -517,7 +530,9 @@ final class StorageModule implements Listener {
         sessions.put(p.getUniqueId(), new Session(f.team.teamId, s.id, e.getInventory(), StoreWorld.contents(e.getInventory(), null)));
         boolean put = may(f.team, s, p, StoreLedger.Action.DEPOSIT), take = may(f.team, s, p, StoreLedger.Action.WITHDRAW);
         String rights = put && take ? "du darfst einlegen und entnehmen" : put ? "du darfst nur einlegen" : take ? "du darfst nur entnehmen" : "nur ansehen";
-        PaperCompat.actionBar(p, "Lager „" + s.name + "“ · " + sectionLabel(f.team, s.section) + " · " + ChatColor.stripColor(statusLabel(s)) + " · " + rights);
+        String bar = "Lager „" + s.name + "“ · " + sectionLabel(f.team, s.section) + " · " + ChatColor.stripColor(statusLabel(s)) + " · " + rights;
+        sessions.get(p.getUniqueId()).bar = bar;
+        PaperCompat.actionBar(p, bar);
         if (s.deviating() && rights(f.team, s, p).rank >= 2) say(p, ChatColor.YELLOW + "Offene Abweichung: " + StoreLedger.diffText(s.deviation, 6) + ". /bauplaner lager siegeln bestätigt den jetzigen Inhalt.");
         needLine(f.team, s).ifPresent(line -> say(p, line));
     }
@@ -541,6 +556,7 @@ final class StorageModule implements Listener {
         if (refused != null) {
             if (blocking() || p.getGameMode() == GameMode.SPECTATOR) { e.setCancelled(true); hint(p, "Im Lager „" + s.name + "“ darfst du nicht " + refused + " (" + StoreLedger.describe(s.protectionOr(defaultProtection())) + ")."); return; }
             hint(p, "Lager „" + s.name + "“: " + refused + " ist hier eigentlich der Bauleitung vorbehalten – es wird gebucht.");
+            ses.beyondRights = true;
         }
         Bukkit.getScheduler().runTask(plugin, () -> book(p.getUniqueId()));
     }
@@ -558,6 +574,7 @@ final class StorageModule implements Listener {
         if (!may(team, s, p, StoreLedger.Action.DEPOSIT)) {
             if (blocking()) { e.setCancelled(true); hint(p, "Im Lager „" + s.name + "“ darfst du nicht einlegen."); return; }
             hint(p, "Lager „" + s.name + "“: einlegen ist hier eigentlich der Bauleitung vorbehalten – es wird gebucht.");
+            ses.beyondRights = true;
         }
         Bukkit.getScheduler().runTask(plugin, () -> book(p.getUniqueId()));
     }
@@ -632,7 +649,10 @@ final class StorageModule implements Listener {
     public void onPlace(BlockPlaceEvent e) {
         Block b = e.getBlockPlaced();
         if (!StoreWorld.isStoreBlock(b)) return;
-        for (Block part : StoreWorld.blocks(b)) {
+        Set<Block> parts = new LinkedHashSet<>(StoreWorld.blocks(b));
+        Block partner = StoreWorld.partner(b);
+        if (partner != null) parts.add(partner);
+        for (Block part : parts) {
             if (part.equals(b)) continue;
             Found f = find(part);
             if (f == null) continue;

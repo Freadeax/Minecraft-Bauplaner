@@ -176,6 +176,12 @@ function measured(p: ProductionPlan, farmId: string, itemId: string): { count: n
 
 /** A hopper booking that comes more than this after the previous one starts a new running period (chunk was unloaded). */
 export const CHEST_GAP_MINUTES = 5;
+/**
+ * Yield reports of the server (store.yield) carry the minutes the farm really ran: like /bauplaner lager info, the
+ * planner uses their rate from 10 minutes on (LAGER-10). Rates estimated from hopper bookings need an hour.
+ */
+export const SERVER_YIELD_MIN_MINUTES = 10;
+const chestMinMinutes = (y: { readonly basis: 'server' | 'trichter' }): number => y.basis === 'server' ? SERVER_YIELD_MIN_MINUTES - 0.5 : 60;
 const MINUTE = 60_000;
 
 export interface TeamChest { readonly id: string; readonly name: string; readonly pos: readonly [number, number, number]; readonly dimension: string; readonly hopperIn: Readonly<Record<string, number>>;
@@ -247,7 +253,8 @@ export function chestYield(team: TeamState | undefined, chest: string | null, fa
     let minutes = 0;
     for (const y of reports) { minutes += y.minutes; for (const l of y.items) items[mc(l.item)] = (items[mc(l.item)] ?? 0) + l.count; }
     const from = reports.map(y => y.from).sort()[0]!, until = reports.map(y => y.until).sort().at(-1)!;
-    return { chest: chest ?? reports[0]!.chest, items, hours: round2(minutes / 60), bookings: reports.length, from, until, basis: 'server' };
+    // Unrounded: the rate divides by it (10 min → 0.1667 h, not 0.17 h).
+    return { chest: chest ?? reports[0]!.chest, items, hours: minutes / 60, bookings: reports.length, from, until, basis: 'server' };
   }
   const items: Record<string, number> = {};
   const times: number[] = [];
@@ -317,7 +324,7 @@ export function farmStatuses(production: ProductionPlan, team?: TeamState): Farm
     // A chest linked here, else the yield store the server assigned to this farm (store.config.farm).
     const chestId = f.chest ?? serverChest.get(f.id) ?? null;
     const linked = chestYield(team, chestId, f.id);
-    const fromChest = chestId || linked.bookings ? linked : null, useChest = !!fromChest && fromChest.hours >= 1;
+    const fromChest = chestId || linked.bookings ? linked : null, useChest = !!fromChest && fromChest.hours * 60 >= chestMinMinutes(fromChest);
     const rates: FarmRate[] = t.outputs.map(o => {
       const m = measured(p, f.id, o.item), useMeasured = m.hours >= 1;
       const perHour = useChest ? round1((fromChest!.items[o.item] ?? 0) / fromChest!.hours) : useMeasured ? round1(m.count / m.hours) : o.perHour * f.units;
@@ -336,7 +343,7 @@ export function farmStatuses(production: ProductionPlan, team?: TeamState): Farm
     });
     for (const i of inputs) if (i.perDay > 0 && i.suppliedPerDay < i.perDay) issues.push(`Braucht ${Math.round(i.perDay)} ${i.itemId.replace(/^minecraft:/, '')}/Tag, Farmen liefern ${Math.round(i.suppliedPerDay)}.`);
     if (b.farm.chest && !teamChests(team).some(c => c.id === b.farm.chest)) issues.push('Die verknüpfte Sammeltruhe gibt es im Team-Lager nicht mehr.');
-    else if (b.fromChest && b.fromChest.hours < 1) issues.push(`Sammeltruhe: erst ${de(b.fromChest.hours * 60)} min Laufzeit gemeldet – ab 1 h rechnet der Planer mit ihr.`);
+    else if (b.fromChest && b.fromChest.hours * 60 < chestMinMinutes(b.fromChest)) issues.push(`Sammeltruhe: erst ${de(b.fromChest.hours * 60)} min Laufzeit gemeldet – ab ${b.fromChest.basis === 'server' ? `${SERVER_YIELD_MIN_MINUTES} min` : '1 h'} rechnet der Planer mit ihr.`);
     if (b.afk && !b.afk.ok && p.afkHoursPerDay > 0) issues.push(`Vom AFK-Platz nicht erreicht: ${b.afk.reason}.`);
     else if (!b.afk && b.type.mode === 'auto' && b.running && p.afkHoursPerDay > 0) issues.push(`AFK-Zeit angenommen, Reichweite ungeprüft: ${b.farm.at ? 'kein AFK-Platz gesetzt' : 'Ort der Farm fehlt'}.`);
     if (b.type.mode === 'auto' && b.running && b.hours === 0) issues.push('Läuft nur, wenn ein Spieler in der Nähe ist – Sammel- und AFK-Zeit sind 0.');
