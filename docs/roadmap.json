@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T02:16:04.189Z",
+  "updatedAt": "2026-11-07T02:19:42.343Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -3146,7 +3146,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T01:04:09.413Z",
+      "updatedAt": "2026-11-07T02:19:42.343Z",
       "area": "KERN",
       "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
@@ -4696,7 +4696,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T02:19:42.343Z",
       "area": "PLANER",
       "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
@@ -4909,7 +4909,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T02:19:42.343Z",
       "area": "PLANER",
       "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
@@ -7390,7 +7390,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T02:19:42.343Z",
       "area": "BIBLIOTHEK",
       "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
@@ -7627,7 +7627,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T02:19:42.343Z",
       "area": "BIBLIOTHEK",
       "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
@@ -27298,6 +27298,78 @@
           "done": 4,
           "total": 5,
           "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T02:19:42.343Z",
+      "kind": "progress",
+      "items": [
+        "BLOCK-02",
+        "TERRAIN-03",
+        "TERRAIN-05",
+        "BASE-01",
+        "GROSS-01"
+      ],
+      "summary": "BLOCK-02-S08 Spielprüfstand: Sätze gelaende, basis, grossprojekte, grossprojekteGelaende im echten Paper 26.3 (321 Pläne, 0 Abweichungen); behoben: Treppen-/Mauerverbindungen in designPayload, Pilze nur auf Podsol/Myzel, Stege im Wasser, Bootshaus-Schwelle, Randsteine an offenen Wasserkanten, Einebnungsring, Laternen am Hang. Offen: Bedienung im Browser und Ansicht in der eigenen Welt (PROJ-06/26, BIB-10/13/19/21 teil).",
+      "files": [
+        "apps/web/src/testing/autochecks.ts",
+        "apps/web/src/views/library/planTerrain.tsx",
+        "docs/TESTING.md",
+        "docs/architecture/bibliothek/BASE_PLANNER.md",
+        "docs/architecture/formate/BLOCK_LOGIC.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/base/anlagen.ts",
+        "packages/domain/src/base/anlagenTerrain.ts",
+        "packages/domain/src/base/base.ts",
+        "packages/domain/src/base/planLandscape.ts",
+        "packages/domain/src/catalog/build/sets/kueste.ts",
+        "packages/domain/src/catalog/grossprojekte.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/world/terrainDesign.ts",
+        "packages/domain/src/world/terrainScatter.ts",
+        "scripts/mod/game_placement.mjs",
+        "scripts/mod/placement_worlds.mjs",
+        "scripts/mod/test_game_placement.sh",
+        "tests/e2e/plan-landscape.e2e.mjs",
+        "tests/unit/catalog/plan-landscape.test.mjs",
+        "tests/unit/world/terrain-game.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "BLOCK-02",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "S06 Stichprobe durch Philipp im eigenen Spiel (Gestaltung, Begehbarkeit); Gelände, Großprojekte und Basisplaner auf demselben Prüfstand."
+        },
+        {
+          "id": "TERRAIN-03",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "Abnahme PROJ-19, BIB-19 und BIB-20 im Spiel (Treppen, Brücken, Wegenetz der Basis auf echtem Gelände)."
+        },
+        {
+          "id": "TERRAIN-05",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp im Planer und im Spiel (PROJ-26)."
+        },
+        {
+          "id": "BASE-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp (S06, BIB-10, BIB-19, BIB-20); Küstenlinie, Wegstufen und Brücken sind über TERRAIN-03-S06/S08 umgesetzt."
+        },
+        {
+          "id": "GROSS-01",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "Abnahme durch Philipp (S06 BIB-13, BIB-21, BIB-22)."
         }
       ]
     }

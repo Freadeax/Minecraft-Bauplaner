@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T02:16:04.189Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T02:19:42.343Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -1483,7 +1483,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### BLOCK-02
 
-**Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Schwebende Blöcke im Katalog reparieren“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T01:04:09.413Z
+**Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Schwebende Blöcke im Katalog reparieren“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T02:19:42.343Z
 
 - [x] BLOCK-02-S01: Gemeinsame Bauregel gameReady(): Laternen ohne Halt hängen an iron_chain bis zur nächsten Decke, danach alle Verbindungen wie im Spiel (settlePayload); gilt für jedes Katalog-Gebäude und jeden Generator.
 - [x] BLOCK-02-S02: Alte Block-ID chain durch iron_chain ersetzt (in 26.3 gibt es chain nicht mehr): 152 Katalog- und alle Generator-Ketten.
@@ -1881,7 +1881,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TERRAIN-03
 
-**Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gelände, Wege und Küste ausbauen“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gelände, Wege und Küste ausbauen“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T02:19:42.343Z
 
 - [x] TERRAIN-03-S01: Geländewerkzeuge: Aufschütten (nur Mulden bis zur Zielhöhe), Abtragen (nur über der Zielhöhe), Rampe mit gleichmäßiger Steigung, Breite und weichem Übergang.
 - [x] TERRAIN-03-S02: Wegstufen: Treppen (bergauf, über die ganze Breite) oder Halbstufen an jedem Höhenwechsel um einen Block, neun Materialfamilien, keine Treppen ins Leere nach späteren Änderungen; Dateiformat BPTDES01 mit optionalem Stufenfeld.
@@ -1932,7 +1932,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TERRAIN-05
 
-**Gelände-Werkzeuge auf dem Projektgelände: Verwittern, Formstempel, Fluss und Maske für alle Werkzeuge mit geschützten Bauplätzen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Alle Bereiche in Blöcken weiterbauen“, Block 1) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Gelände-Werkzeuge auf dem Projektgelände: Verwittern, Formstempel, Fluss und Maske für alle Werkzeuge mit geschützten Bauplätzen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Alle Bereiche in Blöcken weiterbauen“, Block 1) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T02:19:42.343Z
 
 - [x] TERRAIN-05-S01: Verwittern: thermische Erosion bis zur Hanggrenze und Regenrinnen, mengengleich, als Pinsel und für die ganze Fläche.
 - [x] TERRAIN-05-S02: Formstempel Hügel, Berg, Krater, Mulde und Plateau mit Größe und Höhe in einem Klick.
@@ -2600,7 +2600,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### BASE-01
 
-**Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Basisanlagen wie im Bild planen“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Basisanlagen wie im Bild planen“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T02:19:42.343Z
 
 - [x] BASE-01-S01: Funktionskatalog mit Lagewünschen, Affinitäten, Katalogbauteilen, Alternativen, freiem Bauplatz und Bauphasen.
 - [x] BASE-01-S02: Spielprüfungen auf echten Blöcken: Verzauberungsstufe (Vanilla-Regel), Bewässerung, Arbeitsblöcke/Betten, Lagerplatz, Schmiede, Kochstelle, Gehege, Stege im Wasser.
@@ -2651,7 +2651,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GROSS-01
 
-**Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gelände, Wege und Küste ausbauen“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gelände, Wege und Küste ausbauen“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T02:19:42.343Z
 
 - [x] GROSS-01-S01: Lückenanalyse der Größenstufen (Gebäude ≤ 25 × 25, Ensembles, Anlagen, Basisplaner) und Datenmodell Großprojekt (Quartiere, Einheiten slot/ensemble/anlage, Phasen, Straßen), abgestimmt mit Projektmodul- und ChatGPT-Projekt-Thread.
 - [x] GROSS-01-S02: Engine: deterministisches Rasterlayout aus echten Grundflächen, Türen zur Straße, Straßennetz als eigenes Bauteil (vier Stile, Laternen, Ring, Aussparung in Quartieren über mehrere Zellen), AnlagePlan-kompatible Vorschau, Übernahme mit Abschnitten je Phase.

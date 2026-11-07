@@ -9080,3 +9080,41 @@ Rebase auf SIZE-01-S06
 
 - `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
 
+## 2026-11-07T02:19:42.343Z · progress
+
+**Aufgaben:** BLOCK-02, TERRAIN-03, TERRAIN-05, BASE-01, GROSS-01
+
+BLOCK-02-S08 Spielprüfstand: Sätze gelaende, basis, grossprojekte, grossprojekteGelaende im echten Paper 26.3 (321 Pläne, 0 Abweichungen); behoben: Treppen-/Mauerverbindungen in designPayload, Pilze nur auf Podsol/Myzel, Stege im Wasser, Bootshaus-Schwelle, Randsteine an offenen Wasserkanten, Einebnungsring, Laternen am Hang. Offen: Bedienung im Browser und Ansicht in der eigenen Welt (PROJ-06/26, BIB-10/13/19/21 teil).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| BLOCK-02 | 🧩 Implementiert · Abnahme offen | 6/7 | S06 Stichprobe durch Philipp im eigenen Spiel (Gestaltung, Begehbarkeit); Gelände, Großprojekte und Basisplaner auf demselben Prüfstand. |
+| TERRAIN-03 | 🧩 Implementiert · Abnahme offen | 7/8 | Abnahme PROJ-19, BIB-19 und BIB-20 im Spiel (Treppen, Brücken, Wegenetz der Basis auf echtem Gelände). |
+| TERRAIN-05 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp im Planer und im Spiel (PROJ-26). |
+| BASE-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp (S06, BIB-10, BIB-19, BIB-20); Küstenlinie, Wegstufen und Brücken sind über TERRAIN-03-S06/S08 umgesetzt. |
+| GROSS-01 | 🧩 Implementiert · Abnahme offen | 7/8 | Abnahme durch Philipp (S06 BIB-13, BIB-21, BIB-22). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/views/library/planTerrain.tsx`
+- `docs/TESTING.md`
+- `docs/architecture/bibliothek/BASE_PLANNER.md`
+- `docs/architecture/formate/BLOCK_LOGIC.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/base/anlagen.ts`
+- `packages/domain/src/base/anlagenTerrain.ts`
+- `packages/domain/src/base/base.ts`
+- `packages/domain/src/base/planLandscape.ts`
+- `packages/domain/src/catalog/build/sets/kueste.ts`
+- `packages/domain/src/catalog/grossprojekte.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/world/terrainDesign.ts`
+- `packages/domain/src/world/terrainScatter.ts`
+- `scripts/mod/game_placement.mjs`
+- `scripts/mod/placement_worlds.mjs`
+- `scripts/mod/test_game_placement.sh`
+- `tests/e2e/plan-landscape.e2e.mjs`
+- `tests/unit/catalog/plan-landscape.test.mjs`
+- `tests/unit/world/terrain-game.test.mjs`
+
