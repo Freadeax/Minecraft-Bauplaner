@@ -1,0 +1,1 @@
+import{t as e}from"./types-Bx4QWjXM.js";var t=1e8;function n(t,n){let r=n.schemaVersion;if(r!==1)throw typeof r==`number`&&r>1?new e(`SCHEMA_NEWER`,`${t} stammt aus einer neueren App-Version (Schema ${r}). Bitte die App aktualisieren.`):new e(`SCHEMA`,`${t} hat ein unbekanntes Schema (${String(r)}).`)}export{n,t};

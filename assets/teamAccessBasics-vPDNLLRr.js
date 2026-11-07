@@ -1,0 +1,1 @@
+function e(e){return!!e.site?.team?.live}function t(e){let t=e.site?.team;if(!t?.live)return e;let{live:n,...r}=t;return{...e,site:{...e.site,team:r}}}export{t as n,e as t};
