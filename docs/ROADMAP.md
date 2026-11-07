@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T02:04:39.741Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T02:08:00.843Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -2398,7 +2398,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-06
 
-**Server-Plugin direkt mit dem Team-Raum (Mod/Plugin 0.26.0): unterschriebene Ereignisse der Bauleitung, Ereignis-ID und wiederholbare Verarbeitung, Abschnittsschutz nach Team-Rollen aus dem Raum** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Server-Plugin direkt mit dem Team-Raum verbinden“) · Zuständiger Thread: „Server-Plugin direkt mit dem Team-Raum verbinden“ · Aktualisiert: 2026-11-07T02:01:03.047Z
+**Server-Plugin direkt mit dem Team-Raum (Mod/Plugin 0.26.0): unterschriebene Ereignisse der Bauleitung, Ereignis-ID und wiederholbare Verarbeitung, Abschnittsschutz nach Team-Rollen aus dem Raum** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Server-Plugin direkt mit dem Team-Raum verbinden“) · Zuständiger Thread: „Server-Plugin direkt mit dem Team-Raum verbinden“ · Aktualisiert: 2026-11-07T02:08:00.843Z
 
 - [x] GAME-06-S01: Signierte Ereignisse, Ereignis-ID und wiederholbare Verarbeitung (aus GAME-04-S02): Bauleitung unterschreibt im Planer und in der Mod (HMAC aus dem Verwaltungsschlüssel, eventSig.ts/EventSig.java, gemeinsamer Prüfvektor), Plugin bekommt den Schlüssel mit dem Server-Link (l), merkt Ankunftsnummern, jede ID wirkt einmal, gleiche ID mit anderem Inhalt ersetzt nichts.
 - [x] GAME-06-S02: EventTrust im Plugin: Bauleitung bestätigt die Vergangenheit (team.trust), danach keine unterschriftslosen Ereignisse im Namen oder mit Rechten der Bauleitung und keine fremden Spielernamen; /bp team raum pruefen; Planer zeigt weiter alles.

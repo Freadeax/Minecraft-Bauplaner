@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T02:04:39.741Z",
+  "updatedAt": "2026-11-07T02:08:00.843Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -6645,7 +6645,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T02:01:03.047Z",
+      "updatedAt": "2026-11-07T02:08:00.843Z",
       "area": "MOD",
       "thread": "Server-Plugin direkt mit dem Team-Raum verbinden",
       "philipp": [
@@ -27252,6 +27252,24 @@
         "GAME-06"
       ],
       "summary": "Rebase auf QA-02 Block 5 Geräte",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "GAME-06",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LINK-14 auf Philipps Server mit echten Spielern."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T02:08:00.843Z",
+      "kind": "progress",
+      "items": [
+        "GAME-06"
+      ],
+      "summary": "Rebase auf SIZE-01-S06",
       "files": [],
       "snapshot": [
         {
