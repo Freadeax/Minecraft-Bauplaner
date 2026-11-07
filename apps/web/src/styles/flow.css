@@ -1,0 +1,61 @@
+/* FLOW-01 · Durchgängiger Bauablauf: Nachweis, Baumodus für Tablet/Zweitbildschirm, Materialbilanz, Materialtausch, Geländeschnitt */
+
+/* Nachweis je Schritt */
+.badge.proof.manual{background:var(--panel-2,#182b36);color:var(--text,#dfe8eb);border-color:var(--line,#3a5560)}
+.badge.proof.game{background:var(--mint);color:var(--theme-on-accent,#173329);border-color:var(--mint)}
+.badge.proof.recheck,.badge.proof.contradicted{background:color-mix(in srgb,#d39432 22%,var(--panel,#101e28));color:var(--ds-warning);border-color:#b07a3c}
+.badge.proof.contradicted{background:color-mix(in srgb,#c8503a 25%,var(--panel,#101e28));border-color:#c8503a}
+.badge.proof.confirmed-open{border-style:dashed;border-color:var(--mint)}
+.proof-summary{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--muted)}
+.proof-summary b{color:var(--text,#dfe8eb);font-weight:600}.proof-summary .game b{color:var(--ds-success)}.proof-summary :is(.recheck,.contradicted) b{color:var(--ds-warning)}
+
+/* Baumodus: Plan groß daneben (Tablet quer, Zweitbildschirm), auf dem Handy untereinander */
+.focus-body{display:grid;gap:12px;max-width:760px;width:100%;margin:0 auto}
+.focus-main{display:grid;gap:10px;min-width:0}
+.focus-plan{min-width:0}.layer-plan.big svg{max-height:min(70vh,640px)}
+.focus-pack{border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--panel,#0d1922)}.focus-pack summary{cursor:pointer;min-height:32px;font-weight:550}
+.focus-pack summary small{font-weight:400;color:var(--muted);margin-left:6px}.focus-pack-table{width:100%}.focus-pack-table td.bad{color:var(--ds-warning)}
+@media(min-width:960px){
+  .focus-body{max-width:1500px;grid-template-columns:minmax(0,1.15fr) minmax(360px,1fr);align-items:start}
+  .focus-plan{position:sticky;top:76px}
+  .focus-body .focus-card{max-width:none}
+  .focus .focus-actions{max-width:1500px}
+}
+.focus.second-screen{padding-top:8px}
+.focus:fullscreen{background:var(--bg,#0a141b);overflow:auto;padding:12px 18px 0}
+.focus:fullscreen .focus-body{max-width:none}.focus:fullscreen .focus-actions{max-width:none}
+
+/* Materialbilanz */
+.ledger{display:grid;gap:10px;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--panel,#0d1922);margin:12px 0}
+.ledger-head{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:space-between;align-items:flex-start}.ledger-head h3{margin:0;font-size:15px}.ledger-head h3 small{font-size:11px;color:var(--muted);font-weight:400;margin-left:6px}
+.ledger-head p{margin:4px 0 0}
+.ledger-bar{display:flex;height:10px;border-radius:5px;overflow:hidden;background:var(--panel-2,#182b36)}.ledger-bar span{display:block;height:100%}
+.ledger-bar .built,.ledger-stats .built dd{background:none}.ledger-bar .built{background:var(--mint)}.ledger-bar .reserved{background:#4f7fcf}.ledger-bar .procure{background:#d39432}
+.ledger-stats .built dd{color:var(--ds-success)}.ledger-stats .reserved dd{color:var(--ds-info)}.ledger-stats .procure dd{color:var(--ds-warning)}
+.ledger-stats dd small{display:block;font-size:10.5px;color:var(--muted);font-weight:400}
+.ledger-table td small{display:block;font-size:10.5px;color:var(--muted)}
+
+/* Materialtausch im Projekt */
+.project-swap{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--panel,#0d1922);margin:12px 0;display:block}
+.project-swap>summary{cursor:pointer;font-weight:550;min-height:30px}.project-swap>summary small{color:var(--muted);font-weight:400;margin-left:6px}
+.project-swap label{display:inline-grid;gap:2px;font-size:11px;color:var(--muted);margin:6px 0}
+.swap-result{display:grid;gap:10px;margin-top:10px}.swap-result h4{margin:0;font-size:14px}.swap-result h4 small{color:var(--muted);font-weight:400;margin-left:6px}
+.swap-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}.swap-facts h5{margin:0 0 4px;font-size:12px;color:var(--ds-success)}
+.swap-facts ul{margin:0;padding-left:16px;line-height:1.6;font-size:12px}.swap-facts code{overflow-wrap:anywhere}
+
+/* Geländeschnitt und Erdbewegung */
+.terrain-section{display:grid;gap:12px;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--panel,#0d1922);margin:12px 0}
+.terrain-section h3{margin:0}
+.source-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+.source-card{display:grid;gap:4px;align-content:start;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--panel-2,#122430);font-size:12px;cursor:pointer}
+.source-card small{color:var(--muted)}.source-card.on{border-color:var(--mint)}.source-card.live.on{border-color:#f08a24}
+.source-card input{margin-right:6px}.source-card button{justify-self:start;margin-top:4px}
+.earth-stats dd small{display:block;font-size:10.5px;color:var(--muted);font-weight:400}.earth-stats .cut dd{color:var(--ds-danger)}.earth-stats .fill dd{color:var(--ds-warning)}.earth-stats .wet dd{color:var(--ds-info)}
+.earth-grid{display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:1000px){.earth-grid{grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr)}}
+.earth-map{margin:0;display:grid;gap:6px;min-width:0;align-content:start}.earth-canvas{max-width:100%;height:auto;image-rendering:pixelated;border:1px solid var(--line);border-radius:6px;background:#13232d;cursor:crosshair}
+.earth-map figcaption,.section-svg figcaption{font-size:11px;color:var(--muted)}.earth-map figcaption i,.section-svg figcaption i{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 3px 0 8px;vertical-align:-1px}
+.earth-section{display:grid;gap:8px;min-width:0;align-content:start}
+.section-svg{margin:0}.section-svg svg{width:100%;height:auto;max-height:360px;display:block}.section-svg .section-bg{fill:#13232d}
+.section-svg .axis{font-size:1.6px;fill:var(--muted);text-anchor:middle}.section-svg .axis.end{text-anchor:end}
+:root[data-appearance=light] :is(.section-svg .section-bg,.earth-canvas){fill:#e6eef0;background:#e6eef0}

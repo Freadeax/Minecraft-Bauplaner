@@ -687,3 +687,43 @@ Browser-Schutz und Release-Check: Sicherheitsheader für Cloudflare Pages (CSP d
 - `tests/unit/formats/export-safety.test.mjs`
 - `tests/unit/tooling/cloudflare-pages.test.mjs`
 
+## 2026-11-07T20:21:31.573Z · progress
+
+**Aufgaben:** FLOW-01
+
+Durchgängiger Bauablauf: Baumodus für Tablet und Zweitbildschirm mit Packliste, Nachweis je Schritt (manuell, im Spiel bestätigt, neu prüfen), Materialbilanz, Materialtausch mit Vorschau, Geländeschnitt mit Höhenprofil, Wassertiefe, Erdbewegung und Kollisionen; Abnahme mit der Großen Hafenstadt an einer Küste
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| FLOW-01 | 🧩 Implementiert · Abnahme offen | 6/6 | Philipps Spieltest: Baumodus auf Tablet bzw. zweitem Bildschirm neben dem Spiel, Materialtausch in einem eigenen Projekt, Geländeschnitt an einer echten Küste. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/styles/flow.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/project/BuildTab.tsx`
+- `apps/web/src/views/project/MaterialLedgerPanel.tsx`
+- `apps/web/src/views/project/MaterialsTab.tsx`
+- `apps/web/src/views/project/ProjectSwapPanel.tsx`
+- `apps/web/src/views/project/TerrainSectionPanel.tsx`
+- `apps/web/src/views/project/TerrainTab.tsx`
+- `apps/web/src/views/project/buildrun/BuildFocus.tsx`
+- `apps/web/src/views/project/buildrun/LayerPlan.tsx`
+- `apps/web/src/views/project/buildrun/SessionsView.tsx`
+- `docs/README.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/planer/BAUABLAUF.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/building/gameCheck.ts`
+- `packages/domain/src/building/guide.ts`
+- `packages/domain/src/building/stepProof.ts`
+- `packages/domain/src/core/types.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/materials/materialLedger.ts`
+- `packages/domain/src/materials/projectSwap.ts`
+- `packages/domain/src/world/terrainSection.ts`
+- `tests/e2e/aged-browserdata.e2e.mjs`
+- `tests/e2e/hafen-ablauf.e2e.mjs`
+- `tests/unit/building/flow.test.mjs`
+

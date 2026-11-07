@@ -104,7 +104,7 @@ function SessionCard({ s, open, onToggle, run, ...p }: Props & { s: BuildSession
       </div>
       {counts && <div className="session-game" role="status">
         <span>Im Spiel: {(['confirmed', 'partial', 'deviating', 'unchecked'] as const).filter(k => counts[k]).map(k => `${counts[k]} ${GAME_STATUS_LABEL[k].replace(/^im Spiel /, '')}`).join(' · ')}</span>
-        <button disabled={!confirmable.length} onClick={() => run(tickSteps(confirmable, `Bautag ${s.index}: ${confirmable.length} im Spiel bestätigte Schritte abgehakt`))}>
+        <button disabled={!confirmable.length} onClick={() => run(tickSteps(confirmable, `Bautag ${s.index}: ${confirmable.length} im Spiel bestätigte Schritte abgehakt`, undefined, 'game'))}>
           {confirmable.length ? `${confirmable.length} bestätigte Schritte dieses Tages abhaken` : 'Keine bestätigten offenen Schritte'}</button>
       </div>}
       <div className="session-grid">

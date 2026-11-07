@@ -442,8 +442,8 @@ export function evaluateProgress(guide: Guide, progress: Readonly<Record<string,
 }
 
 /** Manual tick (or re-confirmation after review) bound to the current geometry. */
-export function tickStep(step: GuideStep, at = new Date().toISOString()): Operation {
-  return { kind: 'progress.set', stepId: step.id, progress: { status: 'done', geometryHash: step.geometryHash, at } };
+export function tickStep(step: GuideStep, at = new Date().toISOString(), source?: 'game'): Operation {
+  return { kind: 'progress.set', stepId: step.id, progress: { status: 'done', geometryHash: step.geometryHash, at, ...(source && { source }) } };
 }
 
 export function untickStep(stepId: string): Operation {
@@ -451,8 +451,8 @@ export function untickStep(stepId: string): Operation {
 }
 
 /** One undoable batch; null when nothing would change. */
-export function tickSteps(steps: readonly GuideStep[], label: string, at = new Date().toISOString()): Operation | null {
-  return steps.length ? { kind: 'batch', label, operations: steps.map(s => tickStep(s, at)) } : null;
+export function tickSteps(steps: readonly GuideStep[], label: string, at = new Date().toISOString(), source?: 'game'): Operation | null {
+  return steps.length ? { kind: 'batch', label, operations: steps.map(s => tickStep(s, at, source)) } : null;
 }
 
 export function untickSteps(stepIds: readonly string[], label: string): Operation | null {

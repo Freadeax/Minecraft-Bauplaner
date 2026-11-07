@@ -106,7 +106,8 @@ for (const name of FIXTURES) {
     const p = await ctx.newPage();
     const errors = [];
     p.on('pageerror', e => errors.push(e.message));
-    p.on('console', m => { if (m.type() === 'error' && !/favicon/.test(m.text())) errors.push(m.text()); });
+    // Der Browser fragt beim direkten Aufruf der SVG-Datei selbst nach /favicon.ico (404, nicht von der App).
+    p.on('console', m => { if (m.type() === 'error' && !/favicon/.test(m.text() + ' ' + (m.location()?.url ?? ''))) errors.push(m.text()); });
 
     // 1. Restore the old database on the app origin without starting the app.
     await p.goto(`${BASE}favicon.svg`);

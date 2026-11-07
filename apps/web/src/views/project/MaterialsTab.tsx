@@ -5,6 +5,9 @@ import { download, formatNumber } from '../../app/ui';
 import { isResolved } from './session';
 import { MaterialLab } from '../../materials/MaterialLab';
 import { RawMaterialsPanel } from './RawMaterialsPanel';
+import { MaterialLedgerPanel } from './MaterialLedgerPanel';
+import { ProjectSwapPanel } from './ProjectSwapPanel';
+import '../../styles/flow.css';
 import type { RawMaterialsSettings } from './RawMaterialsPanel';
 import type { ProjectSession } from './session';
 
@@ -23,6 +26,9 @@ export function MaterialsTab({ session }: { session: ProjectSession }) {
   const { project, resolution, computation } = session;
   const [scopeId, setScopeId] = useState('');
   const [filter, setFilter] = useState('');
+  // Survives the recalculation after a material swap (the panels below unmount while the material is recomputed).
+  const [swapNote, setSwapNote] = useState('');
+  const swapNotice = swapNote ? <div className="notice success" role="status" data-testid="swap-done">{swapNote}<button onClick={() => setSwapNote('')}>OK</button></div> : null;
   const scopeInstance = project.instances.find(instance => instance.id === scopeId);
   const report = scopeInstance ? computation?.instanceMaterials.get(scopeInstance.id) : computation?.materials;
 
@@ -37,7 +43,7 @@ export function MaterialsTab({ session }: { session: ProjectSession }) {
     onTag: (tag, item) => session.execute(siteOperation(setRecipePrefs(site, { tag, item }), item ? `${tag.slice(1)}: ${item.replace(/^minecraft:/, '')} gewählt` : `${tag.slice(1)}: automatisch`)),
     onFuel: (fuel, fuelInBase) => session.execute(siteOperation(setRecipePrefs(site, { fuel, fuelInBase }), fuelInBase ? 'Brennstoff in Rohstoffe aufgenommen' : `Brennstoff: ${(fuel ?? 'coal').replace(/^minecraft:/, '')}`)),
   };
-  if (session.computationState !== 'ready') return <section className="materials" aria-label="Materialbedarf"><p role="status">{session.computationState === 'pending' ? 'Material wird neu berechnet.' : session.computationState === 'cancelled' ? 'Materialberechnung abgebrochen.' : 'Materialberechnung nicht verfügbar.'}</p></section>;
+  if (session.computationState !== 'ready') return <section className="materials" aria-label="Materialbedarf">{swapNotice}<p role="status">{session.computationState === 'pending' ? 'Material wird neu berechnet.' : session.computationState === 'cancelled' ? 'Materialberechnung abgebrochen.' : 'Materialberechnung nicht verfügbar.'}</p></section>;
   if (!isResolved(resolution)) return <section className="materials report danger-report" role="alert"><h3>Material kann nicht berechnet werden</h3><p>{resolution.error}</p></section>;
   if (!report) return <section className="materials" aria-label="Materialbedarf"><p role="alert">Für diesen Umfang liegt noch kein Materialbericht vor.</p></section>;
   const q = filter.trim().toLowerCase();
@@ -64,6 +70,9 @@ export function MaterialsTab({ session }: { session: ProjectSession }) {
       <div><dt>Platzierte Blöcke</dt><dd>{formatNumber(report.placed.blocks)}</dd></div>
     </dl>
     {report.placed.blocks === 0 ? <p className="muted">Keine platzierten Blöcke in diesem Umfang{report.placed.air ? `; ${report.placed.air} Luftzellen.` : '.'}</p> : <>
+      {!scopeInstance && computation && <MaterialLedgerPanel project={project} report={report} plan={computation.site.plan} />}
+      {swapNotice}
+      <ProjectSwapPanel session={session} resolution={resolution} onDone={setSwapNote} />
       <MaterialLab report={report} />
       <h3 className="materials-title">Bauitems <small>{items.length} von {report.items.length}</small></h3>
       <div className="table-wrap"><table className="materials-table">

@@ -12688,6 +12688,108 @@
       "thread": "Sicherheitsheader und Release-Check einführen",
       "philipp": [],
       "orphans": []
+    },
+    {
+      "id": "FLOW-01",
+      "title": "Durchgängiger Bauablauf vom Entwurf bis zum nächsten Block im Spiel: Baumodus für Tablet/Zweitbildschirm, Nachweis je Schritt, Materialbilanz, Materialtausch mit Vorschau, Geländeschnitt",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Arbeitsstrang „Durchgängiger Bauablauf bis ins Spiel“",
+      "dependencies": [
+        "BUILD-06",
+        "MAT-02",
+        "TERRAIN-04",
+        "GAME-01"
+      ],
+      "scope": [
+        "packages/domain/src/building/stepProof.ts",
+        "packages/domain/src/materials/materialLedger.ts",
+        "packages/domain/src/materials/projectSwap.ts",
+        "packages/domain/src/world/terrainSection.ts",
+        "packages/domain/src/core/types.ts",
+        "packages/domain/src/building/guide.ts",
+        "packages/domain/src/building/gameCheck.ts",
+        "packages/domain/src/index.ts",
+        "apps/web/src/views/project/BuildTab.tsx",
+        "apps/web/src/views/project/buildrun/",
+        "apps/web/src/views/project/MaterialsTab.tsx",
+        "apps/web/src/views/project/MaterialLedgerPanel.tsx",
+        "apps/web/src/views/project/ProjectSwapPanel.tsx",
+        "apps/web/src/views/project/TerrainTab.tsx",
+        "apps/web/src/views/project/TerrainSectionPanel.tsx",
+        "apps/web/src/styles/flow.css",
+        "tests/unit/building/flow.test.mjs",
+        "tests/e2e/hafen-ablauf.e2e.mjs",
+        "docs/architecture/planer/BAUABLAUF.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "FLOW-01-S01",
+          "title": "Baumodus für Tablet und Zweitbildschirm: großer Schichtplan neben dem Schritt, Zurück/Weiter auch per Tastatur, Vollbild, Packliste des Bauabschnitts (Bedarf, aus Lager, besorgen), eigenes Fenster, das Haken mit dem ersten Fenster abgleicht.",
+          "done": true
+        },
+        {
+          "id": "FLOW-01-S02",
+          "title": "Nachweis je Schritt: manuell abgehakt, im Spiel bestätigt (Haken aus Aufnahme/Mod oder durch Aufnahme belegt), neu prüfen nach Planänderung, im Spiel abweichend, im Spiel fertig aber nicht abgehakt.",
+          "done": true
+        },
+        {
+          "id": "FLOW-01-S03",
+          "title": "Materialbilanz: Gesamtbedarf, verbaut, offen, Lager, reserviert (für offene Abschnitte in Bau-Reihenfolge), frei und zu beschaffen in einer Tabelle, jeweils mit dem aktuellen Abschnitt, als CSV.",
+          "done": true
+        },
+        {
+          "id": "FLOW-01-S04",
+          "title": "Materialtausch im Projekt mit Vorschau: vorher/nachher, betroffene Instanzen, Blockwechsel, Mehr-/Minderbedarf gegen Lager, abgehakte Schritte, die danach neu zu prüfen sind; Übernahme als neue Bauteilversionen in einem Rückgängig-Schritt.",
+          "done": true
+        },
+        {
+          "id": "FLOW-01-S05",
+          "title": "Gelände: Plan, Geländeaufnahme und Live-Gelände aus der Mod getrennt; Erdbewegungskarte (Abtrag, Unterbau, Kollision, Höhe, Wassertiefe), Geländeschnitt mit Höhenprofil; Live wird verglichen, nie gespeichert.",
+          "done": true
+        },
+        {
+          "id": "FLOW-01-S06",
+          "title": "Abnahmeprojekt Hafen (Große Hafenstadt an einer Küste, Mod-Simulator) automatisch im Browser und im Rechenkern durchgespielt.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Keine zweite Geometrie-, Zähl- oder Itemlogik: Bilanz aus Materialbericht und Baustellenplan, Tausch über swapMaterials und commitProjectEdit, Erdbewegung mit denselben Zahlen wie estimateEarthwork.",
+        "Haken bleiben ausdrücklich; „im Spiel bestätigt“ stützt sich nur auf eine Aufnahme. Live-Gelände wird nie in die Aufnahme übernommen."
+      ],
+      "next": "Philipps Spieltest: Baumodus auf Tablet bzw. zweitem Bildschirm neben dem Spiel, Materialtausch in einem eigenen Projekt, Geländeschnitt an einer echten Küste.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/unit/building/flow.test.mjs",
+          "note": "5 Fälle am Großprojekt „Große Hafenstadt“: Nachweis, Bilanzgleichungen, Tausch-Vorschau = übernommener Stand, Erdbewegung = estimateEarthwork, Live getrennt."
+        },
+        {
+          "path": "tests/e2e/hafen-ablauf.e2e.mjs",
+          "note": "Chromium 1400 px mit Mod-Simulator: Großprojekt anlegen, Küste, Gelände aus der Mod, Schnitt/Wassertiefe/Kollisionen, Live-Vergleich, Baumodus mit Tastatur, Zweitbildschirm-Fenster, Bilanz, Materialtausch."
+        }
+      ],
+      "verification": {
+        "state": "passed",
+        "note": "Einheitstests und Hafen-Browsertest grün; bestehende Bauen-/Material-/Gelände-/Persistenz-Browsertests grün; kein echter Spieltest."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-07T20:21:31.573Z",
+      "area": "PROJEKT",
+      "thread": "Durchgängigen Bauablauf bis ins Spiel schaffen",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Baumodus auf Tablet oder zweitem Bildschirm neben dem Spiel, Materialtausch mit Vorschau und Geländeschnitt an deiner Küste prüfen."
+        }
+      ],
+      "orphans": []
     }
   ],
   "events": [
@@ -15011,6 +15113,52 @@
           "done": 5,
           "total": 7,
           "next": "Entscheidung Philipp: eigene Team-Raum-Adressen beim Durchsetzen der CSP erlauben oder nicht; Mod-Version mit Browserliste mit dem nächsten Mod-Release ausliefern."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T20:21:31.573Z",
+      "kind": "progress",
+      "items": [
+        "FLOW-01"
+      ],
+      "summary": "Durchgängiger Bauablauf: Baumodus für Tablet und Zweitbildschirm mit Packliste, Nachweis je Schritt (manuell, im Spiel bestätigt, neu prüfen), Materialbilanz, Materialtausch mit Vorschau, Geländeschnitt mit Höhenprofil, Wassertiefe, Erdbewegung und Kollisionen; Abnahme mit der Großen Hafenstadt an einer Küste",
+      "files": [
+        "apps/web/src/styles/flow.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/project/BuildTab.tsx",
+        "apps/web/src/views/project/MaterialLedgerPanel.tsx",
+        "apps/web/src/views/project/MaterialsTab.tsx",
+        "apps/web/src/views/project/ProjectSwapPanel.tsx",
+        "apps/web/src/views/project/TerrainSectionPanel.tsx",
+        "apps/web/src/views/project/TerrainTab.tsx",
+        "apps/web/src/views/project/buildrun/BuildFocus.tsx",
+        "apps/web/src/views/project/buildrun/LayerPlan.tsx",
+        "apps/web/src/views/project/buildrun/SessionsView.tsx",
+        "docs/README.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/planer/BAUABLAUF.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/building/gameCheck.ts",
+        "packages/domain/src/building/guide.ts",
+        "packages/domain/src/building/stepProof.ts",
+        "packages/domain/src/core/types.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/materials/materialLedger.ts",
+        "packages/domain/src/materials/projectSwap.ts",
+        "packages/domain/src/world/terrainSection.ts",
+        "tests/e2e/aged-browserdata.e2e.mjs",
+        "tests/e2e/hafen-ablauf.e2e.mjs",
+        "tests/unit/building/flow.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "FLOW-01",
+          "status": "implemented",
+          "done": 6,
+          "total": 6,
+          "next": "Philipps Spieltest: Baumodus auf Tablet bzw. zweitem Bildschirm neben dem Spiel, Materialtausch in einem eigenen Projekt, Geländeschnitt an einer echten Küste."
         }
       ]
     }

@@ -128,6 +128,8 @@ export interface StepProgress {
   /** Geometry hash of the step when it was ticked; mismatch ⇒ "prüfbedürftig". */
   readonly geometryHash: string;
   readonly at: string;
+  /** FLOW-01: `game` when the tick came from an in-game confirmation (recording or mod); absent = manual tick. */
+  readonly source?: 'game';
 }
 
 export interface BlueprintRevision {

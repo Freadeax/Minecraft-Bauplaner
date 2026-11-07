@@ -37,6 +37,7 @@ Diese Läufe starten echte Minecraft-Clients oder Paper-Server (kopflos) und sin
 |---|---|
 | `npm run check` | grün |
 | Browsertests Chromium | 235/235 grün (96 Dateien, Stand LIB-07; `planer-abnahmen` einzeln nachgelaufen; `team-room.e2e` danach 10 Läufe hintereinander grün, `offline.e2e` 6/6) |
+| FLOW-01 Bauablauf (07.11.) | `npm run check` grün; Browsertests 238/238 (99 Dateien, Stand vor LIB-07/RELEASE-01; im Gesamtlauf wackelten `offline.e2e` (Dienst-Worker-Wechsel) und `team-room.e2e` (echter Dienst), beide einzeln danach grün) |
 | Firefox, WebKit, iPad-/iPhone-Profile | grün für Werkstatt, Weltkarte und Grafik |
 | RELEASE-01 Browser-Schutz (07.11.) | `npm run check` grün; Browsertests 233/234 im Gesamtlauf, `team-room.e2e` danach 5 von 6 Einzelläufen grün (bekanntes Zeitverhalten, unverändert); `security-headers.e2e` null CSP-Verstöße; Mod-Kern-JUnit und Fabric-Build grün |
 | Platzierung im Spiel | Katalog, Generatoren und Gelände 670 Pläne, Basis 28, Großprojekte 169 + 13 auf Gelände: jeweils 0 Abweichungen |

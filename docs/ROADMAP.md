@@ -15,7 +15,7 @@ Stand: 2026-11-07T19:33:20.416Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 2 |
 | 🚧 In Arbeit | 5 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 102 |
+| 🧩 Implementiert · Abnahme offen | 103 |
 | ✅ Im beschriebenen Umfang geprüft | 35 |
 | ⏸ Zurückgestellt | 3 |
 
@@ -27,7 +27,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Arbeitsstrang
 |---|---:|---:|---:|---:|
 | [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 29 | 0 | 29 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 11 | 0 | 11 | 4 |
-| [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
+| [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 13 | 0 | 10 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 18 | 0 | 14 | 1 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 14 | 0 | 12 | 0 |
@@ -103,6 +103,7 @@ Abgeschlossen oder zurückgestellt: LIB-01 (geprüft), GEN-01 (geprüft), WORLD-
 | ID | Paket | Status | Prio | Arbeitsstrang | Nur Philipp |
 |---|---|---|---|---|---|
 | [BUILD-06](#build-06) | Bauführung im Spiel | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Bauführung mit Mod-Aufnahme auf deinem Server; Druck- und Handyansicht. |
+| [FLOW-01](#flow-01) | Durchgängiger Bauablauf vom Entwurf bis zum nächsten Block im Spiel | 🧩 Implementiert · Abnahme offen 6/6 | P1 | „Durchgängigen Bauablauf bis ins Spiel schaffen“ | Baumodus auf Tablet oder zweitem Bildschirm neben dem Spiel, Materialtausch mit Vorschau und Geländeschnitt an deiner Küste prüfen. |
 | [PROJ-01](#proj-01) | Projektplanung für große Projekte | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Reiter „Planung“ abnehmen (PROJ-09…11). |
 | [PROJ-02](#proj-02) | Projektplanung vertieft | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Basisplan, Material abwarten und Anteil der Bautage im Reiter „Planung“ abnehmen (PROJ-16…18). |
 | [PROJ-03](#proj-03) | Planung Runde 3 | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Im Reiter „Planung“ eine Abwesenheit eintragen und zwei Basispläne vergleichen (PROJ-20). |
@@ -310,6 +311,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **LINK-11** · Abnahme LINK-12: als Bauleitung „Mein Spiel verbinden“, mit der Mod auf den Server – der Server verbindet sich selbst mit dem Team-Raum, Abschnittsschutz greift.
 - **WORLD-SHARE-01** · Mit dem Paper-Plugin und BlueMap oder Dynmap prüfen, ob die Marker des Weltplans ohne Datei auf der Server-Karte erscheinen und gesperrte Bauplätze geschützt sind (KARTE-10..12).
 - **NAME-01** · Mod 0.24.0 laden: Optionen → Steuerung zeigt die Gruppe „Build Studio“, J-Menü heißt „Build Studio“.
+- **FLOW-01** · Baumodus auf Tablet oder zweitem Bildschirm neben dem Spiel, Materialtausch mit Vorschau und Geländeschnitt an deiner Küste prüfen.
 
 ### Auf echten Geräten und Browsern
 
@@ -599,6 +601,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [CORE-04](#core-04) | Planer-Kernmodule prüfen und überarbeiten: Verbindungen zwischen Projekt, Planung, Werkstatt, Import/Export und Speicher sauber, gefundene Fehler behoben | 🧩 Implementiert · Abnahme offen | 4/5 | ARCH-02, PROJ-04, EDIT-06 | ausstehend | ausstehend |
 | [WORLD-SHARE-01](#world-share-01) | Weltplan und Server-Karte nur über den Team-Raum: Weltplan mit Bauplätzen, Gruppen und Sperren an alle Mods und das Paper-Plugin, Plugin schreibt BlueMap-/Dynmap-Marker selbst, Kartenliste geteilt, Dateiwege nur als Notfall | 🧩 Implementiert · Abnahme offen | 4/5 | MAP-02, MAP-04 | ausstehend | ausstehend |
 | [UI-03](#ui-03) | Design-System: saubere, einheitliche und schön angepasste Planer-Oberfläche | 🧩 Implementiert · Abnahme offen | 4/5 | UI-01, UI-02 | ausstehend | ausstehend |
+| [FLOW-01](#flow-01) | Durchgängiger Bauablauf vom Entwurf bis zum nächsten Block im Spiel: Baumodus für Tablet/Zweitbildschirm, Nachweis je Schritt, Materialbilanz, Materialtausch mit Vorschau, Geländeschnitt | 🧩 Implementiert · Abnahme offen | 6/6 | BUILD-06, MAT-02, TERRAIN-04, GAME-01 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
 
@@ -3957,6 +3960,31 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/e2e/security-headers.e2e.mjs](../tests/e2e/security-headers.e2e.mjs) — dist-web mit Cloudflare-Headern: null CSP-Verstöße auf allen Hauptwegen, Gegenprobe, Einbettung blockiert.; [tests/unit/formats/export-safety.test.mjs](../tests/unit/formats/export-safety.test.mjs) — Meldung, Entfernen und Dateiinhalt für Schem und Litematic.; [tests/unit/tooling/cloudflare-pages.test.mjs](../tests/unit/tooling/cloudflare-pages.test.mjs) — _headers und Meta-CSP aus security_headers.mjs.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java) — Browserliste, Zwecke, Neustart, einzelnes Trennen.
 
 **Dateiumfang:** `scripts/pages/security_headers.mjs`, `scripts/pages/publish_cloudflare.mjs`, `scripts/pages/publish_main_pages.sh`, `scripts/checks/release_check.mjs`, `apps/web/index.html`, `apps/web/src/app/frameGuard.ts`, `apps/web/src/main.tsx`, `apps/web/src/views/project/ExportTab.tsx`, `packages/voxel/src/exportSafety.ts`, `packages/application/src/revisionExport.ts`, `mods/bauplaner-bridge/`, `tests/`, `docs/architecture/betrieb/SICHERHEITSHEADER.md`, `docs/operations/VEROEFFENTLICHUNG.md`, `SECURITY.md`. **Abhängigkeiten:** PERF-06, FORMAT-02, LINK-03. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### FLOW-01
+
+**Durchgängiger Bauablauf vom Entwurf bis zum nächsten Block im Spiel: Baumodus für Tablet/Zweitbildschirm, Nachweis je Schritt, Materialbilanz, Materialtausch mit Vorschau, Geländeschnitt** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Durchgängiger Bauablauf bis ins Spiel“ · Arbeitsstrang: „Durchgängigen Bauablauf bis ins Spiel schaffen“ · Aktualisiert: 2026-11-07T20:21:31.573Z
+
+- [x] FLOW-01-S01: Baumodus für Tablet und Zweitbildschirm: großer Schichtplan neben dem Schritt, Zurück/Weiter auch per Tastatur, Vollbild, Packliste des Bauabschnitts (Bedarf, aus Lager, besorgen), eigenes Fenster, das Haken mit dem ersten Fenster abgleicht.
+- [x] FLOW-01-S02: Nachweis je Schritt: manuell abgehakt, im Spiel bestätigt (Haken aus Aufnahme/Mod oder durch Aufnahme belegt), neu prüfen nach Planänderung, im Spiel abweichend, im Spiel fertig aber nicht abgehakt.
+- [x] FLOW-01-S03: Materialbilanz: Gesamtbedarf, verbaut, offen, Lager, reserviert (für offene Abschnitte in Bau-Reihenfolge), frei und zu beschaffen in einer Tabelle, jeweils mit dem aktuellen Abschnitt, als CSV.
+- [x] FLOW-01-S04: Materialtausch im Projekt mit Vorschau: vorher/nachher, betroffene Instanzen, Blockwechsel, Mehr-/Minderbedarf gegen Lager, abgehakte Schritte, die danach neu zu prüfen sind; Übernahme als neue Bauteilversionen in einem Rückgängig-Schritt.
+- [x] FLOW-01-S05: Gelände: Plan, Geländeaufnahme und Live-Gelände aus der Mod getrennt; Erdbewegungskarte (Abtrag, Unterbau, Kollision, Höhe, Wassertiefe), Geländeschnitt mit Höhenprofil; Live wird verglichen, nie gespeichert.
+- [x] FLOW-01-S06: Abnahmeprojekt Hafen (Große Hafenstadt an einer Küste, Mod-Simulator) automatisch im Browser und im Rechenkern durchgespielt.
+
+**Abnahme:** Keine zweite Geometrie-, Zähl- oder Itemlogik: Bilanz aus Materialbericht und Baustellenplan, Tausch über swapMaterials und commitProjectEdit, Erdbewegung mit denselben Zahlen wie estimateEarthwork. Haken bleiben ausdrücklich; „im Spiel bestätigt“ stützt sich nur auf eine Aufnahme. Live-Gelände wird nie in die Aufnahme übernommen.
+
+**Nächste Aktion:** Philipps Spieltest: Baumodus auf Tablet bzw. zweitem Bildschirm neben dem Spiel, Materialtausch in einem eigenen Projekt, Geländeschnitt an einer echten Küste.
+
+**Nur Philipp:** Im Spiel an deinem PC: Baumodus auf Tablet oder zweitem Bildschirm neben dem Spiel, Materialtausch mit Vorschau und Geländeschnitt an deiner Küste prüfen.
+
+**Prüfstand:** Einheitstests und Hafen-Browsertest grün; bestehende Bauen-/Material-/Gelände-/Persistenz-Browsertests grün; kein echter Spieltest.
+
+**Nachweise:** [tests/unit/building/flow.test.mjs](../tests/unit/building/flow.test.mjs) — 5 Fälle am Großprojekt „Große Hafenstadt“: Nachweis, Bilanzgleichungen, Tausch-Vorschau = übernommener Stand, Erdbewegung = estimateEarthwork, Live getrennt.; [tests/e2e/hafen-ablauf.e2e.mjs](../tests/e2e/hafen-ablauf.e2e.mjs) — Chromium 1400 px mit Mod-Simulator: Großprojekt anlegen, Küste, Gelände aus der Mod, Schnitt/Wassertiefe/Kollisionen, Live-Vergleich, Baumodus mit Tastatur, Zweitbildschirm-Fenster, Bilanz, Materialtausch.
+
+**Dateiumfang:** `packages/domain/src/building/stepProof.ts`, `packages/domain/src/materials/materialLedger.ts`, `packages/domain/src/materials/projectSwap.ts`, `packages/domain/src/world/terrainSection.ts`, `packages/domain/src/core/types.ts`, `packages/domain/src/building/guide.ts`, `packages/domain/src/building/gameCheck.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/BuildTab.tsx`, `apps/web/src/views/project/buildrun/`, `apps/web/src/views/project/MaterialsTab.tsx`, `apps/web/src/views/project/MaterialLedgerPanel.tsx`, `apps/web/src/views/project/ProjectSwapPanel.tsx`, `apps/web/src/views/project/TerrainTab.tsx`, `apps/web/src/views/project/TerrainSectionPanel.tsx`, `apps/web/src/styles/flow.css`, `tests/unit/building/flow.test.mjs`, `tests/e2e/hafen-ablauf.e2e.mjs`, `docs/architecture/planer/BAUABLAUF.md`. **Abhängigkeiten:** BUILD-06, MAT-02, TERRAIN-04, GAME-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

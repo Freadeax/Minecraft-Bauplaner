@@ -194,7 +194,7 @@ export function tickedButNotBuilt(guide: Guide, check: GameCheck, status: (id: s
 /** Explicit, undoable transfer of confirmed steps into manual ticks. */
 export function tickConfirmed(guide: Guide, check: GameCheck, status: (id: string) => StepStatus, at?: string): Operation | null {
   const steps = confirmedUnticked(guide, check, status);
-  return tickSteps(steps, `${steps.length} im Spiel bestätigte Schritte abgehakt`, at);
+  return tickSteps(steps, `${steps.length} im Spiel bestätigte Schritte abgehakt`, at, 'game');
 }
 
 /** One height of the plan in a game check (MAP-05): every planned cell at this Y, by verdict. */

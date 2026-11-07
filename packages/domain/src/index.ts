@@ -44,7 +44,7 @@ export type { ProfileRecipe, ProfileIngredient, ProfileStation } from './materia
 export type { Recipe, Ingredient, Station, RecipeMethod, RecipeOptions, RecipeReport, RecipeStep, BaseLine, BaseKind, TagChoice, TagDefinition, FuelBalance, RecipePrefs } from './materials/recipes.js';
 export { ENSEMBLES, memberTransform, latestVersions, missingMembers, createEnsembleProject, ensemblesWith } from './catalog/ensembles.js';
 export type { Ensemble, EnsembleMember } from './catalog/ensembles.js';
-export { MATERIAL_SETS, MATERIAL_KIND_LABEL, materialSet, materialOf, detectMaterials, swapMaterials, swapLabel } from './materials/variants.js';
+export { MATERIAL_SETS, MATERIAL_KIND_LABEL, materialSet, materialOf, detectMaterials, swapMaterials, swapLabel, materialTargets } from './materials/variants.js';
 export type { MaterialSet, MaterialKind, MaterialUse, MaterialSwap, SwapResult } from './materials/variants.js';
 export { SITE_SCHEMA_VERSION, DEFAULT_RESERVATION_DEPTH, MAX_RESERVATION_DEPTH, emptySite, siteOf, checkSite, siteOperation, recipeOptionsOf, setRecipePrefs, addSection, updateSection, removeSection, moveSection, setStock, toggleResolvedStock, setPace, reservationKey, setReservation, pruneSite, sectionOfStep, SECTION_PRESET_LABEL, suggestSections, checkSections, gatherRuleFor, GATHER_BUILDING_IDS, planSite, RESERVATION_STATE_LABEL, profileSize, reservationCells, reservationsFor } from './building/site.js';
 export type { SitePlan, SiteSection, SectionMember, ReservationSetting, SectionPreset, SectionIssue, GatherRule, GatherLine, BuildItemLine, SectionPlan, SiteOverview, ReservationState, Reservation } from './building/site.js';
@@ -190,3 +190,12 @@ export { WORLD_SHARE_SCHEMA, WORLD_SHARE_FORMAT, MAP_LIST_FORMAT, WORLD_SHARE_MA
 export type { WorldShareDoc, WorldMerge, MapListDoc } from './world/worldShare.js';
 export { FURNACE_LINE_BUILDINGS, FURNACE_TARGET_HOURS, MAX_FURNACE_MODULES, FURNACE_SECTION_NAME, furnaceBuildingOf, furnaceLineOptions, furnaceLineOperation } from './materials/furnaceLine.js';
 export type { FurnaceBuilding, FurnaceLineOption, FurnaceLineInput, FurnaceLinePlacement } from './materials/furnaceLine.js';
+// FLOW-01 Durchgängiger Bauablauf: Nachweis je Schritt, Materialbilanz, Materialtausch im Projekt, Geländeschnitt.
+export { STEP_PROOF_LABEL, STEP_PROOF_MARK, STEP_PROOF_ORDER, stepProof, proofCounts } from './building/stepProof.js';
+export type { StepProof, ProofCounts } from './building/stepProof.js';
+export { materialLedger, ledgerToCsv } from './materials/materialLedger.js';
+export type { LedgerLine, MaterialLedger } from './materials/materialLedger.js';
+export { previewProjectSwap } from './materials/projectSwap.js';
+export type { ProjectSwapPreview, SwapItemLine } from './materials/projectSwap.js';
+export { planColumns, earthworkMap, terrainSection, middleLine } from './world/terrainSection.js';
+export type { PlanColumn, EarthColumn, EarthTotals, EarthworkMap, SectionAxis, TerrainSection } from './world/terrainSection.js';

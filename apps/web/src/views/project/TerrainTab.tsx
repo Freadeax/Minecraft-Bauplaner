@@ -11,6 +11,8 @@ import { WorldClient } from '../world/protocol';
 import type { WorldResponse } from '../world/protocol';
 import { RegionPicker } from '../world/RegionPicker';
 import { TerrainSurveyPanel } from './TerrainSurveyPanel';
+import { TerrainSectionPanel } from './TerrainSectionPanel';
+import '../../styles/flow.css';
 import { checkTerrain, placedBounds, terrainBox, LIVE_BOX_MAX_CELLS } from '../../../../../packages/domain/src/index.js';
 import type { PickedWorld } from '../world/RegionPicker';
 import { isResolved } from './session';
@@ -118,6 +120,7 @@ export function TerrainTab({ session }: { session: ProjectSession }) {
     </header>
     {busy && <div className="notice world-busy" role="status">{busy}{progress && ` … ${progress[0]} / ${progress[1]} Chunks`}<button onClick={() => client.current?.abort()}>Abbrechen</button></div>}
     {survey}
+    {!empty && <TerrainSectionPanel project={project} placement={placement} world={world} game={game} />}
     {empty && <div className="notice">Noch nichts geplant. Füge im <a href={`#/projekt/${project.id}/editor`}>Editor</a> Bauteile ein oder plane eine <a href="#/bibliothek/anlagen">Anlage</a> auf diesem Gelände.</div>}
     {!empty && <section className="terrain-check" aria-label="Blockgenau prüfen">
       <h3>Blockgenau prüfen</h3>
