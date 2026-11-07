@@ -16,13 +16,36 @@
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 work=$(mktemp -d)
-weston_pid=
-cleanup() { [ -n "$weston_pid" ] && kill "$weston_pid" 2>/dev/null; [ -n "${BAUPLANER_KEEP:-}" ] && cp -r "$work" "$BAUPLANER_KEEP"; rm -rf "$work"; }
+weston_pid= relay_pid= wrangler_pid=
+cleanup() {
+  [ -n "$weston_pid" ] && kill "$weston_pid" 2>/dev/null
+  [ -n "$relay_pid" ] && kill "$relay_pid" 2>/dev/null
+  [ -n "$wrangler_pid" ] && kill -- "-$wrangler_pid" 2>/dev/null
+  [ -n "${BAUPLANER_KEEP:-}" ] && cp -r "$work" "$BAUPLANER_KEEP"; rm -rf "$work"
+}
 trap cleanup EXIT
 
 node scripts/mod/bridge_gametest.mjs prepare "$work"
-# Optional BAUPLANER_ROOM=<running team room, e.g. http://127.0.0.1:8787 from npx wrangler dev>: LINK-07 step (mod ↔ room without a server file).
-[ -n "${BAUPLANER_ROOM:-}" ] && node scripts/mod/bridge_room_prepare.mjs "$work" "$BAUPLANER_ROOM"
+# Optional BAUPLANER_ROOM=<running team room, e.g. http://127.0.0.1:8787 from npx wrangler dev> or BAUPLANER_ROOM=start
+# (starts its own `wrangler dev`): LINK-07 step (mod ↔ room without a server file) and LINK-09 (block C): the mod talks
+# to the room through scripts/mod/bridge_netcut.mjs, which the game test uses to cut the line and bring it back.
+if [ "${BAUPLANER_ROOM:-}" = start ]; then
+  roomport=${BAUPLANER_ROOM_PORT:-8788}
+  (cd services/team-room && exec setsid npx --yes wrangler@4 dev --port "$roomport" --ip 127.0.0.1 --persist-to "$work/room-state" >"$work/wrangler.log" 2>&1) &
+  wrangler_pid=$!
+  for _ in $(seq 1 120); do grep -q "Ready on" "$work/wrangler.log" 2>/dev/null && break; sleep 1; done
+  grep -q "Ready on" "$work/wrangler.log" || { cat "$work/wrangler.log"; echo "Team-Raum (wrangler dev) startet nicht" >&2; exit 1; }
+  BAUPLANER_ROOM=http://127.0.0.1:$roomport
+fi
+if [ -n "${BAUPLANER_ROOM:-}" ]; then
+  relayport=${BAUPLANER_RELAY_PORT:-8790}
+  node scripts/mod/bridge_netcut.mjs "$work" "$relayport" "$BAUPLANER_ROOM" >"$work/netcut.log" 2>&1 &
+  relay_pid=$!
+  for _ in $(seq 1 50); do grep -q "Netz-Relais" "$work/netcut.log" 2>/dev/null && break; sleep 0.2; done
+  node scripts/mod/bridge_room_prepare.mjs "$work" "http://127.0.0.1:$relayport"
+  printf %s "$BAUPLANER_ROOM" >"$work/room-direct"
+  : >"$work/netcut-ready"
+fi
 if [ -z "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]; then
   command -v weston >/dev/null || { echo "Kein Bildschirm und kein weston: sudo apt-get install weston" >&2; exit 2; }
   # SDL 3 waits forever in SDL_CreateWindow when libdecor has no plugin (headless weston): no decorations.

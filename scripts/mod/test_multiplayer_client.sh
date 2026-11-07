@@ -31,6 +31,8 @@ if [ -z "$room" ]; then
   grep -q "Ready on" "$work/wrangler.log" || { cat "$work/wrangler.log"; echo "Team-Raum (wrangler dev) startet nicht"; exit 1; }
   room=http://127.0.0.1:$port
 fi
+# MOD-10: the same website plan as the singleplayer test, for the placement helper on the server.
+node scripts/mod/bridge_gametest.mjs prepare "$work" >/dev/null
 node scripts/mod/bridge_multiplayer_client.mjs "$work" "$jar" "$version" "$java25" "$room" > >(tee "$work/driver.log") 2>&1 &
 driver=$!; pids+=($driver)
 for _ in $(seq 1 600); do [ -s "$work/mp-paper.txt" ] && break; kill -0 "$driver" 2>/dev/null || break; sleep 1; done

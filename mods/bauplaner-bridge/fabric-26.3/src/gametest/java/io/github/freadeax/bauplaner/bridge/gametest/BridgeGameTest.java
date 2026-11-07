@@ -30,6 +30,8 @@ import net.minecraft.world.level.levelgen.Heightmap;
  */
 public final class BridgeGameTest implements FabricClientGameTest {
     private static final String PLAN = "spieltest.schem";
+    /** Key of the website link paired in {@link #liveLink}; block C (AbnahmeScenario) talks to the mod with it. */
+    static String linkToken;
 
     @Override
     public void runTest(ClientGameTestContext context) {
@@ -55,7 +57,11 @@ public final class BridgeGameTest implements FabricClientGameTest {
             Files.deleteIfExists(root.resolve("platzierung.properties"));
             List<String> setblocks = Files.readAllLines(io.resolve("setblocks.txt")).stream().filter(l -> !l.isBlank()).toList();
 
+            net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldSave save;
+            java.util.Map<String, Object> placedBefore;
+            String state;
             try (TestSingleplayerContext world = context.worldBuilder().create()) {
+                save = world.getWorldSave();
                 world.getServer().runCommand("time set noon");
                 // Project origin 0/0/0 on the ground at x=8, z=8; the plan is built from there.
                 int ground = world.getServer().computeOnServer(s -> s.overworld().getHeight(Heightmap.Types.MOTION_BLOCKING, 8, 8));
@@ -92,6 +98,10 @@ public final class BridgeGameTest implements FabricClientGameTest {
                     ui(context, world, io, anchor);
                     acceptance(context, world, io, anchor);
                     browserPhase(context, world, io);
+                    // Block C (07.11.2026): the remaining hand cases of the test phase, then LINK-09 offline.
+                    AbnahmeScenario.run(context, world, io, root, anchor, linkToken);
+                    if (AbnahmeScenario.offlineReady(io)) AbnahmeScenario.offline(context, world, io, anchor, linkToken);
+                    placedBefore = AbnahmeScenario.placementNow(context);
                 } catch (Throwable t) {
                     // Modpack runs can hang on shutdown before the failure is reported: log it right away.
                     t.printStackTrace();
@@ -99,11 +109,20 @@ public final class BridgeGameTest implements FabricClientGameTest {
                     throw t;
                 }
 
-                String state = Files.readString(root.resolve("state.properties"));
+                state = Files.readString(root.resolve("state.properties"));
                 if (!state.contains(".anchor=" + anchor[0] + " " + anchor[1] + " " + anchor[2]))
                     throw new AssertionError("Anker nicht gespeichert oder falsch: " + state);
-                Files.writeString(io.resolve("state.properties"), state);
             }
+            // MOD-02 / LINK-09: leave the world and enter it again – the plan stands where it stood, waiting reports go out.
+            try {
+                AbnahmeScenario.reopen(context, save, io, new int[] { 0, 0, 0 }, linkToken, placedBefore);
+            } catch (Throwable t) {
+                t.printStackTrace();
+                Files.writeString(io.resolve("fehler.txt"), String.valueOf(t));
+                throw t;
+            }
+            // Written last: the shell script ends the game once it exists.
+            Files.writeString(io.resolve("state.properties"), state);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -473,7 +492,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
     }
 
     /** Clicks the button whose label is {@code label} (also as the active tab „▸ label“ or shortened „label…“). */
-    private static void clickLabel(ClientGameTestContext context, String label) {
+    static void clickLabel(ClientGameTestContext context, String label) {
         String shown = context.computeOnClient(mc -> mc.gui.screen().children().stream()
                 .filter(c -> c instanceof net.minecraft.client.gui.components.Button).map(c -> ((net.minecraft.client.gui.components.Button) c).getMessage().getString())
                 .filter(m -> m.equals(label) || m.equals("▸ " + label) || (m.endsWith("…") && label.startsWith(m.substring(0, m.length() - 1)))).findFirst()
@@ -559,7 +578,8 @@ public final class BridgeGameTest implements FabricClientGameTest {
      * driver runs (it writes browser-ready); the verify step then reports it as not checked.
      */
     private static void browserPhase(ClientGameTestContext context, TestSingleplayerContext world, Path io) throws IOException {
-        context.waitFor(mc -> Files.exists(io.resolve("browser-ready")) || Files.exists(io.resolve("browser-off")), 20 * 600);
+        // browser-done without browser-ready: the browser driver gave up before it started (verify reports why).
+        context.waitFor(mc -> Files.exists(io.resolve("browser-ready")) || Files.exists(io.resolve("browser-off")) || Files.exists(io.resolve("browser-done")), 20 * 600);
         if (!Files.exists(io.resolve("browser-ready"))) return;
         context.setScreen(() -> null);
         Files.writeString(io.resolve("browser-go"), "{\"port\":47615}");
@@ -684,6 +704,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
         var m = java.util.regex.Pattern.compile("\"token\":\"([A-Za-z0-9_-]+)\"").matcher(pair);
         if (!m.find()) throw new AssertionError("Kopplung ohne Schlüssel: " + pair);
         String token = m.group(1);
+        linkToken = token;
         out.append(",\"status\":").append(request(context, http, base + "/v1/status", "GET", null, token, "https://freadeax.github.io"));
         int cx = Math.floorDiv(anchor[0], 16), cz = Math.floorDiv(anchor[2], 16);
         out.append(",\"chunks\":").append(request(context, http, base + "/v1/chunks?c=" + cx + "," + cz + ";4000,4000", "GET", null, token, "https://freadeax.github.io"));

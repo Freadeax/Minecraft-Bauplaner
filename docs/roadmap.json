@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T14:07:04.677Z",
+  "updatedAt": "2026-11-07T14:44:36.135Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -5773,7 +5773,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T12:35:25.144Z",
+      "updatedAt": "2026-11-07T14:44:36.135Z",
       "area": "MOD",
       "thread": "Mod-Abnahmen im Spiel automatisieren",
       "philipp": [
@@ -8042,6 +8042,14 @@
         {
           "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/DiagnosticsTest.java",
           "note": "Logauswahl, Schwärzen, Berichtstext."
+        },
+        {
+          "path": "scripts/mod/bridge_block_c.mjs",
+          "note": "Abnahmen MOD-02/04/06/07/09/17/21/29, LIVE-06, LINK-07/09 im echten Spiel (AbnahmeScenario.java), in autochecks.ts eingetragen (07.11.2026)."
+        },
+        {
+          "path": "tests/e2e/file-fallback.e2e.mjs",
+          "note": "LINK-13: Dateiwege nur unter „Notfall“ (07.11.2026)."
         }
       ],
       "verification": {
@@ -8052,7 +8060,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T13:59:37.996Z",
+      "updatedAt": "2026-11-07T14:44:36.135Z",
       "area": "QA",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -8960,7 +8968,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T14:07:04.677Z",
+      "updatedAt": "2026-11-07T14:44:36.135Z",
       "area": "MODRINTH",
       "thread": "Mod auf Modrinth veröffentlichen",
       "philipp": [],
@@ -10987,7 +10995,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T12:31:42.554Z",
+      "updatedAt": "2026-11-07T14:44:36.135Z",
       "area": "MOD",
       "thread": "Mod-Abnahmen im Spiel automatisieren",
       "orphans": [],
@@ -11226,7 +11234,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T12:31:42.554Z",
+      "updatedAt": "2026-11-07T14:44:36.135Z",
       "area": "MOD",
       "thread": "Mod-Abnahmen im Spiel automatisieren",
       "orphans": [],
@@ -11307,13 +11315,17 @@
         {
           "path": "scripts/mod/test_bridge_ingame.sh",
           "note": "Minecraft 26.3 Fabric (mit BAUPLANER_ROOM gegen den echten Team-Raum) und NeoForge bestanden mit Mod 0.16.0 (04.11.2026)."
+        },
+        {
+          "path": "scripts/mod/bridge_netcut.mjs",
+          "note": "Netz-Trenner zwischen Mod und Team-Raum: echter 26.3-Client offline, Welt neu betreten, wieder online – Messungen, Kiste und Übernahme je genau einmal im Raum (Mod 0.27.1, 07.11.2026); dabei behoben: Ausgangskorb im Einzelspieler ging beim Verlassen der Welt verloren."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Spieltest 0.16.0 Fabric mit echtem Team-Raum und NeoForge bestanden (04.11.), 0.16.0 auf Modrinth; Abnahme LINK-09 offen."
+        "note": "Spieltest 0.16.0 Fabric/NeoForge (04.11.); am 07.11. echter Fabric-26.3-Client mit hart getrenntem Netz zum Team-Raum grün (BAUPLANER_ROOM=start scripts/mod/test_bridge_ingame.sh, Mod 0.27.1). Offen nur Philipps Abnahme mit echtem Spielneustart ohne Internet."
       },
-      "next": "Abnahme LINK-09 mit getrenntem Netz automatisieren (Block C).",
+      "next": "Abnahme LINK-09 durch Philipp (echter Spielneustart ohne Internet); der Rest ist automatisch geprüft.",
       "philipp": [
         {
           "kind": "spiel",
@@ -14197,6 +14209,79 @@
         "mods/bauplaner-bridge/CHANGELOG.md"
       ],
       "snapshot": [
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 4,
+          "total": 5,
+          "next": "Modrinth prüft das Projekt weiter (Status processing, am 07.11.2026 nachgesehen); alle Versionen bis 0.26.0, Texte, Galerie und Offenlegungen sind aktuell (modrinth_publish.mjs plan). Kein Handlungsbedarf außer Abwarten."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T14:44:36.135Z",
+      "kind": "progress",
+      "items": [
+        "QA-04",
+        "FALLBACK-01",
+        "GAME-07",
+        "LINK-07",
+        "GAME-09"
+      ],
+      "summary": "Mod-/Spiel-Abnahmen automatisiert: Abnahme-Ablauf im echten 26.3-Client, Netzabbruch zum Team-Raum, Platzierhilfe auf Paper 26.3, Dateiwege nur als Notfall; Mod/Plugin 0.27.1 behebt verlorene Offline-Übernahmen im Einzelspieler und eine falsche Zwischenablage-Meldung und enthält den Plugin-Fix für den Sperrhinweis",
+      "files": [
+        "apps/web/src/testing/autochecks.ts",
+        "apps/web/src/views/mod/releases.json",
+        "docs/TESTING.md",
+        "docs/testing/TESTPLAN.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.27.1.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.27.1.jar",
+        "downloads/mod/bauplaner-bridge-paper-0.27.1.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/AbnahmeScenario.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/PaperMultiplayerTest.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramDiagnose.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java",
+        "scripts/mod/bridge_block_c.mjs",
+        "scripts/mod/bridge_gametest.mjs",
+        "scripts/mod/bridge_multiplayer_client.mjs",
+        "scripts/mod/bridge_netcut.mjs",
+        "scripts/mod/test_bridge_ingame.sh",
+        "scripts/mod/test_multiplayer_client.sh",
+        "tests/e2e/file-fallback.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "QA-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Testphase starten, sobald die laufenden Arbeitsstränge gemerged sind und die Mod mit diagnose veröffentlicht ist. Diagnose und Fehlerbehebung der offenen Fälle übernehmen ab 07.11. die Threads „Planer-Abnahmen ohne Nachweis automatisieren“ und „Mod-Abnahmen im Spiel automatisieren“."
+        },
+        {
+          "id": "FALLBACK-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme LINK-09 durch Philipp (echter Spielneustart ohne Internet); der Rest ist automatisch geprüft."
+        },
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 10,
+          "total": 11,
+          "next": "Philipp prüft 0.19.0 im echten Spiel: gesperrter Bauplatz grau, Hologramm nur in einer Gruppe (Testfall MOD-21); danach Stufe 7."
+        },
+        {
+          "id": "LINK-07",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme LINK-07 automatisieren (Block C), Rest im eigenen Spiel durch Philipp."
+        },
         {
           "id": "GAME-09",
           "status": "in_progress",

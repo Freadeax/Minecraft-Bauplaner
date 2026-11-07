@@ -2,10 +2,19 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
-## Unreleased
+## 0.27.1 – 2026-11-07
 
+**Nothing lost offline, honest diagnosis / Offline geht nichts verloren, ehrliche Diagnose**
+
+- Team room in singleplayer: a section you take while the internet is down now waits in a saved outbox for this world. Before, it was lost when you left the world or closed the game; now it goes to the team room exactly once as soon as the connection is back.
+- `/bauplaner diagnose` only says “copied to the clipboard” when the report really is in the clipboard. Otherwise it says to attach the file from bauplaner/diagnose/.
 - Fix (Paper plugin): after `/bp weltplan sperren hinweis` the hint line appears right away instead of after a minute.
+- Checked automatically in the real game: the internet between the mod and the team room cut and restored (measurements, chest contents and the taken section each arrive exactly once), leaving and re-entering the world, moving and turning keys, layer and section keys, placement helper, scaffold hints, groups and locks, rebinding the menu key and key conflicts in the diagnosis.
+
+- Team-Raum im Einzelspieler: Ein Abschnitt, den du ohne Internet übernimmst, wartet jetzt in einem gespeicherten Ausgangskorb dieser Welt. Vorher ging er beim Verlassen der Welt oder beim Beenden des Spiels verloren; jetzt kommt er genau einmal im Team-Raum an, sobald die Verbindung wieder steht.
+- `/bauplaner diagnose` sagt nur noch „in die Zwischenablage kopiert“, wenn der Bericht wirklich in der Zwischenablage liegt. Sonst bittet sie, die Datei aus bauplaner/diagnose/ anzuhängen.
 - Behoben (Paper-Plugin): Nach `/bp weltplan sperren hinweis` erscheint die Hinweiszeile sofort statt erst nach einer Minute.
+- Im echten Spiel automatisch geprüft: Internet zwischen Mod und Team-Raum getrennt und wieder verbunden (Messungen, Kisteninhalt und die Übernahme kommen je genau einmal an), Welt verlassen und neu betreten, Tasten zum Verschieben und Drehen, Ebenen- und Abschnittstasten, Platzierhilfe, Gerüsthinweise, Gruppen und Sperren, Umbelegen der Menütaste und Tastenkonflikte in der Diagnose.
 
 ## 0.27.0 – 2026-11-07
 

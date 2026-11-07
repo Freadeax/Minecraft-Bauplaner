@@ -1173,6 +1173,53 @@
       "releasedAt": "2026-11-07",
       "sourceCommit": "fe7dcbb85a327dcac49ce0048a07ac740c7533c1",
       "tested": "Paper 1.21.11 und 26.3: Team; Teamkanal nimmt Mitbauen/Aussteigen an, /bp mitbauen|aussteigen (TEAM-03)"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.27.1.jar",
+      "modVersion": "0.27.1",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 675363,
+      "sha256": "53a7e2eee8047a71e274bbf689e44e772413b47f7d7d97e71f8acb5039b07376",
+      "releasedAt": "2026-11-07",
+      "sourceCommit": "e7e56b505624d28cbebf60c7a800474402a05d78",
+      "tested": "Minecraft 26.3 Fabric: Spieltest mit Block-C-Abnahmen (Tasten, Platzierhilfe, Gerüst, Gruppen, Diagnose, Netzabbruch zum Team-Raum) und Mitbauern grün"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.27.1.jar",
+      "modVersion": "0.27.1",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 670483,
+      "sha256": "1efd5b1f3d8754079c71edeefa1d95cbeea6f06de5ff6d3ee8ea47ab2c9c584d",
+      "releasedAt": "2026-11-07",
+      "sourceCommit": "e7e56b505624d28cbebf60c7a800474402a05d78",
+      "tested": "Minecraft 26.3 NeoForge: Spieltest (Hologramm, Platzierhilfe, Website-Verbindung) grün"
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.27.1.jar",
+      "modVersion": "0.27.1",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 331643,
+      "sha256": "fe40430aef3ee54f69813d6c437bb4e63afdd2bcd2e8c6ab05341ba50e8cd13e",
+      "releasedAt": "2026-11-07",
+      "sourceCommit": "d85f9594e24198085623c35c257351ab922a3f56",
+      "tested": "Paper 26.3 mit echtem 26.3-Client (Teamkanal, Platzierhilfe auf dem Server) grün"
     }
   ]
 }

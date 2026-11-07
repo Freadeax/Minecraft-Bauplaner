@@ -221,6 +221,55 @@ class RoomFallbackTest {
     }
 
     @Test
+    void aClaimTakenOfflineInSingleplayerSurvivesARestartAndGoesOutOnce() throws Exception {
+        // LINK-09 (found by the Block C game test): the outbox of a singleplayer world is saved under the world key.
+        Path dir = Files.createTempDirectory("raum-stand");
+        Path f = dir.resolve("raum.json");
+        Path team = Files.createTempDirectory("team");
+        FakeRoom room = new FakeRoom(0);
+        int port = room.port();
+        room.add(RoomClientTest.event("tev_join", "2026-11-04T10:00:00.000Z", "mem_lea", "member.join", ",\"member\":\"mem_tom\",\"name\":\"Tom\""));
+        RoomClient first = new RoomClient(f, t -> { });
+        first.use(RoomClient.parse(config(port)));
+        until(() -> first.live() && first.events() == 1, "erster Kontakt: " + first.status() + " " + first.lastError());
+        first.close();
+        room.stop();
+
+        // Offline: the claim waits.
+        List<String> said = new CopyOnWriteArrayList<>();
+        TeamSync sync = new TeamSync(team, "test", System::currentTimeMillis, said::add);
+        RoomClient offline = new RoomClient(f, said::add);
+        sync.room(offline);
+        sync.join("welt:Testwelt", null);
+        FakeRoom back = null;
+        RoomClient again;
+        try {
+            until(() -> offline.status() == RoomClient.Status.RETRY && sync.state() != null, "Raum weg: " + offline.status());
+            String answer = sync.act("section.claim", new LinkedHashMap<>(Map.of("section", "sec_b")), "Abschnitt 2 übernommen");
+            assertTrue(answer.contains("wartet"), answer);
+            assertEquals(1, sync.outbox().pending().size());
+        } finally { offline.close(); }
+
+        // Game restarted, same world: the claim is still there and goes out exactly once when the room is back.
+        TeamSync restarted = new TeamSync(team, "test", System::currentTimeMillis, t -> { });
+        again = new RoomClient(f, t -> { });
+        restarted.room(again);
+        restarted.join("welt:Testwelt", null);
+        try {
+            assertEquals(1, restarted.outbox().pending().size(), "Übernahme nach dem Neustart noch im Ausgangskorb");
+            back = new FakeRoom(port);
+            back.rows.addAll(room.rows);
+            again.connect();
+            FakeRoom b = back;
+            until(() -> { restarted.tick(); return b.has("section.claim"); }, "Übernahme nachgereicht: " + again.status() + " " + again.lastError());
+            until(() -> { restarted.tick(); return restarted.outbox().pending().isEmpty(); }, "vom Raum bestätigt");
+            for (int i = 0; i < 5; i++) { restarted.tick(); Thread.sleep(60); }
+            Thread.sleep(300);
+            assertEquals(1, b.rows.stream().filter(r -> "section.claim".equals(r.get("kind").getAsString())).count(), "genau einmal im Raum");
+        } finally { again.close(); if (back != null) back.stop(); }
+    }
+
+    @Test
     void aDifferentRoomDropsTheStoredState() throws Exception {
         Path dir = Files.createTempDirectory("raum-wechsel");
         Path f = dir.resolve("raum.json");

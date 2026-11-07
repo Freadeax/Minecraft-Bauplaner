@@ -439,3 +439,42 @@ Changelog: Abschnitt Unreleased mit Plugin-Fix Sperrhinweis für die nächste Ve
 
 - `mods/bauplaner-bridge/CHANGELOG.md`
 
+## 2026-11-07T14:44:36.135Z · progress
+
+**Aufgaben:** QA-04, FALLBACK-01, GAME-07, LINK-07, GAME-09
+
+Mod-/Spiel-Abnahmen automatisiert: Abnahme-Ablauf im echten 26.3-Client, Netzabbruch zum Team-Raum, Platzierhilfe auf Paper 26.3, Dateiwege nur als Notfall; Mod/Plugin 0.27.1 behebt verlorene Offline-Übernahmen im Einzelspieler und eine falsche Zwischenablage-Meldung und enthält den Plugin-Fix für den Sperrhinweis
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Arbeitsstränge gemerged sind und die Mod mit diagnose veröffentlicht ist. Diagnose und Fehlerbehebung der offenen Fälle übernehmen ab 07.11. die Threads „Planer-Abnahmen ohne Nachweis automatisieren“ und „Mod-Abnahmen im Spiel automatisieren“. |
+| FALLBACK-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme LINK-09 durch Philipp (echter Spielneustart ohne Internet); der Rest ist automatisch geprüft. |
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 10/11 | Philipp prüft 0.19.0 im echten Spiel: gesperrter Bauplatz grau, Hologramm nur in einer Gruppe (Testfall MOD-21); danach Stufe 7. |
+| LINK-07 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme LINK-07 automatisieren (Block C), Rest im eigenen Spiel durch Philipp. |
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth prüft das Projekt weiter (Status processing, am 07.11.2026 nachgesehen); alle Versionen bis 0.26.0, Texte, Galerie und Offenlegungen sind aktuell (modrinth_publish.mjs plan). Kein Handlungsbedarf außer Abwarten. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/views/mod/releases.json`
+- `docs/TESTING.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.27.1.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.27.1.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.27.1.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/AbnahmeScenario.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/PaperMultiplayerTest.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramDiagnose.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java`
+- `scripts/mod/bridge_block_c.mjs`
+- `scripts/mod/bridge_gametest.mjs`
+- `scripts/mod/bridge_multiplayer_client.mjs`
+- `scripts/mod/bridge_netcut.mjs`
+- `scripts/mod/test_bridge_ingame.sh`
+- `scripts/mod/test_multiplayer_client.sh`
+- `tests/e2e/file-fallback.e2e.mjs`
+

@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T14:07:04.677Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T14:44:36.135Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -2142,7 +2142,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-07
 
-**Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Teambau und Befehle in der Mod ausbauen“ · Arbeitsstrang: „Mod-Abnahmen im Spiel automatisieren“ · Aktualisiert: 2026-11-07T12:35:25.144Z
+**Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Teambau und Befehle in der Mod ausbauen“ · Arbeitsstrang: „Mod-Abnahmen im Spiel automatisieren“ · Aktualisiert: 2026-11-07T14:44:36.135Z
 
 - [x] GAME-07-S01: Versionsneutraler Mod-Kern: Blockzustände, Vergleichsregeln wie gameCheck.ts, Platzierung mit Drehen/Spiegeln, Planmodell, Live-Abgleich, Platzierungsspeicher; JUnit-Tests.
 - [x] GAME-07-S02: Fabric 26.3: Planmenü, Tasten, Platzieren/Verschieben/Drehen/Spiegeln, Rahmen, Speicherung je Server/Welt.
@@ -2752,7 +2752,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### QA-04
 
-**Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Große Testphase vorbereiten und betreuen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T13:59:37.996Z
+**Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Große Testphase vorbereiten und betreuen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T14:44:36.135Z
 
 - [x] QA-04-S01: Testplan (eine Quelle: testplan.ts → TESTPLAN.md) mit Kern-/vertieften Fällen für alle Planer-Bereiche und die Mod.
 - [x] QA-04-S02: Seite #/testphase: Checklisten mit Protokoll im Browser, Protokoll-Export, Fehlerbericht mit automatischer Diagnose (Umgebung, Fehlerprotokoll, Konsole, Seiten) und GitHub-Issue-Vorbelegung.
@@ -2769,7 +2769,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Prüfstand:** Abnahme durch Tester steht aus (ist Zweck der Testphase).
 
-**Nachweise:** [tests/unit/web/testphase.test.mjs](../tests/unit/web/testphase.test.mjs) — Testplan-Konsistenz, Protokoll, Fehlerbericht, Issue-Adresse gegen die Vorlage.; [tests/e2e/testphase.e2e.mjs](../tests/e2e/testphase.e2e.mjs) — Checklisten, Neuladen, Fehlerbericht mit echtem Fehler und Konsole im Chromium.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/DiagnosticsTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/DiagnosticsTest.java) — Logauswahl, Schwärzen, Berichtstext.
+**Nachweise:** [tests/unit/web/testphase.test.mjs](../tests/unit/web/testphase.test.mjs) — Testplan-Konsistenz, Protokoll, Fehlerbericht, Issue-Adresse gegen die Vorlage.; [tests/e2e/testphase.e2e.mjs](../tests/e2e/testphase.e2e.mjs) — Checklisten, Neuladen, Fehlerbericht mit echtem Fehler und Konsole im Chromium.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/DiagnosticsTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/DiagnosticsTest.java) — Logauswahl, Schwärzen, Berichtstext.; [scripts/mod/bridge_block_c.mjs](../scripts/mod/bridge_block_c.mjs) — Abnahmen MOD-02/04/06/07/09/17/21/29, LIVE-06, LINK-07/09 im echten Spiel (AbnahmeScenario.java), in autochecks.ts eingetragen (07.11.2026).; [tests/e2e/file-fallback.e2e.mjs](../tests/e2e/file-fallback.e2e.mjs) — LINK-13: Dateiwege nur unter „Notfall“ (07.11.2026).
 
 **Dateiumfang:** `apps/web/src/testing/`, `apps/web/src/app/diagnostics.ts`, `scripts/checks/render_testplan.mjs`, `docs/testing/TESTPLAN.md`, `docs/architecture/betrieb/TESTPHASE.md`, `.github/ISSUE_TEMPLATE/`, `tests/unit/web/testphase.test.mjs`, `tests/e2e/testphase.e2e.mjs`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Diagnostics.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramDiagnose.java`. **Abhängigkeiten:** QA-01, STAB-01, GAME-07. **Alte IDs:** —.
 
@@ -2990,7 +2990,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-09
 
-**Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Arbeitsstrang „Mod auf Modrinth veröffentlichen“ · Arbeitsstrang: „Mod auf Modrinth veröffentlichen“ · Aktualisiert: 2026-11-07T14:07:04.677Z
+**Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Arbeitsstrang „Mod auf Modrinth veröffentlichen“ · Arbeitsstrang: „Mod auf Modrinth veröffentlichen“ · Aktualisiert: 2026-11-07T14:44:36.135Z
 
 - [x] GAME-09-S01: Projektdaten: project.json (Slug, Titel, Kurztext, Kategorien, Seiten, Lizenz, Links, Loader, Abhängigkeit Fabric API), DESCRIPTION.md Englisch + Deutsch, Icon 512 px, 6 Bilder aus den Spieltests.
 - [x] GAME-09-S02: scripts/modrinth_publish.mjs check|plan|create|sync|release: Dateien aus releases.json mit SHA-256-Vergleich, Änderungsliste aus CHANGELOG.md je Version, Token nur aus MODRINTH_TOKEN; Offline-Prüfung in npm test, Ablauf gegen nachgebaute API geprüft.
@@ -3542,7 +3542,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LINK-07
 
-**Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Anbindung von Planer, Mod und Server neu denken“ · Arbeitsstrang: „Mod-Abnahmen im Spiel automatisieren“ · Aktualisiert: 2026-11-07T12:31:42.554Z
+**Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Anbindung von Planer, Mod und Server neu denken“ · Arbeitsstrang: „Mod-Abnahmen im Spiel automatisieren“ · Aktualisiert: 2026-11-07T14:44:36.135Z
 
 - [x] LINK-07-S01: RoomClient in mod-core: Kopf + Ereignisse aus dem Raum, Faltung mit dem TeamLog des Plugins, eigene Aktionen per append, Anwesenheit, Wiederverbinden.
 - [x] LINK-07-S02: Planer „Mein Spiel verbinden“/„Spiel trennen“ (POST /v1/room, Feature room).
@@ -3592,7 +3592,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### FALLBACK-01
 
-**Ausweichwege über alle Verbindungen: Teamstand offline in der Mod, HTTP statt WebSocket, offline gemerkte Messungen, Baustand über den besten Weg (Spiel → Team-Raum → Server → Datei)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Mod, Server und Client mit Fallbacks ausbauen“ · Arbeitsstrang: „Mod-Abnahmen im Spiel automatisieren“ · Aktualisiert: 2026-11-07T12:31:42.554Z
+**Ausweichwege über alle Verbindungen: Teamstand offline in der Mod, HTTP statt WebSocket, offline gemerkte Messungen, Baustand über den besten Weg (Spiel → Team-Raum → Server → Datei)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Mod, Server und Client mit Fallbacks ausbauen“ · Arbeitsstrang: „Mod-Abnahmen im Spiel automatisieren“ · Aktualisiert: 2026-11-07T14:44:36.135Z
 
 - [x] FALLBACK-01-S01: Mod: Teamstand aus dem Raum in bauplaner/team/raum-stand.json (Kopf, Ereignisse, Cursor); nach Neustart offline sichtbar, beim Wiederverbinden nur der Rest.
 - [x] FALLBACK-01-S02: Mod: HTTP-Ausweg (GET/POST …/events) nach zwei WebSocket-Fehlschlägen bei erreichbarem Raum, alle 5 min neuer WebSocket-Versuch.
@@ -3603,13 +3603,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Fällt ein Weg aus (Raum offline, WebSocket gesperrt, Plugin fehlt), arbeitet Mod oder Planer über den nächsten weiter und sagt, welcher Weg gerade gilt. Nichts geht verloren: eigene Aktionen und Messungen warten und gehen beim nächsten Kontakt raus.
 
-**Nächste Aktion:** Abnahme LINK-09 mit getrenntem Netz automatisieren (Block C).
+**Nächste Aktion:** Abnahme LINK-09 durch Philipp (echter Spielneustart ohne Internet); der Rest ist automatisch geprüft.
 
 **Nur Philipp:** Im Spiel an deinem PC: Abnahme LINK-09: mit Team live kurz das Internet trennen, Minecraft neu starten, Teamstand und „Baustand holen (bester Weg)“ prüfen.
 
-**Prüfstand:** Spieltest 0.16.0 Fabric mit echtem Team-Raum und NeoForge bestanden (04.11.), 0.16.0 auf Modrinth; Abnahme LINK-09 offen.
+**Prüfstand:** Spieltest 0.16.0 Fabric/NeoForge (04.11.); am 07.11. echter Fabric-26.3-Client mit hart getrenntem Netz zum Team-Raum grün (BAUPLANER_ROOM=start scripts/mod/test_bridge_ingame.sh, Mod 0.27.1). Offen nur Philipps Abnahme mit echtem Spielneustart ohne Internet.
 
-**Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java) — Raum-Ersatz ohne WebSocket: HTTP-Abfrage, Aktion/Notiz/Messung; Neustart ohne Netz mit gespeichertem Stand, Nachreichen, Cursor (04.11.2026).; [tests/e2e/game-progress.e2e.mjs](../tests/e2e/game-progress.e2e.mjs) — „Baustand holen (bester Weg)“ über das eigene Spiel; anderer Plan → alle Gründe und Datei-Ausweg (04.11.2026).; [scripts/mod/test_bridge_ingame.sh](../scripts/mod/test_bridge_ingame.sh) — Minecraft 26.3 Fabric (mit BAUPLANER_ROOM gegen den echten Team-Raum) und NeoForge bestanden mit Mod 0.16.0 (04.11.2026).
+**Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java) — Raum-Ersatz ohne WebSocket: HTTP-Abfrage, Aktion/Notiz/Messung; Neustart ohne Netz mit gespeichertem Stand, Nachreichen, Cursor (04.11.2026).; [tests/e2e/game-progress.e2e.mjs](../tests/e2e/game-progress.e2e.mjs) — „Baustand holen (bester Weg)“ über das eigene Spiel; anderer Plan → alle Gründe und Datei-Ausweg (04.11.2026).; [scripts/mod/test_bridge_ingame.sh](../scripts/mod/test_bridge_ingame.sh) — Minecraft 26.3 Fabric (mit BAUPLANER_ROOM gegen den echten Team-Raum) und NeoForge bestanden mit Mod 0.16.0 (04.11.2026).; [scripts/mod/bridge_netcut.mjs](../scripts/mod/bridge_netcut.mjs) — Netz-Trenner zwischen Mod und Team-Raum: echter 26.3-Client offline, Welt neu betreten, wieder online – Messungen, Kiste und Übernahme je genau einmal im Raum (Mod 0.27.1, 07.11.2026); dabei behoben: Ausgangskorb im Einzelspieler ging beim Verlassen der Welt verloren.
 
 **Dateiumfang:** `apps/web/src/testing/testplan.ts`, `apps/web/src/views/mod/releases.json`, `apps/web/src/views/project/GameCheckPanel.tsx`, `docs/architecture/team/AUTO_LINK.md`, `docs/architecture/team/FALLBACKS.md`, `docs/testing/TESTPLAN.md`, `downloads/mod/bauplaner-bridge-fabric-26.3-0.16.0.jar`, `downloads/mod/bauplaner-bridge-neoforge-26.3-0.16.0.jar`, `mods/bauplaner-bridge/CHANGELOG.md`, `mods/bauplaner-bridge/VERSION`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java`, `packages/domain/src/index.ts`, `packages/domain/src/world/scanRoutes.ts`, `tests/e2e/game-progress.e2e.mjs`, `tests/unit/world/scan-routes.test.mjs`. **Abhängigkeiten:** LINK-07, COOP-10. **Alte IDs:** —.
 

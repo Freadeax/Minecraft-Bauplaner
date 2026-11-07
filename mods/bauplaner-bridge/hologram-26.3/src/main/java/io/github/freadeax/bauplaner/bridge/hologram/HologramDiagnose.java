@@ -56,9 +56,14 @@ public final class HologramDiagnose {
             where = null;
         }
         boolean copied;
-        try { mc.keyboardHandler.setClipboard(text); copied = true; } catch (RuntimeException e) { copied = false; }
+        // Minecraft only logs when the system refuses the clipboard (seen on headless Wayland): read it back before saying so.
+        try {
+            mc.keyboardHandler.setClipboard(text);
+            String back = mc.keyboardHandler.getClipboard();
+            copied = back != null && back.replace("\r\n", "\n").strip().equals(text.replace("\r\n", "\n").strip());
+        } catch (RuntimeException e) { copied = false; }
         McCompat.chat(mc, Component.literal("[Build Studio] Diagnose " + (where == null ? "nicht speicherbar" : "gespeichert: " + where)
-                + (copied ? " und in die Zwischenablage kopiert." : ".") + " Im Fehlerbericht (Website → Testphase → Fehler melden) einfügen oder die Datei anhängen."));
+                + (copied ? " und in die Zwischenablage kopiert." : where == null ? "." : " – die Zwischenablage ging nicht, bitte die Datei anhängen.") + " Im Fehlerbericht (Website → Testphase → Fehler melden) einfügen oder die Datei anhängen."));
         return 1;
     }
 

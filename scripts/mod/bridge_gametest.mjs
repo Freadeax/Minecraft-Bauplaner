@@ -8,6 +8,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import assert from 'node:assert/strict';
+import { verifyBlockC } from './bridge_block_c.mjs';
 import { readWorldScan } from '../../dist/formats/src/index.js';
 import { exportRevisionSchem } from '../../dist/application/src/index.js';
 import { addSection, appendEvents, applyOperation, createTeam, teamContextOf, teamEvent, teamLinkState, teamView, buildGuide, checkScan, createProject, createSampleLibrary, emptySite, freezeRevision, newInstance, resolveProject, scanTarget } from '../../dist/domain/src/index.js';
@@ -25,7 +26,7 @@ const at = (id, name, position) => newInstance({ assetVersionId: latest(id), nam
 const tower = at('sample_tower', 'Turm West', [0, 0, 0]), wall = at('sample_wall', 'Mauer', [4, 0, 1]);
 const built = applyOperation(createProject({ name: 'Spieltest Brücke' }), { kind: 'batch', label: 't', operations: [tower, wall].map(instance => ({ kind: 'instance.add', instance })) }).project;
 // Two build sections (Baustelle tab): the mod gets them in the plan file (0.7.0).
-const base = { ...built, site: addSection(addSection(emptySite(), 'Turm', [{ instanceId: tower.id }]), 'Mauer', [{ instanceId: wall.id }]) };
+const base = { ...built, site: addSection(addSection(emptySite(), 'Turm', [{ instanceId: tower.id }], 'sec_turm'), 'Mauer', [{ instanceId: wall.id }], 'sec_mauer') };
 
 const stateString = s => s.id + (Object.keys(s.properties).length ? `[${Object.entries(s.properties).sort(([a], [b]) => a < b ? -1 : 1).map(([k, v]) => `${k}=${v}`).join(',')}]` : '');
 
@@ -84,6 +85,8 @@ if (mode === 'prepare') {
   assert.deepEqual(byVerdict.missing.position, expected.missing);
   hologram(join(dir, 'game.log'), check.totals.cells);
   await live(join(dir, 'live.json'), scan.meta.loader ?? 'fabric', { project, guide, resolution, expected }, join(dir, 'game.log'));
+  // Block C (07.11.2026): remaining hand cases of the test phase and LINK-09 offline (Fabric game test only).
+  await verifyBlockC(dir);
   console.log(`Spieltest bestanden: Minecraft ${scan.meta.gameVersion ?? '26.3'} (${scan.meta.loader ?? '?'}), ${check.totals.cells} Zellen aus ${scan.meta.source === 'server' ? 'der echten Serverwelt' : 'dem echten Client'} gelesen, ${check.totals.ok} korrekt, 1 falscher Block und 1 fehlender Block an den erwarteten Stellen erkannt.`);
 }
 

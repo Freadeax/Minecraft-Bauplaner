@@ -41,6 +41,7 @@ Diese Läufe starten echte Minecraft-Clients oder Paper-Server (kopflos) und sin
 | Exporte im Spiel | 22/22 Fälle |
 | Großbau | 1,45 Mio. Blöcke im Spiel aufgebaut und geprüft |
 | Paper-Plugin | 1.21.11 und 26.3 für Team, Lager, Team-Raum, Unterschriften |
+| Mod im Spiel (Abnahmen Mod und Anbindung) | Fabric und NeoForge 26.3 grün; Tasten, Platzierhilfe, Gerüst, Gruppen, Diagnose, Netzabbruch zum Team-Raum (`BAUPLANER_ROOM=start scripts/mod/test_bridge_ingame.sh`); echter Client auf Paper 26.3 (`test_multiplayer_client.sh`) |
 | Team-Raum live | Status, Rauchprobe, Sicherungsprobe und `team-room.e2e` gegen den echten Dienst |
 | Abnahmen Block B (17 Testfälle) | `planer-abnahmen`, `team-abnahmen` (echter Team-Raum per `wrangler dev`, 2–3 Browser), `werkstatt-abnahme`: 17/17 in Chromium, Firefox und WebKit; `scripts/library/test_contribution_live.mjs` (Beitrag bis in den Export) und `test_bridge_paper_bots.sh weltplan` (gesperrter Bauplatz, Paper 1.21.11 und 26.1.2) grün |
 

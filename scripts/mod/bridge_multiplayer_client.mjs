@@ -62,10 +62,25 @@ try {
   assert.equal(claim.origin, 'server', 'Nehmen kam über den Teamkanal ins Plugin und von dort in den Raum');
   assert.equal(new Set(feed.map(e => e.id)).size, feed.length, 'keine doppelten Ereignisse');
   writeFileSync(join(io, 'mp-result.json'), JSON.stringify({ player: name, member: me.id, placed: me.placed, events: feed.length, server: feed.filter(e => e.origin === 'server').length, build: server.build }));
+  // MOD-10 (Block C): hologram and placement helper on the server without the mod (PaperMultiplayerTest.helperOnServer).
+  let helper = '';
+  if (existsSync(join(io, 'mp-helper.json'))) {
+    const h = JSON.parse(readFileSync(join(io, 'mp-helper.json'), 'utf8'));
+    assert.equal(h.planned, 'minecraft:cobblestone', `MOD-10: Planblock am Testplatz (${h.planned})`);
+    assert.equal(h.afterWrong, 'minecraft:air', `MOD-10: falscher Block auf dem Server nicht gesetzt (${h.wrongResult})`);
+    assert.equal(h.slotAfterWrong, 2, 'MOD-10: Platzierhilfe nimmt den richtigen Block aus der Schnellleiste');
+    assert.equal(h.afterRight, 'minecraft:cobblestone', 'MOD-10: richtiger Block vom Server gesetzt');
+    assert.equal(h.afterBreak, 'minecraft:cobblestone', 'MOD-10: geschützter Planblock bleibt auch auf dem Server');
+    assert.equal(h.connected, true, 'MOD-10: kein Kick');
+    assert.match(h.worldKey, /^server:127\.0\.0\.1:/, 'MOD-10: Lage je Server');
+    assert.match(h.stored, /server[_:\\]+127\.0\.0\.1[_:\\]+\d+\.plan=server-plan\.schem/, `MOD-10: Platzierung für diesen Server gespeichert (${h.stored})`);
+    helper = ', Platzierhilfe auf dem Server (falscher Block abgewiesen, richtiger genommen und gesetzt, Abbauschutz, Lage je Server gespeichert)';
+  }
   await until('Spieler weg', async () => /left the game/.test(server.log), 60);
+  assert.doesNotMatch(server.log, /illegal packet|was kicked|kicked for/i, 'MOD-10: keine „illegal packet“-Meldung und kein Kick im Serverprotokoll');
   await server.stop();
   assert.deepEqual(server.problems(), [], 'keine Warnungen oder Fehler des Plugins im Serverprotokoll');
-  console.log(`  Paper ${version}: echter Client „${name}“ – Raum übergeben, Abschnitt 1 genommen, 3 Blöcke gezählt; Raum ${feed.length} Ereignisse (${feed.filter(e => e.origin === 'server').length} vom Server), Planer-Faltung = Serverstand.`);
+  console.log(`  Paper ${version}: echter Client „${name}“ – Raum übergeben, Abschnitt 1 genommen, 3 Blöcke gezählt; Raum ${feed.length} Ereignisse (${feed.filter(e => e.origin === 'server').length} vom Server), Planer-Faltung = Serverstand${helper}.`);
 } catch (e) {
   writeFileSync(join(io, 'mp-fehler.txt'), String(e?.stack ?? e));
   server.kill();

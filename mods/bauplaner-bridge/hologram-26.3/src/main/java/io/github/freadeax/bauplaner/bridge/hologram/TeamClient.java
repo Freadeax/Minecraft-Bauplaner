@@ -76,9 +76,13 @@ public final class TeamClient {
     /** Current state with own waiting actions (null without a team). */
     public TeamState state() { return shown; }
 
-    /** Joined a world or server; {@code transport} is null in singleplayer. */
+    /**
+     * Joined a world or server; {@code transport} is null in singleplayer. The world key also names the saved
+     * outbox in singleplayer (LINK-09): team actions taken while the team room is away survive leaving the world
+     * and restarting the game, and go out once the room is back.
+     */
     public void join(Minecraft mc, TeamSync.Transport transport) {
-        sync.join(transport == null ? null : McCompat.worldKey(mc), transport);
+        sync.join(McCompat.worldKey(mc), transport);
         announcedDone.clear();
         refresh();
     }

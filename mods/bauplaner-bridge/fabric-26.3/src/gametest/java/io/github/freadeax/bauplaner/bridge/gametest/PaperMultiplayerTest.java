@@ -1,6 +1,7 @@
 package io.github.freadeax.bauplaner.bridge.gametest;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import io.github.freadeax.bauplaner.bridge.hologram.McCompat;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -84,11 +85,66 @@ final class PaperMultiplayerTest {
         context.waitTicks(40);
         context.setScreen(() -> null);
         context.takeScreenshot("bauplaner-paper-mehrspieler");
+        if (Files.isRegularFile(io.resolve("plan.schem"))) helperOnServer(context, io, root);
         Files.writeString(io.resolve("mp-done.txt"), "ok\n");
         context.waitTicks(20);
         context.runOnClient(mc -> mc.disconnectFromWorld(net.minecraft.network.chat.Component.literal("Spieltest fertig")));
         context.waitFor(mc -> mc.level == null, 20 * 30);
         context.setScreen(TitleScreen::new);
+    }
+
+    /**
+     * MOD-10 (Block C, 07.11.2026): the hologram and the placement helper on a server without the mod. The plan stands
+     * beside the team sections on the flat world; a wrong block is refused and the right one taken from the hotbar,
+     * the right block goes in – all through the real client path against the real Paper server. Results in
+     * mp-helper.json (judged by bridge_multiplayer_client.mjs together with the server log).
+     */
+    private static void helperOnServer(ClientGameTestContext context, Path io, Path root) throws IOException {
+        Files.createDirectories(root.resolve("plans"));
+        Files.copy(io.resolve("plan.schem"), root.resolve("plans").resolve("server-plan.schem"), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        chat(context, "/gamemode creative");
+        chat(context, "/clear");
+        chat(context, "/bauplaner zeigen server-plan.schem");
+        context.waitTicks(40);
+        int ox = 20, oy = -60, oz = 20;
+        context.runOnClient(mc -> AbnahmeScenario.client().hologram().setPlacement(new io.github.freadeax.bauplaner.mod.Placement("minecraft:overworld", ox, oy, oz, 0, false)));
+        chat(context, "/tp @s " + (ox + 1.5) + " " + oy + " " + (oz - 2.5) + " 0 30");
+        context.waitTicks(60);
+        chat(context, "/bauplaner platzierhilfe an");
+        chat(context, "/item replace entity @s hotbar.0 with minecraft:dirt 16");
+        chat(context, "/item replace entity @s hotbar.2 with minecraft:cobblestone 16");
+        context.waitTicks(20);
+        context.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(0));
+        context.waitTicks(5);
+        java.util.Map<String, Object> out = new java.util.LinkedHashMap<>();
+        BlockPos target = new BlockPos(ox + 1, oy, oz), below = target.below();
+        out.put("planned", context.computeOnClient(mc -> {
+            var c = AbnahmeScenario.client().hologram().check();
+            int i = c.indexAt(target.getX(), target.getY(), target.getZ());
+            return i < 0 ? "kein Planblock" : c.expected(i).toString();
+        }));
+        BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(below).add(0, 0.5, 0), Direction.UP, below, false);
+        context.getInput().lookAt(target);
+        context.waitTicks(3);
+        out.put("wrongResult", context.computeOnClient(mc -> mc.gameMode.useItemOn(mc.player, InteractionHand.MAIN_HAND, hit).getClass().getSimpleName()));
+        context.waitTicks(20);
+        out.put("afterWrong", context.computeOnClient(mc -> net.minecraft.commands.arguments.blocks.BlockStateParser.serialize(mc.level.getBlockState(target))));
+        out.put("slotAfterWrong", context.computeOnClient(mc -> mc.player.getInventory().getSelectedSlot()));
+        context.runOnClient(mc -> mc.gameMode.useItemOn(mc.player, InteractionHand.MAIN_HAND, hit));
+        context.waitTicks(20);
+        out.put("afterRight", context.computeOnClient(mc -> net.minecraft.commands.arguments.blocks.BlockStateParser.serialize(mc.level.getBlockState(target))));
+        // Protected plan block: breaking it is refused on the client, the server keeps it.
+        context.runOnClient(mc -> mc.gameMode.startDestroyBlock(target, Direction.UP));
+        context.waitTicks(20);
+        out.put("afterBreak", context.computeOnClient(mc -> net.minecraft.commands.arguments.blocks.BlockStateParser.serialize(mc.level.getBlockState(target))));
+        chat(context, "/bauplaner fortschritt");
+        context.waitTicks(10);
+        out.put("connected", context.computeOnClient(mc -> mc.getConnection() != null && mc.player != null));
+        out.put("worldKey", context.computeOnClient(mc -> McCompat.worldKey(mc)));
+        Path stored = root.resolve("platzierung.properties");
+        out.put("stored", Files.isRegularFile(stored) ? Files.readString(stored) : "");
+        Files.writeString(io.resolve("mp-helper.json"), new com.google.gson.Gson().toJson(out));
+        chat(context, "/bauplaner entfernen");
     }
 
     private static void chat(ClientGameTestContext context, String line) {
