@@ -300,6 +300,28 @@ export class SceneController {
     this.update({ view: name });
   }
 
+  /**
+   * Exact camera pose in world block coordinates (Block 5, image comparison with game screenshots):
+   * eye and target as in Minecraft (`tp` position + eye height, `lookAt`), vertical field of view in degrees;
+   * `grid: false` hides the ground grid so only blocks are drawn.
+   * Only the comparison script calls it (via the test hook in ThreeViewer); the menu never does.
+   */
+  setPose(eye: Vec3, target: Vec3, fov = FOV, grid = true): void {
+    this.autoFrame = false;
+    if (this.grid) this.grid.visible = grid;
+    if (this.stateValue.mode === 'flight') this.leaveFlight();
+    if (this.stateValue.projection !== 'perspective') this.setProjection('perspective');
+    this.perspective.fov = fov; this.perspective.updateProjectionMatrix();
+    const t = new THREE.Vector3(...this.local(target));
+    this.perspective.position.set(...this.local(eye));
+    this.perspective.up.set(0, 1, 0);
+    this.controls.target.copy(t);
+    this.perspective.lookAt(t);
+    this.controls.update();
+    this.update({ view: null });
+    this.requestRender();
+  }
+
   /** Frames `bounds` from the current viewing direction (orbit) or flies in front of it (flight). */
   focus(bounds: Bounds): void {
     if (this.stateValue.mode === 'flight') {

@@ -73,8 +73,9 @@ test('Großes Litematic: Import, 3D-Ansicht und Speichern im Hintergrund, Datenc
   const detail = p.url();
 
   // Stored hash, id and packed cells must match what the page holds: the data check recomputes them after a reload.
-  await p.reload();
+  // Fresh load straight on the system page (WebKit ignores a hash-only goto right after a reload).
   await p.goto(`${BASE}#/system`);
+  await p.reload();
   await p.getByRole('button', { name: 'Datencheck starten' }).click();
   await p.getByText('✓ Alles in Ordnung').waitFor();
 

@@ -44,6 +44,7 @@ Neben Chromium laufen die Browsertests auch in **Firefox** und **WebKit** (die E
 - `npm run test:e2e:webkit -- tests/e2e/shell.e2e.mjs` bzw. `npm run test:e2e:firefox -- --part 1/6` (Teilläufe, weil WebKit deutlich langsamer ist).
 - Die Tests bleiben unverändert: `tests/e2e/engine-hook.mjs` leitet `chromium.launch()` auf die gewählte Engine um (`BAUPLANER_ENGINE`). Firefox hat ohne Anzeige kein WebGL und läuft deshalb automatisch unter `xvfb-run` (llvmpipe).
 - Tests, die Chromium-eigene Schnittstellen (CDP) brauchen, gelten in Firefox/WebKit nicht als Befund.
+- Grafik (06.11.2026): Betrachter, Licht, Biome, Leuchtfeuer, große Szenen, Texturen und Hintergrund-Worker laufen in WebKit und Firefox grün; dabei zwei Safari-Fehler behoben (Speicherwachstum der Bibliothek durch Unschärfe-Ebenen, Speichern im Privatfenster). Der Spielbildabgleich (`scripts/checks/compare_game_shot.mjs`) zeigt in allen drei Engines dasselbe Bild wie Minecraft 26.3. Echte GPU und echtes iPad bleiben „offen“.
 - Fingerbedienung mit Geräteprofilen (iPad Pro 11, iPhone 15): `npm run test:e2e:webkit -- tests/e2e/touch-devices.e2e.mjs` – Werkstatt und Weltkarte mit Tippen, Ziehen, Zwei-Finger-Zoom und Langdruck-Menü. Ziehen, Langdruck und zwei Finger sind künstliche touch-Zeiger; die Zelle „T“/„I-S“ bleibt trotzdem offen, bis jemand am echten Gerät prüft.
 
 ## Ablauf für Tester

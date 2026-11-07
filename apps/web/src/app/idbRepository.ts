@@ -10,7 +10,7 @@ import type { Repository, StorageBatch, StorageChange, StorageInfo } from './rep
  * IndexedDB implementation of the storage boundary (P2-01, B3).
  *
  * Stores: projects, assets, versions (key id, cells packed – STORE-03), originals (key sha256, bytes as
- * Blob) and meta. Every write runs in one readwrite transaction; the promise
+ * ArrayBuffer; older entries hold a Blob) and meta. Every write runs in one readwrite transaction; the promise
  * resolves only on `complete`, so a quota or revision error aborts the whole
  * transaction. Other tabs learn about changes via BroadcastChannel; actual
  * conflicts are still decided by baseRevision inside the transaction.
@@ -66,7 +66,11 @@ const MIGRATIONS: Record<number, (db: IDBDatabase, tx: IDBTransaction, fail: (er
   },
 };
 
-interface StoredOriginal { readonly sha256: string; readonly fileName: string; readonly mediaType: string; readonly size: number; readonly createdAt: string; readonly blob: Blob }
+interface StoredOriginal { readonly sha256: string; readonly fileName: string; readonly mediaType: string; readonly size: number; readonly createdAt: string;
+  /** Since Block 5 (06.11.2026): WebKit cannot store Blobs in private windows (UnknownError), plain bytes work everywhere. */
+  readonly bytes?: ArrayBuffer;
+  /** Entries written before Block 5. */
+  readonly blob?: Blob }
 
 export class StorageNewerError extends Error {
   constructor() {
@@ -226,8 +230,8 @@ export class IdbRepository implements Repository {
   async getOriginal(sha256: string): Promise<OriginalFile | null> {
     const raw = await this.run(['originals'], 'readonly', tx => req(tx.objectStore('originals').get(sha256) as IDBRequest<StoredOriginal | undefined>));
     if (!raw) return null;
-    const { blob, ...meta } = raw;
-    return { ...meta, bytes: new Uint8Array(await blob.arrayBuffer()) };
+    const { blob, bytes, ...meta } = raw;
+    return { ...meta, bytes: new Uint8Array(bytes ?? (blob ? await blob.arrayBuffer() : new ArrayBuffer(0))) };
   }
   async listOriginalHashes() {
     return (await this.run(['originals'], 'readonly', tx => req(tx.objectStore('originals').getAllKeys()))).map(String);
@@ -282,7 +286,7 @@ export class IdbRepository implements Repository {
       for (const a of nextAssets) tx.objectStore('assets').put(a);
       for (const o of batch.originals ?? []) {
         const { bytes, ...meta } = o;
-        tx.objectStore('originals').put({ ...meta, blob: new Blob([bytes as Uint8Array<ArrayBuffer>], { type: o.mediaType }) } satisfies StoredOriginal);
+        tx.objectStore('originals').put({ ...meta, bytes: bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer } satisfies StoredOriginal);
       }
       for (const project of nextProjects) projects().put(project);
       return nextProjects;

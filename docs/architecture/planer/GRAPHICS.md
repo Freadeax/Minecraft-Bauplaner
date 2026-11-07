@@ -94,7 +94,9 @@ Prüfattribute am `.canvas-host`: `data-light`, `data-spawn-check`, `data-spawn`
 
 - Node `tests/unit/web/graphics.test.mjs`: Leuchtwerte, Ausbreitung (Fackel, geschlossener Raum, Wasser, Dachöffnung), Eckschatten, Licht je Eckpunkt, Spawnflächen (dunkler Raum, Fackel, niedrige Decke, Glas/Laub), Abschnitte (gleiche Flächenzahl wie ein Mesh, Reihenfolge egal, Änderung/Markierung/Ursprung/Licht über Grenzen, inkrementell = neu gebaut), Sortierung, Einstellungen, Sonnenbahn.
 - Browser `tests/e2e/graphics.e2e.mjs` (Chromium, Software-WebGL): alle Lichtmodi mit Helligkeitsvergleich der Bildschirmfotos (Schatten dunkeln ab, Nacht dunkler als Tag), Uhrzeit, Spawnzähler und Kreuze, Umschalten ohne Neuaufbau, Speicherung über Neuladen, Dorfplatz mit mehreren Abschnitten und Picking.
-- Nicht geprüft: echte GPUs, Firefox/Safari, Handy-Leistung mit Schatten; Vergleich mit Bildschirmfotos aus dem Spiel. Wolken, Himmelsfarbe und Nebel gibt es nicht (Biomfarben und leuchtende Blockentities seit GFX-02, siehe oben). Blockentities (Truhen, Banner) werfen Schatten nur als eigene Form.
+- Firefox und WebKit (Block 5, 06.11.2026): dieselben Browsertests grün (`npm run test:e2e:firefox|webkit`). Keine `backdrop-filter`-Unschärfe auf vielen kleinen Elementen: in WebKit ließ das die Bibliothek bis zum Absturz Speicher fressen.
+- Spielbildabgleich (Block 5): `scripts/checks/compare_game_shot.mjs` zeichnet den Plan aus dem Spieltest mit der Kamera des echten Spielbilds (Testhaken `bauplanerPose`, `SceneController.setPose`) und vergleicht Form und Farbe je Bildfeld; Chromium, Firefox und WebKit stimmen mit Minecraft 26.3 überein.
+- Nicht geprüft: echte GPUs, Handy-Leistung mit Schatten. Wolken, Himmelsfarbe und Nebel gibt es nicht (Biomfarben und leuchtende Blockentities seit GFX-02, siehe oben). Blockentities (Truhen, Banner) werfen Schatten nur als eigene Form.
 
 ## Weiterverwendung
 

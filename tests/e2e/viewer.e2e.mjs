@@ -45,12 +45,13 @@ test('Betrachter: WebGL mit Flächen-Culling, Ansichten, Ortho, Freiflug', async
   const d = await data(p);
   assert.equal(d.mode, 'orbit'); assert.equal(d.blocks, '425'); assert.equal(d.view, 'iso');
   await p.getByRole('button', { name: 'Draufsicht (Norden oben)' }).click();
-  await p.waitForFunction(() => document.querySelector('.canvas-host').dataset.view === 'top');
+  // The camera reaches the dataset with the next drawn frame (WebKit draws it a little later).
+  await p.waitForFunction(() => { const d = document.querySelector('.canvas-host').dataset; return d.view === 'top' && Number(d.camera.split(',')[1]) > 30; });
   const top = await camera(p);
   // Above the centre of the demo bounds (x −7…8, z −5…10).
   assert.ok(Math.abs(top[0] - 0.5) < 0.2 && Math.abs(top[2] - 2.5) < 0.2 && top[1] > 30, `top camera ${top}`);
   await p.getByRole('button', { name: 'Ansicht von Norden' }).click();
-  await p.waitForTimeout(100);
+  await p.waitForFunction(() => Number(document.querySelector('.canvas-host').dataset.camera.split(',')[2]) < -20);
   const north = await camera(p);
   assert.ok(north[2] < -20 && Math.abs(north[0] - 0.5) < 0.2, `north camera ${north}`);
   await p.getByRole('button', { name: 'Parallelprojektion' }).click();
@@ -158,11 +159,21 @@ test('Touch: Tippen wählt, Flugsteuerung per Bildschirmtasten', async () => {
   await pad.waitFor();
   const before = await camera(p);
   const forward = await pad.getByRole('button', { name: 'Vorwärts' }).boundingBox();
-  const cdp = await p.context().newCDPSession(p);
   const point = { x: forward.x + forward.width / 2, y: forward.y + forward.height / 2 };
-  await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point] });
-  await p.waitForTimeout(500);
-  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  if (chromium.name() === 'chromium') {
+    // Echtes Gedrückthalten mit dem Finger gibt es nur über CDP.
+    const cdp = await p.context().newCDPSession(p);
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point] });
+    await p.waitForTimeout(500);
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  } else {
+    // Firefox/WebKit (Block 5): derselbe Zeigerpfad (pointerdown → pointerup) als Fingerereignis.
+    const button = pad.getByRole('button', { name: 'Vorwärts' });
+    const touch = { pointerId: 7, pointerType: 'touch', isPrimary: true, bubbles: true, clientX: point.x, clientY: point.y };
+    await button.dispatchEvent('pointerdown', touch);
+    await p.waitForTimeout(500);
+    await button.dispatchEvent('pointerup', touch);
+  }
   await p.waitForTimeout(100);
   const after = await camera(p);
   assert.ok(moved(before, after) > 1, `pad moves camera ${before} → ${after}`);

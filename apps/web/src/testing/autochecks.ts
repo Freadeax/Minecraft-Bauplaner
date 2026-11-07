@@ -158,6 +158,35 @@ export const AUTO_CHECKS: readonly AutoCheck[] = [
   { caseId: 'TEAMBAU-27', scope: 'teil', covers: 'Ein Mod-Client wie mod-core RoomClient meldet mit dem Mitgliedsschlüssel section.seen und store.seen: „laut Spiel 72 % … ungeprüft“ mit fehlenden Blöcken und Kisteninhalt bei zwei Browsern; eine gefälschte Servermessung wird abgelehnt.', remaining: 'Im echten Spiel mit Mod auf einem Server ohne Plugin bauen und eine Teamkiste öffnen.', command: 'npm run build && node --test tests/e2e/team-acceptance.e2e.mjs', evidence: '06.11.2026, main 94a2487 mit Block 4c, echter Team-Raum unter wrangler dev 4.158.0, Chromium (Rechner 1400 px, Handy 390 px Touch, Tablet 820 px Touch), 5 volle Läufe grün' },
   { caseId: 'TEAMBAU-28', scope: 'teil', covers: '60 Plugin-Messungen und Erträge über 6 Tage per Serverschlüssel: Ertragsbuch 300 cactus/h, „älter als 3 Tage“ verdichtet auf unter 100 Ereignisse bei gleichen Zahlen; Helferin online und Helfer mit älterem Stand bekommen denselben Stand ohne Doppel. Rückgängig in team-digest.e2e.mjs.', remaining: 'Echte Ertragskiste mit Farm am Paper-Plugin über mehrere Tage.', command: 'npm run build && node --test tests/e2e/team-acceptance.e2e.mjs tests/e2e/team-digest.e2e.mjs', evidence: '06.11.2026, main 94a2487 mit Block 4c, echter Team-Raum unter wrangler dev 4.158.0, Chromium (Rechner 1400 px, Handy 390 px Touch, Tablet 820 px Touch), 5 volle Läufe grün' },
   { caseId: 'TEAMBAU-29', scope: 'teil', covers: 'Zwei Helfer klicken im selben Moment „Übernehmen“: ein Inhaber bei allen, Hinweis „Nicht übernommen, weil … schneller war“, „Zurücknehmen“ macht den Abschnitt überall frei; zugeklappter Laptop (Leitung tot ohne Abmeldung): dort abgeben, der Herzschlag erkennt es, Wiederverbinden ohne Neuladen, nichts doppelt.', remaining: 'Echtes Gerät zwei Minuten ohne WLAN bzw. zugeklappt.', command: 'npm run build && node --test tests/e2e/team-acceptance.e2e.mjs', evidence: '06.11.2026, main 94a2487 mit Block 4c, echter Team-Raum unter wrangler dev 4.158.0, Chromium (Rechner 1400 px, Handy 390 px Touch, Tablet 820 px Touch), 5 volle Läufe grün' },
+  // Block 5 Grafik in Firefox und Safari (VIEW-01/02, GFX-01/02/03, PERF-04): WebGL in WebKit und Firefox, Spielbildabgleich mit Minecraft 26.3.
+  {
+    caseId: 'DATEI-01', scope: 'teil',
+    covers: 'Betrachter mit WebGL in WebKit (Safari-Engine), Firefox und Chromium: Bau erscheint ganz, verdeckte Flächen fallen weg (1118 statt 2550), Draufsicht/Nord/Ortho/Freiflug, Blockauswahl mit Welt- und Lokalkoordinate, Tippen und Flugtasten; ohne WebGL Ersatzansicht. Spielbildabgleich: derselbe Plan im echten Minecraft 26.3 und im Planer aus derselben Kamera (Augenpunkt, Blickrichtung, Sichtfeld aus dem Spiel) mit Originaltexturen – 30/30 Bildfelder farbgleich, Umriss deckungsgleich, in allen drei Engines; eine um 15° verdrehte Kamera fällt durch.',
+    remaining: 'Echte GPU (Philipps Rechner) und echtes iPad/iPhone mit Safari; negative Koordinaten und alle Schnittachsen mit Touch (VIEW-01-S02).',
+    command: 'npm run build && npm run test:e2e:webkit -- tests/e2e/viewer.e2e.mjs && npm run test:e2e:firefox -- tests/e2e/viewer.e2e.mjs && BAUPLANER_KEEP=/tmp/spiel scripts/mod/test_bridge_ingame.sh && node scripts/checks/compare_game_shot.mjs /tmp/spiel --engine webkit',
+    evidence: '06.11.2026, main ff748e7 + Block 5 Grafik: grün in WebKit 2370, Firefox 1555 (xvfb, llvmpipe-WebGL) und Chromium im Container; Spieltest Minecraft 26.3 (weston, Mesa) bestanden, Spielbildabgleich 100 % in Chromium, Firefox und WebKit',
+  },
+  {
+    caseId: 'DATEI-04', scope: 'teil',
+    covers: 'Licht Tag/Sonne mit Schatten/Nacht/Flach (bleibt nach Neuladen), Spawnprüfung mit Zähler, Eckenschatten ohne Neuaufbau, Biomfarben ohne Neuaufbau, Leuchtfeuer mit Pyramide und Glasfarbe, große Szene in 32³-Abschnitten und in mehreren Bildern auf die Grafikkarte, Auswahl über Abschnitte hinweg – in WebKit, Firefox und Chromium mit WebGL. Farben und Form der Blöcke mit Originaltexturen stimmen mit einem echten Spielbild überein (DATEI-01).',
+    remaining: 'Flüssiges Drehen eines großen Modells mit viel Wasser/Glas auf echter GPU und auf dem iPad (Software-WebGL misst keine echte Bildrate).',
+    command: 'npm run build && npm run test:e2e:webkit -- tests/e2e/graphics.e2e.mjs tests/e2e/graphics2.e2e.mjs && npm run test:e2e:firefox -- tests/e2e/graphics.e2e.mjs tests/e2e/graphics2.e2e.mjs',
+    evidence: '06.11.2026, main ff748e7 + Block 5 Grafik: grün in WebKit 2370, Firefox 1555 (xvfb, llvmpipe-WebGL) und Chromium im Container',
+  },
+  {
+    caseId: 'DATEI-05', scope: 'teil',
+    covers: 'Großes Litematic (130 085 Blöcke) über den Hintergrund-Worker: Import mit Fortschritt, 3D-Ansicht im Worker gebaut, als Bauteil gespeichert, Datencheck nach Neuladen ohne Befund, STL wasserdicht; Abbrechen von Import und 3MF-Export sofort ohne Datei; Update-Vorschau und Versionsvergleich über den Worker – in WebKit, Firefox und Chromium. Dabei behoben: Speichern scheiterte in Safari-Privatfenstern (Blob in IndexedDB), die Bibliothek wuchs in WebKit bis zum Absturz (Unschärfe auf jedem Kartenknopf).',
+    remaining: 'Über 1 Mio. Blöcke (Olympus) auf Philipps Rechner und Safari auf echtem Gerät; Projekt mit dem großen Bauteil anlegen.',
+    command: 'npm run build && npm run test:e2e:webkit -- tests/e2e/background-jobs.e2e.mjs && npm run test:e2e:firefox -- tests/e2e/background-jobs.e2e.mjs',
+    evidence: '06.11.2026, main ff748e7 + Block 5 Grafik: grün in WebKit 2370, Firefox 1555 (xvfb, llvmpipe-WebGL) und Chromium im Container',
+  },
+  {
+    caseId: 'GERAET-05', scope: 'teil',
+    covers: 'Texturen: eigenes Ressourcenpaket (.zip) laden, nach Neuladen noch aktiv (jetzt auch im Safari-Privatfenster gespeichert), Paket ohne Blockzustände abgewiesen, entfernen – in WebKit, Firefox und Chromium; die Originaltexturen aus der Client-Jar von Minecraft 26.3 zeichnen Blöcke wie das Spiel (Spielbildabgleich DATEI-01).',
+    remaining: 'Farbschema des Geräts (hell/dunkel/automatisch) auf echten Geräten; Mojang-Download im echten Browser (VIEW-02-S06).',
+    command: 'npm run build && npm run test:e2e:webkit -- tests/e2e/textures.e2e.mjs && npm run test:e2e:firefox -- tests/e2e/textures.e2e.mjs',
+    evidence: '06.11.2026, main ff748e7 + Block 5 Grafik: grün in WebKit 2370, Firefox 1555 (xvfb, llvmpipe-WebGL) und Chromium im Container',
+  },
 ];
 
 export function autoCheckOf(caseId: string): AutoCheck | undefined {

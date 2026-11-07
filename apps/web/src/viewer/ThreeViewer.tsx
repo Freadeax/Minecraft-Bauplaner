@@ -63,6 +63,8 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
         hover: setHover, state: setState, lost: () => setLost(true),
       });
       controller.current = c; setSoftware(false);
+      // Test hook for the game-screenshot comparison (scripts/checks/compare_game_shot.mjs), only with this switch.
+      try { if (localStorage.getItem('bauplaner.test.pose') === '1') Object.defineProperty(el, 'bauplanerPose', { configurable: true, value: c.setPose.bind(c) }); } catch { /* no storage */ }
       c.setGraphics(graphics);
       return () => { controller.current = null; c.dispose(); };
     } catch { setSoftware(true); return undefined; }
@@ -159,7 +161,7 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
     </div>
     {flying && <div className="flight-pad" role="group" aria-label="Flugsteuerung">
       {PAD.map(([code, label, name]) => <button key={code} aria-label={name} title={name}
-        onPointerDown={e => { e.currentTarget.setPointerCapture(e.pointerId); press(code, true); }}
+        onPointerDown={e => { try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* pointer already gone */ } press(code, true); }}
         onPointerUp={() => press(code, false)} onPointerCancel={() => press(code, false)} onLostPointerCapture={() => press(code, false)}
         onContextMenu={e => e.preventDefault()}>{label}</button>)}
       <label className="speed">Tempo<select value={state.speed} onChange={e => controller.current?.setSpeed(Number(e.target.value))}>

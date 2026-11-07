@@ -110,6 +110,8 @@ input:not([type]), input[type=search], input[type=text], input[inputmode], texta
 .thumb { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
 .thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .thumb.loading::before { content: ''; width: 34%; height: 34%; border-radius: 10px; background: linear-gradient(90deg, #1b3340, #234252, #1b3340); background-size: 200% 100%; animation: shimmer 1.2s linear infinite; }
+/* Cards outside the view wait without animating (Block 5: endless shimmer kept WebKit repainting). */
+.thumb.loading.waiting::before { animation: none; opacity: .6; }
 @keyframes shimmer { from { background-position: 200% 0; } to { background-position: 0 0; } }
 @media (prefers-reduced-motion: reduce) { .thumb.loading::before { animation: none; } .bcard, .cat-tile { transition: none; } }
 .thumb-empty { font-size: 11px; color: var(--muted); }
@@ -123,7 +125,9 @@ input:not([type]), input[type=search], input[type=text], input[inputmode], texta
 .bcard-facts { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: #b7c7ce; margin-top: 2px; }
 .bcard-facts .stars, .stars { color: var(--gold); letter-spacing: 1px; }
 .bcard-actions { position: absolute; right: 8px; top: 8px; display: flex; gap: 6px; z-index: 2; }
-.icon-button { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .12); background: rgba(10, 21, 29, .72); color: #d6e4e8; font-size: 16px; line-height: 1; backdrop-filter: blur(4px); }
+.icon-button { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .12); background: rgba(10, 21, 29, .86); color: #d6e4e8; font-size: 16px; line-height: 1; }
+/* No backdrop-filter on card buttons (Block 5): dozens of blurred layers over the previews made WebKit
+   grow by hundreds of MB per second until the tab crashed; a denser background looks the same. */
 .icon-button:hover { border-color: var(--mint); color: var(--mint); }
 .icon-button.on { background: var(--mint); color: #12301f; border-color: var(--mint); }
 .bcard .bcard-body strong + .bcard-kicker { margin-top: -2px; }

@@ -170,17 +170,20 @@ async function tx<T>(mode: IDBTransactionMode, run: (s: IDBObjectStore) => IDBRe
   } finally { db.close(); }
 }
 
-interface Stored { meta: PackMeta; paths: string[]; blob: Blob; sizes: number[] }
+/** `bytes` since Block 5 (06.11.2026): WebKit cannot store Blobs in private windows; `blob` = older entries. */
+interface Stored { meta: PackMeta; paths: string[]; bytes?: ArrayBuffer; blob?: Blob; sizes: number[] }
 export async function savePack(pack: TexturePack): Promise<void> {
   const paths = [...pack.files.keys()], sizes = paths.map(p => pack.files.get(p)!.length);
-  const blob = new Blob(paths.map(p => pack.files.get(p)! as BlobPart));
-  await tx('readwrite', s => s.put({ meta: pack.meta, paths, sizes, blob } satisfies Stored, KEY));
+  const all = new Uint8Array(sizes.reduce((a, n) => a + n, 0));
+  let o = 0;
+  for (const p of paths) { const f = pack.files.get(p)!; all.set(f, o); o += f.length; }
+  await tx('readwrite', s => s.put({ meta: pack.meta, paths, sizes, bytes: all.buffer } satisfies Stored, KEY));
 }
 export async function loadStoredPack(): Promise<TexturePack | null> {
   if (typeof indexedDB === 'undefined') return null;
   const stored = await tx('readonly', s => s.get(KEY) as IDBRequest<Stored | undefined>);
   if (!stored) return null;
-  const all = new Uint8Array(await stored.blob.arrayBuffer()), files = new Map<string, Uint8Array>();
+  const all = new Uint8Array(stored.bytes ?? (stored.blob ? await stored.blob.arrayBuffer() : new ArrayBuffer(0))), files = new Map<string, Uint8Array>();
   let o = 0;
   stored.paths.forEach((p, i) => { const n = stored.sizes[i]!; files.set(p, all.subarray(o, o + n)); o += n; });
   return { meta: stored.meta, files };

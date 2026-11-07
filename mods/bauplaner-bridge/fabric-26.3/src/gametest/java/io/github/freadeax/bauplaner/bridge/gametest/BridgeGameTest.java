@@ -71,6 +71,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
                 // Keep this recording: the Baustand requests later write more files into scans/.
                 Files.copy(scans(root).getFirst(), io.resolve("scan.schem"), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                 context.takeScreenshot("bauplaner-aufnahme");
+                gameShot(context, world, io, anchor);
 
                 try {
                     hologram(context, world, io, root, anchor);
@@ -92,6 +93,35 @@ public final class BridgeGameTest implements FabricClientGameTest {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    /**
+     * Block 5 (GFX-01-S06/GFX-02-S04): the built plan without hologram or chat, seen from a fixed pose.
+     * spielbild.properties holds eye, yaw, pitch and field of view so that
+     * scripts/checks/compare_game_shot.mjs can draw the same plan in the planner from the same camera.
+     */
+    private static void gameShot(ClientGameTestContext context, TestSingleplayerContext world, Path io, int[] anchor) throws IOException {
+        // Eye at (anchor − 5.5, +1.62, − 8.5), looking at the middle of the building; rotation in the tp itself.
+        double dx = 9.0, dy = 4.5 - 1.62, dz = 11.0;
+        double yaw = -Math.toDegrees(Math.atan2(dx, dz)), pitch = -Math.toDegrees(Math.atan2(dy, Math.hypot(dx, dz)));
+        world.getServer().runCommand("tp @a " + (anchor[0] - 5.5) + " " + anchor[1] + " " + (anchor[2] - 8.5) + " " + yaw + " " + pitch);
+        world.getConnection().waitForChunksRender();
+        context.setScreen(() -> null);
+        context.runOnClient(mc -> mc.gui.hud.getChat().clearMessages(false));
+        // Message cards fade after at most 8 s.
+        context.waitTicks(170);
+        String pose = context.computeOnClient(mc -> {
+            var eye = mc.player.getEyePosition();
+            return "eye=" + eye.x + " " + eye.y + " " + eye.z + "\nyaw=" + mc.player.getYRot() + "\npitch=" + mc.player.getXRot()
+                + "\nfov=" + mc.options.fov().get() + "\nanchor=" + anchor[0] + " " + anchor[1] + " " + anchor[2] + "\n";
+        });
+        copy(context.takeScreenshot("bauplaner-spielbild"), io.resolve("spielbild.png"));
+        Files.writeString(io.resolve("spielbild.properties"), pose);
+        // Back to where the recording stood: the hologram is placed from there.
+        world.getServer().runCommand("tp @a " + (anchor[0] + 0.5) + " " + anchor[1] + " " + (anchor[2] - 2.5) + " 0 30");
+        world.getConnection().waitForChunksRender();
+        context.getInput().lookAt(new BlockPos(anchor[0], anchor[1], anchor[2]));
+        context.waitTicks(5);
     }
 
     /**

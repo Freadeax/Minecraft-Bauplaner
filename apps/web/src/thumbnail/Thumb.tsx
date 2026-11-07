@@ -97,12 +97,15 @@ export function Thumb({ cacheKey, payload, alt, width = 320, height = 220, class
   const key = keyOf(cacheKey, kit, options, width, height);
   const [src, setSrc] = useState(() => cache.get(key) ?? null);
   const ref = useRef<HTMLDivElement>(null);
+  // Not yet scrolled near: the placeholder stands still (no endless repaint of dozens of cards, Block 5 WebKit).
+  const [waiting, setWaiting] = useState(!eager);
   const latest = useRef({ payload, markOf });
   latest.current = { payload, markOf };
   useEffect(() => {
     const hit = cache.get(key);
     if (hit !== undefined) { setSrc(hit); return; }
     setSrc(null);
+    setWaiting(!eager);
     let cancelled = false;
     const job = async () => {
       if (cancelled) return;
@@ -116,13 +119,13 @@ export function Thumb({ cacheKey, payload, alt, width = 320, height = 220, class
       if (!cancelled) setSrc(url);
     };
     /** A stored image from an earlier start shows at once; only a miss waits for a render slot (PERF-05 O-1). */
-    const start = (first: boolean) => void revision().then(async rev => {
+    const start = (first: boolean) => { setWaiting(false); void revision().then(async rev => {
       const stored = rev ? await readStoredShot(rev, key) : undefined;
       if (cancelled) return;
       if (stored) { cache.set(key, stored); setSrc(stored); return; }
       if (first) queue.unshift(job); else queue.push(job);
       pump();
-    });
+    }); };
     const el = ref.current;
     if (eager || !el || !('IntersectionObserver' in window)) { start(true); return () => { cancelled = true; }; }
     const io = new IntersectionObserver(entries => {
@@ -131,7 +134,7 @@ export function Thumb({ cacheKey, payload, alt, width = 320, height = 220, class
     io.observe(el);
     return () => { cancelled = true; io.disconnect(); };
   }, [key, width, height, eager]);
-  return <div ref={ref} className={`${className}${src === null ? ' loading' : ''}`}>
+  return <div ref={ref} className={`${className}${src === null ? ` loading${waiting ? ' waiting' : ''}` : ''}`}>
     {src ? <img src={src} alt={alt} width={width} height={height} decoding="async" draggable={false} />
       : src === '' ? <span className="thumb-empty" aria-label={`${alt}: keine Vorschau`}>keine Vorschau</span> : null}
   </div>;

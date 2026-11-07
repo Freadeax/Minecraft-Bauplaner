@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T22:20:27.341Z",
+  "updatedAt": "2026-11-07T01:02:09.889Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -2537,7 +2537,7 @@
         "Ein 927 000-Block-Litematic blockiert die Seite beim Speichern nicht mehr in langen Stücken (vorher bis 17 s).",
         "Der Start blockiert die Seite nicht mehr in langen Stücken (vorher bei jedem Start 3–4 s am Stück); die Bibliothek ist danach dieselbe wie auf dem direkten Weg."
       ],
-      "next": "Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06). Der GPU-Upload großer Szenen läuft seit GFX-02-S03 in Stücken, seit GFX-03 mit Sichtfeld zuerst.",
+      "next": "Abnahme auf Philipps Rechner mit Olympus (S06); Firefox/Safari-Engine automatisch geprüft.",
       "blockers": [],
       "evidence": [
         {
@@ -2563,13 +2563,13 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "Node- und Chromium-Prüfung bestanden; echte Geräte und andere Browser offen."
+        "note": "Node- und Chromium-Prüfung bestanden; Worker-Pfade (Import, 3D-Ansicht, Speichern, Abbrechen, Update-Vorschau) in Firefox 1555 und WebKit 2370 (Safari-Engine) im Container grün (Block 5, 06.11.2026); dabei Speichern im Safari-Privatfenster behoben. Offen: echte Geräte."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:02:09.889Z",
       "area": "PERF",
       "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
@@ -2829,13 +2829,13 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Betrachter in Chromium, Firefox 1555 und WebKit 2370 (Safari-Engine) im Container grün (Block 5, 06.11.2026); Spielbildabgleich bestanden. Offen: echte GPU/Touch-Geräte."
       },
       "delivery": {
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:02:09.889Z",
       "area": "PLANER",
       "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
@@ -2905,7 +2905,7 @@
       "acceptance": [
         "Keine fremden Texturen ohne Rechte; sichtbare Geometrie stimmt mit Zellwahl überein."
       ],
-      "next": "Mojang-Download im echten Browser und weitere Browser prüfen (Testphase); Register ist seit PROFILE-01 an den Serverbericht gebunden.",
+      "next": "Mojang-Download im echten Browser und echte Geräte (S06); Firefox/Safari-Engine automatisch geprüft (Block 5).",
       "blockers": [],
       "evidence": [
         {
@@ -2923,13 +2923,13 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "Node- und Chromium-Prüfungen bestanden (391 Node, 59 Browser); Mojang-Download im Browser, Firefox/Safari und Geräte offen."
+        "note": "Node- und Chromium-Prüfungen bestanden; Blockformen und Texturpakete in Firefox 1555 und WebKit 2370 (Safari-Engine) im Container grün (Block 5, 06.11.2026); Originaltexturen der Client-Jar zeichnen wie das Spiel. Offen: Mojang-Download im echten Browser, echte Geräte."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:02:09.889Z",
       "area": "PLANER",
       "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
@@ -3191,7 +3191,7 @@
         "Inkrementeller Aufbau ergibt dieselben Abschnitte wie ein vollständiger.",
         "Keine fremden Texturen; Licht nur aus eigenen Regeln und geladenen Quellen."
       ],
-      "next": "Prüfung auf echten Geräten und Browsern (S06); Biomfarben und leuchtende Blockentities als GFX-02.",
+      "next": "Nur noch echte GPU und Handy/iPad mit Schatten (S06); Firefox/Safari-Engine und Spielbildabgleich sind automatisch geprüft.",
       "blockers": [],
       "evidence": [
         {
@@ -3209,13 +3209,13 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "Node- und Chromium-Prüfung (Software-WebGL) bestanden; echte GPUs, Firefox/Safari und Geräte offen."
+        "note": "Node- und Chromium-Prüfung bestanden; Firefox 1555 und WebKit 2370 (Safari-Engine) im Container grün (Block 5, 06.11.2026); Spielbildabgleich mit Minecraft 26.3 in allen drei Engines bestanden (compare_game_shot.mjs). Offen: echte GPUs, Handy."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:02:09.889Z",
       "area": "PLANER",
       "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
@@ -3286,7 +3286,7 @@
         "Inkrementeller Aufbau mit Leuchtfeuer ergibt dieselben Abschnitte wie ein vollständiger.",
         "Kleine Modelle erscheinen weiter in einem Bild; große bleiben während des Hochladens bedienbar."
       ],
-      "next": "Abnahme auf echten GPUs, Firefox/Safari und Abgleich mit Spielbildern (S04, zusammen mit GFX-01-S06).",
+      "next": "Nur noch Abnahme auf echter GPU (S04); Firefox/Safari-Engine und Spielbildabgleich automatisch geprüft (Block 5).",
       "blockers": [],
       "evidence": [
         {
@@ -3304,13 +3304,13 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "Node- und Chromium-Prüfung (Software-WebGL) bestanden; echte GPUs, Firefox/Safari und Spielbildabgleich offen."
+        "note": "Node- und Chromium-Prüfung bestanden; Firefox 1555 und WebKit 2370 (Safari-Engine) im Container grün (Block 5, 06.11.2026); Spielbildabgleich bestanden. Offen: echte GPUs."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:02:09.889Z",
       "area": "PLANER",
       "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
@@ -3368,7 +3368,7 @@
         "Anklicken findet denselben nächsten Treffer wie das Prüfen aller Abschnitte; die Zelle enthält den Trefferpunkt, auch auf Glas und Wasser.",
         "Kein Bild sortiert mehr als das Budget; bei ruhender Kamera wird nichts sortiert."
       ],
-      "next": "Abnahme auf Philipps Rechner: großes Modell mit Wasser drehen und Blöcke anklicken, dazu Firefox/Safari (S04).",
+      "next": "Abnahme auf Philipps Rechner: großes Modell mit Wasser drehen und Blöcke anklicken (S04); Firefox/Safari-Engine automatisch geprüft.",
       "blockers": [],
       "evidence": [
         {
@@ -3386,13 +3386,13 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "Node- und Chromium-Prüfung (Software-WebGL) bestanden; echte GPUs und Firefox/Safari offen."
+        "note": "Node- und Chromium-Prüfung bestanden; Firefox 1555 und WebKit 2370 (Safari-Engine) im Container grün (Block 5, 06.11.2026). Offen: echte GPU mit großem Wassermodell."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:02:09.889Z",
       "area": "PERF",
       "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
@@ -26234,6 +26234,80 @@
           "done": 4,
           "total": 5,
           "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T01:02:09.889Z",
+      "kind": "progress",
+      "items": [
+        "VIEW-01",
+        "VIEW-02",
+        "GFX-01",
+        "GFX-02",
+        "GFX-03",
+        "PERF-04"
+      ],
+      "summary": "Block 5 Grafik in Firefox und Safari: Grafik-, Betrachter-, Textur- und Worker-Browsertests in WebKit 17/17 und Firefox 19/19 grün; Fixes: WebKit-Speicherwachstum der Bibliothek (backdrop-filter auf Kartenknöpfen), Speichern von Originaldateien/Texturen im Safari-Privatfenster (ArrayBuffer statt Blob), ruhende Vorschauplatzhalter; Spielbildabgleich Minecraft 26.3 gegen Planer (compare_game_shot.mjs) in Chromium/Firefox/WebKit 30/30; Autochecks DATEI-01/04/05, GERAET-05 teilweise. Voller Chromium-Browserlauf 212/212. Grenze: keine echte GPU, kein echtes iPad.",
+      "files": [
+        "apps/web/src/app/idbRepository.ts",
+        "apps/web/src/blockmodels/pack.ts",
+        "apps/web/src/styles/catalog.css",
+        "apps/web/src/testing/autochecks.ts",
+        "apps/web/src/thumbnail/Thumb.tsx",
+        "apps/web/src/viewer/ThreeViewer.tsx",
+        "apps/web/src/viewer/sceneController.ts",
+        "docs/TESTING.md",
+        "docs/architecture/planer/GRAPHICS.md",
+        "docs/testing/GERAETEMATRIX.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "scripts/checks/compare_game_shot.mjs",
+        "tests/e2e/background-jobs.e2e.mjs",
+        "tests/e2e/viewer.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "VIEW-01",
+          "status": "implemented",
+          "done": 1,
+          "total": 2,
+          "next": "Aktuelle GPU-/Touch-Prüfung mit negativen Koordinaten und allen Schnittachsen."
+        },
+        {
+          "id": "VIEW-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Mojang-Download im echten Browser und echte Geräte (S06); Firefox/Safari-Engine automatisch geprüft (Block 5)."
+        },
+        {
+          "id": "GFX-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Nur noch echte GPU und Handy/iPad mit Schatten (S06); Firefox/Safari-Engine und Spielbildabgleich sind automatisch geprüft."
+        },
+        {
+          "id": "GFX-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Nur noch Abnahme auf echter GPU (S04); Firefox/Safari-Engine und Spielbildabgleich automatisch geprüft (Block 5)."
+        },
+        {
+          "id": "GFX-03",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme auf Philipps Rechner: großes Modell mit Wasser drehen und Blöcke anklicken (S04); Firefox/Safari-Engine automatisch geprüft."
+        },
+        {
+          "id": "PERF-04",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme auf Philipps Rechner mit Olympus (S06); Firefox/Safari-Engine automatisch geprüft."
         }
       ]
     }

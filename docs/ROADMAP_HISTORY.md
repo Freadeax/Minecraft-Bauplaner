@@ -8554,3 +8554,36 @@ Block 4c: automatische Abnahme Team live mit drei Geräten gegen den echten Team
 |---|---|---:|---|
 | GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
 
+## 2026-11-07T01:02:09.889Z · progress
+
+**Aufgaben:** VIEW-01, VIEW-02, GFX-01, GFX-02, GFX-03, PERF-04
+
+Block 5 Grafik in Firefox und Safari: Grafik-, Betrachter-, Textur- und Worker-Browsertests in WebKit 17/17 und Firefox 19/19 grün; Fixes: WebKit-Speicherwachstum der Bibliothek (backdrop-filter auf Kartenknöpfen), Speichern von Originaldateien/Texturen im Safari-Privatfenster (ArrayBuffer statt Blob), ruhende Vorschauplatzhalter; Spielbildabgleich Minecraft 26.3 gegen Planer (compare_game_shot.mjs) in Chromium/Firefox/WebKit 30/30; Autochecks DATEI-01/04/05, GERAET-05 teilweise. Voller Chromium-Browserlauf 212/212. Grenze: keine echte GPU, kein echtes iPad.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| VIEW-01 | 🧩 Implementiert · Abnahme offen | 1/2 | Aktuelle GPU-/Touch-Prüfung mit negativen Koordinaten und allen Schnittachsen. |
+| VIEW-02 | 🧩 Implementiert · Abnahme offen | 5/6 | Mojang-Download im echten Browser und echte Geräte (S06); Firefox/Safari-Engine automatisch geprüft (Block 5). |
+| GFX-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Nur noch echte GPU und Handy/iPad mit Schatten (S06); Firefox/Safari-Engine und Spielbildabgleich sind automatisch geprüft. |
+| GFX-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Nur noch Abnahme auf echter GPU (S04); Firefox/Safari-Engine und Spielbildabgleich automatisch geprüft (Block 5). |
+| GFX-03 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme auf Philipps Rechner: großes Modell mit Wasser drehen und Blöcke anklicken (S04); Firefox/Safari-Engine automatisch geprüft. |
+| PERF-04 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme auf Philipps Rechner mit Olympus (S06); Firefox/Safari-Engine automatisch geprüft. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/idbRepository.ts`
+- `apps/web/src/blockmodels/pack.ts`
+- `apps/web/src/styles/catalog.css`
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/thumbnail/Thumb.tsx`
+- `apps/web/src/viewer/ThreeViewer.tsx`
+- `apps/web/src/viewer/sceneController.ts`
+- `docs/TESTING.md`
+- `docs/architecture/planer/GRAPHICS.md`
+- `docs/testing/GERAETEMATRIX.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `scripts/checks/compare_game_shot.mjs`
+- `tests/e2e/background-jobs.e2e.mjs`
+- `tests/e2e/viewer.e2e.mjs`
+
