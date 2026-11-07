@@ -287,12 +287,16 @@ export function normalizeLitematic(sourceNbt: { name: string; tag: NbtTag }, opt
   }
   const isAir = palette.map(s => AIR_IDS.has(s.id));
   // Cells in Y→Z→X order straight from the dense box (already sorted).
+  // SIZE-01-S05: over the limit, name the file's real block count and say how to split it (found with a 4.2 million block file).
+  let total = 0;
+  for (let at = 0; at < boxVolume; at++) { const v = dense[at]!; if (v && (keepAir || !isAir[v - 1])) total++; }
+  if (total > limits.maxCells) throw new FormatError('LIMIT', `Die Datei hat ${formatCount(total)} Blöcke – mehr als die ${formatCount(limits.maxCells)}, die der Planer in einem Bauteil verarbeitet. `
+    + (used.length > 1 ? `Bitte eine einzelne Region wählen oder die Datei in mehrere Teile teilen` : `Bitte die Datei in mehrere Teile teilen`) + ' (in Litematica mehrere kleinere Bereiche speichern) und die Teile einzeln importieren.');
   const cells: Cell[] = [];
   for (let at = 0, y = 0; y < BH; y++) for (let z = 0; z < BL; z++) for (let x = 0; x < BW; x++, at++) {
     const v = dense[at]!; if (!v) continue;
     const paletteIndex = v - 1;
     if (isAir[paletteIndex]) { airCells++; if (!keepAir) continue; }
-    if (cells.length >= limits.maxCells) throw new FormatError('LIMIT', `Mehr als ${formatCount(limits.maxCells)} Blöcke; einzelne Regionen lassen sich getrennt importieren.`);
     cells.push({ position: [x, y, z], kind: isAir[paletteIndex] ? 'air' : 'block', paletteIndex });
   }
   const blockEntities = [...entityAt.keys()].sort((a, b) => a - b).map(k => entityAt.get(k)!);

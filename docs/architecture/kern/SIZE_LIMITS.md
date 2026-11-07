@@ -72,6 +72,35 @@ Was dafür umgebaut wurde:
 
 Die Mod las den gesendeten Plan (194 KB .schem) in 0,4 s, die Prüfung braucht rund 56 MB.
 
+## Abnahme Großstadt im echten Spiel (SIZE-01-S05, 06.11.2026)
+
+`scripts/size/test_grossbau_ingame.sh` prüft DATEI-05, WERK-07, MOD-11 (mit MOD-15) und LIVE-02 (mit LIVE-09) automatisch mit einem echten Großbau:
+
+- `scripts/size/big_build.mjs` packt alle Katalog-Gebäude bis 30 hoch dicht an dicht mit 3-Block-Straßen auf eine 600 × 600 große Bodenplatte: **1.451.347 Blöcke, Box 600 × 31 × 600 = 11,2 Mio. Zellen, 1.112 Gebäude, 1,1 MB**. Dazu `zu-gross.litematic` mit 4,2 Mio. Blöcken für die Grenzmeldung.
+- `tests/big/grossbau.big.mjs` bedient die gebaute Website in Chromium (ohne GPU) wie ein Spieler: zu große Datei, Import abbrechen, ganz laden, als Bauteil speichern, Werkstatt öffnen, 356.055 Grasblöcke durch Moos ersetzen, Rückgängig, Wiederholen, als Version 2.0 speichern, Projekt anlegen, Litematic exportieren (und wieder einlesen: alle Blöcke, Moos stimmt), auf der Weltkarte „Wo ich stehe“ und „▶ Ins Spiel senden“.
+- Im Spiel (Minecraft 26.3, Fabric-Client-Gametest, weston) läuft die echte Mod: Verbinden per Klickfreigabe, Hologramm des Großplans, Lage = Kartenursprung der Website, Leistung `normal`/`niedrig`/`hoch` (Grenze greift, „niedrig“ < „normal“), Drehen mit Ende, Verschieben mit Pfeiltaste, `/bauplaner diagnose`, Scan-Download. Spiel und Browser messen Zeit, längste Tick-/Bildpause und Speicher.
+
+Gemessen (vier Läufe vom 06.11.2026, Container ohne GPU; JS-Speicher der Seite bis 2,6 GB):
+
+| Schritt | Zeit | längste Bildpause | Chromium gesamt |
+| --- | --- | --- | --- |
+| Zu große Datei abgewiesen | 0,7 s | 0,1 s | 0,8 GB |
+| Import 1,45 Mio. Blöcke | 3–4,5 s | 0,4–0,5 s | 1,2 GB |
+| Als Bauteil speichern | 7–9 s | 0,5–0,7 s | 2,8 GB |
+| Werkstatt öffnen | 4,6–4,8 s | 4,2 s | 2,5–3,5 GB |
+| 356.055 Blöcke ersetzen | 4,4–6 s | 4–5,6 s | 3,6–3,9 GB |
+| Rückgängig / Wiederholen | 2,4–2,7 s / 3,3–4,9 s | 2–4,7 s | 3,2–4,8 GB |
+| Als Version 2.0 speichern | 12–15 s | 3,8–5,4 s | 4,4–5,3 GB |
+| Projekt anlegen | 32–41 s | 6–9 s | 5,1–6,4 GB |
+| Litematic-Export | 9–10 s | 7–8 s | 5,1–6,2 GB |
+| Ins Spiel senden | 15–18 s | 9–10 s | 5,9–6,8 GB |
+
+Mod: der Plan ist 12–13 s nach dem Klick als Hologramm da, längste Tickpause dabei 0,15 s, Java-Speicher 0,5–0,7 von 3,4 GB, Drehen 0,3–0,4 s, Verschieben 0,2–0,3 s, Baustand-Scan 2–4 s. Leistung zeigt 36.000 offene Blöcke bei „normal“ (30.000 + 6.000 mit Textur), 18.000 bei „niedrig“, bei „hoch“ alle 54.098 im Umkreis.
+
+Dabei behoben: Litematic über 4 Mio. Blöcke meldete einen Fehler mitten im Lesen und ließ genau 4 Mio. nicht zu – jetzt zählt der Import vorher und sagt „… mehr als die 4 Mio. … die Datei in mehrere Teile teilen“; die Werkstatt zeigt Änderungszähler mit Tausenderpunkt; „Wo ich stehe“ auf der Weltkarte übernimmt keine Lage außerhalb der Bauhöhe (−64 bis 319) mehr.
+
+Offen (Folgepunkt Leistung): Werkstatt, Projekt anlegen, Export und Senden halten den Hauptthread bei 1,5 Mio. Blöcken 4–10 s fest (Seite stockt, bricht aber nicht ab); die Mod schreibt Blockzahlen im Chat und in der Anzeige ohne Tausenderpunkt. Bildrate auf echter Grafikkarte und mit Shadern, ferne Blöcke als Kisten und „Plan wird vorbereitet …“ prüft nur Philipp im eigenen Spiel (MOD-11 bleibt teilweise).
+
 ## Grenzen, die bleiben
 
 - Mehr als 4 Mio. Blöcke oder eine Box über 16,7 Mio. Zellen: in Teilprojekte oder Bauabschnitte teilen. Die Meldungen sagen das.

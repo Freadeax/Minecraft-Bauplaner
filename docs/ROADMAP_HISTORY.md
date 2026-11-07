@@ -8772,3 +8772,42 @@ Block 5 Geräte: Abläufe in Chromium, Firefox und WebKit automatisch abgenommen
 - `tests/e2e/start.mjs`
 - `tests/e2e/thumb-store.e2e.mjs`
 
+## 2026-11-07T01:59:38.294Z · progress
+
+**Aufgaben:** SIZE-01, SPLIT-01
+
+SIZE-01-S06 und SPLIT-01-S07: Großbau (1,45 Mio. Blöcke) und eine im echten Spiel gebaute Basis automatisch im Minecraft-26.3-Gametest mit echter Mod und Chromium geprüft (npm run test:grossbau); WERK-07 und LIVE-02 voll, DATEI-05, MOD-11 und BIB-11 teilweise automatisch. Behoben: Litematic-Grenzmeldung, Steg über tiefem Bach, Zähler, Wo ich stehe außerhalb der Bauhöhe. Offen: Bildrate im eigenen Spiel, eigene Basis, Hänger 4–10 s bei 1,5 Mio. Blöcken.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| SIZE-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Rest von MOD-11 im eigenen Spiel (Bildrate auf echter Grafikkarte). Folgepunkt Leistung: Werkstatt, Projekt anlegen, Export und Senden blockieren bei 1,5 Mio. Blöcken die Seite 4–10 s (in den Hintergrundrechner verlagern); Mod-Zahlen mit Tausenderpunkt. |
+| SPLIT-01 | 🧩 Implementiert · Abnahme offen | 6/7 | Rest von BIB-11 mit einer eigenen Basis aus Philipps Welt. Bekannt: Brücke nimmt das Wasser darunter mit, Bibliotheksgebäude ohne Funktion. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/editor/BlockEditor.tsx`
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `docs/STRUKTUR.md`
+- `docs/TESTING.md`
+- `docs/architecture/bibliothek/BASE_PLANNER.md`
+- `docs/architecture/kern/SIZE_LIMITS.md`
+- `fixtures/litematic/README.md`
+- `fixtures/litematic/basis-aus-dem-spiel.litematic`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/GrossbauScenario.java`
+- `package.json`
+- `packages/domain/src/core/split.ts`
+- `packages/formats/src/litematic.ts`
+- `scripts/size/basis_build.mjs`
+- `scripts/size/basis_check.mjs`
+- `scripts/size/big_build.mjs`
+- `scripts/size/grossbau_verify.mjs`
+- `scripts/size/test_grossbau_ingame.sh`
+- `tests/big/basis.big.mjs`
+- `tests/big/grossbau.big.mjs`
+- `tests/unit/core/size-limits.test.mjs`
+- `tests/unit/core/split-game-base.test.mjs`
+- `tests/unit/core/split-under.test.mjs`
+- `tests/unit/formats/litematic.test.mjs`
+

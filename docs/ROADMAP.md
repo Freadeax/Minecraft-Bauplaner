@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T01:55:22.675Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T01:59:38.294Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -91,7 +91,7 @@ Abgeschlossen oder zurückgestellt: UI-01 (geprüft), UI-02 (geprüft).
 | [LIB-04](#lib-04) | Gebäudebibliothek v3 | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Redstone-Bauten im Spiel abnehmen. |
 | [LIB-05](#lib-05) | Bibliothek im Stil der Vorlagen | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Einige neu gezeichnete Gebäude im Spiel ansehen (S08). |
 | [LIB-06](#lib-06) | Bibliotheksbeiträge | 🧩 Implementiert · Abnahme offen 5/7 | P1 | „Hochgeladene Bauobjekte fest in Bibliothek übernehmen“ | Eigenes Bauwerk einreichen und das Paket im Thread hochladen (BIB-15/16). |
-| [SPLIT-01](#split-01) | Gebäude aus großen Modellen herauslösen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Echte Litematic-Basen zum Herauslösen bereitstellen (S05). |
+| [SPLIT-01](#split-01) | Gebäude aus großen Modellen herauslösen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Echte Litematic-Basen zum Herauslösen bereitstellen (S05). |
 
 Abgeschlossen oder zurückgestellt: LIB-01 (geprüft), GEN-01 (geprüft), WORLD-02 (geprüft), BUILD-05 (geprüft).
 
@@ -147,7 +147,7 @@ Abgeschlossen oder zurückgestellt: COOP-02 (geprüft).
 
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
-| [SIZE-01](#size-01) | Volumenlimit für große Builds | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Großen Bau (Olympus) ins Spiel senden und prüfen (DATEI-05, MOD-11, MOD-15, LIVE-09).<br>Im Thread beschreiben, was beim Senden falsch ankommt. |
+| [SIZE-01](#size-01) | Volumenlimit für große Builds | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Großen Plan (über 1 Mio. Blöcke) im eigenen Spiel einblenden und herumlaufen: Bildrate, ferne Blöcke als Kisten (MOD-11). |
 
 <a id="bereich-mod"></a>
 
@@ -292,7 +292,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **MAP-06** · Weltkarte mit Mod 0.8.0 oder neuer im Spiel abnehmen (S08, KARTE-05/06, LIVE-08).
 - **MAP-07** · Ein Projekt auf der Weltkarte drehen, ins Spiel senden und mit F3 prüfen; ein im Spiel gedrehtes Hologramm übernehmen (KARTE-07).
 - **GEN-03** · Kolosseum exportieren und im Spiel aufstellen (BIB-14).
-- **SIZE-01** · Großen Bau (Olympus) ins Spiel senden und prüfen (DATEI-05, MOD-11, MOD-15, LIVE-09).
+- **SIZE-01** · Großen Plan (über 1 Mio. Blöcke) im eigenen Spiel einblenden und herumlaufen: Bildrate, ferne Blöcke als Kisten (MOD-11).
 - **COOP-05** · LAGER-11: Lagerstand im Materialfenster der Mod.
 - **GAME-12** · Menü J, Meldungen oben rechts, Baufenster und Befehle auf Englisch im Modpack prüfen (MOD-25 bis MOD-28).
 - **LINK-03** · Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“.
@@ -357,7 +357,6 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 ### Entscheiden oder Rückfrage beantworten
 
 - **OPS-04** · Ausrollen des Team-Raums mit Sicherung freigeben (S04).
-- **SIZE-01** · Im Thread beschreiben, was beim Senden falsch ankommt.
 - **COOP-01** · Weg für den Live-Abgleich ohne Herunter- und Hochladen wählen (Rückfrage im Thread).
 
 ## Verwaiste Punkte
@@ -399,7 +398,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **LIB-06 · Bibliotheksbeiträge: eigene Bauwerke (Importe, Werkstatt, Generator) als festen Katalogeintrag für alle einreichen – Beitragspaket mit Prüfsumme und Rechtebestätigung, GitHub-Formular, Übernahme-Skript, Auslieferung wie mitgelieferte Gebäude** — 🧩 Implementiert · Abnahme offen, 5/7 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06) und erster echter Beitrag (S07).
 - **GROSS-01 · Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** — 🧩 Implementiert · Abnahme offen, 7/8 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06 BIB-13, BIB-21, BIB-22).
 - **MAP-06 · Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players)** — 🧩 Implementiert · Abnahme offen, 7/8 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag).
-- **SIZE-01 · Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05) mit einem großen Bau im Spiel.
+- **SIZE-01 · Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Rest von MOD-11 im eigenen Spiel (Bildrate auf echter Grafikkarte). Folgepunkt Leistung: Werkstatt, Projekt anlegen, Export und Senden blockieren bei 1,5 Mio. Blöcken die Seite 4–10 s (in den Hintergrundrechner verlagern); Mod-Zahlen mit Tausenderpunkt.
 - **COOP-01 · Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp mit Mitspielern (TEAMBAU-01…05).
 - **COOP-02 · Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll** — ✅ Im beschriebenen Umfang geprüft, 4/4 Teilschritte. Nächster Schritt: Regressionen bei Plugin-Änderungen mit scripts/mod/test_multiplayer.sh.
 - **COOP-03 · Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-09 auf Philipps Server mit Mod 0.10.0 und Paper-Plugin mit Teamkanal; Lagerkisten (COOP-04) über TeamChannel.decorate/broadcastStore.
@@ -565,14 +564,14 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LIB-05](#lib-05) | Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren | 🧩 Implementiert · Abnahme offen | 7/8 | LIB-04, BLOCK-02, GEN-02 | ausstehend | ausstehend |
 | [LIB-06](#lib-06) | Bibliotheksbeiträge: eigene Bauwerke (Importe, Werkstatt, Generator) als festen Katalogeintrag für alle einreichen – Beitragspaket mit Prüfsumme und Rechtebestätigung, GitHub-Formular, Übernahme-Skript, Auslieferung wie mitgelieferte Gebäude | 🧩 Implementiert · Abnahme offen | 5/7 | LIB-02, LIB-05, PERF-04, UPDATE-01 | ausstehend | ausstehend |
 | [BASE-01](#base-01) | Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen | 🧩 Implementiert · Abnahme offen | 5/6 | BUILD-05, TERRAIN-01, BLOCK-02 | ausstehend | ausstehend |
-| [SPLIT-01](#split-01) | Gebäude aus großen Modellen herauslösen: Gebäude, Felder, Gehege und Wegenetz erkennen, einzeln oder zusammen als Bauteile speichern, als Projekt an alter Stelle aufteilen | 🧩 Implementiert · Abnahme offen | 5/6 | LIB-04, WORLD-IMPORT-01, PERF-04 | ausstehend | ausstehend |
+| [SPLIT-01](#split-01) | Gebäude aus großen Modellen herauslösen: Gebäude, Felder, Gehege und Wegenetz erkennen, einzeln oder zusammen als Bauteile speichern, als Projekt an alter Stelle aufteilen | 🧩 Implementiert · Abnahme offen | 6/7 | LIB-04, WORLD-IMPORT-01, PERF-04 | ausstehend | ausstehend |
 | [GROSS-01](#gross-01) | Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt | 🧩 Implementiert · Abnahme offen | 7/8 | BUILD-05, BASE-01, LIB-05 | ausstehend | ausstehend |
 | [MAP-05](#map-05) | Planung auf der Live-Karte vertiefen: Baustand aus dem Spiel (Mod 0.7.1, GET /v1/scan), Ebenen und Abweichungen auf der Karte, bestätigte Schritte abhaken, Bauabschnitte wählen, Weltplan automatisch abgleichen, Hologramm und BlueMap aus dem Kontextmenü | 🧩 Implementiert · Abnahme offen | 4/5 | MAP-03, MAP-04, GAME-07, GAME-01 | ausstehend | ausstehend |
 | [MAP-06](#map-06) | Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players) | 🧩 Implementiert · Abnahme offen | 7/8 | MAP-04, MAP-05, GAME-07 | ausstehend | ausstehend |
 | [MAP-07](#map-07) | Gedrehte und gespiegelte Projektlagen auf der Weltkarte: dieselbe Regel wie das Hologramm der Mod, gedrehtes Hologramm übernehmen, Plan gedreht ins Spiel | 🧩 Implementiert · Abnahme offen | 3/4 | MAP-05, MAP-04, GAME-07 | ausstehend | ausstehend |
 | [QA-04](#qa-04) | Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage | 🧩 Implementiert · Abnahme offen | 4/6 | QA-01, STAB-01, GAME-07 | ausstehend | ausstehend |
 | [GEN-03](#gen-03) | Kolosseum aus Philipps Bauplan: Arena-Generator, Bauset Antike und Großprojekt Kolosseum-Viertel | 🧩 Implementiert · Abnahme offen | 5/6 | GEN-02, GROSS-01 | ausstehend | ausstehend |
-| [SIZE-01](#size-01) | Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger | 🧩 Implementiert · Abnahme offen | 4/5 | PERF-04, ARCH-02, GFX-01, GAME-08 | ausstehend | ausstehend |
+| [SIZE-01](#size-01) | Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger | 🧩 Implementiert · Abnahme offen | 5/6 | PERF-04, ARCH-02, GFX-01, GAME-08 | ausstehend | ausstehend |
 | [COOP-01](#coop-01) | Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“ | 🧩 Implementiert · Abnahme offen | 4/5 | BUILD-06, BACKUP-02 | ausstehend | ausstehend |
 | [COOP-02](#coop-02) | Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll | ✅ Im beschriebenen Umfang geprüft | 4/4 | COOP-01, GAME-04 | ausstehend | ausstehend |
 | [COOP-06](#coop-06) | Teamplanung im Planer: Arbeitspakete, Zuteilung, Zeitplan, Material je Spieler, Fortschritt mit Hinweisen, Konflikthilfe, Planstand-Vergleich, Übergabe und Abwesenheit | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-01 | ausstehend | ausstehend |
@@ -2620,26 +2619,27 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### SPLIT-01
 
-**Gebäude aus großen Modellen herauslösen: Gebäude, Felder, Gehege und Wegenetz erkennen, einzeln oder zusammen als Bauteile speichern, als Projekt an alter Stelle aufteilen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Basisanlagen wie im Bild planen“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Gebäude aus großen Modellen herauslösen: Gebäude, Felder, Gehege und Wegenetz erkennen, einzeln oder zusammen als Bauteile speichern, als Projekt an alter Stelle aufteilen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Basisanlagen wie im Bild planen“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T01:59:38.294Z
 
 - [x] SPLIT-01-S01: Säulenanalyse: Bodenhöhe (mit Auffüllen unter Gebäuden), Natur/Flach/Gebaut je Zelle, Kernsäulen, Rand, Flächen nach Kategorie.
 - [x] SPLIT-01-S02: Funktionserkennung je Teil (Zaubertisch, Amboss, Truhen, Ackerboden, Zaun, Wegblöcke) und Benennung.
 - [x] SPLIT-01-S03: Herauslösen ohne/mit Boden, Zusammenlegen, Rest, Projekt mit Instanzen an alter Stelle und Abschnitten.
 - [x] SPLIT-01-S04: Oberfläche im Gebäudeblatt: Optionen, Draufsicht, Liste, Hervorhebung in 3D, drei Speicherwege.
-- [ ] SPLIT-01-S05: Abnahme mit Philipps echten Litematic-Basen in der Testphase.
+- [ ] SPLIT-01-S05: Rest der Abnahme: eine eigene, gewachsene Basis aus Philipps Welt herauslösen (BIB-11).
 - [x] SPLIT-01-S06: Unterirdische Räume (eigene Teile, Keller gehört zum Haus) und Brücken zwischen Gebäuden (eigener Teil mit connects, legt Häuser nicht zusammen) erkennen; Liste zeigt Art und Verbindung.
+- [x] SPLIT-01-S07: Abnahme mit einer Basis aus dem echten Spiel: Minecraft 26.3 baut Häuser, Keller, Bunker, Felder, Gehege, Wege und eine Brücke über einen Bach in echtes Gelände, die Mod nimmt sie auf; Herauslösen und Aufteilen im Kern und im Browser geprüft, Datei als Fixture mit Einheitstest; Steg über tiefem Wasser kein Gebäude mehr.
 
 **Abnahme:** Eine ganze Basis auf Gras zerfällt in ihre Gebäude, Felder und das Wegenetz; jeder Block des aufgeteilten Projekts steht am alten Platz. Das Quellmodell bleibt unverändert; Herkunft wird übernommen.
 
-**Nächste Aktion:** Abnahme mit echten Dateien (S05).
+**Nächste Aktion:** Rest von BIB-11 mit einer eigenen Basis aus Philipps Welt. Bekannt: Brücke nimmt das Wasser darunter mit, Bibliotheksgebäude ohne Funktion.
 
 **Nur Philipp:** Dateien oder Welt liefern: Echte Litematic-Basen zum Herauslösen bereitstellen (S05).
 
-**Prüfstand:** Einheits- und Browsertests grün; Abnahme mit echten Dateien offen (S05).
+**Prüfstand:** 06.11.2026: mit einer Basis aus dem echten Spiel automatisch geprüft (BIB-11 teilweise); offen nur eine eigene gewachsene Basis (S05).
 
-**Nachweise:** [tests/unit/catalog/base.test.mjs](../tests/unit/catalog/base.test.mjs) — Ganze Basis auf Gras: Gebäude, Felder, Wegenetz, Schmiede nahezu vollständig, mit/ohne Boden, Zusammenlegen, Rest, Bilanz; Projekt ohne Konflikte am alten Platz.; [tests/e2e/base.e2e.mjs](../tests/e2e/base.e2e.mjs) — Chromium: Herauslösen im Gebäudeblatt, Teil benennen und speichern.; [docs/architecture/bibliothek/BASE_PLANNER.md](architecture/bibliothek/BASE_PLANNER.md) — Analyse, Klassen, Herauslösen, Grenzen.; [tests/unit/core/split-under.test.mjs](../tests/unit/core/split-under.test.mjs) — 4 Fälle: Brücke zwischen zwei Häusern, Steg über Wasser und Dachüberstand, Bunker unter Gras, Keller unter einem Haus.
+**Nachweise:** [tests/unit/catalog/base.test.mjs](../tests/unit/catalog/base.test.mjs) — Ganze Basis auf Gras: Gebäude, Felder, Wegenetz, Schmiede nahezu vollständig, mit/ohne Boden, Zusammenlegen, Rest, Bilanz; Projekt ohne Konflikte am alten Platz.; [tests/e2e/base.e2e.mjs](../tests/e2e/base.e2e.mjs) — Chromium: Herauslösen im Gebäudeblatt, Teil benennen und speichern.; [docs/architecture/bibliothek/BASE_PLANNER.md](architecture/bibliothek/BASE_PLANNER.md) — Analyse, Klassen, Herauslösen, Grenzen.; [tests/unit/core/split-under.test.mjs](../tests/unit/core/split-under.test.mjs) — 4 Fälle: Brücke zwischen zwei Häusern, Steg über Wasser und Dachüberstand, Bunker unter Gras, Keller unter einem Haus.; [tests/unit/core/split-game-base.test.mjs](../tests/unit/core/split-game-base.test.mjs) — Basis aus dem echten Spiel (122.669 Blöcke, Wald, Strand, Ruinenportal): 3 Gebäude, Keller beim Haus, unterirdischer Raum, Brücke zwischen Wohnhaus und Schmiede, 2 Felder, Gehege, Wege; aufgeteilt jeder Block am alten Platz. Browser: tests/big/basis.big.mjs.
 
-**Dateiumfang:** `packages/domain/src/core/split.ts`, `packages/domain/src/base/baseFunctions.ts`, `apps/web/src/views/library/SplitPanel.tsx`, `apps/web/src/views/library/BuildingDetail.tsx`, `tests/unit/catalog/base.test.mjs`, `tests/e2e/base.e2e.mjs`, `docs/architecture/bibliothek/BASE_PLANNER.md`, `tests/unit/core/split-under.test.mjs`, `docs/TESTING.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`. **Abhängigkeiten:** LIB-04, WORLD-IMPORT-01, PERF-04. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/core/split.ts`, `packages/domain/src/base/baseFunctions.ts`, `apps/web/src/views/library/SplitPanel.tsx`, `apps/web/src/views/library/BuildingDetail.tsx`, `tests/unit/catalog/base.test.mjs`, `tests/e2e/base.e2e.mjs`, `docs/architecture/bibliothek/BASE_PLANNER.md`, `tests/unit/core/split-under.test.mjs`, `docs/TESTING.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `scripts/size/basis_build.mjs`, `scripts/size/basis_check.mjs`, `tests/big/basis.big.mjs`, `tests/unit/core/split-game-base.test.mjs`, `fixtures/litematic/basis-aus-dem-spiel.litematic`, `apps/web/src/testing/autochecks.ts`. **Abhängigkeiten:** LIB-04, WORLD-IMPORT-01, PERF-04. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -2798,25 +2798,26 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### SIZE-01
 
-**Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Volumenlimit für große Builds aufheben“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Volumenlimit für große Builds aufheben“) · Zuständiger Thread: „Bibliothek und Gelände spielgerecht prüfen“ · Aktualisiert: 2026-11-07T01:59:38.294Z
 
 - [x] SIZE-01-S01: Bestandsaufnahme aller harten Größen-/Blockgrenzen in Planer und Mod, Messung von Speicher und Zeit bei 1–4 Mio. Zellen.
 - [x] SIZE-01-S02: Planer: zentrale Grenzen in sizeLimits.ts, Importe ohne Kopie (adoptPayload), Luft ab 250.000 Zellen Box unausgewählt, Werkstatt 4 Mio./1 Mio. je Schritt mit linearer Umkehrung und Rückgängig-Budget, Export/Aufnahmen bis 16,7 Mio. Box, Größenhinweise.
 - [x] SIZE-01-S03: Übertragung: SectionRuns statt einem Byte je Boxzelle, Prüfung gegen die verbundene Mod (Fähigkeit bigplans), Dateien bis 64 MB, passende Wartezeit.
 - [x] SIZE-01-S04: Mod 0.9.0 (Fabric, NeoForge): Plan einmal entpacken, 6 Byte je Planblock, LiveCheck ohne Objekt je Block mit Abschnittszählung, Laden/Verschieben großer Pläne im Hintergrund, Baustand in Scheiben, Render-Budget /bauplaner leistung, Diagnose.
-- [ ] SIZE-01-S05: Abnahme durch Philipp in der Testphase (DATEI-05, WERK-07, MOD-11, MOD-15, LIVE-09) mit einem echten großen Bau im Spiel.
+- [ ] SIZE-01-S05: Rest der Abnahme durch Philipp im eigenen Spiel: Bildrate mit großem Plan auf echter Grafikkarte (auch Shader), ferne Blöcke als Kisten, „Plan wird vorbereitet …“ (MOD-11).
+- [x] SIZE-01-S06: Automatische Abnahme mit echtem Großbau (npm run test:grossbau): 1,45 Mio. Blöcke Import/Abbrechen/zu große Datei, Werkstatt füllen/Rückgängig/speichern, Projekt, Export, Senden an die echte Mod im Minecraft-26.3-Gametest (Hologramm an Kartenlage, Leistungsgrenze, Drehen/Verschieben, Diagnose); Zeit und Speicher gemessen (WERK-07, LIVE-02 voll, DATEI-05 und MOD-11 teilweise).
 
 **Abnahme:** Schem/Litematic bis 16,7 Mio. Zellen Box und 4 Mio. Blöcke importieren, bearbeiten, exportieren und ins Spiel senden, ohne harte Grenze darunter. Über der Grenze eine Meldung mit Rat (teilen) statt Abbruch ohne Erklärung; darunter nur Hinweise. Ältere Mods bekommen nur Pläne, die sie laden können; die Website sagt es vor dem Senden. Mod: 3 Mio. Blöcke Live-Abgleich in unter einer Sekunde, Verschieben großer Hologramme ohne Spielhänger.
 
-**Nächste Aktion:** Abnahme durch Philipp (S05) mit einem großen Bau im Spiel.
+**Nächste Aktion:** Rest von MOD-11 im eigenen Spiel (Bildrate auf echter Grafikkarte). Folgepunkt Leistung: Werkstatt, Projekt anlegen, Export und Senden blockieren bei 1,5 Mio. Blöcken die Seite 4–10 s (in den Hintergrundrechner verlagern); Mod-Zahlen mit Tausenderpunkt.
 
-**Nur Philipp:** Im Spiel an deinem PC: Großen Bau (Olympus) ins Spiel senden und prüfen (DATEI-05, MOD-11, MOD-15, LIVE-09). Entscheiden oder Rückfrage beantworten: Im Thread beschreiben, was beim Senden falsch ankommt.
+**Nur Philipp:** Im Spiel an deinem PC: Großen Plan (über 1 Mio. Blöcke) im eigenen Spiel einblenden und herumlaufen: Bildrate, ferne Blöcke als Kisten (MOD-11).
 
-**Prüfstand:** Node- und JUnit-Tests grün, Spieltests Fabric/NeoForge/Modpack; Abnahme durch Philipp mit einem großen Bau offen (S05).
+**Prüfstand:** 06.11.2026: WERK-07 und LIVE-02 (mit LIVE-09) automatisch im echten Spiel geprüft, DATEI-05 und MOD-11 (mit MOD-15) teilweise; offen Bildrate im eigenen Spiel (S05) und Safari auf echtem Gerät.
 
-**Nachweise:** [tests/unit/core/size-limits.test.mjs](../tests/unit/core/size-limits.test.mjs) — Grenzen, Stufen, großer Schem-Import ohne Luft, SectionRuns, lineare Werkstattschritte, Rückgängig-Budget, Prüfung gegen alte/neue Mod.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/BigPlanTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/BigPlanTest.java) — 6,3 Mio. Box / 3,1 Mio. Blöcke laden und abgleichen, SectionRuns = SectionCells, Ablehnung zu großer Pläne.; [docs/architecture/kern/SIZE_LIMITS.md](architecture/kern/SIZE_LIMITS.md) — Grenzen vorher/jetzt, Messwerte, Umbau Website und Mod.
+**Nachweise:** [tests/unit/core/size-limits.test.mjs](../tests/unit/core/size-limits.test.mjs) — Grenzen, Stufen, großer Schem-Import ohne Luft, SectionRuns, lineare Werkstattschritte, Rückgängig-Budget, Prüfung gegen alte/neue Mod.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/BigPlanTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/BigPlanTest.java) — 6,3 Mio. Box / 3,1 Mio. Blöcke laden und abgleichen, SectionRuns = SectionCells, Ablehnung zu großer Pläne.; [docs/architecture/kern/SIZE_LIMITS.md](architecture/kern/SIZE_LIMITS.md) — Grenzen vorher/jetzt, Messwerte, Umbau Website und Mod.; [scripts/size/test_grossbau_ingame.sh](../scripts/size/test_grossbau_ingame.sh) — 06.11.2026 grün: Großstadt 1.451.347 Blöcke (600 × 31 × 600) durch Chromium und die echte Mod in Minecraft 26.3; Import 4 s, Werkstatt füllen 6 s, Projekt 40 s, Senden 17 s, Hologramm 12 s nach dem Klick, längste Tickpause 0,15 s; Messwerte in docs/architecture/kern/SIZE_LIMITS.md.
 
-**Dateiumfang:** `packages/voxel/src/sizeLimits.ts`, `packages/voxel/src/validation.ts`, `packages/formats/src/schem.ts`, `packages/formats/src/litematic.ts`, `packages/formats/src/worldExcerpt.ts`, `packages/formats/src/schemWrite.ts`, `packages/formats/src/litematicWrite.ts`, `packages/formats/src/scan.ts`, `packages/domain/src/editor/draft.ts`, `packages/domain/src/team/liveLink.ts`, `packages/application/src/revisionExport.ts`, `packages/application/src/scanPersistence.ts`, `apps/web/src/app/SizeNotice.tsx`, `apps/web/src/app/importLimits.ts`, `apps/web/src/jobs/importJob.ts`, `apps/web/src/editor/BlockEditor.tsx`, `apps/web/src/views/map/WorldMapView.tsx`, `apps/web/src/views/map/liveClient.ts`, `mods/bauplaner-bridge/`, `tests/unit/core/size-limits.test.mjs`, `docs/architecture/kern/SIZE_LIMITS.md`. **Abhängigkeiten:** PERF-04, ARCH-02, GFX-01, GAME-08. **Alte IDs:** —.
+**Dateiumfang:** `packages/voxel/src/sizeLimits.ts`, `packages/voxel/src/validation.ts`, `packages/formats/src/schem.ts`, `packages/formats/src/litematic.ts`, `packages/formats/src/worldExcerpt.ts`, `packages/formats/src/schemWrite.ts`, `packages/formats/src/litematicWrite.ts`, `packages/formats/src/scan.ts`, `packages/domain/src/editor/draft.ts`, `packages/domain/src/team/liveLink.ts`, `packages/application/src/revisionExport.ts`, `packages/application/src/scanPersistence.ts`, `apps/web/src/app/SizeNotice.tsx`, `apps/web/src/app/importLimits.ts`, `apps/web/src/jobs/importJob.ts`, `apps/web/src/editor/BlockEditor.tsx`, `apps/web/src/views/map/WorldMapView.tsx`, `apps/web/src/views/map/liveClient.ts`, `mods/bauplaner-bridge/`, `tests/unit/core/size-limits.test.mjs`, `docs/architecture/kern/SIZE_LIMITS.md`, `scripts/size/`, `tests/big/`, `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/GrossbauScenario.java`, `apps/web/src/testing/autochecks.ts`, `docs/TESTING.md`, `package.json`. **Abhängigkeiten:** PERF-04, ARCH-02, GFX-01, GAME-08. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

@@ -103,3 +103,15 @@ test('SIZE-01: the website checks a plan against what the connected mod can load
   assert.equal(checkPlanForMod(neu, { ...big, volume: MODEL_MAX_VOLUME + 1 }).ok, false);
   assert.equal(checkPlanForMod(neu, { ...big, bytes: 65_000_000 }).ok, false);
 });
+
+test('Litematic über der Blockgrenze: Meldung nennt die Blockzahl der Datei und rät zum Teilen (SIZE-01-S05)', async () => {
+  const { writeLitematic, importLitematic } = await import('../../../dist/formats/src/index.js');
+  const cells = [];
+  for (let x = 0; x < 10; x++) for (let z = 0; z < 12; z++) cells.push({ position: [x, 0, z], kind: 'block', paletteIndex: 0 });
+  const payload = createPayload({ schemaVersion: 1, profileId: 'java-26.3', bounds: { min: [0, 0, 0], maxExclusive: [10, 1, 12] }, pivot: [0, 0, 0], sourceOrigin: [0, 0, 0],
+    palette: [{ id: 'minecraft:stone', properties: {} }], cells, blockEntities: [] });
+  const out = await writeLitematic(payload, { dataVersion: 5023, anchor: 'min-corner', unselected: 'air' });
+  const buffer = out.bytes.buffer.slice(out.bytes.byteOffset, out.bytes.byteOffset + out.bytes.byteLength);
+  await assert.rejects(importLitematic(buffer, { maxCells: 100 }), e => /Die Datei hat 120 Blöcke – mehr als die 100/.test(e.message) && /in mehrere Teile teilen/.test(e.message) && !/Region/.test(e.message));
+  assert.equal((await importLitematic(buffer, { maxCells: 120 })).payload.cells.length, 120);
+});

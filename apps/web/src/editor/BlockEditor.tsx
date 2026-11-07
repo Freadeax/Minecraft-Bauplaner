@@ -569,7 +569,7 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
         title={selBox ? 'Verbindungen in der Auswahl wie im Spiel setzen (Zäune, Mauern, Scheiben, Gitter, Treppenecken, Tore)' : 'Verbindungen im ganzen Modell wie im Spiel setzen (Zäune, Mauern, Scheiben, Gitter, Treppenecken, Tore)'}>⛓ Wie im Spiel verbinden</button>
       <button data-testid="placement-check" onClick={() => { const pl = materializeDraft(draft); setMessage(pl ? placementSummary(checkPlacement(pl)) : 'Das Modell ist leer.'); }} title="Halt, Schwerkraft, Verbindungen und Hälften wie im Spiel prüfen">✓ Spielprüfung</button>
       <span className="editor-stats" aria-live="polite" data-changes={changes}>
-        {formatNumber(model.cellCount)} Zellen · Änderungen: <b>+{model.summary.added}</b> / <b>−{model.summary.removed}</b> / <b>~{model.summary.changed}</b>{model.summary.entities > 0 && <> · Ausstattung geändert</>}
+        {formatNumber(model.cellCount)} Zellen · Änderungen: <b>+{formatNumber(model.summary.added)}</b> / <b>−{formatNumber(model.summary.removed)}</b> / <b>~{formatNumber(model.summary.changed)}</b>{model.summary.entities > 0 && <> · Ausstattung geändert</>}
       </span>
       <span className="spacer" />
       {saveBar(model)}

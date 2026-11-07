@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T01:55:22.675Z",
+  "updatedAt": "2026-11-07T01:59:38.294Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -7375,7 +7375,13 @@
         "tests/unit/core/split-under.test.mjs",
         "docs/TESTING.md",
         "apps/web/src/testing/testplan.ts",
-        "docs/testing/TESTPLAN.md"
+        "docs/testing/TESTPLAN.md",
+        "scripts/size/basis_build.mjs",
+        "scripts/size/basis_check.mjs",
+        "tests/big/basis.big.mjs",
+        "tests/unit/core/split-game-base.test.mjs",
+        "fixtures/litematic/basis-aus-dem-spiel.litematic",
+        "apps/web/src/testing/autochecks.ts"
       ],
       "legacyIds": [],
       "steps": [
@@ -7401,12 +7407,17 @@
         },
         {
           "id": "SPLIT-01-S05",
-          "title": "Abnahme mit Philipps echten Litematic-Basen in der Testphase.",
+          "title": "Rest der Abnahme: eine eigene, gewachsene Basis aus Philipps Welt herauslösen (BIB-11).",
           "done": false
         },
         {
           "id": "SPLIT-01-S06",
           "title": "Unterirdische Räume (eigene Teile, Keller gehört zum Haus) und Brücken zwischen Gebäuden (eigener Teil mit connects, legt Häuser nicht zusammen) erkennen; Liste zeigt Art und Verbindung.",
+          "done": true
+        },
+        {
+          "id": "SPLIT-01-S07",
+          "title": "Abnahme mit einer Basis aus dem echten Spiel: Minecraft 26.3 baut Häuser, Keller, Bunker, Felder, Gehege, Wege und eine Brücke über einen Bach in echtes Gelände, die Mod nimmt sie auf; Herauslösen und Aufteilen im Kern und im Browser geprüft, Datei als Fixture mit Einheitstest; Steg über tiefem Wasser kein Gebäude mehr.",
           "done": true
         }
       ],
@@ -7414,7 +7425,7 @@
         "Eine ganze Basis auf Gras zerfällt in ihre Gebäude, Felder und das Wegenetz; jeder Block des aufgeteilten Projekts steht am alten Platz.",
         "Das Quellmodell bleibt unverändert; Herkunft wird übernommen."
       ],
-      "next": "Abnahme mit echten Dateien (S05).",
+      "next": "Rest von BIB-11 mit einer eigenen Basis aus Philipps Welt. Bekannt: Brücke nimmt das Wasser darunter mit, Bibliotheksgebäude ohne Funktion.",
       "blockers": [],
       "evidence": [
         {
@@ -7432,17 +7443,21 @@
         {
           "path": "tests/unit/core/split-under.test.mjs",
           "note": "4 Fälle: Brücke zwischen zwei Häusern, Steg über Wasser und Dachüberstand, Bunker unter Gras, Keller unter einem Haus."
+        },
+        {
+          "path": "tests/unit/core/split-game-base.test.mjs",
+          "note": "Basis aus dem echten Spiel (122.669 Blöcke, Wald, Strand, Ruinenportal): 3 Gebäude, Keller beim Haus, unterirdischer Raum, Brücke zwischen Wohnhaus und Schmiede, 2 Felder, Gehege, Wege; aufgeteilt jeder Block am alten Platz. Browser: tests/big/basis.big.mjs."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Einheits- und Browsertests grün; Abnahme mit echten Dateien offen (S05)."
+        "note": "06.11.2026: mit einer Basis aus dem echten Spiel automatisch geprüft (BIB-11 teilweise); offen nur eine eigene gewachsene Basis (S05)."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:59:38.294Z",
       "area": "BIBLIOTHEK",
       "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
@@ -8122,7 +8137,13 @@
         "apps/web/src/views/map/liveClient.ts",
         "mods/bauplaner-bridge/",
         "tests/unit/core/size-limits.test.mjs",
-        "docs/architecture/kern/SIZE_LIMITS.md"
+        "docs/architecture/kern/SIZE_LIMITS.md",
+        "scripts/size/",
+        "tests/big/",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/GrossbauScenario.java",
+        "apps/web/src/testing/autochecks.ts",
+        "docs/TESTING.md",
+        "package.json"
       ],
       "legacyIds": [],
       "steps": [
@@ -8148,8 +8169,13 @@
         },
         {
           "id": "SIZE-01-S05",
-          "title": "Abnahme durch Philipp in der Testphase (DATEI-05, WERK-07, MOD-11, MOD-15, LIVE-09) mit einem echten großen Bau im Spiel.",
+          "title": "Rest der Abnahme durch Philipp im eigenen Spiel: Bildrate mit großem Plan auf echter Grafikkarte (auch Shader), ferne Blöcke als Kisten, „Plan wird vorbereitet …“ (MOD-11).",
           "done": false
+        },
+        {
+          "id": "SIZE-01-S06",
+          "title": "Automatische Abnahme mit echtem Großbau (npm run test:grossbau): 1,45 Mio. Blöcke Import/Abbrechen/zu große Datei, Werkstatt füllen/Rückgängig/speichern, Projekt, Export, Senden an die echte Mod im Minecraft-26.3-Gametest (Hologramm an Kartenlage, Leistungsgrenze, Drehen/Verschieben, Diagnose); Zeit und Speicher gemessen (WERK-07, LIVE-02 voll, DATEI-05 und MOD-11 teilweise).",
+          "done": true
         }
       ],
       "acceptance": [
@@ -8158,7 +8184,7 @@
         "Ältere Mods bekommen nur Pläne, die sie laden können; die Website sagt es vor dem Senden.",
         "Mod: 3 Mio. Blöcke Live-Abgleich in unter einer Sekunde, Verschieben großer Hologramme ohne Spielhänger."
       ],
-      "next": "Abnahme durch Philipp (S05) mit einem großen Bau im Spiel.",
+      "next": "Rest von MOD-11 im eigenen Spiel (Bildrate auf echter Grafikkarte). Folgepunkt Leistung: Werkstatt, Projekt anlegen, Export und Senden blockieren bei 1,5 Mio. Blöcken die Seite 4–10 s (in den Hintergrundrechner verlagern); Mod-Zahlen mit Tausenderpunkt.",
       "blockers": [],
       "evidence": [
         {
@@ -8172,27 +8198,27 @@
         {
           "path": "docs/architecture/kern/SIZE_LIMITS.md",
           "note": "Grenzen vorher/jetzt, Messwerte, Umbau Website und Mod."
+        },
+        {
+          "path": "scripts/size/test_grossbau_ingame.sh",
+          "note": "06.11.2026 grün: Großstadt 1.451.347 Blöcke (600 × 31 × 600) durch Chromium und die echte Mod in Minecraft 26.3; Import 4 s, Werkstatt füllen 6 s, Projekt 40 s, Senden 17 s, Hologramm 12 s nach dem Klick, längste Tickpause 0,15 s; Messwerte in docs/architecture/kern/SIZE_LIMITS.md."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Node- und JUnit-Tests grün, Spieltests Fabric/NeoForge/Modpack; Abnahme durch Philipp mit einem großen Bau offen (S05)."
+        "note": "06.11.2026: WERK-07 und LIVE-02 (mit LIVE-09) automatisch im echten Spiel geprüft, DATEI-05 und MOD-11 (mit MOD-15) teilweise; offen Bildrate im eigenen Spiel (S05) und Safari auf echtem Gerät."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:59:38.294Z",
       "area": "GROESSE",
       "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
         {
           "kind": "spiel",
-          "text": "Großen Bau (Olympus) ins Spiel senden und prüfen (DATEI-05, MOD-11, MOD-15, LIVE-09)."
-        },
-        {
-          "kind": "entscheidung",
-          "text": "Im Thread beschreiben, was beim Senden falsch ankommt."
+          "text": "Großen Plan (über 1 Mio. Blöcke) im eigenen Spiel einblenden und herumlaufen: Bildrate, ferne Blöcke als Kisten (MOD-11)."
         }
       ],
       "orphans": []
@@ -26777,6 +26803,58 @@
           "done": 2,
           "total": 2,
           "next": "Abnahme auf echten Geräten (QA-02), besonders Safari-Downloads; Rückmeldung zur Erinnerungsschwelle (7 Tage) einholen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T01:59:38.294Z",
+      "kind": "progress",
+      "items": [
+        "SIZE-01",
+        "SPLIT-01"
+      ],
+      "summary": "SIZE-01-S06 und SPLIT-01-S07: Großbau (1,45 Mio. Blöcke) und eine im echten Spiel gebaute Basis automatisch im Minecraft-26.3-Gametest mit echter Mod und Chromium geprüft (npm run test:grossbau); WERK-07 und LIVE-02 voll, DATEI-05, MOD-11 und BIB-11 teilweise automatisch. Behoben: Litematic-Grenzmeldung, Steg über tiefem Bach, Zähler, Wo ich stehe außerhalb der Bauhöhe. Offen: Bildrate im eigenen Spiel, eigene Basis, Hänger 4–10 s bei 1,5 Mio. Blöcken.",
+      "files": [
+        "apps/web/src/editor/BlockEditor.tsx",
+        "apps/web/src/testing/autochecks.ts",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "docs/STRUKTUR.md",
+        "docs/TESTING.md",
+        "docs/architecture/bibliothek/BASE_PLANNER.md",
+        "docs/architecture/kern/SIZE_LIMITS.md",
+        "fixtures/litematic/README.md",
+        "fixtures/litematic/basis-aus-dem-spiel.litematic",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/GrossbauScenario.java",
+        "package.json",
+        "packages/domain/src/core/split.ts",
+        "packages/formats/src/litematic.ts",
+        "scripts/size/basis_build.mjs",
+        "scripts/size/basis_check.mjs",
+        "scripts/size/big_build.mjs",
+        "scripts/size/grossbau_verify.mjs",
+        "scripts/size/test_grossbau_ingame.sh",
+        "tests/big/basis.big.mjs",
+        "tests/big/grossbau.big.mjs",
+        "tests/unit/core/size-limits.test.mjs",
+        "tests/unit/core/split-game-base.test.mjs",
+        "tests/unit/core/split-under.test.mjs",
+        "tests/unit/formats/litematic.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "SIZE-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Rest von MOD-11 im eigenen Spiel (Bildrate auf echter Grafikkarte). Folgepunkt Leistung: Werkstatt, Projekt anlegen, Export und Senden blockieren bei 1,5 Mio. Blöcken die Seite 4–10 s (in den Hintergrundrechner verlagern); Mod-Zahlen mit Tausenderpunkt."
+        },
+        {
+          "id": "SPLIT-01",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Rest von BIB-11 mit einer eigenen Basis aus Philipps Welt. Bekannt: Brücke nimmt das Wasser darunter mit, Bibliotheksgebäude ohne Funktion."
         }
       ]
     }

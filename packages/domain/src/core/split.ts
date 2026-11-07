@@ -220,8 +220,12 @@ export function analyzeSplit(payload: VoxelPayload, rawOptions: SplitOptions = {
   const tall = new Uint8Array(N), core = new Uint8Array(N), low = new Uint8Array(N), flatOnly = new Uint8Array(N);
   for (let i = 0; i < N; i++) {
     if (builtMax[i] !== NO_GROUND) {
-      const base = ground[i] !== NO_GROUND && ground[i]! < builtMax[i]! ? ground[i]! : builtMin[i]! - 1;
-      if (builtMax[i]! - base >= options.coreHeight) tall[i] = 1;
+      // SPLIT-01-S05 (real base from the game): water never makes a column tall – a slab footbridge over a stream two blocks
+      // deep counted as a „Gebäude“ before. Height = solid built blocks above the ground or above the water they stand on.
+      if (solidMax[i] === NO_GROUND) { low[i] = 1; continue; }
+      let base = ground[i] !== NO_GROUND && ground[i]! < solidMax[i]! ? ground[i]! : solidMin[i]! - 1;
+      if (waterTop[i] !== NO_GROUND && waterTop[i]! < solidMin[i]! && waterTop[i]! > base) base = waterTop[i]!;
+      if (solidMax[i]! - base >= options.coreHeight) tall[i] = 1;
       else { low[i] = 1; if (!nonPaving[i] && builtMax[i] === builtMin[i]) flatOnly[i] = 1; }
     } else if (hasFlat[i]) { low[i] = 1; flatOnly[i] = 1; }
   }

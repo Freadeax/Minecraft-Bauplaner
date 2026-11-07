@@ -35,3 +35,7 @@ Zusatzdaten: Truhen-Tile-Entity bei Haus-relativ 0/0/2 (absolut 4/0/0) mit Modif
 Ebenfalls eigene Daten aus demselben Python-Writer, nachgebaut nach der Gliederung echter Dateien (Litematica 1.21, Konverter): **unkomprimiert**, Format 7 ohne `SubVersion`, MinecraftDataVersion 4556, Wurzelschlüssel in Litematicas HashMap-Reihenfolge, Metadata ohne Vorschaubild, leere Listen mit Elementtyp TAG_End.
 
 Region „Unnamed“: `Position` 2/1/3, `Size` −3/−2/−4 → Minimum 0/0/0, 3×2×4, Palette 6 (3 Bit, 2 Longs). Y=0 überall Grasblock (12). Y=1 (Index 12–23): Fichtenbretter bei 0/1/0, 0/1/3, 2/1/3; altes `minecraft:grass` bei 2/1/0; Eichenschild bei 1/1/1 mit Schild-TileEntity (`front_text`/`back_text`); alte `minecraft:chain` bei 2/1/2. 18 Blöcke, 6 Luft. Freie Entities: Gemälde (`Pos` −0,97/−0,5/−2,0 relativ zur Region-`Position`) und Rahmen.
+
+## Basis aus dem echten Spiel (SPLIT-01-S05)
+
+`basis-aus-dem-spiel.litematic` (rund 123.000 Blöcke, 100 × 36 × 84) hat Minecraft 26.3 im Fabric-Client-Gametest selbst gebaut (`scripts/size/basis_build.mjs`, Welt mit festem Seed „LMNT-Bauplaner-Grossbau“: Wald, Strand, Ruinenportal), die Mod hat den Bereich mit `GET /v1/box` aufgenommen und `scripts/size/grossbau_verify.mjs` hat daraus die Datei geschrieben. Neu erzeugen: `BAUPLANER_KEEP=<ordner> scripts/size/test_grossbau_ingame.sh`, dann die Datei aus dem Ordner kopieren. Test: `tests/unit/core/split-game-base.test.mjs`.

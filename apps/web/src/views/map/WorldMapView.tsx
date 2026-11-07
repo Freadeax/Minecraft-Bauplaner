@@ -698,6 +698,8 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   const placeAtPlayer = async (p: Project) => {
     if (!player) return;
     const origin = originFromPlayer(player);
+    // Build height of 26.3 (−64 … 319): a player falling through the void must not become the project's origin.
+    if (origin[1] < -64 || origin[1] > 319) { setNotice(`Du stehst bei Y ${origin[1]} außerhalb der Bauhöhe (−64 bis 319) – erst auf festen Boden stellen.`); setNoticeUndo(false); return; }
     if (await save(p, worldOperation({ ...(p.world ?? createPlacement(origin, player.dimension)), origin, dimension: player.dimension }, 'An die Spielerposition gesetzt'))) {
       setDimension(player.dimension); setFrame2d({ projectId: p.id, seq: ++seq.current });
     }

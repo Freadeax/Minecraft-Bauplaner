@@ -102,3 +102,15 @@ test('Keller unter einem Haus gehört zum Haus (auch wenn er etwas über den Gru
   assert.match(buildings[0].reason, /mit Keller/);
   assert.ok(buildings[0].below > 100);
 });
+
+test('Steg über einem tiefen Bach ist kein Gebäude: Wasser zählt nicht zur Gebäudehöhe (echte Basis aus dem Spieltest)', () => {
+  const b = [], air = [];
+  // Stream three blocks deep (y −2…0) across the field, a slab footbridge one block above the water.
+  for (let x = 0; x < 60; x++) for (let z = 12; z <= 17; z++) for (let y = -2; y <= 0; y++) { air.push(`${x},${y},${z}`); b.push([`${x},${y},${z}`, P.water]); }
+  for (let x = 30; x <= 31; x++) for (let z = 11; z <= 18; z++) b.push([`${x},1,${z}`, P.oak_planks]);
+  house(b, air, 2, 2, 8, 8);
+  const a = analyzeSplit(world(b, air));
+  const buildings = a.parts.filter(p => p.kind === 'building' && !p.role);
+  assert.equal(buildings.length, 1, `nur das Haus: ${a.parts.map(p => `${p.name} (${p.reason})`).join(', ')}`);
+  assert.equal(buildings[0].box.min[0], 2);
+});

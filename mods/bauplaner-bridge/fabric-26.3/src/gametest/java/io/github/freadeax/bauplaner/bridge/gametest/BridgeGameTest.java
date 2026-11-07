@@ -35,6 +35,15 @@ public final class BridgeGameTest implements FabricClientGameTest {
     public void runTest(ClientGameTestContext context) {
         Path io = Path.of(require(System.getenv("BAUPLANER_GAMETEST_DIR"), "BAUPLANER_GAMETEST_DIR fehlt"));
         Path root = FabricLoader.getInstance().getGameDir().resolve("bauplaner");
+        // SIZE-01-S05/SPLIT-01-S05: scripts/size/test_grossbau_ingame.sh runs the big-build scenario instead.
+        if (Files.isRegularFile(io.resolve("grossbau.json"))) {
+            try {
+                GrossbauScenario.run(context, io, root);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+            return;
+        }
         try {
             // Multiplayer acceptance on a real Paper server instead of the singleplayer run (test_multiplayer_client.sh).
             String paper = System.getenv("BAUPLANER_PAPER");
@@ -623,11 +632,11 @@ public final class BridgeGameTest implements FabricClientGameTest {
         if (!actual.equals(expected)) throw new AssertionError(message + ": " + actual + " bei " + pos.toShortString());
     }
 
-    private static void copy(Path from, Path to) throws IOException {
+    static void copy(Path from, Path to) throws IOException {
         Files.copy(from, to, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
     }
 
-    private static void chat(ClientGameTestContext context, String line) {
+    static void chat(ClientGameTestContext context, String line) {
         context.setScreen(() -> new ChatScreen("", false));
         context.getInput().typeChars(line);
         context.getInput().pressKey(InputConstants.KEY_RETURN);
@@ -941,7 +950,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
         }
     }
 
-    private static Object field(Object o, String name) throws ReflectiveOperationException {
+    static Object field(Object o, String name) throws ReflectiveOperationException {
         var f = o.getClass().getDeclaredField(name);
         f.setAccessible(true);
         return f.get(o);
@@ -963,7 +972,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
     }
 
     /** GET of a file: saved to {@code to}, answered as {"status":n,"file":name,"bytes":n} (or the error body). */
-    private static String download(ClientGameTestContext context, java.net.http.HttpClient http, String url, String token, Path to) {
+    static String download(ClientGameTestContext context, java.net.http.HttpClient http, String url, String token, Path to) {
         var r = java.net.http.HttpRequest.newBuilder(java.net.URI.create(url)).timeout(java.time.Duration.ofSeconds(30))
                 .header("Origin", "https://freadeax.github.io").header("X-Bauplaner-Token", token).GET().build();
         var f = http.sendAsync(r, java.net.http.HttpResponse.BodyHandlers.ofByteArray());
@@ -975,7 +984,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
                 + res.headers().firstValue("Access-Control-Expose-Headers").orElse("") + "\",\"bytes\":" + res.body().length + "}";
     }
 
-    private static String send(ClientGameTestContext context, java.net.http.HttpClient http, java.net.http.HttpRequest r) {
+    static String send(ClientGameTestContext context, java.net.http.HttpClient http, java.net.http.HttpRequest r) {
         var f = http.sendAsync(r, java.net.http.HttpResponse.BodyHandlers.ofString());
         context.waitFor(mc -> f.isDone(), 20 * 30);
         var res = f.join();

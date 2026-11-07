@@ -214,7 +214,7 @@ test('large models keep blocks only, Metadata mismatches and single-block files 
   assert.ok(big.warnings.some(w => /Großes Modell: 8 Luftzellen/.test(w)));
   const small = normalizeLitematic(source());
   assert.deepEqual(big.payload.cells.map(c => c.position.join()), small.payload.cells.filter(c => c.kind === 'block').map(c => c.position.join()));
-  assert.throws(() => normalizeLitematic(source(), { maxAirVolume: 29, maxCells: 21 }), e => e.code === 'LIMIT' && /21 Blöcke/.test(e.message));
+  assert.throws(() => normalizeLitematic(source(), { maxAirVolume: 29, maxCells: 21 }), e => e.code === 'LIMIT' && /22 Blöcke – mehr als die 21/.test(e.message));
   const t = readNbt(realRaw).tag;
   const meta = { ...t.value.Metadata.value, TotalBlocks: { type: 'int', value: 17 }, Software: { type: 'string', value: 'Litemapy_0.11.0b0' }, PreviewImageData: { type: 'intArray', value: [] } };
   const changed = normalizeLitematic({ name: '', tag: { type: 'compound', value: { ...t.value, Metadata: { type: 'compound', value: meta } } } });

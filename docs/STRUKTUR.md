@@ -59,6 +59,7 @@ Stand: 05.11.2026 · STRUCT-01. Diese Karte ist verbindlich: Neue Dateien kommen
 | `gen/` | Datengeneratoren aus dem Minecraft-Server (Blockdaten, Blockfakten, Standardzustände, Versionsprofil, `probe/`) |
 | `fixtures/` | Erzeuger der Testdaten unter `fixtures/` |
 | `bench/` | Leistungsmessungen (`perf/`, Benchmarks) |
+| `size/` | Großbau-Abnahme im echten Spiel (SIZE-01-S05, SPLIT-01-S05): Großstadt-Erzeuger `big_build.mjs`, Spielbasis `basis_build.mjs`, Prüfung `grossbau_verify.mjs`, Lauf `test_grossbau_ingame.sh` |
 | `library/`, `team/` | Bibliotheksbeiträge übernehmen, Team-Raum-Rauchtest |
 | `dev/` | Python-Starter, Codex-Einrichtung, Umzugswerkzeug `restructure.mjs` mit Listen in `moves/` |
 
@@ -68,6 +69,7 @@ Stand: 05.11.2026 · STRUCT-01. Diese Karte ist verbindlich: Neue Dateien kommen
 |---|---|
 | `unit/<bereich>/` | Einheitstests, gleiche Bereiche wie der Fachkern: `core`, `data`, `formats`, `catalog`, `materials`, `building`, `planning`, `world`, `team`, `editor`, `mod`, `web`, `tooling` |
 | `e2e/` | Browsertests (`*.e2e.mjs`) mit `start.mjs` und `modSimulator.mjs` |
+| `big/` | Browserläufe mit echten Großdateien für `scripts/size/` (`*.big.mjs`, nicht in `npm run test:e2e`) |
 | `helpers/` | gemeinsame Hilfen für Einheits- und Browsertests |
 
 `npm test` läuft über `tests/**/*.test.mjs`. Ein Strukturtest (`tests/unit/tooling/structure.test.mjs`) schlägt fehl, wenn neue Dateien wieder flach in `tests/`, `scripts/`, `packages/domain/src/` oder `docs/architecture/` landen.
