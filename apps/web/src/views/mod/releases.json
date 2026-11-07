@@ -1032,6 +1032,53 @@
       "releasedAt": "2026-11-06",
       "sourceCommit": "41e9f47030628bfef889bc5772e13de4e13202d4",
       "tested": "Umbenennung LMNT — Build Studio: Unit-Tests, Realtest Paper 1.21.11 (Kopplung)"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.25.0.jar",
+      "modVersion": "0.25.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 663001,
+      "sha256": "baefc3403ac0c825140120f0ec529070cd9ed7a27a1e7b233cb8f675a8fde664",
+      "releasedAt": "2026-11-07",
+      "sourceCommit": "a1177f67e6a4a7e7256eb71cced76c9a394a0d5e",
+      "tested": "Spieltest fabric 26.3 mit Planer im Browser: alle Menüs und Anzeigen in 854×480 bis 1920×1080 ohne Überdeckung, Koppeln per Klick, Senden, Lage zurück, Gelände aus dem Spiel; Modpack mit REI und Shader (Block 3)"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.25.0.jar",
+      "modVersion": "0.25.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 658171,
+      "sha256": "1ee93e686135ff591a62ebe5064299d6083028e32e340fe031d4241e3fa6a3e9",
+      "releasedAt": "2026-11-07",
+      "sourceCommit": "a1177f67e6a4a7e7256eb71cced76c9a394a0d5e",
+      "tested": "Spieltest neoforge 26.3: Hologramm, Website-Verbindung, neue Frage-Karte (Block 3)"
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.25.0.jar",
+      "modVersion": "0.25.0",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 316143,
+      "sha256": "83b82de8ee201f514a3dd9daf362fd7f85aa41a826e1c7a7640506fc083c2592",
+      "releasedAt": "2026-11-07",
+      "sourceCommit": "a1177f67e6a4a7e7256eb71cced76c9a394a0d5e",
+      "tested": "Unit-Tests paper; Lagerkisten und Ertragsfarm mit echten Spielern (COOP-05/08) im Quellstand"
     }
   ]
 }

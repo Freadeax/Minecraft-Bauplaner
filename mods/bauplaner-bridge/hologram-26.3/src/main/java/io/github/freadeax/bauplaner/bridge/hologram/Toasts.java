@@ -69,6 +69,9 @@ public final class Toasts {
     /** Texts of the cards on screen (game test). */
     public static List<String> texts() { synchronized (CARDS) { return CARDS.stream().map(c -> c.text).toList(); } }
 
+    /** Texts as shown, with the repeat counter („  ×2“) (game test). */
+    public static List<String> shownTexts() { synchronized (CARDS) { return CARDS.stream().map(c -> c.text + (c.count > 1 ? "  ×" + c.count : "")).toList(); } }
+
     /** Draws the cards from {@code top} downwards (below the build panel when it is shown). */
     static void extract(GuiGraphicsExtractor g, int top) {
         Minecraft mc = Minecraft.getInstance();
@@ -113,6 +116,7 @@ public final class Toasts {
             float left = c.leaving >= 0 ? 0f : 1f - Math.min(1f, (now - c.born) / (float) c.life);
             g.fill(2, h - 1, 2 + Math.round((w - 2) * left), h, withAlpha(c.kind.color & 0x00FFFFFF | 0x90000000, alpha));
             g.pose().popMatrix();
+            if (c.leaving < 0) HudLayout.note("Meldung", Math.round(x), Math.round(c.y), Math.round(x) + w, Math.round(c.y) + h);
             float step = (h + GAP) * (c.leaving >= 0 ? 1f - out : 1f);
             y += step;
             lowest = Math.max(lowest, c.y + h);

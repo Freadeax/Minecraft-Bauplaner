@@ -169,9 +169,10 @@ public final class HologramClient {
             var screen = Minecraft.getInstance().gui.screen();
             if (screen instanceof PlanScreen || screen instanceof CommandScreen || screen instanceof MaterialScreen) return;
             hud.extract(g, delta);
+            LinkPrompt.hud(g, this);
             Toasts.extract(g, HudCard.ceiling() > 0 ? HudCard.ceiling() + 4 : 6);
             HudCard.ceiling(Math.round(Toasts.bottom()));
-            marks.hud(g, delta); team.hud(g); guides.hud(g); LinkPrompt.hud(g, this);
+            marks.hud(g, delta); team.hud(g); guides.hud(g);
         });
     }
 

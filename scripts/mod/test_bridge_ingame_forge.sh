@@ -23,7 +23,7 @@ trap cleanup EXIT
 node scripts/mod/bridge_gametest.mjs prepare "$work"
 if [ -z "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]; then
   command -v weston >/dev/null || { echo "Kein Bildschirm und kein weston: sudo apt-get install weston" >&2; exit 2; }
-  export XDG_RUNTIME_DIR="$work/xdg" WAYLAND_DISPLAY=bauplaner-test SDL_VIDEO_DRIVER=wayland
+  export XDG_RUNTIME_DIR="$work/xdg" WAYLAND_DISPLAY=bauplaner-test SDL_VIDEO_DRIVER=wayland SDL_VIDEO_WAYLAND_ALLOW_LIBDECOR=0
   mkdir -m 700 "$XDG_RUNTIME_DIR"
   weston --backend=headless --renderer=gl --socket="$WAYLAND_DISPLAY" --width=1280 --height=720 >"$work/weston.log" 2>&1 &
   weston_pid=$!

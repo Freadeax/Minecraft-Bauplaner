@@ -191,6 +191,6 @@ final class MarksRenderer {
         if (ClientSettings.panel() == ClientSettings.Panel.HIDDEN) return;
         List<String[]> cells = new ArrayList<>();
         for (String r : rows) cells.add(new String[] { r, Integer.toHexString(r.equals(website()) ? HologramHud.GREEN : HologramHud.CYAN) });
-        HudCard.bottomRight(g, mc.font, cells, HologramHud.CYAN);
+        HudCard.bottomRight(g, mc.font, cells, HologramHud.CYAN, "Weltplan");
     }
 }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T01:21:51.439Z",
+  "updatedAt": "2026-11-07T01:42:20.153Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -3898,13 +3898,13 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "Unit- und Chromium-Prüfung bestanden; Spielprüfung, Firefox/Safari und Geräte offen."
+        "note": "Unit- und Chromium-Prüfung bestanden; Spielprüfung, Firefox/Safari und Geräte offen. 07.11.: Bauhilfe-Zeile weicht in allen Fenstergrößen aus (MOD-18 teilweise automatisch)."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:42:20.153Z",
       "area": "PLANER",
       "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "philipp": [
@@ -4810,13 +4810,13 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "Kern-, Browser- und Spieltests bestanden; Abnahme durch Philipp offen."
+        "note": "Kern-, Browser- und Spieltests bestanden; Abnahme durch Philipp offen. 07.11.: Planer im Browser holt Gelände aus dem Spiel, Prüfung, Geländegedächtnis weit weg und Biome automatisch geprüft (PROJ-24)."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:42:20.153Z",
       "area": "PLANER",
       "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "philipp": [
@@ -5768,13 +5768,13 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "Automatisch im echten Client und mit Modpack geprüft; Mehrspieler-Abnahme durch Philipp offen."
+        "note": "Automatisch im echten Client und mit Modpack geprüft; Mehrspieler-Abnahme durch Philipp offen. 07.11.: alle HUD-Anzeigen ohne Überdeckung in drei Fenstergrößen automatisch geprüft (MOD-26)."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:42:20.153Z",
       "area": "MOD",
       "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "philipp": [
@@ -5929,13 +5929,13 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "Im echten Client geprüft; Abnahme durch Philipp offen."
+        "note": "Im echten Client geprüft; Abnahme durch Philipp offen. 07.11.: echter Planer im Browser gegen das Spiel: Koppeln per Klick und Senden von der Karte automatisch geprüft (LIVE-01/02)."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:42:20.153Z",
       "area": "MOD",
       "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "philipp": [
@@ -7658,13 +7658,13 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "Einheits-, Browser- und echte Spieltests grün; Abnahme durch Philipp offen (S05)."
+        "note": "Einheits-, Browser- und echte Spieltests grün; Abnahme durch Philipp offen (S05). 07.11.: Lage aus dem Spiel übernehmen und „Baustand holen“ im echten Browser gegen das Spiel automatisch geprüft (LIVE-04)."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:42:20.153Z",
       "area": "PLANER",
       "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "philipp": [
@@ -7774,13 +7774,13 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "Einheits- und Browsertests grün; Protokoll 2 nur gegen den Simulator; Abnahme durch Philipp offen (S08)."
+        "note": "Einheits- und Browsertests grün; Protokoll 2 nur gegen den Simulator; Abnahme durch Philipp offen (S08). 07.11.: Gelände um mich, Punkt am Spieler und Weltplan ins Spiel im echten Browser gegen das Spiel geprüft (LIVE-03)."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:42:20.153Z",
       "area": "PLANER",
       "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "philipp": [
@@ -8944,13 +8944,13 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "Spieltests Fabric und NeoForge 26.3 bestanden; Serverbefehle mit echtem Paper-Plugin nur auf Philipps Server prüfbar (MOD-16)."
+        "note": "Spieltests Fabric und NeoForge 26.3 bestanden; Serverbefehle mit echtem Paper-Plugin nur auf Philipps Server prüfbar (MOD-16). 07.11.: alle 10 Reiter der Befehlsseite in drei Fenstergrößen ohne Überdeckung/Kürzung automatisch geprüft (MOD-25)."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:42:20.153Z",
       "area": "MOD",
       "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "philipp": [
@@ -9121,13 +9121,13 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "Spieltests Fabric und NeoForge 26.3; Abnahme im Modpack durch Philipp offen."
+        "note": "Spieltests Fabric und NeoForge 26.3; Abnahme im Modpack durch Philipp offen. 07.11.: automatische Abnahme im echten Spiel in drei Fenstergrößen inkl. Modpack mit REI/Shader (MOD-25/26/28 teilweise automatisch geprüft, scripts/mod/test_bridge_ingame.sh)."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:42:20.153Z",
       "area": "MOD",
       "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "philipp": [
@@ -9957,7 +9957,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:42:20.153Z",
       "area": "MOD",
       "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "orphans": [],
@@ -10027,7 +10027,7 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "Mod-Kern und echtes Minecraft 26.3 geprüft; Abnahme bei Philipp offen."
+        "note": "Mod-Kern und echtes Minecraft 26.3 geprüft; Abnahme bei Philipp offen. 07.11.: „Verbinden“ im Browser, Frage-Karte im Spiel, J → „Planer zulassen“ automatisch geprüft (LIVE-01)."
       },
       "next": "Abnahme LIVE-01 in Philipps Modpack.",
       "philipp": [
@@ -26580,6 +26580,114 @@
           "done": 2,
           "total": 2,
           "next": "Abnahme auf dem Paper-Server (Thread „Server-Plugin mit geprüften Lagerkisten“)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T01:42:20.153Z",
+      "kind": "progress",
+      "items": [
+        "GAME-12",
+        "GAME-10",
+        "GAME-07",
+        "GAME-03",
+        "LINK-03",
+        "EDIT-04",
+        "TERRAIN-04",
+        "MAP-05",
+        "MAP-06"
+      ],
+      "summary": "Block 3: Mod 0.25.0 im echten Spiel in drei Fenstergrößen und mit dem echten Planer im Browser automatisch abgenommen; Frage-Karte, Bauhilfe-Zeile und Knopfbeschriftungen korrigiert",
+      "files": [
+        "apps/web/src/testing/autochecks.ts",
+        "apps/web/src/views/mod/releases.json",
+        "docs/TESTING.md",
+        "docs/testing/TESTPLAN.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.25.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.25.0.jar",
+        "downloads/mod/bauplaner-bridge-paper-0.25.0.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandScreen.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/GuideClient.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramHud.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HudCard.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HudLayout.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LinkPrompt.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/MarksRenderer.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Toasts.java",
+        "scripts/mod/bridge_browser.mjs",
+        "scripts/mod/bridge_gametest.mjs",
+        "scripts/mod/test_bridge_ingame.sh",
+        "scripts/mod/test_bridge_ingame_forge.sh"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-12",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme MOD-25 bis MOD-28 im Spiel."
+        },
+        {
+          "id": "GAME-10",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme MOD-16 auf Philipps Server mit Paper-Plugin."
+        },
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 10,
+          "total": 11,
+          "next": "Philipp prüft 0.19.0 im echten Spiel: gesperrter Bauplatz grau, Hologramm nur in einer Gruppe (Testfall MOD-21); danach Stufe 7."
+        },
+        {
+          "id": "GAME-03",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht."
+        },
+        {
+          "id": "LINK-03",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme LIVE-01 in Philipps Modpack."
+        },
+        {
+          "id": "EDIT-04",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "Spielprüfung gespiegelter Zustände im Planer (S07) und der Bauhilfen in der Mod (MOD-18/19); Gelände-Werkzeuge auf dem Projektgelände sind als TERRAIN-05 umgesetzt."
+        },
+        {
+          "id": "TERRAIN-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp im Spiel (S05)."
+        },
+        {
+          "id": "MAP-05",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05); denkbar: gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden können."
+        },
+        {
+          "id": "MAP-06",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag)."
         }
       ]
     }

@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T01:21:51.439Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T01:42:20.153Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -1676,7 +1676,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### EDIT-04
 
-**Kreativwerkzeuge aus dem Planer-Vergleich: Symmetrie, Kurven, Naturwerkzeuge, Oberflächenmaske, Farbpaletten, Bild → Blöcke** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Ideen aus anderen Planern übernehmen“ · Zuständiger Thread: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Kreativwerkzeuge aus dem Planer-Vergleich: Symmetrie, Kurven, Naturwerkzeuge, Oberflächenmaske, Farbpaletten, Bild → Blöcke** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Ideen aus anderen Planern übernehmen“ · Zuständiger Thread: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T01:42:20.153Z
 
 - [x] EDIT-04-S01: Gap-Analyse: andere Planer und Bautools gegen unsere Module, Auswahl und Vorschläge für eigene Threads (docs/project/PLANER_VERGLEICH.md).
 - [x] EDIT-04-S02: Symmetrie (Spiegeln X/Z, 2-/4-fach drehen, Achse auf Zellmitte oder -grenze) mit Zustandsdrehung über transformBlockState für alle Pinsel-Werkzeuge.
@@ -1693,7 +1693,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nur Philipp:** Im Spiel an deinem PC: Gespiegelte und gedrehte Zustände (Türen, Truhen, Schienen) im Spiel (S07). Im Spiel an deinem PC: Bauhilfen Symmetrie und Kurven in der Mod (MOD-18, MOD-19).
 
-**Prüfstand:** Unit- und Chromium-Prüfung bestanden; Spielprüfung, Firefox/Safari und Geräte offen.
+**Prüfstand:** Unit- und Chromium-Prüfung bestanden; Spielprüfung, Firefox/Safari und Geräte offen. 07.11.: Bauhilfe-Zeile weicht in allen Fenstergrößen aus (MOD-18 teilweise automatisch).
 
 **Nachweise:** [tests/unit/editor/editor-creative.test.mjs](../tests/unit/editor/editor-creative.test.mjs) — Symmetrie, Kurven, Natur, Maske, Farben, Bild mit Handzählung.; [tests/e2e/workshop-creative.e2e.mjs](../tests/e2e/workshop-creative.e2e.mjs) — Chromium 1400/390 px: Symmetrie, Kurve, Abtragen, Naturalisieren, Farbverlauf, Oberfläche, PNG → Wollbild.; [docs/architecture/planer/CREATIVE_TOOLS.md](architecture/planer/CREATIVE_TOOLS.md) — Vertrag und Grenzen EDIT-04.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/edit/EditGuidesTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/edit/EditGuidesTest.java) — Java-Port gegen fixtures/edit/mod-edit-vectors.json: 7 Kurven, 6 Symmetrien, Zustände von Tür, Treppe, Truhe, Schiene, Stamm, Schild identisch zum Planer.
 
@@ -1908,7 +1908,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TERRAIN-04
 
-**Gelände direkt aus der Mod: Geländegedächtnis, Übernahme ohne Dateien, blockgenaue Prüfung aus dem Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gelände direkt aus der Mod übernehmen“) · Zuständiger Thread: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Gelände direkt aus der Mod: Geländegedächtnis, Übernahme ohne Dateien, blockgenaue Prüfung aus dem Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gelände direkt aus der Mod übernehmen“) · Zuständiger Thread: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T01:42:20.153Z
 
 - [x] TERRAIN-04-S01: Mod 0.20.0: Geländegedächtnis (gesehene Chunks mit Biom, je Welt/Server auf dem PC gespeichert), GET /v1/terrain, /v1/terrain/known, /bauplaner gelaende an|aus|vergessen.
 - [x] TERRAIN-04-S02: Mod 0.20.0: GET /v1/box liest einen Weltbereich blockgenau aus den geladenen Chunks (bis 2 Mio. Zellen, in Scheiben je Tick).
@@ -1922,7 +1922,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nur Philipp:** Im Spiel an deinem PC: Mod 0.20.0 installieren, einmal um den Bauplatz laufen, im Reiter „Gelände“ „Gelände aus dem Spiel übernehmen“ und „Gelände aus dem Spiel prüfen“ (S05).
 
-**Prüfstand:** Kern-, Browser- und Spieltests bestanden; Abnahme durch Philipp offen.
+**Prüfstand:** Kern-, Browser- und Spieltests bestanden; Abnahme durch Philipp offen. 07.11.: Planer im Browser holt Gelände aus dem Spiel, Prüfung, Geländegedächtnis weit weg und Biome automatisch geprüft (PROJ-24).
 
 **Nachweise:** [tests/unit/world/live-terrain.test.mjs](../tests/unit/world/live-terrain.test.mjs) — Leser, Abdeckung, Aufnahme mit Biomen und Dateikopf, Box als Prüfraster, Biom-Stile.; [tests/e2e/terrain-game.e2e.mjs](../tests/e2e/terrain-game.e2e.mjs) — Chromium 1400/390 px gegen den Mod-Simulator: verbinden, Abdeckung, Übernahme, Prüfung aus dem Spiel, Landschaft nach Biomen, alte Mod.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/TerrainMemoryTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/TerrainMemoryTest.java) — Antwort live/Gedächtnis, Datei speichern/laden, Grenze, Box, Routen.
 
@@ -2143,7 +2143,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-07
 
-**Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Teambau und Befehle in der Mod ausbauen“) · Zuständiger Thread: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Teambau und Befehle in der Mod ausbauen“) · Zuständiger Thread: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T01:42:20.153Z
 
 - [x] GAME-07-S01: Versionsneutraler Mod-Kern: Blockzustände, Vergleichsregeln wie gameCheck.ts, Platzierung mit Drehen/Spiegeln, Planmodell, Live-Abgleich, Platzierungsspeicher; JUnit-Tests.
 - [x] GAME-07-S02: Fabric 26.3: Planmenü, Tasten, Platzieren/Verschieben/Drehen/Spiegeln, Rahmen, Speicherung je Server/Welt.
@@ -2163,7 +2163,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nur Philipp:** Auf deinem Server mit Mitspielern: Hologramm, Abschnitte und Röntgensicht auf server.lmnt-gaming.net (S05).
 
-**Prüfstand:** Automatisch im echten Client und mit Modpack geprüft; Mehrspieler-Abnahme durch Philipp offen.
+**Prüfstand:** Automatisch im echten Client und mit Modpack geprüft; Mehrspieler-Abnahme durch Philipp offen. 07.11.: alle HUD-Anzeigen ohne Überdeckung in drei Fenstergrößen automatisch geprüft (MOD-26).
 
 **Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java) — 7 JUnit-Fälle: Zustände, Regeln wie gameCheck.ts, Drehen/Spiegeln mit Rückweg, Planlesen, Live-Abgleich, Speicher.; [scripts/mod/test_bridge_ingame.sh](../scripts/mod/test_bridge_ingame.sh) — Echter 26.3-Client und Produktionsstart mit Philipps Modpack (Sodium, Iris, Xaero …): Hologramm fehlt 1/falsch 1, gesetzter Block ohne Befehl erkannt, Drehen, Speichern, Taste J öffnet das Menü (02.11.2026).; [docs/architecture/mod/MOD_HOLOGRAM.md](architecture/mod/MOD_HOLOGRAM.md) — Grundsätze, Aufbau, Tasten, Darstellung, Live-Abgleich, Prüfung.; [tests/e2e/mod-download.e2e.mjs](../tests/e2e/mod-download.e2e.mjs) — Download-Seite wählt 0.2.0 vor, 0.1.0 bleibt wählbar.; [tests/unit/mod/mod-releases.test.mjs](../tests/unit/mod/mod-releases.test.mjs) — Jede .jar wie ein Launcher geprüft (EOCD, Verzeichnis, Loader-Metadaten); abgeschnittene/HTML/beschädigte Dateien erkannt. Download-Seite speichert nur geprüfte Bytes (02.11.2026).; [scripts/mod/bridge_gametest.mjs](../scripts/mod/bridge_gametest.mjs) — 0.3.0: Materialliste, Ebenenmodus, texturierte Geisterblöcke im echten Client und mit Philipps Modpack (Sodium/Iris) geprüft (02.11.2026).; [mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlacementAdvice.java](../mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlacementAdvice.java) — 0.4.0 Platzierhilfe: Urteil, Wegsuche und Hinweise; im echten Client und mit Philipps Modpack über den echten Klickweg geprüft (02.11.2026).; [mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java](../mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java) — 0.6.0: echter NeoForge-26.3-Client spielt Hologramm, Materialliste, Ebenen, J/Num 7, Platzierhilfe über Minecraft.startUseItem/startAttack und die Website-Verbindung durch; Fabric zusätzlich mit Philipps 25 Mods und Complementary Unbound (BAUPLANER_SHADERPACK) bestanden (02.11.2026).; [mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Filter.java](../mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Filter.java) — 0.7.0: ein Filter (Ebenen + Bauabschnitt) für Hologramm, HUD, Material und Fehlerfinder; JUnit buildSectionsFilterEverything, Website-Test für SectionNames/SectionCells im Export und Abschnitte im Live-Status; Spieltests Fabric (auch Modpack + Complementary) und NeoForge prüfen Abschnittsliste, Röntgensicht und Abschnittswahl über die Website (02.11.2026).; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/MarkAreasTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/MarkAreasTest.java) — Schema 3 lesen, Flächen aus Bauplatz/Zone/Weg, Filter mit Fläche, Fehlerfinder ohne gesperrte Flächen.
 
@@ -2197,7 +2197,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-03
 
-**Optionale lokale Verbindung und Anzeige im Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Live-Karte mit Spielanbindung neu bauen“) · Zuständiger Thread: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Optionale lokale Verbindung und Anzeige im Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Live-Karte mit Spielanbindung neu bauen“) · Zuständiger Thread: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T01:42:20.153Z
 
 - [x] GAME-03-S01: Loopback-Sicherheitsvertrag mit expliziter Kopplung definieren.
 - [x] GAME-03-S02: Planübertragung und Bestätigungen getrennt von Weltänderungen umsetzen.
@@ -2208,7 +2208,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nur Philipp:** Auf deinem Server mit Mitspielern: Zusammen mit MAP-03-S06.
 
-**Prüfstand:** Im echten Client geprüft; Abnahme durch Philipp offen.
+**Prüfstand:** Im echten Client geprüft; Abnahme durch Philipp offen. 07.11.: echter Planer im Browser gegen das Spiel: Koppeln per Klick und Senden von der Karte automatisch geprüft (LIVE-01/02).
 
 **Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java) — Kopplung, Token, Ursprung, Host, Grenzen.; [docs/architecture/team/LIVE_LINK.md](architecture/team/LIVE_LINK.md) — Loopback-Sicherheitsvertrag.
 
@@ -2672,7 +2672,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-05
 
-**Planung auf der Live-Karte vertiefen: Baustand aus dem Spiel (Mod 0.7.1, GET /v1/scan), Ebenen und Abweichungen auf der Karte, bestätigte Schritte abhaken, Bauabschnitte wählen, Weltplan automatisch abgleichen, Hologramm und BlueMap aus dem Kontextmenü** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Planung auf der Live-Karte vertiefen“) · Zuständiger Thread: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Planung auf der Live-Karte vertiefen: Baustand aus dem Spiel (Mod 0.7.1, GET /v1/scan), Ebenen und Abweichungen auf der Karte, bestätigte Schritte abhaken, Bauabschnitte wählen, Weltplan automatisch abgleichen, Hologramm und BlueMap aus dem Kontextmenü** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Planung auf der Live-Karte vertiefen“) · Zuständiger Thread: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T01:42:20.153Z
 
 - [x] MAP-05-S01: Mod 0.7.1: GET /v1/scan liefert die Planbox des Hologramms als bauplaner-scan-Aufnahme in Plankoordinaten (auch gedreht/gespiegelt), hello.features.
 - [x] MAP-05-S02: Karte: Baustand holen (auch alle 20 s), Vergleich wie Spielaufnahme, Speicherung im Projektverlauf, Ebenen mit Filter, Abweichungen als Spalten auf der Draufsicht, bestätigte Schritte abhaken mit Rückgängig.
@@ -2686,7 +2686,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nur Philipp:** Auf deinem Server mit Mitspielern: „Baustand holen“ mit der Mod auf server.lmnt-gaming.net (S05).
 
-**Prüfstand:** Einheits-, Browser- und echte Spieltests grün; Abnahme durch Philipp offen (S05).
+**Prüfstand:** Einheits-, Browser- und echte Spieltests grün; Abnahme durch Philipp offen (S05). 07.11.: Lage aus dem Spiel übernehmen und „Baustand holen“ im echten Browser gegen das Spiel automatisch geprüft (LIVE-04).
 
 **Nachweise:** [tests/e2e/game-progress.e2e.mjs](../tests/e2e/game-progress.e2e.mjs) — Abschnitt wählen, Baustand holen, Ebenenfilter, Kartenspalten, Abhaken + Rückgängig, Bauen-Reiter, Weltplan-Autoabgleich, Hologramm per Kontextmenü, alte Mod.; [tests/unit/building/game-check.test.mjs](../tests/unit/building/game-check.test.mjs) — layerProgress, deviationColumns, stepStatusCounts.; [scripts/mod/bridge_gametest.mjs](../scripts/mod/bridge_gametest.mjs) — Echter Spieltest Fabric/NeoForge: Baustand = Live-Zählung, falscher Block an der erwarteten Stelle, gedreht in Plankoordinaten.; [docs/architecture/team/LIVE_LINK.md](architecture/team/LIVE_LINK.md) — Protokoll, Oberfläche, Grenzen (BlueMap http).
 
@@ -2696,7 +2696,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-06
 
-**Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Weltkarte in die Tiefe ausbauen“) · Zuständiger Thread: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Weltkarte in die Tiefe ausbauen“) · Zuständiger Thread: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T01:42:20.153Z
 
 - [x] MAP-06-S01: Plan und Vertrag: Stufen festgelegt, Mod-Protokoll 2 (hello.features marks2/players) als Entwurf in LIVE_LINK.md, GAME-08 für den Mod-Thread angelegt.
 - [x] MAP-06-S02: Weltplan-Schema 2: Zonen (Polygon, Art, Fläche), Ebene und Farbe je Eintrag, neue Punktarten; Schema 1 lesbar, Umkehrungen, Sicherung.
@@ -2713,7 +2713,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nur Philipp:** Im Spiel an deinem PC: Weltkarte mit Mod 0.8.0 oder neuer im Spiel abnehmen (S08, KARTE-05/06, LIVE-08).
 
-**Prüfstand:** Einheits- und Browsertests grün; Protokoll 2 nur gegen den Simulator; Abnahme durch Philipp offen (S08).
+**Prüfstand:** Einheits- und Browsertests grün; Protokoll 2 nur gegen den Simulator; Abnahme durch Philipp offen (S08). 07.11.: Gelände um mich, Punkt am Spieler und Weltplan ins Spiel im echten Browser gegen das Spiel geprüft (LIVE-03).
 
 **Nachweise:** [tests/e2e/map-depth.e2e.mjs](../tests/e2e/map-depth.e2e.mjs) — Zonen, Ebenen, Messen, Notiz, Neuladen; alte Mod gefiltert, Höhenprofil, Route, Punkt wo ich stehe; Protokoll-2-Simulator mit Mitspielern und Zonen.; [tests/unit/world/worldroute.test.mjs](../tests/unit/world/worldroute.test.mjs) — Messung, Profil, A*-Route um Kamm/Tor/Wasser, Vereinfachung.; [tests/unit/team/livelink.test.mjs](../tests/unit/team/livelink.test.mjs) — Protokoll 1–2, marksForMod, readLivePlayers.; [docs/architecture/team/LIVE_LINK.md](architecture/team/LIVE_LINK.md) — Protokoll 2 (Entwurf) als Vertrag mit der Mod.
 
@@ -3007,7 +3007,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-10
 
-**Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Teambau in der Mod“) · Zuständiger Thread: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Teambau in der Mod“) · Zuständiger Thread: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T01:42:20.153Z
 
 - [x] GAME-10-S01: Befehlskatalog im Mod-Kern (CommandCatalog, CommandContext, ReplyLog) mit den Befehlen von Mod und Paper-Plugin (/bp), mit dem Plugin-Thread abgeglichen; JUnit liest die Plugin-Befehle aus den Quellen, damit ein neuer Befehl ohne Knopf auffällt.
 - [x] GAME-10-S02: Befehlsseite „Befehle & Status“ (Knopf im Plan-Menü, /bauplaner befehle): Reiter je Gruppe, Statusübersicht, Eingabefelder, ausgegraute Knöpfe mit Grund, Antworten von Mod und Server; Fabric + NeoForge.
@@ -3020,7 +3020,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nur Philipp:** Auf deinem Server mit Mitspielern: Befehlsseite im J-Menü zusammen mit dem Plugin auf deinem Server (MOD-16).
 
-**Prüfstand:** Spieltests Fabric und NeoForge 26.3 bestanden; Serverbefehle mit echtem Paper-Plugin nur auf Philipps Server prüfbar (MOD-16).
+**Prüfstand:** Spieltests Fabric und NeoForge 26.3 bestanden; Serverbefehle mit echtem Paper-Plugin nur auf Philipps Server prüfbar (MOD-16). 07.11.: alle 10 Reiter der Befehlsseite in drei Fenstergrößen ohne Überdeckung/Kürzung automatisch geprüft (MOD-25).
 
 **Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java) — Katalog deckt alle Mod-Befehle und alle Plugin-Befehle ab (aus TeamModule.COMMANDS und StorageModule.SUBCOMMANDS gelesen), Eingaben werden geprüft, Gründe für ausgegraute Knöpfe, Antwortfenster, keine doppelten Zeilen.; [scripts/mod/bridge_gametest.mjs](../scripts/mod/bridge_gametest.mjs) — Echter Fabric-Client 26.3 mit echten Mausklicks: Reiter Team, Übersicht, „Abschnitt zeigen 2“, Antworten auf der Seite, Serverknöpfe ohne Plugin ausgegraut. NeoForge-Szenario öffnet die Seite und führt einen Befehl aus.
 
@@ -3051,7 +3051,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-12
 
-**Mod einfacher bedienen (Mod 0.23.0): animiertes Menü als Seitenleiste, Meldungskarten oben rechts statt Chat, kompaktes Baufenster, alle Befehle und Texte auf Deutsch und Englisch** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Mod einfacher bedienen, Menü und Befehle zweisprachig“) · Zuständiger Thread: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Mod einfacher bedienen (Mod 0.23.0): animiertes Menü als Seitenleiste, Meldungskarten oben rechts statt Chat, kompaktes Baufenster, alle Befehle und Texte auf Deutsch und Englisch** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Mod einfacher bedienen, Menü und Befehle zweisprachig“) · Zuständiger Thread: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T01:42:20.153Z
 
 - [x] GAME-12-S01: Befehle zweisprachig: /bauplaner (deutsche Wörter) und /buildplanner (englische Wörter), gemischte Zeilen gehen auch; Tab-Vervollständigung folgt der Spielsprache (CommandWords, CommandLang); JUnit prüft, dass jedes deutsche Befehlswort ein englisches hat.
 - [x] GAME-12-S02: Alle Texte der Mod Deutsch/Englisch (Lang.t), Sprache folgt dem Spiel oder /bauplaner sprache deutsch|englisch|auto; Befehlsseite und Katalog in beiden Sprachen.
@@ -3066,7 +3066,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nur Philipp:** Im Spiel an deinem PC: Menü J, Meldungen oben rechts, Baufenster und Befehle auf Englisch im Modpack prüfen (MOD-25 bis MOD-28).
 
-**Prüfstand:** Spieltests Fabric und NeoForge 26.3; Abnahme im Modpack durch Philipp offen.
+**Prüfstand:** Spieltests Fabric und NeoForge 26.3; Abnahme im Modpack durch Philipp offen. 07.11.: automatische Abnahme im echten Spiel in drei Fenstergrößen inkl. Modpack mit REI/Shader (MOD-25/26/28 teilweise automatisch geprüft, scripts/mod/test_bridge_ingame.sh).
 
 **Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandWordsTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandWordsTest.java) — Jedes literal(…) in den Mod-Quellen hat ein englisches Wort, englische Wörter eindeutig, Katalogtexte in beiden Sprachen.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandExportTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandExportTest.java) — Befehlsliste auf #/mod entspricht dem Katalog der Mod.; [tests/unit/mod/mod-commands.test.mjs](../tests/unit/mod/mod-commands.test.mjs) — Befehlsliste: beide Sprachen, Wurzeln /bauplaner und /buildplanner, Suche und Gruppen.; [scripts/mod/bridge_gametest.mjs](../scripts/mod/bridge_gametest.mjs) — Echter Fabric-Client 26.3: Meldungskarten, deutsche und englische Vervollständigung, englisches Menü, Bilder meldungen.png, menue-einstellungen.png, menue-en.png.
 
@@ -3282,7 +3282,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LINK-03
 
-**Mod: Live-Dienst startet selbst, Planer per Klick im Spiel zulassen, Teamfreigabe als Knopf, Server-Wege weiterreichen (Mod 0.12.0)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Mod: Live-Dienst startet selbst, Planer per Klick im Spiel zulassen, Teamfreigabe als Knopf, Server-Wege weiterreichen (Mod 0.12.0)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Mod-Oberfläche und Hologramm automatisch abnehmen“ · Aktualisiert: 2026-11-07T01:42:20.153Z
 
 - [x] LINK-03-S01: /v1/pair/ask mit Frage im Spiel (Banner, eigene Frage-Ansicht im J-Menü mit Später), Schlüssel einmal, 3 Minuten, höchstens 3.
 - [x] LINK-03-S02: Teamkanal-Freigabe als Knopf, Regel „nur freiwillig je Server“ bleibt.
@@ -3296,7 +3296,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nur Philipp:** Im Spiel an deinem PC: Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“.
 
-**Prüfstand:** Mod-Kern und echtes Minecraft 26.3 geprüft; Abnahme bei Philipp offen.
+**Prüfstand:** Mod-Kern und echtes Minecraft 26.3 geprüft; Abnahme bei Philipp offen. 07.11.: „Verbinden“ im Browser, Frage-Karte im Spiel, J → „Planer zulassen“ automatisch geprüft (LIVE-01).
 
 **Nachweise:** [scripts/mod/test_bridge_ingame.sh](../scripts/mod/test_bridge_ingame.sh) — Fabric 26.3: Frage im Spiel, Klick auf „Planer zulassen“, Schlüssel einmal, /v1/server (04.11.2026).; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java) — Zulassen, Ablehnen, Ablauf, Obergrenze.
 

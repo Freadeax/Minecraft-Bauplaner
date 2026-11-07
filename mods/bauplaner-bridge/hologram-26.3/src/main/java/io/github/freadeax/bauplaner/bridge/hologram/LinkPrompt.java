@@ -38,7 +38,10 @@ final class LinkPrompt {
     private static Question cached;
     private static long cachedAt;
 
-    /** Banner at the top while no screen is open. */
+    /**
+     * Card at the top right while no screen is open, below the build panel and above the message cards (0.25.0:
+     * before, a banner in the middle of the top edge covered the build panel in small windows).
+     */
     static void hud(GuiGraphicsExtractor g, HologramClient c) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.gui.screen() != null) return;
@@ -46,9 +49,17 @@ final class LinkPrompt {
         if (now - cachedAt > 500) { cached = current(c); cachedAt = now; }
         Question q = cached;
         if (q == null) return;
-        String text = "Build Studio: " + (q.kind() == Kind.PLANER ? t("Planer möchte sich verbinden", "planner wants to connect") : t("Server-Plugin gefunden", "server plugin found")) + t(" – J drücken", " – press J");
-        int w = mc.font.width(text), x = (g.guiWidth() - w) / 2, y = 6;
-        g.fill(x - 4, y - 3, x + w + 4, y + mc.font.lineHeight + 2, 0xB0000000);
-        g.text(mc.font, text, x, y, HudCard.GOLD, true);
+        String text = (q.kind() == Kind.PLANER ? t("Planer möchte sich verbinden", "Planner wants to connect") : t("Server-Plugin gefunden", "Server plugin found")) + t(" – J drücken", " – press J");
+        var font = mc.font;
+        int max = Math.max(120, Math.min(200, g.guiWidth() * 2 / 5)) - 2 * HudCard.PAD;
+        java.util.List<String> lines = Toasts.wrap(font, text, max);
+        int line = HudCard.line(font), w = 0;
+        for (String l : lines) w = Math.max(w, font.width(l));
+        int h = lines.size() * line;
+        int x = g.guiWidth() - w - 6 - HudCard.PAD, y = Math.max(6, HudCard.ceiling() + 4 + HudCard.PAD);
+        HudCard.back(g, x, y, w, h, HudCard.GOLD);
+        HudLayout.note("Frage", x - HudCard.PAD, y - HudCard.PAD, x + w + HudCard.PAD, y + h + HudCard.PAD - 2);
+        for (String l : lines) { g.text(font, l, x, y, HudCard.GOLD, true); y += line; }
+        HudCard.ceiling(y + HudCard.PAD);
     }
 }

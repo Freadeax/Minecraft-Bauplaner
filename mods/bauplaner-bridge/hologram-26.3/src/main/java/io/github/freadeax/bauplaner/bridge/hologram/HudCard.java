@@ -24,7 +24,7 @@ final class HudCard {
     /** Lowest row used at the top right (message cards, build panel): panels at the bottom right never go above it. */
     private static int ceiling;
 
-    static void frame(GuiGraphicsExtractor g) { bottom = g.guiHeight() - 40; ceiling = 0; }
+    static void frame(GuiGraphicsExtractor g) { bottom = g.guiHeight() - 40; ceiling = 0; HudLayout.frame(g.guiWidth(), g.guiHeight()); }
 
     static void ceiling(int y) { ceiling = Math.max(ceiling, y); }
 
@@ -48,7 +48,7 @@ final class HudCard {
     }
 
     /** Rows {text, colour} as a card at the bottom right, above the cards drawn before in this frame. */
-    static void bottomRight(GuiGraphicsExtractor g, Font font, List<String[]> rows, int accent) {
+    static void bottomRight(GuiGraphicsExtractor g, Font font, List<String[]> rows, int accent, String name) {
         if (rows.isEmpty()) return;
         int line = line(font), w = 0, max = Math.max(120, g.guiWidth() / 2 - 20);
         for (String[] r : rows) w = Math.max(w, Math.min(max, font.width(r[0])));
@@ -59,6 +59,7 @@ final class HudCard {
         int h = rows.size() * line;
         int x = g.guiWidth() - w - 6 - PAD, y = bottom - h;
         back(g, x, y, w, h, accent);
+        HudLayout.note(name, x - PAD, y - PAD, x + w + PAD, y + h + PAD - 2);
         for (String[] r : rows) { g.text(font, fit(font, r[0], w), x, y, (int) Long.parseLong(r[1], 16), true); y += line; }
         bottom -= h + 2 * PAD + 4;
     }

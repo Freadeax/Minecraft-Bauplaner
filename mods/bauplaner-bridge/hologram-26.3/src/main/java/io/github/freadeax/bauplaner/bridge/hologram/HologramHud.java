@@ -109,6 +109,7 @@ public final class HologramHud {
         for (String[] r : rows) { g.text(font, HudCard.fit(font, r[0], w), x, y, (int) Long.parseLong(r[1], 16), true); y += line; }
         g.pose().popMatrix();
         HudCard.ceiling(Math.round(top) + h + HudCard.PAD);
+        HudLayout.note("Bauanzeige", x - HudCard.PAD, Math.round(top) - HudCard.PAD, x + w + HudCard.PAD, Math.round(top) + h + HudCard.PAD - 2);
         aimLine(g, mc);
     }
 
@@ -126,6 +127,7 @@ public final class HologramHud {
         if (font.width(text) > max) text = font.plainSubstrByWidth(text, max - 6) + "…";
         int w = font.width(text), cx = g.guiWidth() / 2, y = g.guiHeight() / 2 + 12;
         g.fill(cx - w / 2 - 3, y - 2, cx + w / 2 + 3, y + font.lineHeight + 1, 0x90000000);
+        HudLayout.note("Zielhilfe", cx - w / 2 - 3, y - 2, cx + w / 2 + 3, y + font.lineHeight + 1);
         g.centeredText(font, text, cx, y, aim.color());
     }
 

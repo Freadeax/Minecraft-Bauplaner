@@ -10,6 +10,7 @@
 # Optional: BAUPLANER_SHADERPACK=<shaderpack .zip> (with BAUPLANER_MODPACK_MODS containing Iris) runs the
 # modpack test with that shaderpack switched on, so the hologram is checked under shaders too.
 # Optional: BAUPLANER_KEEP=<dir> keeps the work folder (game.log, hologramm.png, menue.png, scan) there.
+# Optional: BAUPLANER_BROWSER=0 skips the browser part (real planner against this game, block 3 acceptance).
 # Optional: BAUPLANER_MC=26.4 runs the same test with the 26.4 adapter (fabric-26.4, snapshot preparation for GAME-11).
 # Not part of `npm run check` (several minutes, large downloads on the first run).
 set -euo pipefail
@@ -24,7 +25,8 @@ node scripts/mod/bridge_gametest.mjs prepare "$work"
 [ -n "${BAUPLANER_ROOM:-}" ] && node scripts/mod/bridge_room_prepare.mjs "$work" "$BAUPLANER_ROOM"
 if [ -z "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]; then
   command -v weston >/dev/null || { echo "Kein Bildschirm und kein weston: sudo apt-get install weston" >&2; exit 2; }
-  export XDG_RUNTIME_DIR="$work/xdg" WAYLAND_DISPLAY=bauplaner-test SDL_VIDEO_DRIVER=wayland
+  # SDL 3 waits forever in SDL_CreateWindow when libdecor has no plugin (headless weston): no decorations.
+  export XDG_RUNTIME_DIR="$work/xdg" WAYLAND_DISPLAY=bauplaner-test SDL_VIDEO_DRIVER=wayland SDL_VIDEO_WAYLAND_ALLOW_LIBDECOR=0
   mkdir -m 700 "$XDG_RUNTIME_DIR"
   weston --backend=headless --renderer=gl --socket="$WAYLAND_DISPLAY" --width=1280 --height=720 >"$work/weston.log" 2>&1 &
   weston_pid=$!
@@ -48,6 +50,15 @@ if [ -n "${BAUPLANER_MODPACK_MODS:-}" ]; then
     printf 'enableShaders=false\n' >"$modpack_run/config/iris.properties"
   fi
 fi
+# Block 3: the real planner in a browser against this game (scripts/mod/bridge_browser.mjs, needs `npm run build`).
+# BAUPLANER_BROWSER=0 skips it; the game test then goes on without waiting.
+browser_pid=
+if [ "${BAUPLANER_BROWSER:-1}" != 0 ] && [ -f dist-web/index.html ]; then
+  node scripts/mod/bridge_browser.mjs "$work" >"$work/browser.log" 2>&1 &
+  browser_pid=$!
+else
+  : >"$work/browser-off"
+fi
 # Some modpack mods keep the game process alive after the test closed the world, so the test counts
 # as finished once the game test has handed back its results (state.properties is written last).
 (cd mods/bauplaner-bridge && BAUPLANER_GAMETEST_DIR="$work" exec ./gradlew -q "${gradle_args[@]}" --console=plain) >"$work/game.log" 2>&1 &
@@ -62,5 +73,6 @@ if [ -s "$work/state.properties" ]; then
 elif ! wait "$gradle_pid"; then
   grep -E "Build Studio|ERROR|Exception|Caused by" "$work/game.log" | tail -40 >&2; exit 1
 fi
+[ -n "$browser_pid" ] && { wait "$browser_pid" 2>/dev/null || true; cat "$work/browser.log"; }
 grep -F '[CHAT] [Build Studio]' "$work/game.log" | sed 's/.*\[CHAT\] /  Spiel: /'
 node scripts/mod/bridge_gametest.mjs verify "$work"

@@ -118,7 +118,7 @@ public final class PlanScreen extends Screen {
         // Footer.
         int fw = (w - 4) / 2;
         if (HologramClient.current() != null)
-            add(Button.builder(Component.literal(HudCard.fit(font, t("Befehle & Status", "Commands & status"), fw - 12)), b -> HologramClient.current().openCommands(minecraft)).bounds(x, footerY(), fw, 20).build());
+            add(Button.builder(Component.literal(HudCard.fit(font, font.width(t("Befehle & Status", "Commands & status")) <= fw - 12 ? t("Befehle & Status", "Commands & status") : t("Befehle", "Commands"), fw - 12)), b -> HologramClient.current().openCommands(minecraft)).bounds(x, footerY(), fw, 20).build());
         add(Button.builder(Component.literal(HudCard.fit(font, t("Fertig", "Done"), fw - 12)), b -> onClose()).bounds(x + w - fw, footerY(), fw, 20).build());
     }
 
@@ -129,7 +129,7 @@ public final class PlanScreen extends Screen {
     }
 
     private Button button(String label, int x, int y, int w, Runnable click) {
-        return add(Button.builder(Component.literal(HudCard.fit(font, label, w - 12)), b -> click.run()).bounds(x, y, w, h).build());
+        return add(Button.builder(Component.literal(HudCard.fit(font, label, w - 6)), b -> click.run()).bounds(x, y, w, h).build());
     }
 
     private void promptWidgets(int x, int w) {

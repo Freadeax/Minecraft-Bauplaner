@@ -354,7 +354,7 @@ public final class TeamClient {
         if (!key.equals(hudKey)) { hudRows = rows(t, mc, px, py, pz); hudKey = key; }
         // GAME-12: compact panel shows the first three rows (team, here, my task); "ausführlich" shows all.
         List<String[]> rows = ClientSettings.panel() == ClientSettings.Panel.DETAILED || hudRows.size() <= 3 ? hudRows : hudRows.subList(0, 3);
-        if (ClientSettings.panel() != ClientSettings.Panel.HIDDEN) HudCard.bottomRight(g, mc.font, rows, HudCard.ACCENT);
+        if (ClientSettings.panel() != ClientSettings.Panel.HIDDEN) HudCard.bottomRight(g, mc.font, rows, HudCard.ACCENT, "Team");
     }
 
     private List<String[]> rows(TeamState t, Minecraft mc, int px, int py, int pz) {

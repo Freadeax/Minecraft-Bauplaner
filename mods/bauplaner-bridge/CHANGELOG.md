@@ -2,6 +2,22 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.25.0 – 2026-11-06
+
+**Tidy screen in every window size / Aufgeräumtes Bild in jeder Fenstergröße**
+
+- The question “Planner wants to connect – press J” is now a card at the top right below the build panel. Before, in small windows it lay on top of the build panel.
+- The build guide line (symmetry, curve) above the hotbar moves aside and wraps in small windows instead of running under the message cards or the team panel.
+- Command page (J → “Commands & status”): when the status does not fit a small window, the last line ends with “…” instead of stopping mid-sentence. The menu button reads “Commands” when “Commands & status” does not fit.
+- Buttons in the J menu are no longer cut too early (“Ausblen…” instead of “Ausblenden” in small windows).
+- Checked automatically in the real game: every tab of the menu and of the command page plus all panels in three window sizes (854×480, 1366×768, Full HD with GUI size 4), and the planner in a real browser against the running game (pairing by click, sending from the map, taking the position back, terrain from the game).
+
+- Die Frage „Planer möchte sich verbinden – J drücken“ ist jetzt eine Karte oben rechts unter dem Baufenster. Vorher lag sie in kleinen Fenstern über dem Baufenster.
+- Die Bauhilfe-Zeile (Symmetrie, Kurve) über der Schnellleiste weicht in kleinen Fenstern aus und bricht um, statt unter den Meldungskarten oder der Team-Anzeige zu verschwinden.
+- Befehlsseite (J → „Befehle & Status“): Passt der Status nicht ins kleine Fenster, endet die letzte Zeile mit „…“ statt mitten im Satz. Der Menüknopf heißt „Befehle“, wenn „Befehle & Status“ nicht passt.
+- Knöpfe im J-Menü werden nicht mehr zu früh gekürzt („Ausblen…“ statt „Ausblenden“ in kleinen Fenstern).
+- Im echten Spiel automatisch geprüft: jeder Reiter des Menüs und der Befehlsseite sowie alle Anzeigen in drei Fenstergrößen (854×480, 1366×768, Full HD mit GUI-Größe 4), dazu der Planer in einem echten Browser gegen das laufende Spiel (Koppeln per Klick, Senden von der Karte, Lage zurück, Gelände aus dem Spiel).
+
 ## 0.24.0 – 2026-11-06
 
 **New name: LMNT — Build Studio / Neuer Name: LMNT — Build Studio**

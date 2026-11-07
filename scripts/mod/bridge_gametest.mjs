@@ -156,6 +156,45 @@ function hologram(logFile, cells) {
     assert.match(log, /\[Build Studio\] Sprache: Deutsch/, 'Sprache umgestellt');
     console.log(`Oberfläche bestanden: Meldungskarten (${ui.toasts.length}), Befehle Deutsch/Englisch mit Vervollständigung, englisches Menü.`);
   }
+  // Block 3 acceptance (0.25.0, docs/TESTING.md „Mod-Abnahme im Spiel“): every tab of the J menu and of „Befehle & Status“
+  // and the HUD panels in three window sizes, help, menu command, ×2 cards, chat mode, build panel modes, language auto.
+  if (existsSync(join(dir, 'abnahme.json'))) {
+    const a = JSON.parse(readFileSync(join(dir, 'abnahme.json'), 'utf8'));
+    const bad = a.audits.filter(x => x.problems.length);
+    assert.equal(bad.length, 0, `Darstellung:\n${bad.map(x => `${x.where} (GUI ${x.gui}): ${x.problems.join('; ')}`).join('\n')}`);
+    const sizes = new Set(a.audits.map(x => x.where.split(' ')[1]));
+    assert.equal(sizes.size, 3, `drei Fenstergrößen: ${[...sizes]}`);
+    for (const tab of ['menue-plan', 'menue-position', 'menue-ansicht', 'menue-optionen']) assert.ok(a.audits.some(x => x.where.startsWith(tab + ' ') && x.screen === 'PlanScreen'), `Planmenü-Reiter ${tab} geprüft`);
+    const pages = a.audits.filter(x => x.where.startsWith('befehle-') && x.screen === 'CommandScreen');
+    assert.ok(pages.length >= 3 * 8, `alle Reiter von „Befehle & Status“ in drei Größen (${pages.length})`);
+    const hud = a.audits.filter(x => x.where.startsWith('frage '));
+    for (const x of hud) for (const name of ['Bauanzeige', 'Frage']) assert.ok(x.seen.some(b => b.startsWith(name + ' ')), `${x.where}: ${name} sichtbar (${x.seen.join(' | ')})`);
+    // Weltplan and team panel step aside while three message cards fill the right column of a small window (they are
+    // dropped, never drawn over the cards); they must be on screen in the other pictures.
+    const hudAll = a.audits.filter(x => !x.screen);
+    for (const name of ['Weltplan', 'Team']) assert.ok(hudAll.some(x => x.seen.some(b => b.startsWith(name + ' '))), `${name}-Anzeige in keinem Bild: ${hudAll.map(x => x.seen.join(' | ')).join(' // ')}`);
+    assert.ok(a.audits.filter(x => x.where.startsWith('bauhilfe ')).every(x => x.seen.some(b => b.startsWith('Bauhilfe '))), 'Bauhilfe-Zeile in allen Größen');
+    assert.equal(a.menueBefehl, 'PlanScreen', '/bauplaner menue öffnet das Planmenü');
+    const helpAt = log.indexOf('[Build Studio] So geht\'s – Build Studio in 5 Schritten:');
+    assert.ok(helpAt >= 0, 'Hilfe-Überschrift im Chat');
+    const help = [...log.slice(helpAt).matchAll(/\[CHAT\] \[Build Studio\] +([1-5])\. /g)].map(m => m[1]);
+    assert.deepEqual(help.slice(0, 5), ['1', '2', '3', '4', '5'], `Hilfe: fünf Schritte (${help})`);
+    assert.ok(a.toastsTwice.some(t => /Abschnitt 99 gibt es nicht.*×2$/.test(t)), `dieselbe Meldung zählt ×2: ${a.toastsTwice}`);
+    assert.deepEqual(a.chatModeNewCards, [], 'Meldungen „Chat“: keine neue Karte');
+    const chatMode = log.indexOf('[Build Studio] Meldungen: ');
+    assert.ok(chatMode >= 0 && /\[CHAT\] \[Build Studio\] Ursprung /.test(log.slice(chatMode)), 'Meldungen „Chat“: die Meldung steht im Chat');
+    assert.ok(a.panel_ausfuehrlich > a.panel_kompakt && a.panel_kompakt > 0, `Bauanzeige ausführlich (${a.panel_ausfuehrlich}) höher als kompakt (${a.panel_kompakt})`);
+    assert.equal(a.panel_aus, 0, 'Bauanzeige aus');
+    assert.equal(a.autoEnglish, true, 'Sprache „auto“ folgt dem englischen Spiel');
+    console.log(`Abnahme Oberfläche bestanden: ${a.audits.length} Bilder in 3 Fenstergrößen ohne Überdeckung oder abgeschnittene Knöpfe (Planmenü 4 Reiter, Befehle & Status ${pages.length / 3} Reiter, Anzeigen mit Frage/Team/Weltplan/Bauhilfe), Hilfe 5 Schritte, Meldung ×2, Chat-Modus, Bauanzeige kompakt/ausführlich/aus, Sprache auto.`);
+  }
+  // Block 3: the real planner in a browser against this game (scripts/mod/bridge_browser.mjs).
+  if (existsSync(join(dir, 'abnahme.json')) && !existsSync(join(dir, 'browser-off'))) {
+    assert.ok(existsSync(join(dir, 'browser.json')), 'Browserteil ohne Ergebnis (browser.json fehlt)');
+    const b = JSON.parse(readFileSync(join(dir, 'browser.json'), 'utf8'));
+    assert.ok(b.ok, `Planer im Browser gegen das Spiel: ${b.failure ?? b.errors.join('; ')}\nSchritte: ${b.steps.map(x => x.name).join(' → ')}`);
+    console.log(`Planer im Browser gegen das echte Spiel bestanden: ${b.steps.map(x => x.name).join(' → ')}.`);
+  }
   console.log(`Hologramm bestanden: ${planned} Planblöcke, Fortschritt ${placed[0]} % → ${built[0]} % nach dem Setzen des fehlenden Blocks, Drehen, Speichern, Materialliste (${material[1][0]} offen nach Teilabriss), Ebenenmodus, Bauabschnitte (Turm ${towerOpen} offen, Mauer ${wallOpen} offen), Röntgensicht und Platzierhilfe (falscher Block, liegender Stamm, Abbauschutz) geprüft.`);
 }
 

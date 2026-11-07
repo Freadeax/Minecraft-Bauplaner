@@ -218,11 +218,29 @@ final class GuideClient {
         }
         if (progress.total() > 0) rows.add(t("Bauhilfe: ", "Build guide: ") + progress.done() + " / " + progress.total() + t(" gesetzt", " placed") + (progress.wrong() > 0 ? " · " + progress.wrong() + t(" falsch", " wrong") : "") + (breakCount > 0 ? " · " + breakCount + t(" abbauen", " to break") : ""));
         var font = mc.font;
-        int line = font.lineHeight + 2, w = 0;
-        for (String r : rows) w = Math.max(w, font.width(r));
-        int x = g.guiWidth() / 2 - w / 2, y = g.guiHeight() - 84 - rows.size() * line;
-        HudCard.back(g, x, y, w, rows.size() * line, 0xFF35D0E0);
-        for (int i = 0; i < rows.size(); i++) { g.text(font, rows.get(i), x, y, i == rows.size() - 1 && progress.total() > 0 ? HologramHud.GREEN : 0xFF35D0E0, true); y += line; }
+        int line = font.lineHeight + 2, last = rows.size() - 1;
+        // Centred above the hotbar; in small windows it keeps left of the message cards and the panels at the bottom
+        // right (0.25.0: it ran under them), long rows wrap instead of running under another panel.
+        List<String[]> lines = new ArrayList<>();
+        int w = 0, x = 0, y = 0;
+        for (int pass = 0; pass < 2; pass++) {
+            int h = Math.max(1, lines.size()) * line;
+            y = g.guiHeight() - 84 - (pass == 0 ? rows.size() * line : h);
+            int right = HudLayout.freeRight(y - HudCard.PAD - 2, y + (pass == 0 ? rows.size() * line : h) + HudCard.PAD + 2, g.guiWidth()) - HudCard.PAD - 4;
+            int max = Math.max(80, right - 6 - HudCard.PAD);
+            lines.clear();
+            for (int i = 0; i < rows.size(); i++) {
+                int color = i == last && progress.total() > 0 ? HologramHud.GREEN : 0xFF35D0E0;
+                for (String l : Toasts.wrap(font, rows.get(i), max)) lines.add(new String[] { l, Integer.toHexString(color) });
+            }
+            w = 0;
+            for (String[] l : lines) w = Math.max(w, font.width(l[0]));
+            x = Math.max(6 + HudCard.PAD, Math.min(g.guiWidth() / 2 - w / 2, right - w));
+        }
+        y = g.guiHeight() - 84 - lines.size() * line;
+        HudCard.back(g, x, y, w, lines.size() * line, 0xFF35D0E0);
+        HudLayout.note("Bauhilfe", x - HudCard.PAD, y - HudCard.PAD, x + w + HudCard.PAD, y + lines.size() * line + HudCard.PAD - 2);
+        for (String[] l : lines) { g.text(font, l[0], x, y, (int) Long.parseLong(l[1], 16), true); y += line; }
     }
 
     // ------------------------------------------------------------------ actions (keys and commands)

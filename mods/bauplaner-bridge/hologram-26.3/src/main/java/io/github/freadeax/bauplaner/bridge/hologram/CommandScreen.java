@@ -314,6 +314,10 @@ public final class CommandScreen extends Screen {
         return out;
     }
 
+    /** Status lines drawn in the last frame and all status lines (game test: what a small window leaves out). */
+    private int statusShown;
+    public int[] statusLines() { return new int[] { statusShown, wrapped(statusWidth()).size() }; }
+
     private int replyLines() { return height >= 300 ? 5 : 3; }
 
     // ------------------------------------------------------------------ drawing
@@ -337,7 +341,12 @@ public final class CommandScreen extends Screen {
         int sx = left(), sy = tabsBottom, sw = statusWidth();
         List<String[]> lines = wrapped(sw);
         int max = wide() ? (height - 30 - sy) / line - replyLines() - 1 : (statusHeight() - 6) / line;
-        if (lines.size() > max) lines = lines.subList(0, Math.max(0, max));
+        if (lines.size() > max) {
+            // Not all of the status fits (small window): the last line says so instead of stopping mid-sentence.
+            lines = new ArrayList<>(lines.subList(0, Math.max(0, max)));
+            if (!lines.isEmpty()) { String[] l = lines.get(lines.size() - 1); lines.set(lines.size() - 1, new String[] { fit(l[0] + " …", sw), l[1] }); }
+        }
+        statusShown = lines.size();
         if (!lines.isEmpty()) HudCard.back(g, sx, sy, sw, lines.size() * line, HudCard.INFO);
         for (String[] r : lines) { g.text(font, r[0], sx, sy, (int) Long.parseLong(r[1], 16), true); sy += line; }
         if (pageLabel != null) g.text(font, pageLabel, pageLabelAt[0], pageLabelAt[1], HudCard.MUTED, true);

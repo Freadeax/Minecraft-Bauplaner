@@ -8692,3 +8692,49 @@ Block 4b: Lagerkisten und Ertragsfarm mit echten Spielern automatisch abgenommen
 - `scripts/mod/test_bridge_paper_bots.sh`
 - `tests/unit/materials/production.test.mjs`
 
+## 2026-11-07T01:42:20.153Z · progress
+
+**Aufgaben:** GAME-12, GAME-10, GAME-07, GAME-03, LINK-03, EDIT-04, TERRAIN-04, MAP-05, MAP-06
+
+Block 3: Mod 0.25.0 im echten Spiel in drei Fenstergrößen und mit dem echten Planer im Browser automatisch abgenommen; Frage-Karte, Bauhilfe-Zeile und Knopfbeschriftungen korrigiert
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-12 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme MOD-25 bis MOD-28 im Spiel. |
+| GAME-10 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme MOD-16 auf Philipps Server mit Paper-Plugin. |
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 10/11 | Philipp prüft 0.19.0 im echten Spiel: gesperrter Bauplatz grau, Hologramm nur in einer Gruppe (Testfall MOD-21); danach Stufe 7. |
+| GAME-03 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht. |
+| LINK-03 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme LIVE-01 in Philipps Modpack. |
+| EDIT-04 | 🧩 Implementiert · Abnahme offen | 7/8 | Spielprüfung gespiegelter Zustände im Planer (S07) und der Bauhilfen in der Mod (MOD-18/19); Gelände-Werkzeuge auf dem Projektgelände sind als TERRAIN-05 umgesetzt. |
+| TERRAIN-04 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp im Spiel (S05). |
+| MAP-05 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05); denkbar: gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden können. |
+| MAP-06 | 🧩 Implementiert · Abnahme offen | 7/8 | Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/views/mod/releases.json`
+- `docs/TESTING.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.25.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.25.0.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.25.0.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/GuideClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramHud.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HudCard.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HudLayout.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LinkPrompt.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/MarksRenderer.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Toasts.java`
+- `scripts/mod/bridge_browser.mjs`
+- `scripts/mod/bridge_gametest.mjs`
+- `scripts/mod/test_bridge_ingame.sh`
+- `scripts/mod/test_bridge_ingame_forge.sh`
+

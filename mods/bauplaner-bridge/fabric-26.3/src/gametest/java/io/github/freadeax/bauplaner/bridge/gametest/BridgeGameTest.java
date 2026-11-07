@@ -3,6 +3,9 @@ package io.github.freadeax.bauplaner.bridge.gametest;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.freadeax.bauplaner.bridge.hologram.CommandLang;
 import io.github.freadeax.bauplaner.bridge.hologram.CommandScreen;
+import io.github.freadeax.bauplaner.bridge.hologram.HudLayout;
+import io.github.freadeax.bauplaner.mod.Lang;
+import io.github.freadeax.bauplaner.mod.commands.CommandCatalog;
 import io.github.freadeax.bauplaner.bridge.hologram.Toasts;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -78,6 +81,8 @@ public final class BridgeGameTest implements FabricClientGameTest {
                     liveLink(context, world, io, anchor);
                     guides(context, world, io, anchor);
                     ui(context, world, io, anchor);
+                    acceptance(context, world, io, anchor);
+                    browserPhase(context, world, io);
                 } catch (Throwable t) {
                     // Modpack runs can hang on shutdown before the failure is reported: log it right away.
                     t.printStackTrace();
@@ -394,6 +399,195 @@ public final class BridgeGameTest implements FabricClientGameTest {
         Files.writeString(io.resolve("ui.json"), out.toString());
     }
 
+    // ------------------------------------------------------------------ block 3 acceptance (0.25.0)
+
+    /** Window sizes of the acceptance: Minecraft's default window, a laptop, Full HD with GUI size 4 (MOD-25). */
+    private static final int[][] SIZES = { { 854, 480, 0 }, { 1366, 768, 0 }, { 1920, 1080, 4 } };
+    private static final List<String> AUDITS = new java.util.ArrayList<>();
+    private static final List<String> FACTS = new java.util.ArrayList<>();
+
+    private static void windowSize(ClientGameTestContext context, int w, int h, int scale) {
+        context.getInput().resizeWindow(w, h);
+        context.runOnClient(mc -> { mc.options.guiScale().set(scale); mc.resizeGui(); });
+        context.waitTicks(12);
+    }
+
+    /**
+     * Checks the current picture in every window size: with a screen open every button inside the window, no two
+     * buttons on top of each other, no label wider than its button; without a screen every panel of the HUD
+     * (HudLayout) inside the window and no two panels on top of each other. Screenshots layout-*.png, results in
+     * abnahme.json (scripts/mod/bridge_gametest.mjs verify). Ends in the default window again.
+     */
+    private static void layoutAudit(ClientGameTestContext context, Path io, String label) throws IOException {
+        for (int[] size : SIZES) {
+            windowSize(context, size[0], size[1], size[2]);
+            context.waitTicks(25); // slide-in of panels and cards settles
+            String where = label + " " + size[0] + "x" + size[1] + (size[2] == 0 ? "" : "@" + size[2]);
+            String result = context.computeOnClient(mc -> {
+                List<String> problems = new java.util.ArrayList<>(), seen = new java.util.ArrayList<>();
+                var screen = mc.gui.screen();
+                int gw = mc.getWindow().getGuiScaledWidth(), gh = mc.getWindow().getGuiScaledHeight();
+                if (screen != null) {
+                    List<net.minecraft.client.gui.components.AbstractWidget> ws = screen.children().stream()
+                            .filter(c -> c instanceof net.minecraft.client.gui.components.AbstractWidget).map(c -> (net.minecraft.client.gui.components.AbstractWidget) c).toList();
+                    for (var w : ws) {
+                        String msg = w.getMessage().getString();
+                        seen.add(msg);
+                        if (w.getX() < 0 || w.getY() < 0 || w.getRight() > screen.width || w.getBottom() > screen.height)
+                            problems.add("Knopf „" + msg + "“ ragt aus dem Fenster (" + w.getX() + "," + w.getY() + "–" + w.getRight() + "," + w.getBottom() + " bei " + screen.width + "×" + screen.height + ")");
+                        if (w instanceof net.minecraft.client.gui.components.Button && mc.font.width(msg) > w.getWidth() - 4)
+                            problems.add("Text „" + msg + "“ breiter als sein Knopf (" + mc.font.width(msg) + " > " + (w.getWidth() - 4) + ")");
+                        // „Plan laden …“ (space before …) means „asks for more“; „Ausblen…“ is a label cut short.
+                        if (w instanceof net.minecraft.client.gui.components.Button && msg.endsWith("…") && msg.length() > 1 && msg.charAt(msg.length() - 2) != ' ')
+                            problems.add("Text „" + msg + "“ gekürzt");
+                    }
+                    for (int i = 0; i < ws.size(); i++) for (int j = i + 1; j < ws.size(); j++) {
+                        var a = ws.get(i); var b = ws.get(j);
+                        if (a.getX() < b.getRight() && b.getX() < a.getRight() && a.getY() < b.getBottom() && b.getY() < a.getBottom())
+                            problems.add("Knöpfe „" + a.getMessage().getString() + "“ und „" + b.getMessage().getString() + "“ liegen übereinander");
+                    }
+                    if (screen instanceof CommandScreen cs) { int[] st = cs.statusLines(); seen.add("Statuszeilen " + st[0] + "/" + st[1]); }
+                } else {
+                    var boxes = HudLayout.last();
+                    int[] gs = HudLayout.size();
+                    for (var b : boxes) { seen.add(b.toString()); if (!b.inside(gs[0], gs[1])) problems.add(b + " ragt aus dem Bild (" + gs[0] + "×" + gs[1] + ")"); }
+                    for (int i = 0; i < boxes.size(); i++) for (int j = i + 1; j < boxes.size(); j++)
+                        if (boxes.get(i).overlaps(boxes.get(j))) problems.add(boxes.get(i) + " überdeckt " + boxes.get(j));
+                }
+                return "{\"where\":\"" + where + "\",\"gui\":\"" + gw + "x" + gh + "\",\"screen\":\"" + (screen == null ? "" : screen.getClass().getSimpleName())
+                        + "\",\"seen\":" + json(seen) + ",\"problems\":" + json(problems) + "}";
+            });
+            AUDITS.add(result);
+            copy(context.takeScreenshot("bauplaner-layout-" + label + "-" + size[0]), io.resolve("layout-" + label + "-" + size[0] + ".png"));
+        }
+        windowSize(context, 854, 480, 0);
+    }
+
+    /** Clicks the button whose label is {@code label} (also as the active tab „▸ label“ or shortened „label…“). */
+    private static void clickLabel(ClientGameTestContext context, String label) {
+        String shown = context.computeOnClient(mc -> mc.gui.screen().children().stream()
+                .filter(c -> c instanceof net.minecraft.client.gui.components.Button).map(c -> ((net.minecraft.client.gui.components.Button) c).getMessage().getString())
+                .filter(m -> m.equals(label) || m.equals("▸ " + label) || (m.endsWith("…") && label.startsWith(m.substring(0, m.length() - 1)))).findFirst()
+                .orElseThrow(() -> new AssertionError("Kein Knopf „" + label + "“")));
+        pressAt(context, shown);
+    }
+
+    /**
+     * Block 3 (MOD-25, MOD-26, MOD-28, MOD-18 layout): every tab of the J menu and of „Befehle & Status“ in three
+     * window sizes, help and menu command, repeating messages count up, messages to the chat and back, build
+     * panel compact/detailed/off, language „auto“ follows the game language, build guides beside the other panels.
+     */
+    private static void acceptance(ClientGameTestContext context, TestSingleplayerContext world, Path io, int[] anchor) throws IOException {
+        world.getServer().runCommand("tp @a " + (anchor[0] - 5.5) + " " + anchor[1] + " " + (anchor[2] - 8.5) + " 0 0");
+        world.getConnection().waitForChunksRender();
+        context.getInput().lookAt(new BlockPos(anchor[0] + 3, anchor[1] + 4, anchor[2] + 2));
+        // MOD-25: help, menu by command, every tab of the plan menu.
+        chat(context, "/bauplaner hilfe");
+        chat(context, "/bauplaner menue");
+        context.waitTicks(10);
+        FACTS.add("\"menueBefehl\":\"" + context.computeOnClient(mc -> mc.gui.screen() == null ? "" : mc.gui.screen().getClass().getSimpleName()) + "\"");
+        for (String tab : List.of("Plan", "Position", "Ansicht", "Optionen")) {
+            clickLabel(context, tab);
+            context.waitTicks(6);
+            layoutAudit(context, io, "menue-" + tab.toLowerCase(java.util.Locale.ROOT));
+        }
+        context.setScreen(() -> null);
+        // „Befehle & Status“: every tab.
+        chat(context, "/bauplaner befehle");
+        context.waitTicks(10);
+        List<String> groups = CommandCatalog.groups();
+        for (String g : groups) {
+            clickLabel(context, CommandCatalog.groupLabel(g));
+            context.waitTicks(6);
+            layoutAudit(context, io, "befehle-" + g.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9]+", "-"));
+        }
+        context.setScreen(() -> null);
+        // MOD-26: the same message twice counts up on one card.
+        context.runOnClient(mc -> mc.gui.hud.getChat().clearMessages(false));
+        chat(context, "/bauplaner abschnitt 99");
+        chat(context, "/bauplaner abschnitt 99");
+        context.waitTicks(5);
+        FACTS.add("\"toastsTwice\":" + json(context.computeOnClient(mc -> Toasts.shownTexts())));
+        // Messages to the chat (like before) and back: the line is a chat line then, not a card.
+        chat(context, "/bauplaner meldungen chat");
+        List<String> cardsBefore = context.computeOnClient(mc -> Toasts.texts());
+        chat(context, "/bauplaner texturen");
+        chat(context, "/bauplaner texturen");
+        context.waitTicks(3);
+        // Cards that came up after the switch (cards expire meanwhile, so compare texts, not counts).
+        FACTS.add("\"chatModeNewCards\":" + json(context.computeOnClient(mc -> Toasts.texts().stream().filter(t -> !cardsBefore.contains(t)).toList())));
+        chat(context, "/bauplaner meldungen einblendung");
+        // Build panel: compact, detailed, off (HudLayout: height of „Bauanzeige“ or none).
+        for (String mode : List.of("kompakt", "ausfuehrlich", "aus")) {
+            chat(context, "/bauplaner anzeige " + mode);
+            context.setScreen(() -> null);
+            context.waitTicks(20);
+            int h = context.computeOnClient(mc -> HudLayout.last().stream()
+                    .filter(b -> b.name().equals("Bauanzeige")).mapToInt(b -> b.y1() - b.y0()).findFirst().orElse(0));
+            FACTS.add("\"panel_" + mode + "\":" + h);
+        }
+        chat(context, "/bauplaner anzeige kompakt");
+        // MOD-28: „auto“ follows the game language (the test client runs in English).
+        chat(context, "/bauplaner sprache auto");
+        chat(context, "/bauplaner fortschritt");
+        FACTS.add("\"autoEnglish\":" + context.computeOnClient(mc -> Lang.en()));
+        chat(context, "/buildplanner language german");
+        // MOD-18 layout: build guide line above the hotbar beside the team and Weltplan panels, all sizes.
+        context.getInput().lookAt(new BlockPos(anchor[0] + 3, anchor[1], anchor[2]));
+        chat(context, "/bauplaner symmetrie hier");
+        chat(context, "/bauplaner symmetrie drehen 4");
+        context.setScreen(() -> null);
+        layoutAudit(context, io, "bauhilfe");
+        chat(context, "/bauplaner bauhilfe aus");
+        context.setScreen(() -> null);
+        Files.writeString(io.resolve("abnahme.json"), "{" + String.join(",", FACTS) + ",\"audits\":[" + String.join(",", AUDITS) + "]}");
+    }
+
+    /**
+     * Block 3: the real planner in a browser (scripts/mod/bridge_browser.mjs, started beside the game) pairs by click,
+     * sends the plan from the map, takes the moved hologram back and reads the terrain – this side plays the player:
+     * J → „Planer zulassen“ when asked, arrow keys and End to move and turn the hologram. Skipped when no browser
+     * driver runs (it writes browser-ready); the verify step then reports it as not checked.
+     */
+    private static void browserPhase(ClientGameTestContext context, TestSingleplayerContext world, Path io) throws IOException {
+        context.waitFor(mc -> Files.exists(io.resolve("browser-ready")) || Files.exists(io.resolve("browser-off")), 20 * 600);
+        if (!Files.exists(io.resolve("browser-ready"))) return;
+        context.setScreen(() -> null);
+        Files.writeString(io.resolve("browser-go"), "{\"port\":47615}");
+        context.waitFor(mc -> Files.exists(io.resolve("browser-ask")) || Files.exists(io.resolve("browser-done")), 20 * 600);
+        if (Files.exists(io.resolve("browser-done"))) return;
+        context.waitTicks(20);
+        context.getInput().pressKey(InputConstants.KEY_J);
+        context.waitTicks(10);
+        click(context, "Planer zulassen");
+        context.waitTicks(5);
+        context.setScreen(() -> null);
+        Files.writeString(io.resolve("game-allowed"), "");
+        context.waitFor(mc -> Files.exists(io.resolve("browser-sent")) || Files.exists(io.resolve("browser-done")), 20 * 600);
+        if (Files.exists(io.resolve("browser-done"))) return;
+        // MOD-02 keys: two blocks east, one turn. The planner sees the new position and takes it over.
+        context.waitTicks(10);
+        context.getInput().pressKey(InputConstants.KEY_RIGHT);
+        context.waitTicks(4);
+        context.getInput().pressKey(InputConstants.KEY_RIGHT);
+        context.waitTicks(4);
+        context.getInput().pressKey(InputConstants.KEY_END);
+        context.waitTicks(20);
+        chat(context, "/bauplaner status");
+        context.setScreen(() -> null);
+        Files.writeString(io.resolve("game-moved"), "");
+        // PROJ-24: walk far away (the site's chunks unload), the planner reads the terrain from the Geländegedächtnis.
+        context.waitFor(mc -> Files.exists(io.resolve("browser-far")) || Files.exists(io.resolve("browser-done")), 20 * 600);
+        if (Files.exists(io.resolve("browser-far"))) {
+            world.getServer().runCommand("tp @a 3000 -60 3000");
+            world.getConnection().waitForChunksRender();
+            context.waitTicks(60);
+            Files.writeString(io.resolve("game-far"), "");
+        }
+        context.waitFor(mc -> Files.exists(io.resolve("browser-done")), 20 * 600);
+        copy(context.takeScreenshot("bauplaner-browser-ende"), io.resolve("browser-spiel.png"));
+    }
+
     /** Tab completion as the chat screen asks for it (the line without the slash). */
     private static List<String> suggest(ClientGameTestContext context, String line) {
         return context.computeOnClient(mc -> {
@@ -568,6 +762,8 @@ public final class BridgeGameTest implements FabricClientGameTest {
         String askUrl = base + "/v1/pair/ask?request=" + rq.group(1);
         context.waitTicks(10);
         copy(context.takeScreenshot("bauplaner-frage"), io.resolve("frage.png"));
+        // Block 3 acceptance: question card, build panel, message cards, Weltplan and team panel at once, in every window size.
+        layoutAudit(context, io, "frage");
         out.append(",\"askWaiting\":").append(request(context, http, askUrl, "GET", null, null, "https://freadeax.github.io"));
         context.getInput().pressKey(InputConstants.KEY_J);
         context.waitTicks(10);
