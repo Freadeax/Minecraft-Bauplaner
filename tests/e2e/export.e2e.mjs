@@ -52,7 +52,10 @@ test('Export: Revision einfrieren, Datei prüfen, Sperre bei Konflikt, alte Revi
   await p.getByText('✓ Exportbereit').waitFor();
   await p.getByText('Noch keine Revision.').waitFor();
   const submit = p.getByRole('button', { name: 'Revision einfrieren und .schem exportieren' });
-  assert.equal(await submit.isDisabled(), true, 'no DataVersion known for the sample profile → must be chosen');
+  // COMPAT-01: the DataVersion comes from „Passt zu deinem Spiel?“ (default: version profile 26.3).
+  assert.equal(await p.getByLabel('DataVersion (Zielversion)').inputValue(), '5023');
+  await p.getByLabel('DataVersion (Zielversion)').fill('');
+  assert.equal(await submit.isDisabled(), true, 'without a DataVersion nothing is exported');
   await p.getByLabel('DataVersion (Zielversion)').fill('3955');
   await p.getByLabel('Kommentar zur Revision').fill('Erste Abnahme');
 

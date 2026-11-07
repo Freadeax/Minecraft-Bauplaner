@@ -4,7 +4,7 @@ import { createRequire } from 'node:module';
 import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { openStorage } from './start.mjs';
+import { openStorage, waitForStart } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -74,6 +74,8 @@ test('Systemcheck: Auslieferung, Browser und Datencheck ohne Befund', async () =
 test('Datencheck findet eine beschädigte Bauteilversion und eine fehlende Version im Projekt', async () => {
   const { p, errors, context } = await page();
   await p.goto(`${BASE}#/`);
+  // The project centre opens before the catalogue (PERF-07); the damage below needs stored versions.
+  await waitForStart(p);
   await p.locator('#projekt-name').fill('Prüfprojekt');
   await p.locator('#projekt-name').press('Enter');
   await p.waitForURL(/#\/projekt\//);

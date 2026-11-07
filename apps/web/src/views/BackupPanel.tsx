@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { MAX_BACKUP_BYTES, readBackup, receiptForHash } from '../../../../packages/domain/src/index.js';
+import { MAX_BACKUP_BYTES, receiptForHash } from '../../../../packages/domain/src/index.js';
+import { loadHomeDomain } from './loadHomeDomain';
 import type { BackupFile, BackupStatus, CoverageLine } from '../../../../packages/domain/src/index.js';
 import { recordBackupReceipt, snooze, snoozedUntil } from '../app/backupStatus';
 import type { BackupStatusState } from '../app/backupStatus';
@@ -42,7 +43,7 @@ export function BackupStatusPanel({ state, onBackupProject, busy }: { state: Bac
     try {
       if (file.size > MAX_BACKUP_BYTES) throw new Error('Sicherungsdatei ist zu groß');
       const text = await file.text();
-      await readBackup(text); // verifies format, checksum, versions and originals; throws on any mismatch
+      await (await loadHomeDomain()).readBackup(text); // verifies format, checksum, versions and originals; throws on any mismatch
       const parsed = JSON.parse(text) as BackupFile;
       const known = receiptForHash(ledger, parsed.contentSha256);
       const failed = await recordBackupReceipt(repo, parsed, 'verified', file.name);

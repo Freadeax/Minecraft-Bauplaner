@@ -2,7 +2,9 @@ import { HostMove } from './HostMove';
 import { hostOf } from '../app/dataFlows';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TeamOpen } from './project/team/TeamOpen';
-import { applyOperation, applyWorldPlanOp, backupFileName, cellCount, buildRestore, createBackup, createEnsembleProject, createProject, findUpdates, hasTeamAccess, latestReleaseId, latestVersions, summarizeUpdates, MAX_BACKUP_BYTES, missingMembers, newInstance, planRestore, programSummary, projectRemoval, readBackup, resolveProject, serializeBackup, siteOf, ENSEMBLES } from '../../../../packages/domain/src/index.js';
+import { MAX_BACKUP_BYTES } from '../../../../packages/domain/src/index.js';
+import { loadHomeDomain } from './loadHomeDomain';
+import type { HomeDomain } from './loadHomeDomain';
 import type { Ensemble, Instance, Project, ProjectChoice, RestorePlan } from '../../../../packages/domain/src/index.js';
 import { useApp } from '../app/context';
 import type { StorageInfo } from '../app/repository';
@@ -17,6 +19,7 @@ import { Icon } from '../app/icons';
 import { lastTab, projectTabNames } from './project/tabNames';
 import { startTour } from './project/Tour';
 import '../styles/start.css';
+import { JobStatus } from '../jobs/JobStatus';
 import type { BackupFile } from '../../../../packages/domain/src/index.js';
 
 const mb = (n: number) => `${(n / 1_000_000).toLocaleString('de-DE', { maximumFractionDigits: 1 })} MB`;
@@ -24,7 +27,10 @@ const planLabel = { new: 'neu', same: 'identisch vorhanden', differs: 'weicht lo
 
 /** Projektzentrale: local projects with revision, size and storage status. */
 export function ProjectsView() {
-  const { repo, library, reloadLibrary } = useApp();
+  const { repo, library, libraryReady, libraryProgress, whenLibrary, reloadLibrary } = useApp();
+  // PERF-07: projects show at once; the domain code for previews, dates, updates and backups follows in the background.
+  const [domain, setDomain] = useState<HomeDomain | null>(null);
+  useEffect(() => { let alive = true; loadHomeDomain().then(d => { if (alive) setDomain(d); }, e => { if (alive) setMessage(errorText(e)); }); return () => { alive = false; }; }, []);
   const [projects, setProjects] = useState<Project[] | null>(null);
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
@@ -45,6 +51,8 @@ export function ProjectsView() {
   const backup = async (scope: 'project' | 'all', project?: Project) => {
     setBusy(true);
     try {
+      const { createBackup, backupFileName, hasTeamAccess, serializeBackup } = await loadHomeDomain();
+      const library = await whenLibrary();
       const [collections, templates, worldPlan] = scope === 'all' ? await Promise.all([repo.listCollections(), repo.listTemplates(), repo.getWorldPlan()]) : [[], [], undefined];
       const file = await createBackup({ projects: projects ?? [], assets: library.assets, versions: library.versions, getOriginal: sha => repo.getOriginal(sha), collections, templates, ...(worldPlan && { worldPlan }) },
         scope, project ? [project.id] : undefined);
@@ -61,6 +69,7 @@ export function ProjectsView() {
     try {
       if (file.size > MAX_BACKUP_BYTES) throw new Error('Sicherungsdatei ist zu groß');
       const text = await file.text();
+      const { readBackup, planRestore } = await loadHomeDomain();
       const parsed = await readBackup(text);
       // Opening a file for restore verifies its checksum: record it as a verified copy (writes nothing else).
       await recordBackupReceipt(repo, JSON.parse(text) as BackupFile, 'verified', file.name);
@@ -74,6 +83,7 @@ export function ProjectsView() {
     if (!restore) return;
     setBusy(true);
     try {
+      const { buildRestore, applyWorldPlanOp } = await loadHomeDomain();
       const write = buildRestore(restore.plan, restore.choices);
       const { worldPlanItems, ...batch } = write;
       // The Weltplan is its own record: its merge is checked before anything is written (e.g. item limit),
@@ -104,10 +114,11 @@ export function ProjectsView() {
     try { await repo.saveProject(project, 0); if (tour) startTour(project.id); navigate({ view: 'project', projectId: project.id, tab: 'editor' }); }
     catch (e) { setMessage(`Projekt nicht gespeichert: ${errorText(e)}`); }
   };
-  const createEmpty = () => {
-    try { void create(createProject({ name: name || 'Neues Projekt' })); } catch (e) { setMessage(errorText(e)); }
+  const createEmpty = async () => {
+    try { const { createProject } = await loadHomeDomain(); void create(createProject({ name: name || 'Neues Projekt' })); } catch (e) { setMessage(errorText(e)); }
   };
-  const createSample = (tour = false) => {
+  const createSample = async (tour = false) => {
+    const [{ applyOperation, createProject, latestReleaseId, newInstance }, library] = await Promise.all([loadHomeDomain(), whenLibrary()]);
     const version = (assetId: string) => { const a = library.assets.find(x => x.id === assetId); return a && latestReleaseId(a, library.versions); };
     const tower = version('sample_tower'), wall = version('sample_wall'), gate = version('sample_gate');
     if (!tower || !wall || !gate) { setMessage('Beispielbauteile fehlen in der Bibliothek.'); return; }
@@ -121,8 +132,8 @@ export function ProjectsView() {
   };
   const remove = async (project: Project) => {
     // Successors (PROJ-04) and world-map sites that point at this project are tidied up after deleting it.
-    let removal;
-    try { removal = projectRemoval(project.id, await repo.listProjects(), await repo.getWorldPlan()); } catch (e) { setMessage(errorText(e)); return; }
+    let removal, applyWorldPlanOp: HomeDomain['applyWorldPlanOp'];
+    try { const d = await loadHomeDomain(); applyWorldPlanOp = d.applyWorldPlanOp; removal = d.projectRemoval(project.id, await repo.listProjects(), await repo.getWorldPlan()); } catch (e) { setMessage(errorText(e)); return; }
     const quote = (list: readonly { name: string }[]) => list.map(x => `„${x.name}“`).join(', ');
     const effects = [
       removal.successors.length ? `${quote(removal.successors)} ${removal.successors.length === 1 ? 'wartet' : 'warten'} nicht mehr auf dieses Projekt.` : '',
@@ -145,18 +156,22 @@ export function ProjectsView() {
     const more = document.querySelector<HTMLDetailsElement>('details.storage-more'); if (more) more.open = true;
     restoreInput.current?.click();
   };
-  const byAsset = useMemo(() => latestVersions(library.assets, library.versions), [library]);
+  const byAsset = useMemo(() => domain ? domain.latestVersions(library.assets, library.versions) : new Map<string, never>(), [library, domain]);
   const names = useMemo(() => new Map(library.assets.map(a => [a.id, a.name])), [library]);
   // Six large shipped buildings from different families as a teaser.
   const featured = useMemo(() => {
+    if (!domain) return [];
+    const { cellCount } = domain;
     const seen = new Set<string>();
     return library.assets.filter(a => a.demo && !a.archived && byAsset.has(a.id))
       .sort((a, b) => cellCount(byAsset.get(b.id)!) - cellCount(byAsset.get(a.id)!))
       .filter(a => { const fam = a.tags.find(t => t.startsWith('kategorie:')) ?? a.id; if (seen.has(fam)) return false; seen.add(fam); return true; }).slice(0, 6);
-  }, [library, byAsset]);
-  const worldOf = (p: Project) => { try { return resolveProject(p, library.versions).world; } catch { return null; } };
-  const ensembleWorld = (e: Ensemble) => { if (missingMembers(e, byAsset).length) return null; try { return resolveProject(createEnsembleProject(e, byAsset, names), library.versions).world; } catch { return null; } };
-  const createFromEnsemble = (e: Ensemble) => { try { void create(createEnsembleProject(e, byAsset, names)); } catch (err) { setMessage(errorText(err)); } };
+  }, [library, byAsset, domain]);
+  // The project preview needs the catalogue versions: a stored image shows at once, a new one waits for the catalogue.
+  const worldOf = async (p: Project) => { const [d, lib] = await Promise.all([loadHomeDomain(), whenLibrary()]); try { return d.resolveProject(p, lib.versions).world; } catch { return null; } };
+  const ensembleWorld = (d: HomeDomain, e: Ensemble) => { if (d.missingMembers(e, byAsset).length) return null; try { return d.resolveProject(d.createEnsembleProject(e, byAsset, names), library.versions).world; } catch { return null; } };
+  const createFromEnsemble = (d: HomeDomain, e: Ensemble) => { try { void create(d.createEnsembleProject(e, byAsset, names)); } catch (err) { setMessage(errorText(err)); } };
+  const libraryBusy = !libraryReady || !domain;
 
   return <div className="page">
     <section className="home-hero"><div><span className="eyebrow">PROJEKTZENTRALE</span><h1>Große Ideen.<br /><em>Block für Block.</em></h1>
@@ -164,8 +179,10 @@ export function ProjectsView() {
       <div className="hero-actions"><a className="primary button-link" href="#neues-projekt" onClick={e => { e.preventDefault(); document.getElementById('projekt-name')?.focus(); }}>＋ Neues Projekt</a>
         <a className="secondary button-link guide-hint" href="#/anleitung" data-guide-link="">? Wie geh ich es an?</a></div>
       <div className="local-badge hero-badge"><span className="pulse" /> {repo.kind === 'memory' ? 'Nur für diese Sitzung gespeichert – bitte Sicherungen herunterladen.' : <>In diesem Browser gespeichert · keine Anmeldung · Team-Freigaben nur auf Wunsch · <a href="#/datenschutz">was wohin geht</a></>}</div></div>
-      <div className="hero-mosaic" aria-label="Beispiele aus der Bibliothek">{featured.map(a => { const v = byAsset.get(a.id)!; return <a key={a.id} href={`#/bibliothek/gebaeude/${encodeURIComponent(a.id)}`} title={a.name}>
+      <div className="hero-mosaic" aria-label="Beispiele aus der Bibliothek" data-ready={featured.length ? '' : undefined}>{!featured.length && Array.from({ length: 6 }, (_, i) => <span key={i} className="thumb loading waiting" aria-hidden="true" />)}{featured.map(a => { const v = byAsset.get(a.id)!; return <a key={a.id} href={`#/bibliothek/gebaeude/${encodeURIComponent(a.id)}`} title={a.name}>
         <Thumb cacheKey={v.id} payload={() => v.payload} alt={a.name} width={200} height={200} /></a>; })}</div></section>
+    {!libraryReady && <div className="home-library-loading" data-library-loading=""><JobStatus title="Bibliothek wird im Hintergrund geladen" progress={libraryProgress ?? { step: 'Bibliothek prüfen', fraction: null }} />
+      <p className="muted">Deine Projekte kannst du schon öffnen; Vorlagen, Beispiel und Sicherung folgen gleich.</p></div>}
     <section className="start-entries" aria-label="Wie möchtest du anfangen?">
       <article className="entry-card" data-entry="continue" aria-labelledby="entry-continue">
         <span className="entry-icon" aria-hidden="true"><Icon name="projects" size={22} /></span>
@@ -177,14 +194,14 @@ export function ProjectsView() {
           {projects.length > 1 && <p className="muted entry-note">Weitere {projects.length - 1} Projekt{projects.length === 2 ? '' : 'e'} unten in der Liste.</p>}
         </> : <>
           <p className="muted">Noch kein Projekt. Die kurze Tour zeigt am Beispiel einer Burgmauer jeden Schritt.</p>
-          <button className="primary" type="button" onClick={() => createSample(true)}>Geführte Tour mit der Burgmauer</button>
+          <button className="primary" type="button" onClick={() => void createSample(true)} disabled={libraryBusy}>Geführte Tour mit der Burgmauer</button>
         </>}
-        {projects !== null && recent && <button className="text-button" type="button" onClick={() => createSample(true)}>Geführte Tour mit der Burgmauer</button>}
+        {projects !== null && recent && <button className="text-button" type="button" onClick={() => void createSample(true)} disabled={libraryBusy}>Geführte Tour mit der Burgmauer</button>}
       </article>
       <article className="entry-card" data-entry="choose" aria-labelledby="entry-choose">
         <span className="entry-icon" aria-hidden="true"><Icon name="library" size={22} /></span>
         <h2 id="entry-choose">Bauwerk auswählen</h2>
-        <p className="muted">{library.assets.filter(a => a.demo && !a.archived).length} Gebäudevorschläge, {ENSEMBLES.length} Ensembles und Generatoren nach Maß.</p>
+        <p className="muted">{libraryBusy ? 'Viele' : library.assets.filter(a => a.demo && !a.archived).length} Gebäudevorschläge, {domain ? domain.ENSEMBLES.length : 'fertige'} Ensembles und Generatoren nach Maß.</p>
         <a className="primary button-link" href="#/bibliothek">Bibliothek öffnen</a>
         <ul className="entry-more"><li><a href="#/bibliothek/ensembles">Fertige Ensembles</a></li><li><a href="#/bibliothek/generatoren">Nach Maß erzeugen</a></li></ul>
       </article>
@@ -194,7 +211,7 @@ export function ProjectsView() {
         <p className="muted">Schem, Litematic oder JSON ansehen, als Bauteil übernehmen oder eine Sicherung zurückholen.</p>
         <a className="primary button-link" href="#/betrachter">Datei ansehen</a>
         <ul className="entry-more"><li><a href="#/bibliothek?import=1">Als Bauteil in die Bibliothek</a></li>
-          <li><button className="text-button" type="button" disabled={busy} onClick={openRestore}>Sicherung zurückholen</button></li>
+          <li><button className="text-button" type="button" disabled={busy || libraryBusy} onClick={openRestore}>Sicherung zurückholen</button></li>
           <li><TeamOpen onMessage={setMessage} onDone={() => void load()} /></li></ul>
       </article>
     </section>
@@ -206,19 +223,19 @@ export function ProjectsView() {
         {p.status === 'differs' && <select aria-label={`Vorgehen für ${p.project.name}`} value={restore.choices[p.project.id] ?? 'copy'}
           onChange={e => setRestore({ ...restore, choices: { ...restore.choices, [p.project.id]: e.target.value as ProjectChoice } })}>
           <option value="copy">als Kopie anlegen (lokal bleibt)</option><option value="skip">überspringen</option><option value="replace">lokale Fassung ersetzen</option></select>}</li>)}</ul>
-      <ul className="muted">{buildRestore(restore.plan, restore.choices).summary.map((line, i) => <li key={i}>{line}</li>)}</ul>
+      <ul className="muted">{domain?.buildRestore(restore.plan, restore.choices).summary.map((line, i) => <li key={i}>{line}</li>)}</ul>
       <div className="button-row"><button className="primary" onClick={() => void applyRestore()} disabled={busy}>Wiederherstellen</button><button onClick={() => setRestore(null)}>Abbrechen</button></div>
     </section>}
     {message && <div className="notice" role="status">{message}</div>}
-    <BackupReminder status={backupState.status} busy={busy || !projects} onBackupAll={() => void backup('all')} />
+     <BackupReminder status={backupState.status} busy={busy || !projects || libraryBusy} onBackupAll={() => void backup('all')} />
     <section className="home-section" aria-label="Projekte">
       <header><h2>Deine Projekte{projects?.length ? ` (${projects.length})` : ''}</h2></header>
       <div className="card-grid">
-      <form id="neues-projekt" className="card new-card" onSubmit={e => { e.preventDefault(); createEmpty(); }}>
+      <form id="neues-projekt" className="card new-card" onSubmit={e => { e.preventDefault(); void createEmpty(); }}>
         <span className="panel-kicker">NEUES PROJEKT</span>
         <label>Name<input id="projekt-name" value={name} maxLength={120} onChange={e => setName(e.target.value)} placeholder="z. B. Hafenviertel" /></label>
         <button className="primary" type="submit">＋ Leeres Projekt anlegen</button>
-        <button className="secondary" type="button" onClick={() => createSample()}>Beispielprojekt „Burgmauer“</button>
+        <button className="secondary" type="button" onClick={() => void createSample()} disabled={libraryBusy} title={libraryBusy ? 'Die Bibliothek lädt noch …' : undefined}>Beispielprojekt „Burgmauer“</button>
       </form>
       {projects === null ? <p className="muted">Projekte werden geladen …</p> : projects.map(p => <article className="card project-card" key={p.id}>
         <a className="project-thumb" href={href({ view: 'project', projectId: p.id, tab: 'editor' })} tabIndex={-1} aria-hidden="true">
@@ -227,24 +244,24 @@ export function ProjectsView() {
         <h2><a href={href({ view: 'project', projectId: p.id, tab: 'editor' })}>{p.name}</a></h2>
         {p.description && <p className="muted">{p.description}</p>}
         <div className="chips"><span>{p.instances.length} Bauteile</span><span>{p.revisions.length} Revisionen</span><span title={new Date(p.updatedAt).toLocaleString('de-DE')}>geändert {new Date(p.updatedAt).toLocaleDateString('de-DE')}</span>
-          {(() => { const n = summarizeUpdates(findUpdates(p, library)).available; return n > 0 && <a className="update-card-chip" href={href({ view: 'project', projectId: p.id, tab: 'updates' })} data-updates={n}>{n === 1 ? '1 Update' : `${n} Updates`}</a>; })()}
-          {(() => { const s = programSummary(siteOf(p), new Date().toISOString().slice(0, 10)); return s.next && <a className="milestone-chip" href={href({ view: 'project', projectId: p.id, tab: 'planung' })} title={`${s.milestones} Meilenstein(e), ${s.builders} Bauleute`}>◆ {s.next.name}{s.next.due ? ` · bis ${s.next.due.slice(8, 10)}.${s.next.due.slice(5, 7)}.` : ''}</a>; })()}</div>
+          {domain && libraryReady && (() => { const n = domain.summarizeUpdates(domain.findUpdates(p, library)).available; return n > 0 && <a className="update-card-chip" href={href({ view: 'project', projectId: p.id, tab: 'updates' })} data-updates={n}>{n === 1 ? '1 Update' : `${n} Updates`}</a>; })()}
+          {domain && (() => { const s = domain.programSummary(domain.siteOf(p), new Date().toISOString().slice(0, 10)); return s.next && <a className="milestone-chip" href={href({ view: 'project', projectId: p.id, tab: 'planung' })} title={`${s.milestones} Meilenstein(e), ${s.builders} Bauleute`}>◆ {s.next.name}{s.next.due ? ` · bis ${s.next.due.slice(8, 10)}.${s.next.due.slice(5, 7)}.` : ''}</a>; })()}</div>
         <dl className="stats sr-only"><div><dt>Instanzen</dt><dd>{p.instances.length}</dd></div><div><dt>Freigegebene Revisionen</dt><dd>{p.revisions.length}</dd></div>
           <div><dt>Speicherrevision</dt><dd>{p.revision}</dd></div><div><dt>Profil</dt><dd>{p.profileId}</dd></div></dl>
         <div className="button-row"><a className="primary" href={href({ view: 'project', projectId: p.id, tab: 'editor' })}>Öffnen</a>
           <a className="secondary button-link" href={href({ view: 'project', projectId: p.id, tab: 'bauen' })}>Bauen</a>
-          <button onClick={() => void backup('project', p)} disabled={busy}>Sichern</button><button className="danger" onClick={() => void remove(p)}>Löschen</button></div>
+          <button onClick={() => void backup('project', p)} disabled={busy || libraryBusy}>Sichern</button><button className="danger" onClick={() => void remove(p)}>Löschen</button></div>
         </div>
       </article>)}
       </div>
     </section>
     <section className="home-section" aria-label="Vorlagen">
       <header><h2>Mit einer Vorlage starten</h2><a href="#/bibliothek/ensembles">Alle Ensembles →</a></header>
-      <ul className="card-grid-auto">{ENSEMBLES.slice(0, 4).map(e => <li key={e.id}><article className="ecard">
-        <Thumb cacheKey={`ens:${e.id}:${e.members.map(mb => byAsset.get(mb.assetId)?.id ?? '-').join(',')}`} payload={() => ensembleWorld(e)} alt={`Vorschau ${e.name}`} width={360} height={220} />
+      {libraryBusy ? <p className="muted" role="status">Vorlagen werden geladen …</p> : <ul className="card-grid-auto">{domain!.ENSEMBLES.slice(0, 4).map(e => <li key={e.id}><article className="ecard">
+        <Thumb cacheKey={`ens:${e.id}:${e.members.map(mb => byAsset.get(mb.assetId)?.id ?? '-').join(',')}`} payload={() => ensembleWorld(domain!, e)} alt={`Vorschau ${e.name}`} width={360} height={220} />
         <div className="bcard-body"><strong>{e.name}</strong><span className="bcard-kicker">{e.members.length} Gebäude</span><span className="ecard-text">{e.description}</span>
-          <div className="button-row"><button className="primary" disabled={missingMembers(e, byAsset).length > 0} onClick={() => void createFromEnsemble(e)}>Als Projekt anlegen</button>
-            <a className="text-button" href={`#/bibliothek/ensembles/${e.id}`}>Ansehen →</a></div></div></article></li>)}</ul>
+          <div className="button-row"><button className="primary" disabled={domain!.missingMembers(e, byAsset).length > 0} onClick={() => createFromEnsemble(domain!, e)}>Als Projekt anlegen</button>
+            <a className="text-button" href={`#/bibliothek/ensembles/${e.id}`}>Ansehen →</a></div></div></article></li>)}</ul>}
     </section>
     <More className="storage-more" title="Speicher & Sicherung" hint={backupState.status?.headline ?? 'Sicherungsdatei, Wiederherstellen, Datencheck'} open={backupState.status?.level === 'due' || (projects?.length === 0 && !!hostOf(location.origin))}>
       <section className="storage-panel" aria-label="Speicher und Sicherung">
@@ -254,8 +271,8 @@ export function ProjectsView() {
             {storage.persisted !== undefined && (storage.persisted ? ' · vor Löschen geschützt' : ' · Browser darf bei Platzmangel löschen')}</p></div>
         <div className="button-row">
           {repo.kind === 'indexeddb' && storage.persisted === false && <button onClick={() => void persist()}>Dauerhaft speichern anfragen</button>}
-          <button onClick={() => void backup('all')} disabled={busy || !projects}>Alles sichern</button>
-          <label className="file-button">Sicherung wiederherstellen …<input ref={restoreInput} type="file" accept=".json,application/json" disabled={busy}
+          <button onClick={() => void backup('all')} disabled={busy || !projects || libraryBusy}>Alles sichern</button>
+          <label className="file-button">Sicherung wiederherstellen …<input ref={restoreInput} type="file" accept=".json,application/json" disabled={busy || libraryBusy}
             onChange={e => { const f = e.target.files?.[0]; if (f) void openBackup(f); }} /></label>
           <a href="#/system">Datencheck</a>
         </div>

@@ -29,9 +29,20 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
   const active = projectTabs.find(t => t.id === tab);
   const tabBar = useRef<HTMLElement>(null);
   // Schmale Bildschirme: aktiven Bereich in der waagerecht scrollbaren Leiste sichtbar halten.
+  // Auch wenn sich die Leiste erst später verbreitert (Schrift, nachgeladene Stile, Kopfzeile): neu ausrichten.
   useEffect(() => {
-    const bar = tabBar.current, link = bar?.querySelector<HTMLElement>('[aria-current=page]');
-    if (bar && link && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = link.offsetLeft - (bar.clientWidth - link.offsetWidth) / 2;
+    const bar = tabBar.current;
+    if (!bar) return;
+    const center = () => {
+      const link = bar.querySelector<HTMLElement>('[aria-current=page]');
+      if (link && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = link.offsetLeft - (bar.clientWidth - link.offsetWidth) / 2;
+    };
+    center();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(center);
+    observer.observe(bar);
+    for (const link of bar.children) observer.observe(link);
+    return () => observer.disconnect();
   }, [tab, session !== null]);
   // Team live (COOP-07): one room connection per open project; incoming events are stored without an undo step.
   const sessionRef = useRef(session); sessionRef.current = session;

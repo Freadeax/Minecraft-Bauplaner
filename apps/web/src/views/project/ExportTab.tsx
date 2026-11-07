@@ -11,6 +11,10 @@ import { download, errorText, formatNumber } from '../../app/ui';
 import { isResolved } from './session';
 import { ModelExportPanel } from '../../export3d/ModelExportPanel';
 import type { ProjectSession } from './session';
+import { checkCompatibility, dataVersionOf, paletteCounts, TOOL_FORMAT } from '../../../../../packages/voxel/src/versionCompat.js';
+import type { GameSetup } from '../../../../../packages/voxel/src/versionCompat.js';
+import { useGameSetup } from '../../app/gameSetup';
+import { CompatStatus, GameSetupFields } from '../compat/GameSetupBar';
 
 const date = (iso: string): string => new Date(iso).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
 
@@ -24,8 +28,16 @@ export function ExportTab({ session }: { session: ProjectSession }) {
   const { project, resolution } = session;
   const resolved = isResolved(resolution) ? resolution : null;
   const suggestion = useMemo(() => suggestDataVersion(project, library.versions), [project, library.versions]);
-  const [dataVersion, setDataVersion] = useState(suggestion.dataVersion ? String(suggestion.dataVersion) : '');
-  const [format, setFormat] = useState<ExportFormat>('schem');
+  // COMPAT-01: the target game decides DataVersion and file format; both stay editable.
+  const [setup, changeSetup] = useGameSetup();
+  const [dataVersion, setDataVersion] = useState(() => String(dataVersionOf(setup.version) ?? suggestion.dataVersion ?? ''));
+  const [format, setFormat] = useState<ExportFormat>(() => TOOL_FORMAT[setup.tool]);
+  const changeGame = (next: Partial<GameSetup>) => {
+    changeSetup(next);
+    if (next.version) { const d = dataVersionOf(next.version); if (d) setDataVersion(String(d)); }
+    if (next.tool) setFormat(TOOL_FORMAT[next.tool]);
+  };
+  const chooseFormat = (f: ExportFormat) => { setFormat(f); changeSetup({ tool: f === 'litematic' ? 'litematica' : 'worldedit' }); };
   const [anchor, setAnchor] = useState<SchemAnchor>('project-origin');
   const [unselected, setUnselected] = useState<UnselectedPolicy>('air');
   const [comment, setComment] = useState('');
@@ -44,6 +56,7 @@ export function ExportTab({ session }: { session: ProjectSession }) {
   const volume = box ? box[0]! * box[1]! * box[2]! : 0;
   // RELEASE-01: command and operator-only parts of the current state, shown before the export.
   const safety = useMemo(() => world ? scanExportSafety(world) : null, [world]);
+  const compat = useMemo(() => world ? checkCompatibility({ palette: world.palette, counts: paletteCounts(world.cells, world.palette.length), blockEntities: world.blockEntities.length, entities: world.entities?.length ?? 0 }, setup) : null, [world, setup]);
   const last = project.revisions.at(-1);
   const current = last && canonicalJson(last.instances) === canonicalJson(project.instances) && canonicalJson(last.links) === canonicalJson(project.links) ? last : null;
 
@@ -78,10 +91,17 @@ export function ExportTab({ session }: { session: ProjectSession }) {
         </dl>}
       </section>
 
+      <section className="export-compat" aria-label="Passt zu deinem Spiel?">
+        <span className="panel-kicker">PASST ZU DEINEM SPIEL?</span>
+        <GameSetupFields setup={setup} onChange={changeGame} />
+        {compat ? <CompatStatus report={compat} /> : <p className="muted">Die Prüfung folgt, sobald das Projekt berechnet ist.</p>}
+        {compat && dvValid && compat.dataVersion !== null && dv !== compat.dataVersion && <p className="notice warning" role="alert" data-compat-dataversion="">DataVersion {dv} passt nicht zu Minecraft {setup.version} ({compat.dataVersion}). Die Datei nennt dann eine andere Version als dein Spiel.</p>}
+      </section>
+
       <form className="export-form" onSubmit={e => { e.preventDefault(); void run(); }}>
         <span className="panel-kicker">EINSTELLUNGEN</span>
         <label>Dateiformat
-          <select value={format} onChange={e => setFormat(e.target.value as ExportFormat)} aria-label="Dateiformat">
+          <select value={format} onChange={e => chooseFormat(e.target.value as ExportFormat)} aria-label="Dateiformat">
             {(Object.keys(EXPORT_FORMAT_LABEL) as ExportFormat[]).map(f => <option key={f} value={f}>{EXPORT_FORMAT_LABEL[f]}</option>)}
           </select>
         </label>
@@ -90,7 +110,7 @@ export function ExportTab({ session }: { session: ProjectSession }) {
           <input inputMode="numeric" value={dataVersion} onChange={e => setDataVersion(e.target.value.trim())} aria-invalid={!dvValid} placeholder="z. B. 3955" list="known-data-versions" />
           <datalist id="known-data-versions">{KNOWN_DATA_VERSIONS.map(k => <option key={k.dataVersion} value={k.dataVersion}>{`Minecraft ${k.version}`}</option>)}</datalist>
         </label>
-        <p className="muted">{suggestion.source}. Bekannte Werte: {KNOWN_DATA_VERSIONS.map(k => `${k.version} = ${k.dataVersion}`).join(' · ')} (Auswahlhilfe, Registry nicht geprüft; Blockzustände werden nicht umgewandelt).</p>
+        <p className="muted">Vorgabe aus „Passt zu deinem Spiel?“. {suggestion.source}{suggestion.dataVersion ? ` (${suggestion.dataVersion})` : ''}. Blockzustände werden nicht umgewandelt; was in der Zielversion fehlt, steht oben.</p>
         <label>Einfügepunkt
           <select value={anchor} onChange={e => setAnchor(e.target.value as SchemAnchor)}>
             <option value="project-origin">Projektursprung 0/0/0 (Offset = {world ? world.bounds.min.join('/') : 'Weltminimum'})</option>

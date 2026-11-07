@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T20:55:35.260Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T21:30:09.169Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-07T20:55:35.260Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 2 |
 | 🚧 In Arbeit | 4 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 106 |
+| 🧩 Implementiert · Abnahme offen | 108 |
 | ✅ Im beschriebenen Umfang geprüft | 35 |
 | ⏸ Zurückgestellt | 3 |
 
@@ -33,8 +33,8 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Arbeitsstrang
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 14 | 0 | 12 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 4 | 0 | 3 | 1 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
-| [Performance und Stabilität](#bereich-perf) | 6 | 0 | 3 | 3 |
-| [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 8 | 0 | 5 | 15 |
+| [Performance und Stabilität](#bereich-perf) | 7 | 1 | 3 | 3 |
+| [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 9 | 1 | 5 | 15 |
 | [Testphase, Qualität und Betrieb](#bereich-qa) | 3 | 0 | 3 | 8 |
 | [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 2 | 0 | 0 | 0 |
 
@@ -208,6 +208,7 @@ Abgeschlossen oder zurückgestellt: LINK-01 (geprüft).
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Olympus auf deinem Rechner, dazu Firefox/Safari (S06). |
 | [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 9/9 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | — |
 | [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | GERAET-03 auf #/testphase: auf dem iPad (Safari) den Planer einmal laden, dann im Flugmodus neu öffnen; einmal die Mod über https://bauplaner.pages.dev/Minecraft-Bauplaner/ verbinden. |
+| [PERF-07](#perf-07) | Ladezeit | 🧩 Implementiert · Abnahme offen 4/6 | P1 | **verwaist** | — |
 | [RELEASE-01](#release-01) | Browser-Schutz und Release-Check | 🧩 Implementiert · Abnahme offen 5/7 | P1 | „Sicherheitsheader und Release-Check einführen“ | — |
 
 Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF-03 (geprüft).
@@ -221,6 +222,7 @@ Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF
 | [ARCH-02](#arch-02) | Planmodell | 🧩 Implementiert · Abnahme offen 6/7 | P0 | „Große Testphase vorbereiten und betreuen“ | Datencheck unter #/system mit deinen eigenen, lange gewachsenen Browserdaten (Stichprobe zu S05; automatisch mit drei alten Ständen geprüft). |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3 | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Einen Bau mit Spielprüfung ohne Hinweise nachbauen und Verbindungen vergleichen (S07). |
 | [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Geänderte Gebäude (Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen (S06). |
+| [COMPAT-01](#compat-01) | Kompatibilitätscheck vor Export und Download | 🧩 Implementiert · Abnahme offen 3/4 | P1 | **verwaist** | — |
 | [CORE-04](#core-04) | Planer-Kernmodule prüfen und überarbeiten | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Projekt mit Nachfolger und Bauplatz löschen; Blockeditor mit Änderungen verlassen; Truhe mit verzaubertem Schwert umsortieren (CORE-04-S05). |
 | [DOC-02](#doc-02) | Repository übersichtlich | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Git-Repo übersichtlich überarbeiten“ | README und Doku-Index auf GitHub ansehen: Ist auf einen Blick klar, was das Projekt ist? |
 | [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Große Testphase vorbereiten und betreuen“ | — |
@@ -382,6 +384,8 @@ Arbeit, für die gerade kein laufender Arbeitsstrang zuständig ist. Zum Verteil
 
 | ID | Bereich | Prio | Status | Offen ohne Bearbeiter |
 |---|---|---|---|---|
+| [COMPAT-01](#compat-01) | Kern, Minecraft-Daten und Dateiformate | P1 | 🧩 Implementiert · Abnahme offen | Abnahme COMPAT-01-S04 im echten Spiel; bei neuer Minecraft-Version fetch_version_reports.sh + gen_version_compat.mjs. |
+| [PERF-07](#perf-07) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | O-10 Export im Worker, O-9 Prüfketten trennen; Abnahme auf Philipps Rechner und iPad (Projektzentrale sofort sichtbar). |
 
 ## Eingänge ohne eigenes Paket
 
@@ -537,6 +541,8 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart | 🧩 Implementiert · Abnahme offen | 6/7 | PERF-01, MODEL-01, ARCH-02 | ausstehend | ausstehend |
 | [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund | 🧩 Implementiert · Abnahme offen | 9/9 | PERF-04 | ausstehend | ausstehend |
 | [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server: Offline-Speicher (Service Worker) und kostenlose zweite Adresse auf Cloudflare Pages | 🧩 Implementiert · Abnahme offen | 3/3 | PERF-05 | ausstehend | ausstehend |
+| [PERF-07](#perf-07) | Ladezeit: Projektzentrale startet vor dem Katalog, schlankeres Startpaket, feste Leistungstests für Großbauten | 🧩 Implementiert · Abnahme offen | 4/6 | PERF-05 | ausstehend | ausstehend |
+| [COMPAT-01](#compat-01) | Kompatibilitätscheck vor Export und Download: Minecraft-Version, Loader und Einfügewerkzeug zeigen fehlende Blöcke, angepasste Zustände, nötige Mods und passende Mod-Datei | 🧩 Implementiert · Abnahme offen | 3/4 | PROFILE-01 | ausstehend | ausstehend |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen | 5/6 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material | 🧩 Implementiert · Abnahme offen | 6/7 | VIEW-02, BUILD-01, MAT-01 | ausstehend | ausstehend |
 | [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel | 🧩 Implementiert · Abnahme offen | 6/7 | BLOCK-01, LIB-04, UPDATE-01 | ausstehend | ausstehend |
@@ -1454,6 +1460,50 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/e2e/offline.e2e.mjs](../tests/e2e/offline.e2e.mjs) — Chromium: Installation, Laden aus dem Speicher, Start offline, alte Dateien weg, Ausschalten.; [tests/unit/tooling/service-worker.test.mjs](../tests/unit/tooling/service-worker.test.mjs) — Manifest ohne Katalogdatei, Version folgt dem Inhalt, Notbremse, Publisher erlaubt sw.js.; [docs/architecture/betrieb/OFFLINE.md](architecture/betrieb/OFFLINE.md) — Regeln, Grenzen, Notbremse, Cloudflare-Plan.
 
 **Dateiumfang:** `scripts/pages/service_worker.template.js`, `scripts/pages/build_service_worker.mjs`, `scripts/pages/prepare_main_pages.mjs`, `apps/web/src/app/offline.ts`, `apps/web/src/main.tsx`, `apps/web/src/views/SystemView.tsx`, `tests/e2e/offline.e2e.mjs`, `tests/unit/tooling/service-worker.test.mjs`, `docs/architecture/betrieb/HOSTING.md`, `docs/architecture/betrieb/OFFLINE.md`, `package.json`, `scripts/pages/publish_cloudflare.mjs`, `scripts/pages/publish_main_pages.sh`, `services/team-room/src/index.js`, `tests/unit/tooling/cloudflare-pages.test.mjs`, `apps/web/src/views/map/liveClient.ts`. **Abhängigkeiten:** PERF-05. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### PERF-07
+
+**Ladezeit: Projektzentrale startet vor dem Katalog, schlankeres Startpaket, feste Leistungstests für Großbauten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Ladezeit und Versions-Check“ · Aktualisiert: 2026-11-07T21:30:09.169Z
+
+- [x] PERF-07-S01: Kerncode ohne Nebenwirkungen markiert: Start-JavaScript 1,73 → 1,21 MiB.
+- [x] PERF-07-S02: Projektzentrale öffnet, sobald der lokale Speicher offen ist; Katalog lädt im Hintergrund, andere Seiten warten wie bisher (LibraryGate). Erste Anzeige 1,24 s → 0,26 s.
+- [x] PERF-07-S03: Fachcode der Projektzentrale (Sicherung, Vorschau, Vorlagen, Termine, Teampaket) wird nachgeladen; gespeicherte Vorschaubilder erscheinen sofort, neue warten auf den Katalog.
+- [x] PERF-07-S04: Feste Leistungstests Großbau (287 000 Blöcke): Öffnen, Schichtwechsel, Kamera, Export mit Budgets in tests/e2e/perf-budgets.json.
+- [ ] PERF-07-S05: Revisionsexport großer Projekte in den Hintergrund-Worker (heute rund 1 s Seitenpause bei 287 000 Blöcken, O-10).
+- [ ] PERF-07-S06: Prüfketten der Speicherdaten von Rechencode trennen, damit Sicherung, Baustelle und Team nicht mehr im Startpaket liegen (O-9).
+
+**Abnahme:** Projektzentrale zeigt eigene Projekte, bevor der Katalog geladen ist; Beispiel, Vorlagen und Sicherung folgen ohne Fehler. Seiten mit Bibliotheksbedarf öffnen erst mit fertigem Katalog (Deep-Links wie bisher). Großbau-Leistungstest im Budget; alle Tests grün.
+
+**Nächste Aktion:** O-10 Export im Worker, O-9 Prüfketten trennen; Abnahme auf Philipps Rechner und iPad (Projektzentrale sofort sichtbar).
+
+**Prüfstand:** Chromium im Container gemessen (measure_start, Großbau-Test); echte Geräte offen.
+
+**Nachweise:** [tests/e2e/grossbau-leistung.e2e.mjs](../tests/e2e/grossbau-leistung.e2e.mjs) — Öffnen, Schichtwechsel, Kamera, Export eines Großbaus gegen feste Budgets.; [tests/e2e/home-before-catalog.e2e.mjs](../tests/e2e/home-before-catalog.e2e.mjs) — Projektzentrale vor dem Katalog, Beispiel und Vorlagen danach.; [docs/architecture/kern/PERFORMANCE_AUDIT.md](architecture/kern/PERFORMANCE_AUDIT.md) — Runde 6: Messwerte vorher/nachher, O-9, O-10.
+
+**Dateiumfang:** `vite.config.mjs`, `apps/web/src/app/context.tsx`, `apps/web/src/main.tsx`, `apps/web/src/views/ProjectsView.tsx`, `apps/web/src/views/homeDomain.ts`, `apps/web/src/views/loadHomeDomain.ts`, `apps/web/src/views/BackupPanel.tsx`, `apps/web/src/views/project/team/TeamOpen.tsx`, `apps/web/src/thumbnail/Thumb.tsx`, `tests/e2e/start.mjs`, `tests/e2e/grossbau-leistung.e2e.mjs`, `tests/e2e/perf-budgets.json`, `tests/e2e/home-before-catalog.e2e.mjs`, `scripts/bench/perf/measure_start.mjs`, `docs/architecture/kern/PERFORMANCE_AUDIT.md`. **Abhängigkeiten:** PERF-05. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### COMPAT-01
+
+**Kompatibilitätscheck vor Export und Download: Minecraft-Version, Loader und Einfügewerkzeug zeigen fehlende Blöcke, angepasste Zustände, nötige Mods und passende Mod-Datei** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Ladezeit und Versions-Check“ · Aktualisiert: 2026-11-07T21:30:09.169Z
+
+- [x] COMPAT-01-S01: Blockberichte der offiziellen Server 1.20.1 bis 26.3 (12 Versionen) erzeugt und nur die Unterschiede zum Profil eingecheckt (versionCompatData.ts).
+- [x] COMPAT-01-S02: checkCompatibility: fehlende Blöcke und angepasste Zustände je Zelle, Mod-Namensräume je Loader, Werkzeug/Loader-Hinweise, Entities.
+- [x] COMPAT-01-S03: „Mein Spiel“ einmal wählen (Browser merkt es); Statuszeile im Export (setzt DataVersion und Format), im Gebäudeblatt und auf der Mod-Seite (passende Datei).
+- [ ] COMPAT-01-S04: Abnahme im eigenen Spiel: Export für eine ältere Version einfügen und die gemeldeten Lücken sehen.
+
+**Abnahme:** Für jede geprüfte Version stimmen fehlende Blöcke mit dem offiziellen Blockbericht überein. Export zeigt vor dem Herunterladen, was im gewählten Spiel fehlt, sich ändert oder Mods braucht. Mod-Seite nennt die passende Datei oder warum es keine gibt.
+
+**Nächste Aktion:** Abnahme COMPAT-01-S04 im echten Spiel; bei neuer Minecraft-Version fetch_version_reports.sh + gen_version_compat.mjs.
+
+**Prüfstand:** Einheits- und Browsertests grün; Einfügen im echten Spiel offen.
+
+**Nachweise:** [tests/unit/formats/version-compat.test.mjs](../tests/unit/formats/version-compat.test.mjs) — Daten an den Profilbericht gebunden, DataVersions, fehlende/angepasste Blöcke, Mods, Loader, Mod-Datei.; [tests/e2e/compat.e2e.mjs](../tests/e2e/compat.e2e.mjs) — Export-Statuszeile, Wechsel der Version setzt DataVersion, Gebäudeblatt, Mod-Seite.; [docs/architecture/formate/VERSION_COMPAT.md](architecture/formate/VERSION_COMPAT.md) — Datenherkunft, Regeln, Grenzen.
+
+**Dateiumfang:** `packages/voxel/src/versionCompat.ts`, `packages/voxel/src/versionCompatData.ts`, `packages/voxel/src/index.ts`, `packages/application/src/revisionExport.ts`, `scripts/gen/fetch_version_reports.sh`, `scripts/gen/gen_version_compat.mjs`, `apps/web/src/app/gameSetup.ts`, `apps/web/src/views/compat/GameSetupBar.tsx`, `apps/web/src/views/compat/compat.css`, `apps/web/src/views/project/ExportTab.tsx`, `apps/web/src/views/library/BuildingSheet.tsx`, `apps/web/src/views/mod/ModView.tsx`, `apps/web/src/views/mod/releases.ts`, `tests/unit/formats/version-compat.test.mjs`, `tests/e2e/compat.e2e.mjs`, `docs/architecture/formate/VERSION_COMPAT.md`. **Abhängigkeiten:** PROFILE-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

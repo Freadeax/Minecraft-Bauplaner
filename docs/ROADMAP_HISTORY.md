@@ -881,3 +881,57 @@ Einladungen einzeln widerrufbar: Zugänge im Team-Raum mit Widerrufen, Bestätig
 - `docs/testing/TESTPLAN.md`
 - `tests/e2e/team-room.e2e.mjs`
 
+## 2026-11-07T21:30:09.169Z · progress
+
+**Aufgaben:** PERF-07, COMPAT-01
+
+Projektzentrale startet vor dem Katalog (Start-JS 1734→1206 KiB, bedienbar nach 0,26 s), feste Großbau-Leistungstests, „Passt zu deinem Spiel?“ in Export, Gebäudeblatt und Mod-Seite aus offiziellen Blockberichten 1.20.1–26.3
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-07 | 🧩 Implementiert · Abnahme offen | 4/6 | O-10 Export im Worker, O-9 Prüfketten trennen; Abnahme auf Philipps Rechner und iPad (Projektzentrale sofort sichtbar). |
+| COMPAT-01 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme COMPAT-01-S04 im echten Spiel; bei neuer Minecraft-Version fetch_version_reports.sh + gen_version_compat.mjs. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/context.tsx`
+- `apps/web/src/app/gameSetup.ts`
+- `apps/web/src/main.tsx`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/thumbnail/Thumb.tsx`
+- `apps/web/src/views/BackupPanel.tsx`
+- `apps/web/src/views/ProjectsView.tsx`
+- `apps/web/src/views/compat/GameSetupBar.tsx`
+- `apps/web/src/views/compat/compat.css`
+- `apps/web/src/views/homeDomain.ts`
+- `apps/web/src/views/library/BuildingSheet.tsx`
+- `apps/web/src/views/loadHomeDomain.ts`
+- `apps/web/src/views/mod/ModView.tsx`
+- `apps/web/src/views/mod/releases.ts`
+- `apps/web/src/views/project/ExportTab.tsx`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `apps/web/src/views/project/team/TeamOpen.tsx`
+- `docs/README.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/formate/VERSION_COMPAT.md`
+- `docs/architecture/kern/PERFORMANCE_AUDIT.md`
+- `packages/application/src/revisionExport.ts`
+- `packages/voxel/src/index.ts`
+- `packages/voxel/src/versionCompat.ts`
+- `packages/voxel/src/versionCompatData.ts`
+- `scripts/bench/perf/measure_start.mjs`
+- `scripts/gen/fetch_version_reports.sh`
+- `scripts/gen/gen_version_compat.mjs`
+- `tests/e2e/compat.e2e.mjs`
+- `tests/e2e/export.e2e.mjs`
+- `tests/e2e/grossbau-leistung.e2e.mjs`
+- `tests/e2e/home-before-catalog.e2e.mjs`
+- `tests/e2e/mod-download.e2e.mjs`
+- `tests/e2e/perf-budgets.json`
+- `tests/e2e/shell.e2e.mjs`
+- `tests/e2e/stability.e2e.mjs`
+- `tests/e2e/start.mjs`
+- `tests/unit/formats/version-compat.test.mjs`
+- `vite.config.mjs`
+

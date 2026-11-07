@@ -6,6 +6,9 @@ import { stateColor } from '../../colors';
 import { FacetFields, facetsFromForm } from './FacetFields';
 import { AssetRevisionNotice } from './AssetRevisionNotice';
 import { checkProfileStates, dataVersionOfProfileId } from '../../../../../packages/voxel/src/profile.js';
+import { checkCompatibility, paletteCounts } from '../../../../../packages/voxel/src/versionCompat.js';
+import { useGameSetup } from '../../app/gameSetup';
+import { CompatStatus, GameSetupFields } from '../compat/GameSetupBar';
 
 export const GROUP_COLOR: Readonly<Record<MaterialGroup, string>> = {
   holz: '#b58452', stein: '#a3a6a8', glas: '#bfe3ea', beton: '#e0e0dc', wolle: '#d46a6a', natur: '#6d9b45', licht: '#ffd166',
@@ -117,6 +120,9 @@ export function TechSection({ entry }: { entry: CatalogEntry }) {
   // PROFILE-01: content check against the version profile – the DataVersion alone claims nothing.
   const payload = entry.version.payload;
   const check = useMemo(() => checkProfileStates(payload.palette, m.dataVersion ?? dataVersionOfProfileId(payload.profileId)), [payload, m.dataVersion]);
+  // COMPAT-01: the same building in the player's own game (version, loader, paste tool).
+  const [setup, changeSetup] = useGameSetup();
+  const compat = useMemo(() => checkCompatibility({ palette: payload.palette, counts: paletteCounts(payload.cells, payload.palette.length), entities: payload.entities?.length ?? 0 }, setup), [payload, setup]);
   return <section className="sheet-section" aria-label="Bauen und Technik">
     <h3>Bauen &amp; Technik <span className="badge ok">berechnet</span></h3>
     <dl className="stats">
@@ -131,6 +137,8 @@ export function TechSection({ entry }: { entry: CatalogEntry }) {
       {m.blockEntities > 0 && <Row label="BlockEntities">{m.blockEntities}</Row>}
     </dl>
     {check.issues.length > 0 && <details className="profile-issues"><summary>{check.summary}</summary><ul>{check.issues.slice(0, 20).map((i, n) => <li key={n}>{i.message}</li>)}</ul>{check.issues.length > 20 && <p>… und {check.issues.length - 20} weitere.</p>}</details>}
+    <CompatStatus report={compat} compact />
+    <details className="compat-setup-change"><summary>Mein Spiel ändern</summary><GameSetupFields setup={setup} onChange={changeSetup} /></details>
     {m.transform.unresolvedStates.length > 0 && <p className="small-note">Ungelöste Zustände bei Transformation: {m.transform.unresolvedStates.map(short).join(', ')}</p>}
   </section>;
 }

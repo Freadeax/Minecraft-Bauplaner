@@ -41,10 +41,10 @@ for (const viewport of [{ width: 1400, height: 900 }, { width: 390, height: 844 
     const older = releases.find(r => r.loader === 'fabric' && r.minecraft === newest.minecraft && r.modVersion !== newest.modVersion);
     assert.equal(await p.getByLabel('Minecraft-Version').inputValue(), newest.minecraft);
     assert.equal(await p.getByLabel('Mod-Loader').inputValue(), 'fabric');
-    assert.equal(await p.locator('option[value=forge]').evaluate(o => o.disabled), true, 'geplante Loader nicht wählbar');
+    assert.equal(await p.getByLabel('Mod-Loader').locator('option[value=forge]').evaluate(o => o.disabled), true, 'geplante Loader nicht wählbar');
     // Client mod is the default; the server plugin is a separate choice and never in the client loader list.
     assert.equal(await p.getByRole('button', { name: /Für mein Spiel/ }).getAttribute('aria-pressed'), 'true');
-    assert.equal(await p.locator('option[value=paper]').count(), 0, 'Paper nicht in der Client-Auswahl');
+    assert.equal(await p.getByLabel('Mod-Loader').locator('option[value=paper]').count(), 0, 'Paper nicht in der Client-Auswahl');
     assert.ok(await p.getByText(/Ordner öffnen/).first().isVisible(), 'Modrinth-Anleitung');
     // GAME-11 S04: one guide per launcher, the choice is remembered.
     const guide = p.locator('.mod-launchers');

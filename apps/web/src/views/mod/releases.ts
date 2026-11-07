@@ -139,3 +139,29 @@ export function checkJarBytes(bytes: Uint8Array, release: Pick<ModRelease, 'byte
   if (meta && !names.includes(meta)) problems.push(`${meta} fehlt in der .jar.`);
   return problems;
 }
+
+/** COMPAT-01: does a build fit the player's game? The newest matching build, or why there is none. */
+export interface GameFit {
+  readonly level: 'ok' | 'warn' | 'loss';
+  readonly headline: string;
+  readonly issues: readonly { readonly kind: 'mod-build'; readonly severity: 'loss' | 'warn' | 'info'; readonly message: string }[];
+  readonly build: ModRelease | null;
+}
+export function modForGame(all: readonly ModRelease[], game: { readonly version: string; readonly loader: string }): GameFit {
+  const where = `Minecraft ${game.version} · ${LOADER_LABEL[game.loader] ?? 'Vanilla'}`;
+  if (game.loader === 'vanilla') return { level: 'loss', build: null, headline: `${where}: ohne Mod-Loader läuft keine Mod.`,
+    issues: [{ kind: 'mod-build', severity: 'loss', message: 'Für die Mod ein Fabric- oder NeoForge-Profil anlegen; auf einem Server ohne Mods hilft das Paper-Plugin.' }] };
+  const builds = buildsFor(all, game.version, game.loader);
+  if (builds.length) {
+    const b = builds[0]!;
+    return { level: 'ok', build: b, headline: `${where}: ${SERVER_LOADERS.includes(b.loader) ? 'Plugin' : 'Mod'} ${b.modVersion} passt.`, issues: [] };
+  }
+  const own = all.filter(r => r.loader === game.loader);
+  const versions = minecraftVersions(own.length ? own : all.filter(r => targetOf(r.loader) === targetOf(game.loader)));
+  const loaders = loadersFor(all.filter(r => targetOf(r.loader) === targetOf(game.loader)), game.version);
+  const message = loaders.length
+    ? `Für ${game.version} gibt es sie für ${loaders.map(l => LOADER_LABEL[l] ?? l).join(', ')}.`
+    : `Es gibt sie bisher für Minecraft ${versions.join(', ') || '–'}${own.length ? ` mit ${LOADER_LABEL[game.loader] ?? game.loader}` : ''}.`;
+  return { level: 'loss', build: null, headline: `${where}: dafür gibt es ${SERVER_LOADERS.includes(game.loader) ? 'das Plugin' : 'die Mod'} noch nicht.`,
+    issues: [{ kind: 'mod-build', severity: 'loss', message }] };
+}

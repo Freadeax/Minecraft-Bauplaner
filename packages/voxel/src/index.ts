@@ -22,6 +22,10 @@ export { stableAtan, stableAtan2, stableCos, stableHypot, stableSin } from './st
 export { JAVA_PROFILE, JAVA_PROFILE_ID, assertProfileConsistent, isProfileItem, profileItemIds, profileItemTag, profileItemTagNames, fuelOf, profileFuels, smeltsPerFuel,
   checkProfileStates, checkPayloadProfile, dataVersionOfProfileId } from './profile.js';
 export type { VersionProfile, FuelFacts, ProfileStatus, ProfileStateIssue, ProfileCheck } from './profile.js';
+export { checkCompatibility, paletteCounts, parseGameSetup, dataVersionOf, GAME_VERSIONS, GAME_LOADER_LABEL, PASTE_TOOL_LABEL, TOOL_FORMAT, DEFAULT_GAME_SETUP } from './versionCompat.js';
+export type { GameSetup, GameLoader, PasteTool, GameVersion, CompatReport, CompatIssue, CompatSeverity, CompatKind, CompatInput } from './versionCompat.js';
+export { COMPAT_VERSIONS, COMPAT_BASE_VERSION } from './versionCompatData.js';
+export type { CompatVersionData } from './versionCompatData.js';
 export { nbtFamily, profileNbtFamilies, blockEntityTypeOf, blockEntityType, transformBlockEntity, turnStructureBlock, commandCoordinates, NBT_FAMILY_LABEL } from './nbtTransforms.js';
 export type { NbtFamily, BlockEntityTransformResult } from './nbtTransforms.js';
 export { CONTAINER_SLOTS, MAX_STACK, SIGN_LINES, SIGN_COLORS, editableContent, slotLabel, readContainer, checkContainer, withContainer, readSign, checkSign, withSign } from './blockContentEdit.js';

@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { buildRestore, MAX_BACKUP_BYTES, mergeTeam, planRestore, readBackup, readTeamPackage } from '../../../../../../packages/domain/src/index.js';
+import { MAX_BACKUP_BYTES } from '../../../../../../packages/domain/src/index.js';
+import { loadHomeDomain } from '../../loadHomeDomain';
 import type { Project, TeamLive, TeamState } from '../../../../../../packages/domain/src/index.js';
 import type { Repository } from '../../../../../../packages/application/src/repository.js';
 import { useApp } from '../../../app/context';
@@ -37,6 +38,7 @@ export function TeamOpen({ onMessage, onDone }: { onMessage(m: string): void; on
  */
 export async function openTeamPackage(text: string, app: { repo: Repository; reloadLibrary(): Promise<void> | void }, live?: TeamLive): Promise<{ projectId: string | null; message: string }> {
   const { repo, reloadLibrary } = app;
+  const { buildRestore, mergeTeam, planRestore, readBackup, readTeamPackage } = await loadHomeDomain();
   const pkg = await readTeamPackage(text);
   const [projects, assets, versions, originals] = await Promise.all([repo.listProjects(), repo.listAssets(), repo.listVersions(), repo.listOriginalHashes()]);
   const known = projects.find(p => p.site?.team?.teamId === pkg.team.teamId);

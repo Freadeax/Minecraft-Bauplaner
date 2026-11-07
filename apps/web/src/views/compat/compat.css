@@ -1,0 +1,18 @@
+/* COMPAT-01: Statuszeile „Passt zu deinem Spiel?“ */
+.game-setup-fields { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: end; }
+.game-setup-fields label { display: grid; gap: .2rem; min-width: 10rem; flex: 1 1 10rem; }
+.compat-status { border: 1px solid var(--line, #ccc); border-left-width: 4px; border-radius: var(--ds-r-md, 8px); padding: .55rem .8rem; background: var(--ds-raised, var(--panel, transparent)); }
+.compat-status.level-ok { border-left-color: var(--ds-success, #2f9e44); }
+.compat-status.level-warn { border-left-color: var(--ds-warning, #e8a33d); }
+.compat-status.level-loss { border-left-color: var(--ds-danger, #d9480f); }
+.compat-headline { margin: 0; display: flex; flex-wrap: wrap; gap: .35rem; align-items: baseline; }
+.compat-icon { display: inline-grid; place-items: center; width: 1.3rem; height: 1.3rem; border-radius: 50%; font-size: .8rem; font-weight: 700; border: 2px solid currentColor; color: var(--ds-success, #2f9e44); }
+.level-warn .compat-icon { color: var(--ds-warning, #b7791f); }
+.level-loss .compat-icon { color: var(--ds-danger, #c92a2a); }
+.compat-issues { margin: .4rem 0 0; padding-left: 1.2rem; }
+.compat-issues li { margin: .15rem 0; overflow-wrap: anywhere; }
+.compat-issues li[data-severity="loss"] { font-weight: 600; }
+.compat-details summary { cursor: pointer; margin-top: .3rem; }
+.export-compat { display: grid; gap: .6rem; margin: 1rem 0; }
+.compat-setup-change summary { cursor: pointer; }
+.compat-setup-change[open] .game-setup-fields { margin-top: .4rem; }

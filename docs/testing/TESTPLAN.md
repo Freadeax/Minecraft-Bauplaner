@@ -14,7 +14,7 @@ Erster Eindruck, Bedienung, Projekte anlegen und Daten sichern. Am besten in ein
 
 | ID | Fall | Stufe | Schritte | Erwartet |
 |---|---|---|---|---|
-| START-01<br><small>früher START-20</small> | Erster Start und Oberfläche „Werkbank“ ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Seite in einem frischen Browserprofil öffnen und warten, bis die Bibliothek geladen ist (Fortschrittsanzeige).<br>2. Oben „Darstellung“ öffnen, alle Themen-Farbfelder und „Hell“/„Dunkel“ antippen.<br>3. Projektzentrale, Bibliothek, Weltkarte, Spiel und im Beispielprojekt die Reiter Editor, Bauen, Material, Baustelle und Team ansehen. | Startbildschirm mit Fortschritt, danach die Projektzentrale ohne Fehlermeldung. Standard ist das grüne Thema „Werkbank“; Knöpfe, Felder, Karten und Reiter sehen überall gleich aus, jeder Text ist hell und dunkel gut lesbar, nichts flackert beim Seitenwechsel. |
+| START-01<br><small>früher START-20</small> | Erster Start und Oberfläche „Werkbank“ ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Seite in einem frischen Browserprofil öffnen: die Projektzentrale steht sofort, die Bibliothek lädt im Hintergrund (Fortschrittsanzeige).<br>2. Oben „Darstellung“ öffnen, alle Themen-Farbfelder und „Hell“/„Dunkel“ antippen.<br>3. Projektzentrale, Bibliothek, Weltkarte, Spiel und im Beispielprojekt die Reiter Editor, Bauen, Material, Baustelle und Team ansehen. | Die Projektzentrale ist sofort bedienbar, Beispiel und Vorlagen erscheinen, sobald die Bibliothek geladen ist; andere Seiten zeigen bis dahin den Startbildschirm mit Fortschritt. Keine Fehlermeldung. Standard ist das grüne Thema „Werkbank“; Knöpfe, Felder, Karten und Reiter sehen überall gleich aus, jeder Text ist hell und dunkel gut lesbar, nichts flackert beim Seitenwechsel. |
 | START-02 | Projekt anlegen, umbenennen, löschen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. In der Projektzentrale ein neues Projekt anlegen.<br>2. Umbenennen.<br>3. Ein zweites Projekt anlegen und wieder löschen. | Namen bleiben nach dem Neuladen (F5) erhalten; das gelöschte Projekt ist weg, das andere unverändert. |
 | START-03<br><small>früher START-04</small> | Sichern, Erinnerung und Wiederherstellen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Mehrere Änderungen machen, ohne zu sichern, und den Hinweis zur letzten Sicherung lesen.<br>2. Unten „Speicher & Sicherung“ aufklappen und „Alles sichern“ drücken.<br>3. Ein Projekt ändern oder löschen, dann „Sicherung wiederherstellen …“ mit der gespeicherten Datei. | Der Hinweis nennt das Alter der letzten Sicherung und bietet „Sichern“ an; die Sicherungsdatei lädt herunter (auch in Safari); nach dem Wiederherstellen ist der gesicherte Stand wieder da. |
 | START-10<br><small>früher START-05, START-13</small> | Vier Hauptbereiche, Schnellsuche und aufgeräumte Seiten ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Oben in der Leiste nachzählen: Projekte, Bibliothek, Weltkarte, Spiel und Anleitung; unten in der Fußzeile „Datei ansehen“ und „Weltimport aus Datei“ finden.<br>2. Strg+K (Mac: ⌘K) drücken, nach einem Gebäude, nach „Werkstatt“ und nach „Betrachter“ suchen und öffnen.<br>3. Auf der Startseite die drei Einstiege „Projekt fortsetzen“, „Bauwerk auswählen“ und „Datei ansehen oder importieren“ ansehen; „Speicher & Sicherung“, in der Werkstatt „Kreativ-Werkzeuge“, in der Baustelle „Abschnittsstände“ und in der Produktion „Zeitbudget und Server“ auf- und zuklappen. | Oben stehen genau vier Bereiche und die Anleitung; die Suche öffnet sofort und Treffer führen zur richtigen Seite. Jede Seite zeigt zuerst das Wichtigste, alle eingeklappten Werkzeuge sind nach dem Aufklappen vollständig da und funktionieren wie vorher. Nichts fehlt. |
@@ -50,7 +50,7 @@ Das Herzstück: Bauteile anordnen, Material und Produktion, Zeitplan, Bauanleitu
 | PROJ-01 | Bauteile anordnen | kern | 1. Projekt mit 2–3 Bauteilen öffnen.<br>2. Bauteil verschieben, drehen, spiegeln; Mehrfachauswahl mit Umschalt.<br>3. Rückgängig/Wiederholen. | Bewegungen folgen der Maus/Tastatur; Überschneidungen werden rot gemeldet; Rückgängig stellt jeden Schritt wieder her. |
 | PROJ-02<br><small>früher PROJ-15</small> | Material und Rohstoffe | kern | 1. Reiter „Material“: Bauitems und Rohstoffe ansehen, nach Bauteil filtern.<br>2. „Rohstoffe und Rezepte“: drei bis fünf Rezepte (Treppen, Platten, Glasscheiben, Laternen) mit Rezeptbuch bzw. REI im Spiel vergleichen. | Mengen plausibel (Treppen, Stufen, Türen als Items), Rohstoffplanung zeigt Stapel und Kisten; Rezepte stimmen mit Minecraft 26.3 (z. B. 6 Platten aus 3 Blöcken, 4 Treppen aus 6 Blöcken). (Abnahme MAT-02) |
 | PROJ-03 | Bauanleitung und Baustelle | kern | 1. Reiter „Baustelle“: Bauabschnitte anlegen.<br>2. Reiter „Bauen“: Schritte abhaken, Druckansicht öffnen; „Baumodus (Tablet/Handy)“ auf dem Tablet oder als „Zweitbildschirm“ neben dem Spiel nutzen.<br>3. Reiter „Material“: Materialbilanz ansehen und einen Materialtausch in der Vorschau prüfen. | Abschnitte und Fortschritt bleiben nach dem Neuladen; Druckansicht vollständig; Haken aus dem zweiten Fenster erscheinen im ersten; nach dem Tausch stehen betroffene abgehakte Schritte auf „neu prüfen“. |
-| PROJ-04 | Export .schem und .litematic | kern | 1. Reiter „Export“: Revision einfrieren und als .schem exportieren.<br>2. Dasselbe als .litematic.<br>3. Optional: Datei in Litematica/WorldEdit im Spiel laden. | Dateien laden herunter; im Spiel stimmt der Bau mit der Vorschau überein (Ausrichtung, Treppen, Türen). |
+| PROJ-04 | Export .schem und .litematic | kern | 1. Reiter „Export“: unter „Passt zu deinem Spiel?“ deine Minecraft-Version, deinen Loader und dein Einfügewerkzeug wählen.<br>2. Revision einfrieren und als .schem exportieren.<br>3. Dasselbe als .litematic.<br>4. Optional: Datei in Litematica/WorldEdit im Spiel laden. | Die Statuszeile nennt vor dem Herunterladen, was in deinem Spiel fehlt (Blöcke, Mods, Werkzeug), und setzt DataVersion und Format passend. Dateien laden herunter; im Spiel stimmt der Bau mit der Vorschau überein (Ausrichtung, Treppen, Türen). (Abnahme COMPAT-01) |
 | PROJ-05 | 3D-Modelldatei | vertieft | 1. Reiter „Export“ → „Modelldatei“: OBJ, GLB, STL oder 3MF erzeugen. | Fortschritt läuft, Abbrechen geht; Datei öffnet sich in einem 3D-Programm. Beim Druckmodell meldet der Slicer keine offenen Kanten. |
 | PROJ-06<br><small>früher PROJ-19</small> | Blöcke, Gelände, Landschaft und Wege | vertieft | 1. Reiter „Blöcke“: Blöcke ansehen/ersetzen. Reiter „Gelände“/„Landschaft“: Gelände formen, bemalen, Wasser.<br>2. „Landschaft“: mit „Rampe“ (M) eine Zufahrt, mit „Aufschütten“ (U) eine Mulde füllen; Werkzeug „Weg“ mit Stufen „Treppen“ die Rampe hinauf und mit „Über Wasser: Brücke mit Geländer“ über einen Bach.<br>3. „Als Bauteil ins Projekt übernehmen“, als .litematic exportieren und im Spiel ansehen. | Änderungen sichtbar in 3D, Rückgängig funktioniert; jeder Höhenwechsel des Wegs hat eine Treppe bergauf über die ganze Breite; die Brücke liegt einen Block über dem Wasser mit zusammenhängendem Geländer; Materialliste zählt Treppen, Planken und Zäune. (Abnahme TERRAIN-03) |
 | PROJ-07 | Updates von Bauteilen | vertieft | 1. Ein verwendetes Bauteil in der Werkstatt ändern.<br>2. Im Projekt Reiter „Updates“ öffnen und die Vorschau ansehen. | Unterschiede werden gezeigt; Übernehmen ändert nur, was angezeigt wurde. |
@@ -213,7 +213,7 @@ Lagerkisten des Teams im freiwilligen Paper-Plugin (COOP-05): markieren, zählen
 
 Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan.ts), geordnet nach dem Ort, den die Abnahme braucht. Ein Paket gilt als abgenommen, wenn alle genannten Fälle ✓ sind; Ob ein Paket noch auf Abnahme wartet, steht in `docs/ROADMAP.md`.
 
-### Nur im Browser (45 Pakete)
+### Nur im Browser (46 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -243,6 +243,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | PERF-03 | BIB-01 |
 | PERF-04 | DATEI-05, PROJ-05, PROJ-08 |
 | PERF-05 | START-01, PROJ-08, WERK-07 |
+| PERF-07 | START-01, DATEI-05, PROJ-08 |
 | PROD-01 | PROJ-12 |
 | PROD-02 | PROJ-13 |
 | PROD-03 | PROJ-12, PROJ-13 |
@@ -263,7 +264,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | VIEW-01 | DATEI-01, GERAET-04 |
 | VIEW-02 | GERAET-05, DATEI-01 |
 
-### Mit Minecraft (Mod oder Spiel) (55 Pakete)
+### Mit Minecraft (Mod oder Spiel) (56 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -271,6 +272,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | BASE-01 | BIB-10, BIB-19 |
 | BLOCK-01 | WERK-09, PROJ-04 |
 | BLOCK-02 | BIB-12, WERK-09 |
+| COMPAT-01 | PROJ-04 |
 | COOP-01 | TEAMBAU-01, TEAMBAU-25, TEAMBAU-03, TEAMBAU-05 |
 | COOP-07 | TEAMBAU-25, LINK-07 |
 | COOP-09 | TEAMBAU-25 |

@@ -84,7 +84,8 @@ export async function shotUrl(cacheKey: string, payload: Pick<VoxelPayload, 'cel
 
 export function Thumb({ cacheKey, payload, alt, width = 320, height = 220, className = 'thumb', view, cutY, markOf, eager = false }: {
   cacheKey: string;
-  payload: () => Pick<VoxelPayload, 'cells' | 'palette' | 'entities'> | null;
+  /** May be async (PERF-07: a project preview waits for the catalogue only when no stored image exists). */
+  payload: () => Pick<VoxelPayload, 'cells' | 'palette' | 'entities'> | null | Promise<Pick<VoxelPayload, 'cells' | 'palette' | 'entities'> | null>;
   alt: string;
   width?: number;
   height?: number;
@@ -114,7 +115,8 @@ export function Thumb({ cacheKey, payload, alt, width = 320, height = 220, class
       if (cancelled) return;
       let url = '';
       try {
-        const p = latest.current.payload();
+        const p = await latest.current.payload();
+        if (cancelled) return;
         url = p ? await render(p, width, height, kit, { ...options, ...(latest.current.markOf && { markOf: latest.current.markOf }) }) : '';
       } catch { url = ''; }
       cache.set(key, url);

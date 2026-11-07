@@ -6,9 +6,13 @@
 export const START_TIMEOUT = 90_000;
 const SAMPLE = 'Beispielprojekt „Burgmauer“';
 
-/** Waits until the start screen offers the sample project (library seeded and loaded). */
+/**
+ * Waits until the start screen offers the sample project and the library is seeded and loaded. Since PERF-07
+ * the project centre shows before the catalogue; `html[data-library="bereit"]` marks the loaded library.
+ */
 export async function waitForStart(page, timeout = START_TIMEOUT) {
   await page.getByRole('button', { name: SAMPLE }).waitFor({ timeout });
+  await page.locator('html[data-library="bereit"]').waitFor({ state: 'attached', timeout });
 }
 
 /** Waits for the start screen, then opens the sample project „Burgmauer“. */

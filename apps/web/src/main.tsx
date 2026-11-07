@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
-import { AppProvider } from './app/context';
+import { AppProvider, LibraryGate } from './app/context';
 import { ErrorBoundary } from './app/ErrorBoundary';
 import { installErrorCapture } from './app/errorLog';
 import { initTextures } from './blockmodels/assets';
@@ -59,7 +59,7 @@ function Page({ route }: { route: Route }) {
 function App() {
   const route = useRoute();
   return <Shell route={route}>
-    <AppProvider><CommandPalette /><ErrorBoundary resetKey={window.location.hash}><Suspense key={route.view} fallback={<div className="loading" role="status" data-page-loading="">Seite wird geladen …</div>}><Page route={route} /></Suspense></ErrorBoundary></AppProvider>
+    <AppProvider><CommandPalette /><ErrorBoundary resetKey={window.location.hash}><Suspense key={route.view} fallback={<div className="loading" role="status" data-page-loading="">Seite wird geladen …</div>}>{route.view === 'projects' ? <Page route={route} /> : <LibraryGate><Page route={route} /></LibraryGate>}</Suspense></ErrorBoundary></AppProvider>
     <TextureDialog />
   </Shell>;
 }

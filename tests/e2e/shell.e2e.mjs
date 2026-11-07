@@ -32,6 +32,8 @@ test('Desktop: Hauptnavigation, Seitentitel und Schnellsuche (Strg+K) mit Tastat
   const { p, errors, context } = await open({ width: 1400, height: 1000 });
   try {
     await p.goto(BASE);
+    // PERF-07: the shell opens before the catalogue; building search needs the loaded library.
+    await p.locator('html[data-library="bereit"]').waitFor({ state: 'attached', timeout: 90_000 });
     const nav = p.getByRole('navigation', { name: 'Hauptnavigation', exact: true });
     // UX-01: vier Hauptbereiche plus Anleitung (GUIDE-01); Datei-Wege (Betrachter, Weltimport) stehen in Fußzeile und Schnellsuche.
     assert.equal(await nav.getByRole('link').count(), 5);

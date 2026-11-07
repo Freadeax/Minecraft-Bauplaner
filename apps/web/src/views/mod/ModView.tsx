@@ -3,6 +3,9 @@ import type React from 'react';
 import releasesData from './releases.json';
 import { buildsFor, checkJarBytes, INSTALL_HINT, LOADER_LABEL, loadersFor, minecraftVersions, parseSelectionSearch, PLANNED_LOADERS, releasesFor, resolveSelection, selectionSearch, targetOf, versionsOf } from './releases';
 import type { ModRelease, Selection, Target } from './releases';
+import { modForGame } from './releases';
+import { useGameSetup } from '../../app/gameSetup';
+import { CompatStatus, GameSetupFields } from '../compat/GameSetupBar';
 import { formatNumber } from '../../app/ui';
 import { More } from '../../app/More';
 import { ServerPanel } from './ServerPanel';
@@ -98,6 +101,15 @@ export function ModView({ search }: { search?: string | undefined }) {
   const server = target === 'server';
   const hasServer = releasesFor(releases, 'server').length > 0;
   const [check, setCheck] = useState<Check>({ state: 'idle' });
+  // COMPAT-01: the player's game decides which file fits.
+  const [game, changeGame] = useGameSetup();
+  const fit = useMemo(() => modForGame(releases, game), [game]);
+  const takeFit = () => {
+    if (!fit.build) return;
+    const t = targetOf(fit.build.loader);
+    setTarget(t); setCheck({ state: 'idle' });
+    remember(resolveSelection(releasesFor(releases, t), { minecraft: game.version, loader: fit.build.loader }));
+  };
   const download = (event: React.MouseEvent<HTMLAnchorElement>) => {
     if (!build || !window.crypto?.subtle) return; // without WebCrypto the plain link downloads
     event.preventDefault();
@@ -134,6 +146,13 @@ export function ModView({ search }: { search?: string | undefined }) {
     </section>}
 
     <ServerPanel search={search} />
+
+    <section className="system-card system-wide mod-game-fit" aria-labelledby="mod-fit">
+      <h2 id="mod-fit">Passt zu deinem Spiel?</h2>
+      <GameSetupFields setup={game} onChange={changeGame} tool={false} />
+      <CompatStatus report={fit} />
+      {fit.build && (selection?.loader !== fit.build.loader || selection?.minecraft !== game.version) && <div className="button-row"><button type="button" onClick={takeFit}>Passende Datei auswählen</button></div>}
+    </section>
 
     {!selection ? <div className="notice warning" role="alert">Noch keine Mod-Version bereitgestellt.</div> : <div className="system-grid">
       <section className="system-card" aria-labelledby="mod-choose">

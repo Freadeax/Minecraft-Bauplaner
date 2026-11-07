@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T20:55:35.260Z",
+  "updatedAt": "2026-11-07T21:30:09.169Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -2914,6 +2914,183 @@
           "text": "GERAET-03 auf #/testphase: auf dem iPad (Safari) den Planer einmal laden, dann im Flugmodus neu öffnen; einmal die Mod über https://bauplaner.pages.dev/Minecraft-Bauplaner/ verbinden."
         }
       ],
+      "orphans": []
+    },
+    {
+      "id": "PERF-07",
+      "title": "Ladezeit: Projektzentrale startet vor dem Katalog, schlankeres Startpaket, feste Leistungstests für Großbauten",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Arbeitsstrang „Ladezeit und Versions-Check“",
+      "dependencies": [
+        "PERF-05"
+      ],
+      "scope": [
+        "vite.config.mjs",
+        "apps/web/src/app/context.tsx",
+        "apps/web/src/main.tsx",
+        "apps/web/src/views/ProjectsView.tsx",
+        "apps/web/src/views/homeDomain.ts",
+        "apps/web/src/views/loadHomeDomain.ts",
+        "apps/web/src/views/BackupPanel.tsx",
+        "apps/web/src/views/project/team/TeamOpen.tsx",
+        "apps/web/src/thumbnail/Thumb.tsx",
+        "tests/e2e/start.mjs",
+        "tests/e2e/grossbau-leistung.e2e.mjs",
+        "tests/e2e/perf-budgets.json",
+        "tests/e2e/home-before-catalog.e2e.mjs",
+        "scripts/bench/perf/measure_start.mjs",
+        "docs/architecture/kern/PERFORMANCE_AUDIT.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "PERF-07-S01",
+          "title": "Kerncode ohne Nebenwirkungen markiert: Start-JavaScript 1,73 → 1,21 MiB.",
+          "done": true
+        },
+        {
+          "id": "PERF-07-S02",
+          "title": "Projektzentrale öffnet, sobald der lokale Speicher offen ist; Katalog lädt im Hintergrund, andere Seiten warten wie bisher (LibraryGate). Erste Anzeige 1,24 s → 0,26 s.",
+          "done": true
+        },
+        {
+          "id": "PERF-07-S03",
+          "title": "Fachcode der Projektzentrale (Sicherung, Vorschau, Vorlagen, Termine, Teampaket) wird nachgeladen; gespeicherte Vorschaubilder erscheinen sofort, neue warten auf den Katalog.",
+          "done": true
+        },
+        {
+          "id": "PERF-07-S04",
+          "title": "Feste Leistungstests Großbau (287 000 Blöcke): Öffnen, Schichtwechsel, Kamera, Export mit Budgets in tests/e2e/perf-budgets.json.",
+          "done": true
+        },
+        {
+          "id": "PERF-07-S05",
+          "title": "Revisionsexport großer Projekte in den Hintergrund-Worker (heute rund 1 s Seitenpause bei 287 000 Blöcken, O-10).",
+          "done": false
+        },
+        {
+          "id": "PERF-07-S06",
+          "title": "Prüfketten der Speicherdaten von Rechencode trennen, damit Sicherung, Baustelle und Team nicht mehr im Startpaket liegen (O-9).",
+          "done": false
+        }
+      ],
+      "next": "O-10 Export im Worker, O-9 Prüfketten trennen; Abnahme auf Philipps Rechner und iPad (Projektzentrale sofort sichtbar).",
+      "acceptance": [
+        "Projektzentrale zeigt eigene Projekte, bevor der Katalog geladen ist; Beispiel, Vorlagen und Sicherung folgen ohne Fehler.",
+        "Seiten mit Bibliotheksbedarf öffnen erst mit fertigem Katalog (Deep-Links wie bisher).",
+        "Großbau-Leistungstest im Budget; alle Tests grün."
+      ],
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/e2e/grossbau-leistung.e2e.mjs",
+          "note": "Öffnen, Schichtwechsel, Kamera, Export eines Großbaus gegen feste Budgets."
+        },
+        {
+          "path": "tests/e2e/home-before-catalog.e2e.mjs",
+          "note": "Projektzentrale vor dem Katalog, Beispiel und Vorlagen danach."
+        },
+        {
+          "path": "docs/architecture/kern/PERFORMANCE_AUDIT.md",
+          "note": "Runde 6: Messwerte vorher/nachher, O-9, O-10."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Chromium im Container gemessen (measure_start, Großbau-Test); echte Geräte offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-07T21:30:09.169Z",
+      "area": "PERF",
+      "orphans": []
+    },
+    {
+      "id": "COMPAT-01",
+      "title": "Kompatibilitätscheck vor Export und Download: Minecraft-Version, Loader und Einfügewerkzeug zeigen fehlende Blöcke, angepasste Zustände, nötige Mods und passende Mod-Datei",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Arbeitsstrang „Ladezeit und Versions-Check“",
+      "dependencies": [
+        "PROFILE-01"
+      ],
+      "scope": [
+        "packages/voxel/src/versionCompat.ts",
+        "packages/voxel/src/versionCompatData.ts",
+        "packages/voxel/src/index.ts",
+        "packages/application/src/revisionExport.ts",
+        "scripts/gen/fetch_version_reports.sh",
+        "scripts/gen/gen_version_compat.mjs",
+        "apps/web/src/app/gameSetup.ts",
+        "apps/web/src/views/compat/GameSetupBar.tsx",
+        "apps/web/src/views/compat/compat.css",
+        "apps/web/src/views/project/ExportTab.tsx",
+        "apps/web/src/views/library/BuildingSheet.tsx",
+        "apps/web/src/views/mod/ModView.tsx",
+        "apps/web/src/views/mod/releases.ts",
+        "tests/unit/formats/version-compat.test.mjs",
+        "tests/e2e/compat.e2e.mjs",
+        "docs/architecture/formate/VERSION_COMPAT.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "COMPAT-01-S01",
+          "title": "Blockberichte der offiziellen Server 1.20.1 bis 26.3 (12 Versionen) erzeugt und nur die Unterschiede zum Profil eingecheckt (versionCompatData.ts).",
+          "done": true
+        },
+        {
+          "id": "COMPAT-01-S02",
+          "title": "checkCompatibility: fehlende Blöcke und angepasste Zustände je Zelle, Mod-Namensräume je Loader, Werkzeug/Loader-Hinweise, Entities.",
+          "done": true
+        },
+        {
+          "id": "COMPAT-01-S03",
+          "title": "„Mein Spiel“ einmal wählen (Browser merkt es); Statuszeile im Export (setzt DataVersion und Format), im Gebäudeblatt und auf der Mod-Seite (passende Datei).",
+          "done": true
+        },
+        {
+          "id": "COMPAT-01-S04",
+          "title": "Abnahme im eigenen Spiel: Export für eine ältere Version einfügen und die gemeldeten Lücken sehen.",
+          "done": false
+        }
+      ],
+      "next": "Abnahme COMPAT-01-S04 im echten Spiel; bei neuer Minecraft-Version fetch_version_reports.sh + gen_version_compat.mjs.",
+      "acceptance": [
+        "Für jede geprüfte Version stimmen fehlende Blöcke mit dem offiziellen Blockbericht überein.",
+        "Export zeigt vor dem Herunterladen, was im gewählten Spiel fehlt, sich ändert oder Mods braucht.",
+        "Mod-Seite nennt die passende Datei oder warum es keine gibt."
+      ],
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/unit/formats/version-compat.test.mjs",
+          "note": "Daten an den Profilbericht gebunden, DataVersions, fehlende/angepasste Blöcke, Mods, Loader, Mod-Datei."
+        },
+        {
+          "path": "tests/e2e/compat.e2e.mjs",
+          "note": "Export-Statuszeile, Wechsel der Version setzt DataVersion, Gebäudeblatt, Mod-Seite."
+        },
+        {
+          "path": "docs/architecture/formate/VERSION_COMPAT.md",
+          "note": "Datenherkunft, Regeln, Grenzen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Einheits- und Browsertests grün; Einfügen im echten Spiel offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-07T21:30:09.169Z",
+      "area": "KERN",
       "orphans": []
     },
     {
@@ -15560,6 +15737,73 @@
           "done": 8,
           "total": 8,
           "next": "Zugänge-Liste wirkt im echten Dienst, sobald der Team-Raum mit TEAM-SEC-01/HARDEN-01 ausgerollt ist (bis dahin Hinweis „ältere Fassung“); danach Abnahme im Spiel."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T21:30:09.169Z",
+      "kind": "progress",
+      "items": [
+        "PERF-07",
+        "COMPAT-01"
+      ],
+      "summary": "Projektzentrale startet vor dem Katalog (Start-JS 1734→1206 KiB, bedienbar nach 0,26 s), feste Großbau-Leistungstests, „Passt zu deinem Spiel?“ in Export, Gebäudeblatt und Mod-Seite aus offiziellen Blockberichten 1.20.1–26.3",
+      "files": [
+        "apps/web/src/app/context.tsx",
+        "apps/web/src/app/gameSetup.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/thumbnail/Thumb.tsx",
+        "apps/web/src/views/BackupPanel.tsx",
+        "apps/web/src/views/ProjectsView.tsx",
+        "apps/web/src/views/compat/GameSetupBar.tsx",
+        "apps/web/src/views/compat/compat.css",
+        "apps/web/src/views/homeDomain.ts",
+        "apps/web/src/views/library/BuildingSheet.tsx",
+        "apps/web/src/views/loadHomeDomain.ts",
+        "apps/web/src/views/mod/ModView.tsx",
+        "apps/web/src/views/mod/releases.ts",
+        "apps/web/src/views/project/ExportTab.tsx",
+        "apps/web/src/views/project/ProjectView.tsx",
+        "apps/web/src/views/project/team/TeamOpen.tsx",
+        "docs/README.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/formate/VERSION_COMPAT.md",
+        "docs/architecture/kern/PERFORMANCE_AUDIT.md",
+        "packages/application/src/revisionExport.ts",
+        "packages/voxel/src/index.ts",
+        "packages/voxel/src/versionCompat.ts",
+        "packages/voxel/src/versionCompatData.ts",
+        "scripts/bench/perf/measure_start.mjs",
+        "scripts/gen/fetch_version_reports.sh",
+        "scripts/gen/gen_version_compat.mjs",
+        "tests/e2e/compat.e2e.mjs",
+        "tests/e2e/export.e2e.mjs",
+        "tests/e2e/grossbau-leistung.e2e.mjs",
+        "tests/e2e/home-before-catalog.e2e.mjs",
+        "tests/e2e/mod-download.e2e.mjs",
+        "tests/e2e/perf-budgets.json",
+        "tests/e2e/shell.e2e.mjs",
+        "tests/e2e/stability.e2e.mjs",
+        "tests/e2e/start.mjs",
+        "tests/unit/formats/version-compat.test.mjs",
+        "vite.config.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-07",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "O-10 Export im Worker, O-9 Prüfketten trennen; Abnahme auf Philipps Rechner und iPad (Projektzentrale sofort sichtbar)."
+        },
+        {
+          "id": "COMPAT-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme COMPAT-01-S04 im echten Spiel; bei neuer Minecraft-Version fetch_version_reports.sh + gen_version_compat.mjs."
         }
       ]
     }

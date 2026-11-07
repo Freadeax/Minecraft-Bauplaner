@@ -6,6 +6,7 @@ import type { NbtTag } from '../../voxel/src/types.js';
 import { LEGACY_MOD_MAX_VOLUME } from '../../voxel/src/sizeLimits.js';
 import { exportSafetyLines, sanitizeForExport } from '../../voxel/src/exportSafety.js';
 import type { ExportSafetyReport } from '../../voxel/src/exportSafety.js';
+import { GAME_VERSIONS } from '../../voxel/src/versionCompat.js';
 import { DomainError } from '../../domain/src/core/types.js';
 import type { AssetVersion, BlueprintRevision, Project } from '../../domain/src/core/types.js';
 
@@ -15,14 +16,11 @@ import type { AssetVersion, BlueprintRevision, Project } from '../../domain/src/
  * from the live editor state, so it can be reproduced later bit for bit.
  */
 
-/** Selection aid for the DataVersion field. Values from the Minecraft wiki, not verified by this app. */
-export const KNOWN_DATA_VERSIONS: readonly { readonly version: string; readonly dataVersion: number }[] = Object.freeze([
-  { version: '1.20.1', dataVersion: 3465 },
-  { version: '1.20.4', dataVersion: 3700 },
-  { version: '1.20.6', dataVersion: 3839 },
-  { version: '1.21.1', dataVersion: 3955 },
-  { version: '1.21.4', dataVersion: 4189 },
-]);
+/**
+ * Selection aid for the DataVersion field, oldest first (COMPAT-01): every version with an official block
+ * report (world_version from the server jar), see versionCompatData.ts.
+ */
+export const KNOWN_DATA_VERSIONS: readonly { readonly version: string; readonly dataVersion: number }[] = Object.freeze([...GAME_VERSIONS].reverse());
 
 /** Target file format of a revision export. Both describe the same cells and anchor. */
 export type ExportFormat = 'schem' | 'litematic';
