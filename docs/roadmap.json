@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T20:44:28.756Z",
+  "updatedAt": "2026-11-07T20:55:35.260Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -12511,7 +12511,7 @@
       "title": "Datenschutz und Freigaben verständlich: was geht wohin, wer sieht es, Speicherstatus und Umzug",
       "phase": "P4",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "implemented",
       "owner": "Arbeitsstrang „Datenschutz, Freigaben und Speicherstatus klären“",
       "dependencies": [
         "COOP-07",
@@ -12541,8 +12541,8 @@
         },
         {
           "id": "PRIV-01-S03",
-          "title": "Live-Position und Aufnahmen getrennt freigeben: Schalter im Team-Reiter, Mod speichert sie in raum.json und setzt sie sofort um (Feature roomshare); Auslieferung mit der nächsten Mod-Version.",
-          "done": false
+          "title": "Live-Position und Aufnahmen getrennt freigeben: Schalter im Team-Reiter, Mod speichert sie in raum.json und setzt sie sofort um (Feature roomshare); ausgeliefert mit Mod/Plugin 0.28.0.",
+          "done": true
         },
         {
           "id": "PRIV-01-S04",
@@ -12551,8 +12551,8 @@
         },
         {
           "id": "PRIV-01-S05",
-          "title": "Einladungen einzeln widerrufbar: Liste der persönlichen Schlüssel im Team-Reiter auf der Worker-API des Team-Identitäten-Pakets.",
-          "done": false
+          "title": "Einladungen einzeln widerrufbar: „Zugänge im Team-Raum“ im Team-Reiter listet die persönlichen Schlüssel (wer, Gerät, ausgestellt, zuletzt genutzt), widerruft einzeln, bestätigt wartende Mitglieder und schaltet „nur persönliche Schlüssel“ (TeamKeys.tsx, team-room.e2e.mjs).",
+          "done": true
         },
         {
           "id": "PRIV-01-S06",
@@ -12573,7 +12573,7 @@
       "acceptance": [
         "Jede Stelle, an der Daten den Browser verlassen, sagt vorher was, wohin und wer es sieht; Position und Aufnahmen lassen sich einzeln abschalten; fremde Webkarten öffnen erst nach Bestätigung; der Speicherstatus am Projekt ist ehrlich."
       ],
-      "next": "S05 auf der Schlüssel-API des Team-Identitäten-Pakets bauen; S03 mit Mod 0.28.0 ausliefern.",
+      "next": "Zugänge-Liste wirkt im echten Dienst, sobald der Team-Raum mit TEAM-SEC-01/HARDEN-01 ausgerollt ist (bis dahin Hinweis „ältere Fassung“); danach Abnahme im Spiel.",
       "blockers": [],
       "evidence": [
         {
@@ -12587,6 +12587,14 @@
         {
           "path": "tests/e2e/release-data.e2e.mjs",
           "note": "Release-Datenprobe."
+        },
+        {
+          "path": "apps/web/src/views/project/team/TeamKeys.tsx",
+          "note": "Zugänge im Team-Raum: einzeln widerrufen, bestätigen, nur persönliche Schlüssel."
+        },
+        {
+          "path": "tests/e2e/team-room.e2e.mjs",
+          "note": "Bauleitung widerruft Annas Planer- und Spielschlüssel einzeln, bestätigt sie nach dem Wiederbeitritt (auch gegen den echten Worker unter wrangler dev)."
         }
       ],
       "verification": {
@@ -12597,7 +12605,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T19:17:28.843Z",
+      "updatedAt": "2026-11-07T20:55:35.260Z",
       "area": "QA",
       "thread": "Datenschutz, Freigaben und Speicherstatus klären",
       "philipp": [
@@ -15525,6 +15533,33 @@
           "done": 5,
           "total": 5,
           "next": "Abnahme START-10/11 im Browser und GERAET-04 auf dem iPad (Philipp)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T20:55:35.260Z",
+      "kind": "progress",
+      "items": [
+        "PRIV-01"
+      ],
+      "summary": "Einladungen einzeln widerrufbar: Zugänge im Team-Raum mit Widerrufen, Bestätigen und nur persönlichen Schlüsseln",
+      "files": [
+        "apps/web/src/app/dataFlows.ts",
+        "apps/web/src/styles/team.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/project/team/TeamKeys.tsx",
+        "apps/web/src/views/project/team/TeamRoom.tsx",
+        "docs/architecture/betrieb/DATENSCHUTZ.md",
+        "docs/testing/TESTPLAN.md",
+        "tests/e2e/team-room.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PRIV-01",
+          "status": "implemented",
+          "done": 8,
+          "total": 8,
+          "next": "Zugänge-Liste wirkt im echten Dienst, sobald der Team-Raum mit TEAM-SEC-01/HARDEN-01 ausgerollt ist (bis dahin Hinweis „ältere Fassung“); danach Abnahme im Spiel."
         }
       ]
     }

@@ -35,7 +35,7 @@ export const DATA_FLOWS: readonly DataFlow[] = [
     where: 'Der eingetragene Team-Raum, voreingestellt ein Cloudflare Worker des Build Studios (bauplaner-team.team-room.workers.dev).',
     who: 'Alle mit dem Einladungslink, die Bauleitung, der Server mit dem Server-Link und der Betreiber des Team-Raums.',
     keep: 'Bis die Bauleitung den Raum löscht; 365 Tage ohne Nutzung löscht er sich selbst. Nach dem Löschen hält der Tresor die Sicherungen noch 90 Tage für eine Wiederherstellung.',
-    stop: '„Live trennen“ trennt nur diesen Browser. „Einladung erneuern“ sperrt alle alten Links. Den Raum selbst löscht die Bauleitung unter „Sicherung und Zustand“.' },
+    stop: '„Live trennen“ trennt nur diesen Browser. Einzelne Personen oder Geräte widerruft die Bauleitung unter „Zugänge im Team-Raum“; „Einladung erneuern“ sperrt alle alten Links für Neue. Den Raum selbst löscht die Bauleitung unter „Sicherung und Zustand“.' },
   { id: 'team-plan', title: 'Planstand im Team-Raum', online: true,
     what: 'Der freigegebene Plan als Paket (Bauteile, Blöcke, Lage in der Welt) und Kopfdaten mit den Abschnitten in Weltkoordinaten für das Server-Plugin. Zugangsschlüssel sind nicht enthalten.',
     where: 'Derselbe Team-Raum.', who: 'Alle mit Einladungslink und der Server.',

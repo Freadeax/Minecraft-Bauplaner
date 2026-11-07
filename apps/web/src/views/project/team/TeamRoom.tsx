@@ -6,6 +6,7 @@ import { errorText } from '../../../app/ui';
 import { RoomError, addRoomKey, createRoom, getPlan, leaderKeysOf, putHeader, putPlan, readRoomUrl, rotateKey, saveRoomUrl, useRoomConnection } from './roomClient';
 import type { ProjectSession } from '../session';
 import { TeamBackup } from './TeamBackup';
+import { TeamKeys } from './TeamKeys';
 import { AdminKeyChange, TeamAccessOpen, TeamAccessSave } from './TeamAccess';
 import { roomHeader, takePlan, teamPackageText } from './teamTransfer';
 import { control, currentPairedServer, gameLeaveRoom, gameRoomState, gameShare, gameToRoom, reachableServer, readGameShare, rememberRoom, saveGameShare } from '../../mod/serverClient';
@@ -257,9 +258,10 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
       {live.adminKey && live.serverKey && <button disabled={busy} className="secondary" onClick={() => void renew('server')}>Server-Link erneuern</button>}
       <AdminKeyChange team={team as RoomTeam} saveLive={saveLive} leaderEvent={leaderEvent} founderHere={founderHere} onDone={() => { autoServer.current = ''; }} onMessage={onMessage} />
     </div>
+    {(live.adminKey || live.personal) && <TeamKeys team={team as RoomTeam} names={names} saveLive={saveLive} onMessage={onMessage} />}
     <TeamAccessSave session={session} team={team as RoomTeam} onMessage={onMessage} />
     {shown && <div className="team-shown">
-      <p>{shown === 'invite' ? 'Diesen Link an alle Mitspieler schicken. Wer ihn öffnet, bekommt Plan und Teamstand und ist sofort live dabei. Er gilt für jeden, der ihn bekommt (auch weitergeleitet), bis du „Einladung erneuern“ drückst.'
+      <p>{shown === 'invite' ? 'Diesen Link an alle Mitspieler schicken. Wer ihn öffnet, bekommt Plan und Teamstand und ist sofort live dabei. Er gilt für jeden, der ihn bekommt (auch weitergeleitet), bis du „Einladung erneuern“ drückst. Wer beigetreten ist, hat danach einen eigenen Schlüssel: Einzelne Personen oder Geräte nimmst du unter „Zugänge im Team-Raum“ zurück.'
         : <>Einfacher geht es mit „Server mit dem Raum verbinden“, wenn der Server gekoppelt ist. Koppeln geht im Menü „Spiel“ mit einem Klick (als OP mit der Mod im Spiel). Nur ohne Kopplung: auf dem Server <code>/bauplaner team verbinden &lt;Link&gt;</code> eingeben (Konsole oder OP). Nicht weitergeben: Mit diesem Link schreibt man Messungen als Server.</>}</p>
       <textarea readOnly rows={2} value={shown === 'invite' ? invite : server} aria-label={shown === 'invite' ? 'Einladungslink' : 'Link für den Server'} onFocus={e => e.currentTarget.select()} />
       <ShareNote flow={shown === 'invite' ? 'team-room' : 'server-link'} />

@@ -30,7 +30,15 @@ Webkarten können über den Team-Raum von anderen eingetragen werden. Der Planer
 
 ## Einladungen
 
-Bis zum Paket Team-Identitäten gibt es einen Einladungsschlüssel für alle; „Einladung erneuern“ sperrt alle alten Links auf einmal. Der Hinweis am Link sagt, dass er für jeden gilt, der ihn bekommt. Einzeln widerrufbare persönliche Schlüssel baut das Team-Identitäten-Paket im Worker; die Liste im Team-Reiter folgt darauf (PRIV-01-S05).
+Der Einladungslink dient nur zum Beitreten: Wer ihn öffnet, bekommt für jedes Gerät (Planer, Spiel) einen eigenen Schlüssel (docs/architecture/team/TEAM_IDENTITY.md). Im Team-Reiter unter Team live → „Zugänge im Team-Raum“ (TeamKeys.tsx, PRIV-01-S05):
+
+- Die Bauleitung sieht alle Schlüssel mit Mitglied, Rolle, Gerät, ausgestellt und zuletzt genutzt und widerruft einzelne. Das Gerät ist sofort getrennt; die anderen behalten ihren Zugang.
+- Wer als Baumeister oder Bauleitung bekannt ist und mit der Einladung neu beitritt, wartet auf „Bestätigen“ und ist bis dahin Helfer.
+- „Nur persönliche Schlüssel annehmen“ schaltet ältere Räume so, dass die Einladung allein nichts mehr schreibt (neue Räume sind von Anfang an so).
+- Mitglieder sehen nur ihre eigenen Geräte und können ein verlorenes widerrufen.
+- „Einladung erneuern“ sperrt alte Links für neue Beitritte; wer schon einen eigenen Schlüssel hat, bleibt.
+
+Ein Team-Raum älterer Fassung kennt keine persönlichen Schlüssel; die Liste sagt das dann, und nur „Einladung erneuern“ sperrt (für alle).
 
 ## Speicherstatus
 

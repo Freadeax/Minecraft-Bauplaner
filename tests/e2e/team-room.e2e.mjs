@@ -38,7 +38,7 @@ after(async () => { await browser?.close(); await mod?.close(); server?.kill(); 
 /** The worker's routes (services/team-room/src/index.js) on top of RoomCore, for Playwright routing. */
 function fakeRooms() {
   const rooms = new Map(), sockets = new Set();
-  const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Authorization, Content-Type, If-Match', 'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS' };
+  const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Authorization, Content-Type, If-Match', 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS' };
   const broadcast = (id, msg) => { for (const s of sockets) if (s.room === id && s.authed) s.ws.send(JSON.stringify(msg)); };
   const presence = id => broadcast(id, { type: 'presence', members: [...sockets].filter(s => s.room === id && s.authed).map(s => s.presence) });
   const http = async route => {
@@ -69,6 +69,7 @@ function fakeRooms() {
         for (const s of sockets) if (s.room === parts[2] && s.session?.keyId === out.revoked) s.ws.close({ code: 4403, reason: 'schluessel-widerrufen' });
         return json(out);
       }
+      if (/^members\/[^/]+\/approve$/.test(rest) && req.method() === 'POST') return json(core.approve(await core.session(key), decodeURIComponent(rest.split('/')[1])));
       if (rest === 'identity' && req.method() === 'POST') { await core.auth(key, 'admin'); return json(core.setIdentity(req.postDataJSON())); }
       if (rest === 'events' && req.method() === 'POST') {
         const { added, seqs, ...out } = core.append(req.postDataJSON(), await core.session(key));
@@ -368,19 +369,33 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     assert.notEqual(fresh, link);
     await b.waitForTimeout(1000);
     assert.equal(await liveBlock(b).locator('[data-state=live]').count(), 1, 'Anna stays with her own key');
-    const revoked = await a.evaluate(async ([base, id, member]) => {
-      const live = await new Promise(res => { const r = indexedDB.open('minecraft-bauplaner'); r.onsuccess = () => { const all = r.result.transaction('projects').objectStore('projects').getAll(); all.onsuccess = () => res(all.result.map(p => p.site?.team?.live).find(l => l?.room === id)); }; });
-      const auth = { Authorization: `Bearer ${live.adminKey}` };
-      const keys = (await (await fetch(`${base}/v1/rooms/${id}/keys`, { headers: auth })).json()).keys.filter(k => k.member === member);
-      for (const k of keys) await fetch(`${base}/v1/rooms/${id}/keys/${k.id}`, { method: 'DELETE', headers: auth });
-      return keys.length;
-    }, [REAL ?? ROOM, roomId, handed.member]);
-    assert.ok(revoked >= 1, 'Anna\'s keys revoked');
+    // PRIV-01-S05: the Bauleitung sees Anna's own keys (planner and game) in the team tab and revokes them one by one.
+    // Before, Anna becomes Baumeister: re-joining with the invitation alone must not give her that role back.
+    await a.getByRole('region', { name: 'Mitglieder' }).getByLabel('Rolle von Anna').selectOption('meister');
+    const keysBox = liveBlock(a).getByTestId('team-keys');
+    await keysBox.locator('summary').click();
+    const annaKeys = keysBox.locator(`li[data-member="${handed.member}"]`);
+    await annaKeys.getByText('Baumeister').waitFor();
+    assert.deepEqual((await annaKeys.locator('tbody td:first-child').allInnerTexts()).sort(), ['Minecraft', 'Planer']);
+    assert.ok(await keysBox.getByRole('checkbox', { name: /Nur persönliche Schlüssel annehmen/ }).isChecked(), 'a new room accepts own keys only');
+    for (const label of ['Minecraft', 'Planer']) {
+      await annaKeys.getByRole('button', { name: `Zugang ${label} von Anna widerrufen` }).click();
+      await a.getByRole('alert').filter({ hasText: `Zugang „${label}“ von Anna widerrufen.` }).first().waitFor();
+    }
+    await annaKeys.waitFor({ state: 'detached' });
     await liveBlock(b).getByText(/kennt diesen Schlüssel nicht mehr/).waitFor();
     await b.goto(fresh);
     await b.getByRole('button', { name: 'Beitreten und Plan laden' }).click();
     await b.waitForURL(/\/team$/);
     await liveBlock(b).locator('[data-state=live]').waitFor();
+    // Anna is back, but as Baumeister she waits for the Bauleitung's confirmation.
+    await keysBox.locator('summary').click(); await keysBox.locator('summary').click();
+    await keysBox.locator('summary', { hasText: '1 warten auf Bestätigung' }).waitFor();
+    await annaKeys.getByText('wartet auf Bestätigung').waitFor();
+    await annaKeys.getByRole('button', { name: 'Anna bestätigen' }).click();
+    await a.getByRole('alert').filter({ hasText: 'Anna bestätigt: gilt jetzt als Baumeister.' }).first().waitFor();
+    await annaKeys.getByText('wartet auf Bestätigung').waitFor({ state: 'detached' });
+    if (!REAL) assert.equal(fake.rooms.get(roomId).members()[handed.member].pending, undefined);
     room.memberKey = new URLSearchParams(fresh.split('?')[1]).get('k');
 
     // ---- Survives a reload: still live, nothing waiting, same log on both sides.

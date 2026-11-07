@@ -112,7 +112,7 @@ Mehrere Spieler an einem Projekt, live über den Team-Raum – ohne Dateien. Daf
 | ID | Fall | Stufe | Schritte | Erwartet |
 |---|---|---|---|---|
 | TEAMBAU-01 | Team gründen und Plan freigeben | kern | 1. Projekt mit Bauabschnitten öffnen („Baustelle“ → Vorschlag „Fundament · Rohbau · Dach“).<br>2. Reiter „Team“: Name und Minecraft-Name eintragen, „Team gründen“.<br>3. „Aktuellen Plan freigeben“, kurze Beschreibung eingeben. | Du bist Bauleitung; oben steht „Planstand N gilt“; im Reiter „Export“ gibt es die neue Revision. |
-| TEAMBAU-25<br><small>früher TEAMBAU-02, TEAMBAU-26</small> | Team live: einladen, beitreten, Planstand, offline ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. „Team“ → „Team live“: Adresse des Team-Raums ist vorausgefüllt, „Live schalten“, Einladungslink an einen Mitspieler schicken.<br>2. Mitspieler öffnet den Link (Rechner oder Handy), „Beitreten und Plan laden“, wählt „Ich bin“ bzw. „Ich bin neu“.<br>3. Bauleitung gibt einen neuen Planstand frei, Mitspieler „Planstand übernehmen“. Mitspieler meldet etwas, während die Bauleitung in einem anderen Reiter ist; danach lädt er neu.<br>4. WLAN kurz aus, eine Notiz schreiben, WLAN an. Bauleitung „Einladung erneuern“, ein dritter Browser versucht den alten Link. | Ohne jede Datei sieht jeder die Schritte der anderen nach Sekunden; unter „Gerade da“ stehen beide; der Mitspieler ist Helfer mit allen Bauteilen und Abschnitten; der neue Planstand kommt mit einem Klick (alter bleibt als Kopie); Meldungen erscheinen in jedem Reiter, nach dem Neuladen nichts doppelt; offline „offline · 1 warten“, die Notiz kommt nach; mit dem alten Link kommt niemand mehr hinein. (Abnahme COOP-07, COOP-09) |
+| TEAMBAU-25<br><small>früher TEAMBAU-02, TEAMBAU-26</small> | Team live: einladen, beitreten, Planstand, offline ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. „Team“ → „Team live“: Adresse des Team-Raums ist vorausgefüllt, „Live schalten“, Einladungslink an einen Mitspieler schicken.<br>2. Mitspieler öffnet den Link (Rechner oder Handy), „Beitreten und Plan laden“, wählt „Ich bin“ bzw. „Ich bin neu“.<br>3. Bauleitung gibt einen neuen Planstand frei, Mitspieler „Planstand übernehmen“. Mitspieler meldet etwas, während die Bauleitung in einem anderen Reiter ist; danach lädt er neu.<br>4. WLAN kurz aus, eine Notiz schreiben, WLAN an. Bauleitung „Einladung erneuern“, ein dritter Browser versucht den alten Link.<br>5. Bauleitung: „Zugänge im Team-Raum“ aufklappen, beim Mitspieler nur den Zugang „Minecraft“ widerrufen. | Ohne jede Datei sieht jeder die Schritte der anderen nach Sekunden; unter „Gerade da“ stehen beide; der Mitspieler ist Helfer mit allen Bauteilen und Abschnitten; der neue Planstand kommt mit einem Klick (alter bleibt als Kopie); Meldungen erscheinen in jedem Reiter, nach dem Neuladen nichts doppelt; offline „offline · 1 warten“, die Notiz kommt nach; mit dem alten Link kommt niemand mehr hinein; die Zugänge-Liste zeigt je Gerät ausgestellt und zuletzt genutzt, nach dem Widerruf ist nur das Spiel des Mitspielers getrennt, sein Planer bleibt live. (Abnahme COOP-07, COOP-09, PRIV-01-S05) |
 | TEAMBAU-03<br><small>früher TEAMBAU-04, TEAMBAU-23</small> | Abschnitt übernehmen, melden, bestätigen | kern | 1. Team live: Mitspieler übernimmt einen freien Abschnitt und meldet ihn unter „Meine Aufgaben“ „Fertig“.<br>2. Bauleitung: „Fortschritt“ und „Achtung“ ansehen, „✓ Bestätigen“ oder „Nacharbeit verlangen“.<br>3. Beide übernehmen gleichzeitig denselben freien Abschnitt.<br>4. Plan im Editor ändern, „Mit Planstand N vergleichen“. | Der Abschnitt steht „fertig gemeldet“ bzw. „bestätigt“ mit dem richtigen Namen; das Brett trennt je Mitglied abgehakt/gemeldet/bestätigt; beim gleichzeitigen Nehmen gehört er dem, der zuerst war, mit Hinweis „… war schon vergeben“; „Achtung“ zeigt Haken-Lücken und Planänderungen. Nichts geht verloren. (Abnahme COOP-01, COOP-06) |
 | TEAMBAU-29 | Gleichzeitig ändern und zurücknehmen | vertieft | 1. Team live mit zwei Geräten (zwei Browser oder Rechner und Handy), beide als Helfer im selben Raum.<br>2. Auf beiden denselben freien Abschnitt im selben Moment „Übernehmen“ klicken.<br>3. Auf dem Gerät, das den Abschnitt bekommen hat: Reiter „Team“ → „Meine letzten Schritte zurücknehmen“ → „Zurücknehmen“ bei der Übernahme.<br>4. Ein Gerät 2 Minuten offline (WLAN aus oder Laptop zu), dort einen Abschnitt abgeben, wieder online. | Nur einer hat den Abschnitt, beide zeigen denselben Inhaber; der andere sieht unten rechts „Nicht übernommen, weil … schneller war“; nach „Zurücknehmen“ ist der Abschnitt bei beiden wieder frei; nach dem Offline-Gehen verbindet sich der Planer ohne Neuladen wieder und holt alles nach, nichts kommt doppelt. (Abnahme TEAM-02) |
 | TEAMBAU-30 | Mehrere Spieler an einem Abschnitt, Sammelauftrag verteilen, Buchung korrigieren | vertieft | 1. Team live mit zwei Browsern (oder zwei Mitspielern): Bauleitung und ein Helfer.<br>2. Als Bauleitung bei einem Abschnitt „Mitbauer …“: zwei Spieler anhaken, speichern; im zweiten Browser fast gleichzeitig denselben Abschnitt einem Dritten zuweisen.<br>3. Unter „Beiträge & Sammeln“ → „Sammelauftrag auf mehrere verteilen“: ein Item an zwei Spieler verteilen.<br>4. Als Helfer eine Lieferung melden, unter „Meine Buchungen“ korrigieren und danach stornieren. | Der Abschnitt zeigt Verantwortliche + Mitbauer, beide haben ihn unter „Meine Aufgaben“; „Mitbauen“ und „Aussteigen“ gehen ohne Bauleitung. Die überholte Zuweisung wird nicht still übernommen, sondern steht oben als Hinweis „Überholt …“ mit „Trotzdem so übernehmen“. Jeder sieht seinen Anteil am Sammelauftrag. Die Buchung zeigt V2 „korrigiert“, danach „storniert“; Lieferungen und Konto rechnen neu. Im Zeitplan gehen Abschnitte mit Mitbauern schneller. (Abnahme TEAM-03) |
@@ -213,7 +213,7 @@ Lagerkisten des Teams im freiwilligen Paper-Plugin (COOP-05): markieren, zählen
 
 Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan.ts), geordnet nach dem Ort, den die Abnahme braucht. Ein Paket gilt als abgenommen, wenn alle genannten Fälle ✓ sind; Ob ein Paket noch auf Abnahme wartet, steht in `docs/ROADMAP.md`.
 
-### Nur im Browser (47 Pakete)
+### Nur im Browser (45 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -221,7 +221,6 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | BACKUP-03 | TEAMBAU-31 |
 | BUILD-06 | PROJ-03, GERAET-06 |
 | COOP-06 | TEAMBAU-21, TEAMBAU-03, TEAMBAU-24 |
-| COOP-09 | TEAMBAU-25 |
 | COOP-11 | TEAMBAU-28 |
 | DOC-02 | START-01 |
 | EDIT-01 | WERK-03 |
@@ -232,7 +231,6 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | GFX-02 | DATEI-04, GERAET-05 |
 | GFX-03 | DATEI-04 |
 | GUIDE-01 | START-08 |
-| HARDEN-01 | GERAET-05, TEAMBAU-25 |
 | LIB-02 | BIB-07 |
 | LIB-03 | BIB-06 |
 | LIB-06 | BIB-15 |
@@ -265,7 +263,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | VIEW-01 | DATEI-01, GERAET-04 |
 | VIEW-02 | GERAET-05, DATEI-01 |
 
-### Mit Minecraft (Mod oder Spiel) (52 Pakete)
+### Mit Minecraft (Mod oder Spiel) (55 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -275,6 +273,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | BLOCK-02 | BIB-12, WERK-09 |
 | COOP-01 | TEAMBAU-01, TEAMBAU-25, TEAMBAU-03, TEAMBAU-05 |
 | COOP-07 | TEAMBAU-25, LINK-07 |
+| COOP-09 | TEAMBAU-25 |
 | COOP-10 | TEAMBAU-27, TEAMBAU-25 |
 | CORE-04 | PROJ-21, WERK-01, WERK-09 |
 | DIFF-01 | BIB-02, PROJ-07 |
@@ -295,6 +294,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | GEN-02 | BIB-06, BIB-12 |
 | GEN-03 | BIB-14 |
 | GROSS-01 | BIB-13, PROJ-09, BIB-21 |
+| HARDEN-01 | GERAET-05, TEAMBAU-25 |
 | LIB-04 | BIB-03, BIB-12 |
 | LIB-05 | BIB-12 |
 | LIB-07 | BIB-02 |
@@ -311,6 +311,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | NAME-01 | START-01, MOD-29 |
 | NBT-01 | DATEI-08 |
 | PERF-06 | GERAET-03 |
+| PRIV-01 | TEAMBAU-25 |
 | QA-04 | SYS-01, LIVE-06 |
 | RELEASE-01 | DATEI-01, LIVE-01, START-01 |
 | SIZE-01 | DATEI-05, WERK-07, MOD-11, LIVE-02 |

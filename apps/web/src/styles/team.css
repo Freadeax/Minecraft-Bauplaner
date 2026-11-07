@@ -144,3 +144,9 @@ details.team-emergency:not(.team-block) { margin-top: .6rem; }
 .team-protect { margin: .6rem 0; padding: .5rem .7rem; border: 1px solid var(--line); border-radius: 8px; }
 .team-protect h4 { margin: 0 0 .25rem; }
 .team-protect label { display: flex; flex-direction: column; gap: 2px; font-size: .92em; }
+/* PRIV-01-S05 Zugänge im Team-Raum */
+.team-keys{margin-top:10px}.team-keys>summary{cursor:pointer;font-weight:600}.team-keys-waiting{color:var(--warn,#c78a1c);font-weight:600}
+.team-keys-list{list-style:none;padding:0;margin:8px 0;display:grid;gap:10px}.team-keys-list>li{border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.team-keys-who{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.team-keys-pending{color:var(--warn,#c78a1c);font-size:12px}
+.team-keys-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}.team-keys-table th{text-align:left;font-weight:500;color:var(--muted)}.team-keys-table td,.team-keys-table th{padding:3px 6px 3px 0;overflow-wrap:anywhere}
+.team-keys-strict{display:flex;gap:6px;align-items:flex-start;margin-top:8px;font-size:13px}

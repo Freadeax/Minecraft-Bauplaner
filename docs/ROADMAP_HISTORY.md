@@ -860,3 +860,24 @@ Startseite mit drei Einstiegen (fortsetzen, Bauwerk wählen, Datei ansehen/impor
 - `tests/e2e/workspace.e2e.mjs`
 - `tests/unit/web/view-tools.test.mjs`
 
+## 2026-11-07T20:55:35.260Z · progress
+
+**Aufgaben:** PRIV-01
+
+Einladungen einzeln widerrufbar: Zugänge im Team-Raum mit Widerrufen, Bestätigen und nur persönlichen Schlüsseln
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PRIV-01 | 🧩 Implementiert · Abnahme offen | 8/8 | Zugänge-Liste wirkt im echten Dienst, sobald der Team-Raum mit TEAM-SEC-01/HARDEN-01 ausgerollt ist (bis dahin Hinweis „ältere Fassung“); danach Abnahme im Spiel. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/dataFlows.ts`
+- `apps/web/src/styles/team.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/project/team/TeamKeys.tsx`
+- `apps/web/src/views/project/team/TeamRoom.tsx`
+- `docs/architecture/betrieb/DATENSCHUTZ.md`
+- `docs/testing/TESTPLAN.md`
+- `tests/e2e/team-room.e2e.mjs`
+
