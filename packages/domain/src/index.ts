@@ -63,7 +63,7 @@ export * from './editor/index.js';
 export { groupOperation } from './core/project.js';
 export type { GroupAction } from './core/project.js';
 export { ANLAGEN, ANLAGE_SCHEMA_VERSION, SHIPPED_LABEL, MIN_SPACING, MAX_SPACING, MAX_SHIFT, DEFAULT_ROW_WIDTH, PATH_MODULES, anlageById, anlageForTheme, themeOfAnlage, normalizeChoices, planAnlage, draftAnlage, previewAnlage,
-  createAnlageProject, anlageIntoProject, besideOffset, swapCandidates, pinnedVersionIdsOf } from './base/anlagen.js';
+  createAnlageProject, anlageIntoProject, besideOffset, swapCandidates, pinnedVersionIdsOf, openWaterEdges, partWithRims, WATER_RIM_BLOCK } from './base/anlagen.js';
 export type { Anlage, AnlageDistrict, AnlageSlot, AnlageSide, AnlagePathKind, AnlageChoices, AnlageLibrary, SlotStatus, SlotState, Footprint, AnlagePlacement, DistrictLayout, AnlagePlan, AnlageDraft, SpacingIssue, AnlagePreview, SwapCandidate } from './base/anlagen.js';
 export { checkTerrain, terrainBox, REPLACEABLE_IDS, FLUID_IDS, NATURAL_TERRAIN_IDS, TERRAIN_VERDICT_LABEL, FOOT_VERDICT_LABEL, TERRAIN_DEPTH } from './world/terrain.js';
 export type { TerrainGrid, TerrainCheck, TerrainOptions, TerrainVerdict, FootVerdict } from './world/terrain.js';
@@ -130,7 +130,7 @@ export { BASE_TEMPLATES, baseTemplateById, defaultZones, zoneKeyFor, normalizeBa
 export type { BaseTemplate, BaseZoneChoice, BaseChoices, NormalizedBaseChoices, WaterSide, PathStyle, BaseMemberPlan, BaseZonePlan, BaseLayout, BasePlan } from './base/base.js';
 export { fitBaseShore, shoreSides, suggestWaterSide, realShoreMap, SHORE_WIDE, SHORE_COAST_SHARE, SHORE_INLAND_SHARE, SHORE_SEARCH, SHORE_MAX_SHIFT } from './base/baseShore.js';
 export type { ShoreSide, ShoreFit, ShoreClash, ShoreInput, ShoreMap } from './base/baseShore.js';
-export { NETWORK_MODE_LABEL, NETWORK_SURFACE, isNetworkPlacement, withoutNetwork, wetPlacements, applyPlanLandscape, lampPostPart } from './base/planLandscape.js';
+export { NETWORK_MODE_LABEL, NETWORK_SURFACE, isNetworkPlacement, withoutNetwork, wetPlacements, applyPlanLandscape, lampPostPart, landscapeRims } from './base/planLandscape.js';
 export type { NetworkMode, PlanNetwork, PlanLandscapeInput, PlanLandscapeResult, WetPlacement } from './base/planLandscape.js';
 export { analyzeSplit, extractParts, extractRest, splitProject, blockClass, SPLIT_DEFAULTS, SPLIT_MAX_COLUMNS, NO_GROUND } from './core/split.js';
 export type { SplitOptions, SplitPart, SplitAnalysis, ExtractOptions, ExtractedPart, GroundMode, SplitProjectPart, BlockClass as SplitBlockClass } from './core/split.js';

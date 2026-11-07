@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { NETWORK_MODE_LABEL, applyPlanLandscape, designFromSurvey, fitAnlageToTerrain, lampPostPart, withoutNetwork } from '../../../../../packages/domain/src/index.js';
+import { NETWORK_MODE_LABEL, applyPlanLandscape, designFromSurvey, fitAnlageToTerrain, lampPostPart, landscapeRims, withoutNetwork } from '../../../../../packages/domain/src/index.js';
 import type { AnlagePlan, AnlageTerrainFit, Asset, AssetVersion, NetworkMode, Operation, PathSteps, PathWater, PlanLandscapeResult, PlanNetwork, Project, TerrainDesign, TerrainMode, TerrainSurvey } from '../../../../../packages/domain/src/index.js';
 import type { Repository } from '../../app/repository';
 import { formatNumber } from '../../app/ui';
@@ -90,7 +90,9 @@ export async function adoptLandscape<T extends AnlagePlan & { network: unknown }
   const reference = await storeDesign(repo, design, base, `${input.name} – Gelände`);
   const operation: Operation = { kind: 'terrainDesign.set', design: reference, label: `Gelände für „${input.name}“ angepasst` };
   if (!landscape) return { plan, heights: fit.heights, operation, result, lamps: null };
-  const lamps = await lampPostPart(result.lamps, { origin, offset: input.offset, key: input.networkKey, name: input.name, asphalt: !!input.asphalt });
+  // The network part (with its rims at open water edges) is replaced: the lamp part takes the rims at the fitted heights.
+  const rims = landscapeRims(fitted, { origin, offset: input.offset, heights: fit.heights });
+  const lamps = await lampPostPart(result.lamps, { origin, offset: input.offset, key: input.networkKey, name: input.name, asphalt: !!input.asphalt, rims });
   const adopted = { ...fitted, placements: [...fitted.placements, ...(lamps ? [lamps.placement] : [])], network: lamps ? { asset: lamps.asset, version: lamps.version } : null } as T;
   return { plan: adopted, heights: fit.heights, operation, result, lamps: lamps ? { asset: lamps.asset, version: lamps.version } : null };
 }
@@ -105,7 +107,7 @@ export function landscapeSummary(r: PlanLandscapeResult): string {
   if (r.grade) parts.push(`${formatNumber(r.grade.graded)} Bauplatzspalten eingeebnet, ${formatNumber(r.grade.blended)} angeglichen`);
   if (r.reclaimed) parts.push(`${formatNumber(r.reclaimed)} Spalten Bauplatz aus dem Wasser gewonnen`);
   if (r.quay) parts.push(`${formatNumber(r.quay)} Felder Kaimauer`);
-  if (r.lamps.length || r.lampsDropped) parts.push(`${r.lamps.length} Laternen auf dem Gelände${r.lampsDropped ? ` (${r.lampsDropped} im Wasser oder auf dem Weg ausgelassen)` : ''}`);
+  if (r.lamps.length || r.lampsDropped) parts.push(`${r.lamps.length} Laternen auf dem Gelände${r.lampsDropped ? ` (${r.lampsDropped} im Wasser, auf dem Weg oder am steilen Hang ausgelassen)` : ''}`);
   if (r.path && !r.path.columns && r.path.unknown) parts.push('Wege liegen außerhalb der Geländeaufnahme');
   return parts.length ? `${parts.join('; ')}.` : 'Keine Änderung am Gelände (Plan liegt außerhalb der Geländeaufnahme?).';
 }

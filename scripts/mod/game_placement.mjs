@@ -1,11 +1,13 @@
 // BLOCK-01/02 Spielprüfstand, Treiber zu scripts/mod/test_game_placement.sh:
 //   prepare <dir> [set ...]   schreibt je Plan eine Auftragsdatei <dir>/jobs/<n>.txt für das Test-Plugin
-//                             scripts/mod/probe/PlacementProbe.java (Sätze: catalog, generators; Standard: alle)
+//                             scripts/mod/probe/PlacementProbe.java (Sätze: catalog, generators, gelaende, basis,
+//                             grossprojekte, grossprojekteGelaende,
+//                             alle; Standard: catalog generators)
 //   verify <dir>              liest <dir>/results/*.json, ordnet jede Abweichung ein, schreibt <dir>/bericht.md
 //                             und beendet sich mit Fehler, wenn das Spiel einen Plan verändert hat
-// Weitere Sätze (Gelände, Großprojekte, Basisplaner) melden sich in SETS an: eine Funktion, die
+// Weitere Sätze melden sich in SETS an (Gelände, Basisplaner, Großprojekte: placement_worlds.mjs): eine Funktion, die
 // { name, payload } liefert. Der Plan steht mit y = 0 auf einer flachen Grasebene; leere Zellen sind Luft.
-import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -39,6 +41,11 @@ export const SETS = {
       }
     }
   },
+  // TERRAIN-03/05, BASE-01, GROSS-01: Gelände, Basisplaner und Großprojekte als ganze Welten (placement_worlds.mjs).
+  async *gelaende() { yield* (await import('./placement_worlds.mjs')).terrainParts(); },
+  async *basis() { yield* (await import('./placement_worlds.mjs')).basePlans(); },
+  async *grossprojekte() { yield* (await import('./placement_worlds.mjs')).grossprojektPlans(); },
+  async *grossprojekteGelaende() { yield* (await import('./placement_worlds.mjs')).grossprojektLandscapes(); },
 };
 
 const isLiquid = s => /^minecraft:(water|lava)$/.test(s.id) || s.properties?.waterlogged === 'true';
@@ -59,6 +66,33 @@ export function jobText(name, payload) {
     blocks.push(`${x} ${y} ${z} ${stateString(s)}`);
   }
   return [`${name.replace(/\s+/g, ' ')}\t${size.join(' ')}${sea >= 0 ? `\t${sea}` : ''}`, ...blocks].join('\n') + '\n';
+}
+
+/** Part of every block (relative position → part name), for worlds made of several parts (placement_worlds.mjs). */
+function partsOf(payload) {
+  const min = payload.bounds.min, out = {};
+  payload.cells.forEach((c, i) => { if (c.kind === 'block') out[`${c.position[0] - min[0]},${c.position[1] - min[1]},${c.position[2] - min[2]}`] = payload.parts[i]; });
+  return out;
+}
+
+const SIDES = { north: [0, 0, -1], south: [0, 0, 1], east: [1, 0, 0], west: [-1, 0, 0] };
+/**
+ * A connection the game makes towards a block of another part (a fence of a house next to the terrain,
+ * the next house or a rim stone): every part is drawn for itself, the planner cannot show it connected.
+ * Reported as a seam (Naht), not as an error.
+ */
+export function isSeam(d, parts) {
+  if (!parts) return false;
+  const want = parseState(d.want), got = parseState(d.got);
+  if (want.id !== got.id) return false;
+  const changed = Object.keys({ ...want.props, ...got.props }).filter(k => want.props[k] !== got.props[k]);
+  const own = parts[d.p.join(',')];
+  return changed.length > 0 && changed.every(k => {
+    const o = SIDES[k];
+    if (!o) return false;
+    const n = parts[[d.p[0] + o[0], d.p[1] + o[1], d.p[2] + o[2]].join(',')];
+    return n !== undefined && n !== own;
+  });
 }
 
 const parseState = s => {
@@ -95,15 +129,19 @@ export function classify(d) {
 if (!main) {
   // imported as a module (SETS, jobText, classify)
 } else if (mode === 'prepare') {
+  rmSync(join(dir, 'parts'), { recursive: true, force: true });
   mkdirSync(join(dir, 'jobs'), { recursive: true });
-  const sets = wanted.length ? wanted : Object.keys(SETS);
+  mkdirSync(join(dir, 'parts'), { recursive: true });
+  const sets = !wanted.length ? ['catalog', 'generators'] : wanted.includes('alle') ? Object.keys(SETS) : wanted;
   let n = 0, blocks = 0;
   for (const set of sets) {
     if (!SETS[set]) throw new Error(`Unbekannter Satz ${set} (${Object.keys(SETS).join(', ')})`);
     for await (const { name, payload } of SETS[set]()) {
       const text = jobText(name, payload);
       blocks += text.split('\n').length - 2;
-      writeFileSync(join(dir, 'jobs', `${String(n++).padStart(5, '0')}.txt`), text);
+      const file = String(n++).padStart(5, '0');
+      writeFileSync(join(dir, 'jobs', `${file}.txt`), text);
+      if (payload.parts) writeFileSync(join(dir, 'parts', `${file}.json`), JSON.stringify(partsOf(payload)));
     }
   }
   console.log(`Spielprüfung vorbereitet: ${n} Pläne, ${blocks} Blöcke (${sets.join(', ')}).`);
@@ -120,11 +158,16 @@ if (!main) {
     // Cells the plan fills with a liquid (or a waterlogged block): a spill starts next to one of them.
     const plan = new Map(readFileSync(join(dir, 'jobs', f.replace(/\.json$/, '.txt')), 'utf8').split('\n').slice(1).filter(Boolean)
       .map(l => { const [x, y, z, st] = l.split(' '); return [`${x},${y},${z}`, st]; }));
+    const partsFile = join(dir, 'parts', f);
+    const parts = existsSync(partsFile) ? JSON.parse(readFileSync(partsFile, 'utf8')) : null;
+    let seams = 0;
     const plannedWater = new Set([...plan].filter(([, st]) => /minecraft:(water|lava)\b|waterlogged=true/.test(st)).map(([k]) => k));
     const flowing = new Map(r.diffs.filter(d => d.want == null && /water|lava/.test(d.got)).map(d => [d.p.join(','), d]));
     for (const d of r.diffs) {
-      const c = classify(d);
+      let c = classify(d);
+      if (c.kind === 'connects' && isSeam(d, parts)) { c = { kind: 'seam', note: c.note }; seams++; }
       counts[c.kind] = (counts[c.kind] ?? 0) + 1;
+      if (c.kind === 'seam') continue;
       if (c.kind === 'harmless') continue;
       if (c.kind === 'flows') {
         // Only the first cell of a spill is reported: the one next to (or under) a cell the plan fills.
@@ -147,13 +190,15 @@ if (!main) {
     const found = [...groups].map(([k, ps]) => `${k} – ${ps.length}× bei ${ps.slice(0, 4).join(' / ')}${ps.length > 4 ? ' …' : ''}`);
     const outside = [...flowing.values()].filter(d => d.p[0] < 0 || d.p[2] < 0 || d.p[0] >= r.size[0] || d.p[2] >= r.size[2]).length;
     if (outside && !found.some(f => /^leaks/.test(f))) found.push(`leaks: ${outside} Zellen Flüssigkeit außerhalb des Plans (über abgeleitete Wasserzellen)`);
-    if (info.length) infos.push({ name: r.name, info });
+    if (info.length || seams) infos.push({ name: r.name, info, seams });
     if (found.length) bad.push({ name: r.name, found });
   }
   const lines = [`# Spielprüfung ${new Date().toISOString().slice(0, 10)}`, '',
     `${files.length} von ${jobs.length} Plänen im echten Server geprüft, ${blocks} Blöcke. Abweichungen: ${JSON.stringify(counts)}.`, ''];
   for (const b of bad) lines.push(`## ${b.name}`, '', ...b.found.slice(0, 40).map(l => `- ${l}`), b.found.length > 40 ? `- … ${b.found.length - 40} weitere` : '', '');
-  if (infos.length) lines.push('## Hinweise (kein Fehler)', '', ...infos.map(i => `- ${i.name}: ${i.info.length} Zellen fließendes Wasser/Lava im Plan, z. B. ${i.info[0]}`), '');
+  if (infos.length) lines.push('## Hinweise (kein Fehler)', '', ...infos.map(i => `- ${i.name}: ${[
+    i.info.length && `${i.info.length} Zellen fließendes Wasser/Lava im Plan, z. B. ${i.info[0]}`,
+    i.seams && `${i.seams} Verbindungen an Nähten zwischen zwei Bauteilen (Zaun, Mauer oder Scheibe verbindet sich im Spiel mit dem Nachbarbauteil, z. B. Haus und Gelände)`].filter(Boolean).join('; ')}`), '');
   writeFileSync(join(dir, 'bericht.md'), lines.join('\n'));
   console.log(lines.slice(0, 3).join('\n'));
   for (const b of bad.slice(0, 30)) console.log(`  ${b.name}: ${b.found.length} – ${b.found.slice(0, 3).join(' | ')}`);

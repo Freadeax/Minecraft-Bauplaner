@@ -1,4 +1,5 @@
-import type { Transform } from '../../../voxel/src/types.js';
+import type { Cell, Transform, Vec3, VoxelPayload } from '../../../voxel/src/types.js';
+import { createPayload } from '../../../voxel/src/validation.js';
 import { BUILD_THEMES } from '../catalog/buildThemes.js';
 import { resolveProject } from '../core/compose.js';
 import type { Resolution, VoxelConflict } from '../core/compose.js';
@@ -300,6 +301,11 @@ export interface AnlagePlacement {
   readonly footprint: Footprint;
   /** Spread-out part (a routed path network, BASE-01): its box is no footprint, spacing is not checked against it. */
   readonly area?: boolean;
+  /**
+   * Stands in the water (harbour piers, BASE-01): on terrain its base layer goes one below the water
+   * surface (posts in the water, deck above it), and levelling building sites leaves its water alone.
+   */
+  readonly inWater?: boolean;
 }
 export interface DistrictLayout {
   readonly id: string;
@@ -667,3 +673,70 @@ export function swapCandidates(entries: readonly { readonly asset: Pick<Asset, '
 
 /** Pinned version ids of a plan (for tests and the "feste Versionen" list). */
 export const pinnedVersionIdsOf = (plan: AnlagePlan): string[] => [...new Set(plan.placements.map(p => p.version.id))];
+
+// ------------------------------------------------------------------ Wasserkanten (Spielprüfstand)
+
+/** Block that closes an open water edge of a building inside a plan. */
+export const WATER_RIM_BLOCK = 'minecraft:stone_bricks';
+const isLiquidState = (s: { id: string; properties: Readonly<Record<string, string>> }): boolean =>
+  s.id === 'minecraft:water' || s.id === 'minecraft:lava' || s.properties.waterlogged === 'true';
+
+/**
+ * Open water edges of the buildings in a composed plan (Spielprüfstand, BASE-01/GROSS-01): a building
+ * whose water reaches its own outer side (mill stream, moat, fish pond, irrigation channel, aqueduct end)
+ * expects open water or its neighbour module there. Inside a town or base there is a street, a gap or a
+ * slope instead, and the water ran out over the ground. Returns the cells (project coordinates, sorted)
+ * right outside such an edge where the plan has nothing: a rim block there keeps the water in. Cells
+ * where a neighbour continues the water (another module, a channel) stay open.
+ */
+export function openWaterEdges(resolution: Pick<Resolution, 'world' | 'placed'>): Vec3[] {
+  if (!resolution.world) return [];
+  const world = resolution.world, { min, maxExclusive: max } = world.bounds;
+  const index = new Map<string, Cell>();
+  for (const c of world.cells) index.set(`${c.position[0]},${c.position[1]},${c.position[2]}`, c);
+  const filled = (x: number, y: number, z: number): boolean => {
+    if (x < min[0] || y < min[1] || z < min[2] || x >= max[0] || y >= max[1] || z >= max[2]) return false;
+    // Any cell of the plan counts (a block holds the water, another building's air must stay free).
+    return index.has(`${x},${y},${z}`);
+  };
+  const rims = new Map<string, Vec3>();
+  for (const p of resolution.placed) {
+    const pay = p.payload, b = pay.bounds;
+    for (const c of pay.cells) {
+      if (c.kind !== 'block' || !isLiquidState(pay.palette[c.paletteIndex]!)) continue;
+      const [x, y, z] = c.position;
+      for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const nx = x + dx, nz = z + dz;
+        if (nx >= b.min[0] && nz >= b.min[2] && nx < b.maxExclusive[0] && nz < b.maxExclusive[2]) continue; // inside its own box
+        if (filled(nx, y, nz)) continue;
+        rims.set(`${nx},${y},${nz}`, [nx, y, nz]);
+      }
+    }
+  }
+  return [...rims.values()].sort((a, b) => a[0] - b[0] || a[2] - b[2] || a[1] - b[1]);
+}
+
+/**
+ * Adds rim blocks (plan coordinates) to a network part given in plan coordinates by its origin, or makes
+ * a part of them alone. Returns the payload and its plan position (min corner), null when empty.
+ */
+export function partWithRims(net: { payload: VoxelPayload; origin: readonly [number, number] } | null, rims: readonly Vec3[]): { payload: VoxelPayload; position: Vec3 } | null {
+  if (!rims.length) return net ? { payload: net.payload, position: [net.origin[0], 0, net.origin[1]] } : null;
+  const palette = [...(net?.payload.palette ?? [])];
+  let rim = palette.findIndex(s => s.id === WATER_RIM_BLOCK && !Object.keys(s.properties).length);
+  if (rim < 0) { rim = palette.length; palette.push({ id: WATER_RIM_BLOCK, properties: {} }); }
+  const cells: { position: Vec3; kind: 'block'; paletteIndex: number }[] = [];
+  const taken = new Set<string>();
+  for (const c of net?.payload.cells ?? []) {
+    if (c.kind !== 'block') continue;
+    const pos: Vec3 = [c.position[0] + net!.origin[0], c.position[1], c.position[2] + net!.origin[1]];
+    taken.add(pos.join(',')); cells.push({ position: pos, kind: 'block', paletteIndex: c.paletteIndex });
+  }
+  for (const r of rims) if (!taken.has(r.join(','))) { taken.add(r.join(',')); cells.push({ position: [r[0], r[1], r[2]], kind: 'block', paletteIndex: rim }); }
+  const lo: [number, number, number] = [Infinity, Infinity, Infinity], hi: [number, number, number] = [-Infinity, -Infinity, -Infinity];
+  for (const c of cells) for (let i = 0; i < 3; i++) { lo[i] = Math.min(lo[i]!, c.position[i]!); hi[i] = Math.max(hi[i]!, c.position[i]!); }
+  const payload = createPayload({ schemaVersion: 1, profileId: net?.payload.profileId ?? SAMPLE_PROFILE, bounds: { min: [0, 0, 0], maxExclusive: [hi[0] - lo[0] + 1, hi[1] - lo[1] + 1, hi[2] - lo[2] + 1] },
+    pivot: [0, 0, 0], sourceOrigin: [0, 0, 0], palette, blockEntities: [],
+    cells: cells.map(c => ({ position: [c.position[0] - lo[0], c.position[1] - lo[1], c.position[2] - lo[2]] as Vec3, kind: 'block' as const, paletteIndex: c.paletteIndex })) });
+  return { payload, position: lo };
+}

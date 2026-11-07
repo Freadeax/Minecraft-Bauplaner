@@ -87,7 +87,7 @@ export const AUTO_CHECKS: readonly AutoCheck[] = [
   {
     caseId: 'BIB-14', scope: 'teil',
     covers: 'Der Arena-Generator mit den Vorlagen „Kolosseum“ und „Provinzarena“, allen Stilen und Bereichsenden steht im echten Paper-26.3-Server ohne einen abfallenden, schwebenden oder anders verbundenen Block (Statuen, Hypogäum-Treppen, Bögen, Ränge eingeschlossen); die Antike-Gebäude des Bausets ebenso.',
-    remaining: 'Kolosseum-Viertel als Projekt (Quartiere, Bauanleitung, Material) im Browser und ein Kolosseum in der eigenen Welt aufstellen; das ganze Viertel auf Gelände prüft der Gelände-Block.',
+    remaining: 'Kolosseum-Viertel als Projekt (Quartiere, Bauanleitung, Material) im Browser und ein Kolosseum in der eigenen Welt aufstellen; das ganze Viertel flach und auf Gelände prüfen die Sätze grossprojekte und grossprojekteGelaende (BIB-13, BIB-21).',
     command: 'scripts/mod/test_game_placement.sh catalog generators',
     evidence: '06.11.2026, Paper 26.3 Build 244 (Java 25), Quellstand BLOCK-02-S07: 559 Pläne (358 Katalog-Gebäude, 201 Generator-Fälle), 878.974 Blöcke, 0 Abweichungen; der erste Lauf fand 47 Gebäude und den Brunnen-Generator, alle behoben.',
   },
@@ -147,6 +147,48 @@ export const AUTO_CHECKS: readonly AutoCheck[] = [
     remaining: 'Im Planer den Reiter „Produktion“ mit der Farm ansehen und eine echte Farm auf Philipps Server über 30 min laufen lassen. Stichprobe auf Paper 26.3 mit dem eigenen Client (die Bot-Bibliothek kann 26.3 noch nicht; auf 26.3 läuft nur der Konsolentest).',
     command: 'scripts/mod/test_bridge_paper_bots.sh farm 1.21.11',
     evidence: '07.11.2026, Plugin aus dem Quellstand (COOP-08-S05): Paper 1.21.11 (Build 132), zwei Bot-Spieler, Team-Raum wrangler dev: 26 Zuckerrohr in 10 min = 156/h im Spiel und im Planer, grün in 680 s.',
+  // Block 2 Unterthread „Gelände und Großprojekte im Spiel prüfen“ (07.11.2026): Sätze gelaende, basis, grossprojekte, grossprojekteGelaende
+  {
+    caseId: 'PROJ-06', scope: 'teil',
+    covers: 'Geländebauteile aus dem Landschaftsreiter stehen im echten Paper-26.3-Server so, wie der Planer sie übergibt (volle Säulen, vom Spiel aktualisiert): Wege mit Treppen und Halbstufen am Hang in allen 9 Stufenmaterialien, Wegkurven in jeder Wegart, Brücken mit Geländer (Breite 1 und 3, jedes Material) und Dämme über einen Bach, Brücken am Hang, Rampen hinauf, hinunter und steil, Wegnetze über Hügel und Wasser. Keine Treppe ändert ihre Form, kein Geländer seine Pfosten, kein Pfad unter einer Stufe wird zu Erde, kein Wasser läuft aus. Für den früheren Fall PROJ-19 (Pläne auf geplantem Gelände) stehen dazu Basen und Großprojekte mit Landschaftsweg, eingeebneten Bauplätzen, Kaimauer, Laternen und Stegen auf einem Hügel am Meer ohne Abweichung (Sätze basis, grossprojekteGelaende).',
+    remaining: 'Bedienung im Browser (Rampe mit M, Aufschütten mit U, Weg-Werkzeug, Rückgängig, 3D-Ansicht) und „Als Bauteil ins Projekt übernehmen“ → .litematic in der eigenen Welt ansehen.',
+    command: 'scripts/mod/test_game_placement.sh gelaende basis && BAUPLANER_PLACEMENT_XMX=11G scripts/mod/test_game_placement.sh grossprojekteGelaende',
+    evidence: '07.11.2026, Paper 26.3 Build 244 (Java 25), Quellstand Spielprüfstand Gelände/Großprojekte: 111 Geländepläne (831.346 Blöcke), 6 Basen und 13 Großprojekte auf Gelände, 0 Abweichungen. Der erste Lauf fand Treppen ohne Eckform in Kurven, Mauergeländer mit falschen Pfosten, Trampelpfad unter Stufen (wird Erde) – jetzt verbindet designPayload wie das Spiel.',
+  },
+  {
+    caseId: 'PROJ-26', scope: 'teil',
+    covers: 'Formstempel (Hügel, Berg, Krater, Mulde, Plateau, je zwei Formen, auto-bemalt), Verwittern mit und ohne Regen an einem steilen Berg, Fluss durch einen Hang (Kies-, Sand-, Lehmbett, schmal und breit), Terrassen und Aufrauen, jede Bodenart am Hügel, Kaimauer am See und jede Streu-Vorlage (Wald, Wiese, Felsen, Wüste, Ufer, Kirschhain, Pilze) stehen im echten Paper-26.3-Server ohne abfallende Blöcke, auslaufendes Wasser oder Drops.',
+    remaining: 'Werkzeuge im Browser bedienen (F, V, L, Maske „Bauplätze schützen“, „nur bis Y“) und das Bauteil in der eigenen Welt ansehen.',
+    command: 'scripts/mod/test_game_placement.sh gelaende',
+    evidence: '07.11.2026, Paper 26.3 Build 244 (Java 25), Quellstand Spielprüfstand Gelände/Großprojekte: 111 Geländepläne, 0 Abweichungen. Der erste Lauf fand Pilze auf Gras/Moos im Tageslicht (fallen ab, jetzt nur auf Podsol/Myzel) und einen Absturz beim Übernehmen von Bruchstein-Felsen auf Geröll (doppelter Palettenzustand), beide behoben.',
+  },
+  {
+    caseId: 'BIB-10', scope: 'teil',
+    covers: 'Alle drei Basis-Vorlagen mit jeder Wegart, Wegbreite 1 und 5, ohne Laternen, größerem Abstand und jeder Wasserseite als ganze Projektwelt (Gebäude + Wegenetz-Bauteil) im echten Paper-26.3-Server: nichts fällt ab, keine Verbindung ändert sich, kein Wasser läuft aus.',
+    remaining: 'Bedienung im Browser: Zonen an-/abwählen und tauschen, Übernehmen, Abschnitte „Wege & Platz“ und „Phase 1–4“ ansehen.',
+    command: 'scripts/mod/test_game_placement.sh basis',
+    evidence: '07.11.2026, Paper 26.3 Build 244 (Java 25), Quellstand Spielprüfstand Gelände/Großprojekte: 28 Basispläne (22 flach, 6 auf Gelände), 1.020.450 Blöcke, 0 Abweichungen. Behoben: das Bootshausbecken lief über den Strand aus (Schwelle wie beim Werft-Docktor).',
+  },
+  {
+    caseId: 'BIB-19', scope: 'teil',
+    covers: 'Küstenbasis, Starterbasis und Handelshafen auf einem Hügel mit Meer: Wegenetz als Landschaftsweg (Treppen/Halbstufen, Brücke/Damm), Bauplätze eingeebnet mit Kaimauer, Laternen auf dem Gelände, alles zusammen im echten Paper-26.3-Server ohne Abweichung.',
+    remaining: 'Echte Küste aus der eigenen Welt (Gelände aus der Mod), Kasten zur Küste, „Ans echte Ufer schieben“ und das Ergebnis im eigenen Spiel ansehen.',
+    command: 'scripts/mod/test_game_placement.sh basis',
+    evidence: '07.11.2026, Paper 26.3 Build 244 (Java 25), Quellstand Spielprüfstand Gelände/Großprojekte: 6 Basen auf Gelände, 0 Abweichungen. Behoben: Stege sanken auf den Meeresgrund (Deck unter Wasser) und wurden beim Einebnen trockengelegt; Erde lag an Hauswänden und unter Vordächern und Windmühlenflügeln an (Zäune verbanden sich); Laternenzäune berührten den Hang.',
+  },
+  {
+    caseId: 'BIB-13', scope: 'teil',
+    covers: 'Alle 13 Großprojekte (darunter das Kolosseum-Viertel) als ganze Projektwelt mit Straßennetz im echten Paper-26.3-Server, dazu jedes Straßennetz in allen vier Belägen und den Breiten 2, 5 und 9: nichts fällt ab, kein Wasser läuft aus, keine Verbindung ändert sich (2 Nähte Zaun–Randstein im Kolosseum-Viertel als Hinweis).',
+    remaining: 'Bedienung im Browser: Quartier abwählen, Straßen ändern, Platz tauschen/drehen, als Projekt anlegen; Großbauwerke begehen.',
+    command: 'scripts/mod/test_game_placement.sh grossprojekte',
+    evidence: '07.11.2026, Paper 26.3 Build 244 (Java 25), Quellstand Spielprüfstand Gelände/Großprojekte: 169 Pläne, 1.202.411 Blöcke, 0 Abweichungen. Der erste Lauf fand in 10 Großprojekten Wasser, das aus Mühlbach, Wassergraben, Fischteich, Bewässerung, Werft oder Aquädukt auf die Straße lief – jetzt setzt das Straßennetz Randsteine an offene Wasserkanten.',
+  },
+  {
+    caseId: 'BIB-21', scope: 'teil',
+    covers: 'Alle 12 Großprojekte mit Straßen auf einem Hügel: Straßennetz als Landschaftsweg mit Treppen und Brücken, Bauplätze eingeebnet, Laternen und Randsteine auf dem Gelände, zusammen im echten Paper-26.3-Server ohne Abweichung (Nähte Haus–Gelände nur als Hinweis).',
+    remaining: 'Echter Bauplatz mit Geländeaufnahme („Flachsten Platz suchen“, Wasserkanten in der Prüfung), eigenes Großprojekt aus einer Sammlung, Ergebnis im eigenen Spiel.',
+    command: 'BAUPLANER_PLACEMENT_XMX=11G scripts/mod/test_game_placement.sh grossprojekteGelaende',
+    evidence: '07.11.2026, Paper 26.3 Build 244 (Java 25), Quellstand Spielprüfstand Gelände/Großprojekte: 13 Welten, 3.086.268 Blöcke, 0 Abweichungen, 8 Nähte als Hinweis.',
   },
   // Block 7 „Projekt, Produktion und Weltkarte vertiefen“ (06.11.2026)
   { caseId: 'PROJ-03', scope: 'teil', covers: 'Bauabschnitte anlegen, Schritte abhaken, Neuladen, Druckansicht (Druckmedium) und Handy-Baumodus in Chromium.', remaining: 'Echter Drucker und echtes Telefon (GERAET-06).',

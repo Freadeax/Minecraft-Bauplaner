@@ -5,9 +5,10 @@
 # Block, der abfällt, sich umwandelt, anders verbindet, ausläuft oder als Drop endet.
 # Braucht JDK 25 (BAUPLANER_JAVA25 oder /usr/lib/jvm/java-25-openjdk-*), Netz zu fill.papermc.io und den
 # Mojang-Servern (nur beim ersten Lauf, danach Cache) und `npm run build:core`.
-# Aufruf: scripts/mod/test_game_placement.sh [satz ...]   (Standard: catalog generators)
+# Aufruf: scripts/mod/test_game_placement.sh [satz ...]   (Standard: catalog generators; weitere Sätze gelaende,
+# basis, grossprojekte, grossprojekteGelaende oder alle – siehe scripts/mod/placement_worlds.mjs)
 # Bericht: $BAUPLANER_PLACEMENT_OUT/bericht.md (Standard: ein Temp-Ordner, der erhalten bleibt, wenn etwas abweicht).
-# Nicht Teil von `npm run check` (einige Minuten).
+# Nicht Teil von `npm run check` (einige Minuten). Große Projektwelten: BAUPLANER_PLACEMENT_XMX=8G.
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 version=26.3
@@ -50,10 +51,10 @@ simulation-distance=2
 spawn-monsters=false
 spawn-animals=false
 EOF
-(cd "$server" && "$java" -Xmx3G -Dfile.encoding=UTF-8 -jar "$jar" --nogui </dev/null >"$work/server.log" 2>&1) || true
+(cd "$server" && "$java" -Xmx${BAUPLANER_PLACEMENT_XMX:-3G} -Dfile.encoding=UTF-8 -jar "$jar" --nogui </dev/null >"$work/server.log" 2>&1) || true
 if ! grep -qx ok "$probe/done.txt" 2>/dev/null; then
   cat "$probe/done.txt" 2>/dev/null || tail -40 "$work/server.log"
   echo "Spielprüfung nicht durchgelaufen (Protokoll $work/server.log)"; exit 1
 fi
-grep -E "WARN|ERROR" "$work/server.log" | grep -i placementprobe && { echo "Warnungen des Test-Plugins"; exit 1; }
+grep -E "(WARN|ERROR)\]: \[PlacementProbe\]" "$work/server.log" && { echo "Warnungen des Test-Plugins"; exit 1; }
 node scripts/mod/game_placement.mjs verify "$probe"

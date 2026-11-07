@@ -26,9 +26,9 @@ import { DomainError } from '../core/types.js';
  * so material, building steps, Schem/Litematic export and the mod see them.
  */
 
-export type ScatterNeed = 'tree' | 'plant' | 'sand' | 'dry' | 'reed' | 'any';
+export type ScatterNeed = 'tree' | 'plant' | 'sand' | 'dry' | 'reed' | 'mushroom' | 'any';
 export const SCATTER_NEED_LABEL: Readonly<Record<ScatterNeed, string>> = {
-  tree: 'Erde, Gras, Moos oder Schnee', plant: 'Gras, Erde oder Moos', sand: 'Sand', dry: 'Sand, Erde oder Terrakotta', reed: 'Erde oder Sand direkt am Wasser', any: 'jeder Boden',
+  tree: 'Erde, Gras, Moos oder Schnee', plant: 'Gras, Erde oder Moos', sand: 'Sand', dry: 'Sand, Erde oder Terrakotta', reed: 'Erde oder Sand direkt am Wasser', mushroom: 'Podsol oder Myzel', any: 'jeder Boden',
 };
 export type ScatterGroup = 'baum' | 'busch' | 'fels' | 'pflanze';
 export const SCATTER_GROUP_LABEL: Readonly<Record<ScatterGroup, string>> = { baum: 'Bäume', busch: 'Büsche', fels: 'Felsen und Steine', pflanze: 'Pflanzen' };
@@ -138,7 +138,7 @@ export const BUILTIN_SCATTER_PARTS: readonly ScatterPart[] = [
   builtin('blumen', 'Blumen', 'pflanze', 'plant', FLOWERS.length, 'eine Blume je Stelle, Sorte gemischt', v => [{ dx: 0, dy: 0, dz: 0, state: st(FLOWERS[v % FLOWERS.length]!) }]),
   builtin('gras', 'Gras', 'pflanze', 'plant', 4, 'kurzes und hohes Gras', v => v === 3 ? doublePlant('tall_grass') : [{ dx: 0, dy: 0, dz: 0, state: st('short_grass') }]),
   builtin('farn', 'Farn', 'pflanze', 'plant', 3, 'Farn und großer Farn', v => v === 2 ? doublePlant('large_fern') : [{ dx: 0, dy: 0, dz: 0, state: st('fern') }]),
-  builtin('pilze', 'Pilze', 'pflanze', 'any', 2, 'brauner und roter Pilz', v => [{ dx: 0, dy: 0, dz: 0, state: st(v ? 'red_mushroom' : 'brown_mushroom') }]),
+  builtin('pilze', 'Pilze', 'pflanze', 'mushroom', 2, 'brauner und roter Pilz', v => [{ dx: 0, dy: 0, dz: 0, state: st(v ? 'red_mushroom' : 'brown_mushroom') }]),
   builtin('kaktus', 'Kaktus', 'pflanze', 'sand', 3, '1–3 hoch, braucht freie Seiten', v => column('cactus', 1 + v)),
   builtin('toter-busch', 'Toter Busch', 'pflanze', 'dry', 1, 'für Wüste und Steppe', () => [{ dx: 0, dy: 0, dz: 0, state: st('dead_bush') }]),
   builtin('schilf', 'Zuckerrohr', 'pflanze', 'reed', 3, '1–3 hoch, nur direkt am Wasser', v => column('sugar_cane', 1 + v)),
@@ -214,8 +214,8 @@ export const SCATTER_PRESETS: readonly ScatterPreset[] = [
   { id: 'kirschhain', label: 'Kirschhain', hint: 'Kirschbäume und Blumen auf Wiese', layers: [
     { part: B('kirsche'), density: 8, spacing: 6, styles: ['wiese', 'moos'], maxSlope: 2 },
     { part: B('blumen'), density: 40, spacing: 1, styles: ['wiese'], maxSlope: 2 }] },
-  { id: 'pilze', label: 'Pilze im Wald', hint: 'Pilze auf Waldboden, Moos und Sumpf', layers: [
-    { part: B('pilze'), density: 15, spacing: 2, styles: ['wald', 'moos', 'sumpf'], maxSlope: 2 }] },
+  { id: 'pilze', label: 'Pilze im Wald', hint: 'Pilze auf dem Podsol im Waldboden (bei Tageslicht halten sie nur auf Podsol und Myzel)', layers: [
+    { part: B('pilze'), density: 15, spacing: 2, styles: ['wald'], maxSlope: 2 }] },
 ];
 
 /** Adds a preset's layers to the plan (returns the new plan and the new layer ids). */
@@ -238,6 +238,8 @@ const TREE_SOIL = new Set([...SOIL, 'minecraft:snow_block']);
 const SAND = new Set(['minecraft:sand', 'minecraft:red_sand', 'minecraft:suspicious_sand']);
 const DRY = new Set([...SAND, 'minecraft:dirt', 'minecraft:coarse_dirt', 'minecraft:podzol', 'minecraft:terracotta', 'minecraft:mud', 'minecraft:packed_mud']);
 const REED_SOIL = new Set([...SOIL, ...SAND]);
+// Spielprüfstand: a mushroom in daylight only holds on the blocks of #mushroom_grow_block.
+const MUSHROOM_SOIL = new Set(['minecraft:podzol', 'minecraft:mycelium', 'minecraft:crimson_nylium', 'minecraft:warped_nylium']);
 const SOLID_EXCLUDED = new Set(['minecraft:water', 'minecraft:lava', 'minecraft:ice']);
 
 export function groundFits(needs: ScatterNeed, top: string): boolean {
@@ -247,6 +249,7 @@ export function groundFits(needs: ScatterNeed, top: string): boolean {
     case 'sand': return SAND.has(top);
     case 'dry': return DRY.has(top) || top.endsWith('_terracotta');
     case 'reed': return REED_SOIL.has(top);
+    case 'mushroom': return MUSHROOM_SOIL.has(top);
     case 'any': return !SOLID_EXCLUDED.has(top);
   }
 }

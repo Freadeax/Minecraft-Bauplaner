@@ -114,10 +114,14 @@ function unitsOf(plan: AnlagePlan): Unit[] {
   return [...units.values()];
 }
 
-/** Median of known ground under columns; null when none is known. */
-function medianGround(columns: readonly ColumnBase[], s: TerrainSurvey): number | null {
+/**
+ * Median of known ground under columns; null when none is known. `inWater` (piers): over water the
+ * reference is two below the water surface, so the base layer lands one below it (Spielprüfstand: on the
+ * sea bed the deck was under water).
+ */
+function medianGround(columns: readonly ColumnBase[], s: TerrainSurvey, inWater = false): number | null {
   const g: number[] = [];
-  for (const c of columns) { const col = columnAt(s, c.x, c.z); if (col && col.groundId !== '?') g.push(col.ground); }
+  for (const c of columns) { const col = columnAt(s, c.x, c.z); if (col && col.groundId !== '?') g.push(inWater && col.fluid && col.surface > col.ground ? col.surface - 2 : col.ground); }
   if (!g.length) return null;
   g.sort((a, b) => a - b);
   return g[Math.floor(g.length / 2)]!;
@@ -142,7 +146,7 @@ export function fitAnlageToTerrain(plan: AnlagePlan, input: AnlageTerrainInput):
       const ref = path ? medianGround(path.columns, survey) ?? common : common;
       return ref === null ? null : ref + 1;
     }
-    const g = medianGround(u.columns, survey);
+    const g = medianGround(u.columns, survey, u.placements.every(p => p.inWater));
     return g === null ? null : g + 1;
   };
   const heights = new Map<string, number>();

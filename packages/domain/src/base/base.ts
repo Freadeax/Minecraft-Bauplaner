@@ -1,7 +1,7 @@
 import type { Cell, Vec3, VoxelPayload } from '../../../voxel/src/types.js';
 import { createPayload } from '../../../voxel/src/validation.js';
 import { transformCellPosition } from '../../../voxel/src/transforms.js';
-import { SHIPPED_LABEL, normalizeChoices, previewAnlage } from './anlagen.js';
+import { SHIPPED_LABEL, normalizeChoices, openWaterEdges, partWithRims, previewAnlage } from './anlagen.js';
 import type { Anlage, AnlageLibrary, AnlagePlacement, AnlagePlan, AnlagePreview, Footprint, SlotState } from './anlagen.js';
 import { BASE_PHASES, affinity, baseFunctionById, checkRequirements } from './baseFunctions.js';
 import type { BaseFunction, BaseFunctionId, BasePhase, Requirement } from './baseFunctions.js';
@@ -540,7 +540,7 @@ export function layoutBase(library: AnlageLibrary, raw: BaseChoices = {}): BaseL
       if (!f || !m.version || !z.enabled) return { key: m.key, role: m.role, assetId: m.assetId, version: m.version, turns: m.turns, water: m.water, footprint: null, turnSource: m.turnSource };
       const rf = rotRect(f, k), turns = ((m.turns + k) % 4) as Turns;
       const t = at(m.version, turns, rf.x0, rf.z0);
-      placements.push({ key: m.key, districtId: z.key, kind: 'building', name: z.members.length > 1 ? `${z.name}: ${m.role}` : z.name, version: m.version, transform: t, footprint: rf });
+      placements.push({ key: m.key, districtId: z.key, kind: 'building', name: z.members.length > 1 ? `${z.name}: ${m.role}` : z.name, version: m.version, transform: t, footprint: rf, ...(m.water && { inWater: true }) });
       return { key: m.key, role: m.role, assetId: m.assetId, version: m.version, turns, water: m.water, footprint: rf, turnSource: m.turnSource };
     });
     const a = access.get(i);
@@ -692,24 +692,28 @@ export async function buildBasePlan(layout: BaseLayout, input: { name?: string }
   const choices = normalizeChoices(anlage, { spacing: anlage.spacing, path: false, doors: false });
   const placements: AnlagePlacement[] = [...layout.placements];
   let network: BasePlan['network'] = null;
-  const net = pathNetworkPayload(layout);
-  if (net) {
-    const asset = createAsset({ name: `Wegenetz: ${input.name?.trim() || layout.choices.template.name}`.slice(0, 120), tags: ['wegenetz', 'basisplaner', 'infrastruktur'],
-      description: `Wege (${PATH_STYLE_LABEL[layout.choices.pathStyle]}, ${layout.choices.pathWidth} Blöcke breit) und ${layout.lamps.length} Laternen, vom Basisplaner zwischen allen Zonen und dem Platz verlegt.`,
-      provenance: { author: 'LMNT — Build Studio', source: 'Basisplaner (eigener Entwurf)', license: 'frei für dieses Projekt' } });
-    network = await addAssetVersion(asset, { payload: net.payload, label: '1.0', source: { format: 'base-plan' } });
-    const t = { position: [net.origin[0], 0, net.origin[1]] as Vec3, quarterTurns: 0 as Turns, mirrorX: false };
-    placements.push({ key: 'wegenetz', districtId: null, kind: 'path', name: 'Wegenetz', version: network.version, transform: t, area: true,
-      footprint: { x0: net.origin[0], z0: net.origin[1], x1: net.origin[0] + net.payload.bounds.maxExclusive[0], z1: net.origin[1] + net.payload.bounds.maxExclusive[2] } });
-  }
   const slots: SlotState[] = layout.zones.flatMap(z => z.members.map((m): SlotState => ({
     key: m.key, districtId: z.key, assetId: m.assetId, curatedAssetId: z.fn.members.find(x => m.role.startsWith(x.role))?.assetId ?? m.assetId, swapped: false, role: m.role, turns: m.turns,
     status: m.version ? 'ok' : 'missing-asset', version: m.version, pin: m.version?.label ?? SHIPPED_LABEL, turnSource: m.turnSource === 'door' ? 'door' : 'curated', entrance: null, facesPath: null })));
-  return {
-    anlage, choices, slots, placements, layout, network,
+  const plan = {
+    anlage, choices, slots, layout,
     districts: layout.zones.map(z => ({ id: z.key, name: z.name, side: 'nord' as const, enabled: z.enabled, footprint: z.rect, placements: z.members.filter(m => m.footprint).length })),
     lane: 0, extent: layout.extent, blockers: layout.blockers,
   };
+  // Open water edges of the buildings (Spielprüfstand) get a rim in the network part.
+  const rims = placements.length ? openWaterEdges(previewAnlage({ ...plan, placements }).resolution) : [];
+  const net = partWithRims(pathNetworkPayload(layout), rims);
+  if (net) {
+    const paths = layout.paths.length > 0;
+    const asset = createAsset({ name: `${paths ? 'Wegenetz' : 'Wasserkanten'}: ${input.name?.trim() || layout.choices.template.name}`.slice(0, 120), tags: ['wegenetz', 'basisplaner', 'infrastruktur'],
+      description: `${paths ? `Wege (${PATH_STYLE_LABEL[layout.choices.pathStyle]}, ${layout.choices.pathWidth} Blöcke breit) und ${layout.lamps.length} Laternen, vom Basisplaner zwischen allen Zonen und dem Platz verlegt` : 'Keine Wege'}${rims.length ? `; ${rims.length} Randsteine an offenen Wasserkanten` : ''}.`,
+      provenance: { author: 'LMNT — Build Studio', source: 'Basisplaner (eigener Entwurf)', license: 'frei für dieses Projekt' } });
+    network = await addAssetVersion(asset, { payload: net.payload, label: '1.0', source: { format: 'base-plan' } });
+    const t = { position: net.position, quarterTurns: 0 as Turns, mirrorX: false };
+    placements.push({ key: 'wegenetz', districtId: null, kind: 'path', name: paths ? 'Wegenetz' : 'Wasserkanten', version: network.version, transform: t, area: true,
+      footprint: { x0: net.position[0], z0: net.position[2], x1: net.position[0] + net.payload.bounds.maxExclusive[0], z1: net.position[2] + net.payload.bounds.maxExclusive[2] } });
+  }
+  return { ...plan, placements, network };
 }
 
 export function previewBase(plan: BasePlan, input: Parameters<typeof previewAnlage>[1] = {}): AnlagePreview {

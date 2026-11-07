@@ -45,7 +45,9 @@ function lounger(p: Plot, x: number, z: number, head: H, wood = 'birch'): void {
 function bootshaus() {
   const p = new Plot([13, 13, 16]);
   p.fill(1, 0, 0, 11, 0, 15, 'stone_bricks'); p.fill(4, 0, 3, 8, 0, 15, 'sand');
-  p.fill(1, 1, 0, 11, 1, 15, 'spruce_planks'); p.fill(4, 1, 3, 8, 1, 15, 'water', water());
+  p.fill(1, 1, 0, 11, 1, 15, 'spruce_planks'); p.fill(4, 1, 3, 8, 1, 14, 'water', water());
+  // Spielprüfstand (BASE-01): a plank sill closes the basin like the shipyard's dock gate – in a base the
+  // boathouse stands one beach block from the water and higher than the sea, the open basin ran out.
   for (let z = 3; z <= 15; z++) for (const x of [3, 9]) p.set(x, 1, z, 'stripped_spruce_log', axis('z'));
   p.room(1, 1, 11, 14, 2, 5, 'spruce_planks');
   for (let x = 2; x <= 10; x++) for (const z of [1, 14]) p.set(x, 5, z, 'stripped_spruce_log', axis('x'));
@@ -346,7 +348,7 @@ export const KUESTE_SPECS: readonly BuildingSpec[] = [
     description: 'Holzbootshaus über einem Wasserbecken mit Toreinfahrt zur See, Laufstegen, Festmachpfählen, Webstuhl für Netze und Lagerfässern.',
     facets: { kategorie: ['infrastruktur'], stil: ['kuestenstil', 'rustikal'], biom: ['kueste', 'sumpf'], funktion: ['lagern', 'transport'] },
     gaps: ['minecraft:water'],
-    tips: ['Das Becken auf Meereshöhe setzen: die Einfahrt im Süden muss ans offene Wasser grenzen.', 'Boote lassen sich im Becken abstellen und bleiben dort liegen.'],
+    tips: ['Die Einfahrt im Süden schließt eine Plankenschwelle: steht das Becken auf Meereshöhe direkt am offenen Wasser, die Schwelle abbauen, dann fahren Boote hinaus.', 'Boote lassen sich im Becken abstellen und bleiben dort liegen.'],
     inspiration: [WIKI('Boat', 'Boot')] },
   { id: 'bld_kueste_werft', name: 'Werft mit Trockendock', payload: werft, tags: ['schiffbau', 'dock', 'rumpf'],
     description: 'Gemauertes Trockendock mit Stufenwänden, halb beplanktem Schiffsrumpf auf Kielblöcken, Gerüst, Docktor zur See und Werkschuppen mit Amboss.',

@@ -87,8 +87,11 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await p.getByLabel('Wegenetz', { exact: true }).selectOption('landschaft');
     await p.getByTestId('base-landscape').getByText('Bauplätze einebnen').click();
     const report = p.getByTestId('base-landscape-report');
-    await report.getByText(/Treppen/).waitFor();
-    assert.match(await report.innerText(), /Bauplatzspalten eingeebnet/);
+    // The first ring around a levelled site stays at site level (Spielprüfstand 07.11.): on this gentle slope the
+    // network then runs without a height change – stairs only where it rises, never an open step.
+    await report.getByText(/Bauplatzspalten eingeebnet/).waitFor();
+    assert.match(await report.innerText(), /Weg \d+ Felder/);
+    assert.doesNotMatch(await report.innerText(), /ohne Stufe/);
     await p.getByTestId('base-conflicts').getByText('keine').waitFor();
     if (!wide) assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), 'keine horizontale Überbreite (Basis)');
     await p.getByRole('button', { name: 'In Projekt einfügen' }).click();

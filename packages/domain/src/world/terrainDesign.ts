@@ -7,6 +7,7 @@ import { checkSurveyArea, createSurvey, SURVEY_UNKNOWN } from './terrainSurvey.j
 import { SURFACE_SKIP_IDS } from './terrain.js';
 import type { ColumnBase, SurveyArea, TerrainSurvey } from './terrainSurvey.js';
 import { DomainError } from '../core/types.js';
+import { settlePayload } from '../core/placement.js';
 import { checkScatterPlan, cloneScatter } from './terrainScatterPlan.js';
 import type { ScatterPlan } from './terrainScatterPlan.js';
 import { stableCos, stableHypot } from '../../../voxel/src/stableMath.js';
@@ -1096,7 +1097,8 @@ export interface GradeResult { readonly graded: number; readonly blended: number
 /**
  * Prepares building sites: under every planned column the ground is set to one
  * below its lowest block (no hanging foundations, nothing buried), and up to
- * `margin` columns around the footprints blend into the surrounding terrain.
+ * `margin` columns around the footprints blend into the surrounding terrain (the first ring at site
+ * level, so no earth touches the building's walls).
  */
 export function gradeFootprints(d: TerrainDesign, bases: readonly ColumnBase[], margin: number): GradeResult {
   const n = d.width * d.length, lim = heightLimits(d.dimension);
@@ -1129,8 +1131,10 @@ export function gradeFootprints(d: TerrainDesign, bases: readonly ColumnBase[], 
         dist[j] = step; target[j] = target[i]!; next.push(j);
       }
     }
+    // The first ring stays exactly at site level (Spielprüfstand: earth pressed against a wall connected
+    // fences and panes on the hillside), the rest blends into the terrain.
     for (const j of next) {
-      const w = 1 - step / (m + 1);
+      const w = step === 1 ? 1 : 1 - (step - 1) / m;
       if (setHeight(d, j, d.height[j]! + (target[j]! - d.height[j]!) * w, lim)) blended++;
     }
     frontier = next;
@@ -1268,13 +1272,18 @@ export function designPayload(base: TerrainSurvey, d: TerrainDesign, profileId: 
   for (const c of extra) add(c);
   if (!cells.size) return null;
   const palette: BlockState[] = [], index = new Map<string, number>();
+  // Keyed by the final state: a bare id (completed with its default properties) and an explicit state
+  // with the same properties are one palette entry (a scattered cobblestone rock on cobblestone ground).
+  const byId = new Map<string, BlockState>();
   const stateOf = (c: DesignCell): number => {
-    const key = c.state ? `${c.state.id}[${Object.entries(c.state.properties).sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => `${k}=${v}`).join(',')}]` : c.id;
-    let i = index.get(key);
-    if (i === undefined) {
-      const state = c.state ?? (c.id === WATER_ID ? { id: c.id, properties: { level: '0' } } : completeState({ id: c.id, properties: {} }) ?? { id: c.id, properties: {} });
-      i = palette.length; palette.push(state); index.set(key, i);
+    let state = c.state;
+    if (!state) {
+      state = byId.get(c.id);
+      if (!state) { state = c.id === WATER_ID ? { id: c.id, properties: { level: '0' } } : completeState({ id: c.id, properties: {} }) ?? { id: c.id, properties: {} }; byId.set(c.id, state); }
     }
+    const key = `${state.id}[${Object.entries(state.properties).sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => `${k}=${v}`).join(',')}]`;
+    let i = index.get(key);
+    if (i === undefined) { i = palette.length; palette.push(state); index.set(key, i); }
     return i;
   };
   let blocks = 0, air = 0;
@@ -1285,7 +1294,9 @@ export function designPayload(base: TerrainSurvey, d: TerrainDesign, profileId: 
     return { position: [...position] as [number, number, number], kind: 'block' as const, paletteIndex: stateOf(c) };
   });
   const size: [number, number, number] = [hi[0]! - lo[0]! + 1, hi[1]! - lo[1]! + 1, hi[2]! - lo[2]! + 1];
-  const payload = createPayload({ schemaVersion: 1, profileId, bounds: { min: [0, 0, 0], maxExclusive: size }, pivot: [0, 0, 0], sourceOrigin: [lo[0]!, lo[1]!, lo[2]!], palette, cells: out, blockEntities: [] });
+  // Spielprüfstand (TERRAIN-03/05): connections as the game shows them – stairs of a path curve get
+  // their inner/outer shape, wall railings their posts, a trampled path under a step piece is dirt.
+  const payload = settlePayload(createPayload({ schemaVersion: 1, profileId, bounds: { min: [0, 0, 0], maxExclusive: size }, pivot: [0, 0, 0], sourceOrigin: [lo[0]!, lo[1]!, lo[2]!], palette, cells: out, blockEntities: [] })).payload;
   return { payload, origin: [lo[0]!, lo[1]!, lo[2]!], blocks, air, skipped };
 }
 

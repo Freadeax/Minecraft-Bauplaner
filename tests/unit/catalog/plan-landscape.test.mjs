@@ -41,8 +41,11 @@ test('base on a slope: network as landscape path, sites levelled under every bui
   // Neighbouring path columns differ by at most one block.
   const set = new Set(layout.paths.map(([x, z]) => `${x + ORIGIN[0]},${z + ORIGIN[2]}`));
   for (const k of set) { const [x, z] = k.split(',').map(Number); for (const [dx, dz] of PATH_DIRS) if (set.has(`${x + dx},${z + dz}`)) assert.ok(Math.abs(d.height[idx(d, x, z)] - d.height[idx(d, x + dx, z + dz)]) <= 1); }
-  // Every building column stands on ground exactly one below its lowest block.
-  for (const p of bare.placements) for (const c of placementColumns(p, ORIGIN, [0, 0])) assert.equal(d.height[idx(d, c.x, c.z)], c.y + (fit.heights.get(p.key) ?? 0) - 1, p.key);
+  // Every building column stands on ground exactly one below its lowest block; under an overhang (lowest block above the base layer) the ground stays at the base.
+  for (const p of bare.placements) {
+    const cols = placementColumns(p, ORIGIN, [0, 0]), base = Math.min(...cols.map(c => c.y)), dy = fit.heights.get(p.key) ?? 0;
+    for (const c of cols) assert.equal(d.height[idx(d, c.x, c.z)], (c.y > base + 1 ? base : c.y) + dy - 1, p.key);
+  }
   assert.ok(r.grade.graded > 0);
   assert.equal(r.lamps.length + r.lampsDropped, layout.lamps.length);
   for (const [x, y, z] of r.lamps) assert.equal(y, d.height[idx(d, x, z)]);

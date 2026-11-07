@@ -1,6 +1,6 @@
 import type { Cell, Vec3, VoxelPayload } from '../../../voxel/src/types.js';
 import { createPayload } from '../../../voxel/src/validation.js';
-import { ANLAGEN, SHIPPED_LABEL, normalizeChoices, planAnlage, previewAnlage } from '../base/anlagen.js';
+import { ANLAGEN, SHIPPED_LABEL, normalizeChoices, openWaterEdges, partWithRims, planAnlage, previewAnlage } from '../base/anlagen.js';
 import type { Anlage, AnlageLibrary, AnlagePlacement, AnlagePlan, AnlagePreview, Footprint, SlotState } from '../base/anlagen.js';
 import { BUILD_THEMES } from './buildThemes.js';
 import { placementBounds } from '../core/connectors.js';
@@ -554,20 +554,28 @@ export async function buildGrossprojektPlan(layout: GrossprojektLayout, input: {
   const choices = normalizeChoices(anlage, { spacing: anlage.spacing, path: false, doors: false, off: layout.choices.off });
   const placements: AnlagePlacement[] = [...layout.placements];
   let network: GrossprojektPlan['network'] = null;
-  const net = layout.streets ? streetPayload(layout.streets) : null;
-  if (net && layout.streets) {
-    const asset = createAsset({ name: `Straßennetz: ${input.name?.trim() || layout.gp.name}`.slice(0, 120), tags: ['strassennetz', 'grossprojekt', 'infrastruktur'],
-      description: `Straßen (${STREET_STYLE_LABEL[layout.streets.style]}, ${layout.streets.width} Blöcke breit) und ${layout.streets.lamps.length} Laternen zwischen den Quartieren von „${layout.gp.name}“.`,
-      provenance: { author: 'LMNT — Build Studio', source: 'Großprojekt (eigener Entwurf)', license: 'frei für dieses Projekt' } });
-    network = await addAssetVersion(asset, { payload: net.payload, label: '1.0', source: { format: 'base-plan' } });
-    const t = { position: [net.origin[0], 0, net.origin[1]] as Vec3, quarterTurns: 0 as const, mirrorX: false };
-    placements.push({ key: 'strassen', districtId: null, kind: 'path', name: 'Straßennetz', version: network.version, transform: t, area: true,
-      footprint: rect(net.origin[0], net.origin[1], net.origin[0] + net.payload.bounds.maxExclusive[0], net.origin[1] + net.payload.bounds.maxExclusive[2]) });
-  }
-  return {
-    anlage, choices, slots: layout.slots, placements, layout, network,
+  const streets = layout.streets ? streetPayload(layout.streets) : null;
+  const plan = {
+    anlage, choices, slots: layout.slots, layout,
     districts: layout.quartiere.map(q => ({ id: q.id, name: q.name, side: 'nord' as const, enabled: q.enabled, footprint: q.footprint, placements: q.placements })),
     lane: 0, extent: layout.extent, blockers: layout.blockers,
+  };
+  // Open water edges of the buildings (mill stream, moat, pond) get a rim in the street part.
+  const rims = layout.placements.length ? openWaterEdges(previewAnlage({ ...plan, placements }).resolution) : [];
+  const net = partWithRims(streets, rims);
+  if (net) {
+    const s = layout.streets;
+    const asset = createAsset({ name: `${s ? 'Straßennetz' : 'Wasserkanten'}: ${input.name?.trim() || layout.gp.name}`.slice(0, 120), tags: ['strassennetz', 'grossprojekt', 'infrastruktur'],
+      description: `${s ? `Straßen (${STREET_STYLE_LABEL[s.style]}, ${s.width} Blöcke breit) und ${s.lamps.length} Laternen` : 'Keine Straßen'}${rims.length ? `, ${rims.length} Randsteine an offenen Wasserkanten` : ''} zwischen den Quartieren von „${layout.gp.name}“.`,
+      provenance: { author: 'LMNT — Build Studio', source: 'Großprojekt (eigener Entwurf)', license: 'frei für dieses Projekt' } });
+    network = await addAssetVersion(asset, { payload: net.payload, label: '1.0', source: { format: 'base-plan' } });
+    const t = { position: net.position, quarterTurns: 0 as const, mirrorX: false };
+    placements.push({ key: 'strassen', districtId: null, kind: 'path', name: s ? 'Straßennetz' : 'Wasserkanten', version: network.version, transform: t, area: true,
+      footprint: rect(net.position[0], net.position[2], net.position[0] + net.payload.bounds.maxExclusive[0], net.position[2] + net.payload.bounds.maxExclusive[2]) });
+  }
+  return {
+    ...plan, placements, network,
+    districts: layout.quartiere.map(q => ({ id: q.id, name: q.name, side: 'nord' as const, enabled: q.enabled, footprint: q.footprint, placements: q.placements })),
   };
 }
 
