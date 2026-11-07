@@ -363,3 +363,13 @@ TEAM-03-S04: Mitbauer in Mod und Hologramm (Mod/Plugin 0.27.0) – crew im Plane
 - `scripts/mod/bridge_gametest.mjs`
 - `tests/unit/team/team-link.test.mjs`
 
+## 2026-11-07T13:30:53.193Z · progress
+
+**Aufgaben:** GAME-09
+
+0.27.0 auf Modrinth (Fabric, NeoForge, Paper) mit Galeriebild Mitbauer
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth prüft das Projekt weiter (Status processing, am 07.11.2026 nachgesehen); alle Versionen bis 0.26.0, Texte, Galerie und Offenlegungen sind aktuell (modrinth_publish.mjs plan). Kein Handlungsbedarf außer Abwarten. |
+

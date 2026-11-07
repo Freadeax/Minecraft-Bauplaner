@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T12:53:56.832Z",
+  "updatedAt": "2026-11-07T13:30:53.193Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -8960,7 +8960,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T12:31:42.554Z",
+      "updatedAt": "2026-11-07T13:30:53.193Z",
       "area": "MODRINTH",
       "thread": "Mod auf Modrinth veröffentlichen",
       "philipp": [],
@@ -14094,6 +14094,24 @@
           "done": 3,
           "total": 4,
           "next": "Abnahme TEAMBAU-30 (Block B / Philipp); Mitbauer jetzt auch in Mod und Hologramm sichtbar (Mod 0.27.0)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T13:30:53.193Z",
+      "kind": "progress",
+      "items": [
+        "GAME-09"
+      ],
+      "summary": "0.27.0 auf Modrinth (Fabric, NeoForge, Paper) mit Galeriebild Mitbauer",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 4,
+          "total": 5,
+          "next": "Modrinth prüft das Projekt weiter (Status processing, am 07.11.2026 nachgesehen); alle Versionen bis 0.26.0, Texte, Galerie und Offenlegungen sind aktuell (modrinth_publish.mjs plan). Kein Handlungsbedarf außer Abwarten."
         }
       ]
     }
