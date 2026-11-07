@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T02:31:45.596Z",
+  "updatedAt": "2026-11-07T04:34:07.557Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -6770,8 +6770,8 @@
         },
         {
           "id": "OPS-04-S04",
-          "title": "Auf den echten Team-Raum ausrollen (Migration v2 RoomVault) und beide Proben gegen den Dienst laufen lassen.",
-          "done": false
+          "title": "Auf den echten Team-Raum ausgerollt (07.11.2026, Version 333e7fd5, Rücksprung 1fa77827, Migration v2 RoomVault); team_room_smoke, team_room_backup_smoke und team-room.e2e gegen den Dienst grün.",
+          "done": true
         }
       ],
       "acceptance": [
@@ -6779,7 +6779,7 @@
         "Wiederherstellen verliert keinen Schritt, den ein Planer im Team hat.",
         "Alles im kostenlosen Cloudflare-Tarif, ohne Datei-Download."
       ],
-      "next": "Nach Philipps OK ausrollen (npx wrangler deploy) und team_room_smoke + team_room_backup_smoke gegen den Dienst; danach Abnahme TEAMBAU-31.",
+      "next": "Abnahme TEAMBAU-31 mit zwei Geräten (sichern, wiederherstellen, löschen und zurückholen).",
       "blockers": [],
       "evidence": [
         {
@@ -6801,20 +6801,16 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "Automatisch geprüft (Einheiten, echter Worker lokal mit Durable Objects und Alarmen, Browser); offen: Ausrollen auf den echten Dienst und Abnahme TEAMBAU-31."
+        "note": "Automatisch geprüft (Einheiten, echter Worker lokal mit Alarmen, Browser, beide Proben gegen den ausgerollten Dienst); offen: Abnahme TEAMBAU-31."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T21:09:31.710Z",
+      "updatedAt": "2026-11-07T04:34:07.557Z",
       "area": "TEAM",
       "thread": "Team-Raum sichern und wiederherstellen",
       "philipp": [
-        {
-          "kind": "entscheidung",
-          "text": "Ausrollen des Team-Raums mit Sicherung freigeben (S04)."
-        },
         {
           "kind": "geraet",
           "text": "Testfall TEAMBAU-31 mit zwei Geräten: sichern, wiederherstellen, löschen und zurückholen."
@@ -27419,6 +27415,26 @@
           "done": 4,
           "total": 5,
           "next": "Abnahme LAGER-10 mit einer echten Farm; Ertragsbuch in TEAMBAU-28."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T04:34:07.557Z",
+      "kind": "progress",
+      "items": [
+        "OPS-04"
+      ],
+      "summary": "Team-Raum mit Sicherung ausgerollt (Version 333e7fd5, Rücksprung 1fa77827); Status, Grundprobe, Sicherungsprobe und team-room.e2e gegen den echten Dienst grün. Offen nur Abnahme TEAMBAU-31.",
+      "files": [
+        "docs/TESTING.md"
+      ],
+      "snapshot": [
+        {
+          "id": "OPS-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 4,
+          "next": "Abnahme TEAMBAU-31 mit zwei Geräten (sichern, wiederherstellen, löschen und zurückholen)."
         }
       ]
     }

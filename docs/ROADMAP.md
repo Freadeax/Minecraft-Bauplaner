@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T02:31:45.596Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T04:34:07.557Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -134,7 +134,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [COOP-11](#coop-11) | Verlauf verdichten | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mehrspieler und Server automatisch abnehmen“ | TEAMBAU-28: einen echten Teamstand verdichten und mit einem Mitspieler abgleichen. |
 | [LINK-04](#link-04) | Planer | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Mehrspieler und Server automatisch abnehmen“ | Testplan-Bereich LINK durchgehen. |
 | [LINK-05](#link-05) | Zweiter Weg über den Team-Raum | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Mehrspieler und Server automatisch abnehmen“ | Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern. |
-| [OPS-04](#ops-04) | Team-Raum betreiben | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Team-Raum sichern und wiederherstellen“ | Ausrollen des Team-Raums mit Sicherung freigeben (S04).<br>Testfall TEAMBAU-31 mit zwei Geräten: sichern, wiederherstellen, löschen und zurückholen. |
+| [OPS-04](#ops-04) | Team-Raum betreiben | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Team-Raum sichern und wiederherstellen“ | Testfall TEAMBAU-31 mit zwei Geräten: sichern, wiederherstellen, löschen und zurückholen. |
 | [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Abschnitte mehreren Spielern zuweisen“ | — |
 | [WORLD-SHARE-01](#world-share-01) | Weltplan und Server-Karte nur über den Team-Raum | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Weltplan und Server-Karte über den Team-Raum“ | Mit dem Paper-Plugin und BlueMap oder Dynmap prüfen, ob die Marker des Weltplans ohne Datei auf der Server-Karte erscheinen und gesperrte Bauplätze geschützt sind (KARTE-10..12). |
 | [COOP-08](#coop-08) | Ertragskisten | 🧩 Implementiert · Abnahme offen 4/5 | P2 | „Mehrspieler und Server automatisch abnehmen“ | LAGER-01…09 mit echten Spielern. |
@@ -357,7 +357,6 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 
 ### Entscheiden oder Rückfrage beantworten
 
-- **OPS-04** · Ausrollen des Team-Raums mit Sicherung freigeben (S04).
 - **COOP-01** · Weg für den Live-Abgleich ohne Herunter- und Hochladen wählen (Rückfrage im Thread).
 
 ## Verwaiste Punkte
@@ -429,7 +428,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **STRUCT-01 · Dateistruktur sauber neu ordnen: Fachordner im Kern und in der Oberfläche, Skripte, Tests und Doku nach Bereich, Ordnerkarte docs/STRUKTUR.md** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Durchsicht der Ordnerkarte durch Philipp; parallele Threads ziehen neue Dateien mit dem Codemod nach.
 - **UX-01 · Bedienung des Planers vereinfachen (Struktur und Abläufe)** — 🚧 In Arbeit, 6/6 Teilschritte. Nächster Schritt: Philipps Abnahme START-10..13 im Browser und auf dem iPad. Optik übernimmt „Planer-Oberfläche schön neu gestalten“.
 - **UI-03 · Design-System: saubere, einheitliche und schön angepasste Planer-Oberfläche** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme START-20/21 durch Philipp am iPad; gruppierte Projektreiter aus „Bedienung vereinfachen“ und Anleitung optisch mitziehen; Werte an das Mod-Menü weitergeben.
-- **OPS-04 · Team-Raum betreiben: Sicherung, Wiederherstellung, Aufbewahrung, Zustand** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Nach Philipps OK ausrollen (npx wrangler deploy) und team_room_smoke + team_room_backup_smoke gegen den Dienst; danach Abnahme TEAMBAU-31.
+- **OPS-04 · Team-Raum betreiben: Sicherung, Wiederherstellung, Aufbewahrung, Zustand** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-31 mit zwei Geräten (sichern, wiederherstellen, löschen und zurückholen).
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -612,7 +611,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung: mehrere Spieler je Abschnitt und Sammelauftrag, versionierte Zuständigkeiten und Buchungen, live über den Team-Raum | 🧩 Implementiert · Abnahme offen | 2/3 | TEAM-02, COOP-06, PROJ-05 | ausstehend | ausstehend |
 | [GAME-06](#game-06) | Server-Plugin direkt mit dem Team-Raum (Mod/Plugin 0.26.0): unterschriebene Ereignisse der Bauleitung, Ereignis-ID und wiederholbare Verarbeitung, Abschnittsschutz nach Team-Rollen aus dem Raum | 🧩 Implementiert · Abnahme offen | 3/4 | TEAM-02, GAME-04, LINK-11 | ausstehend | ausstehend |
 | [LAGER-01](#lager-01) | Optionale Truhen-/Lagerintegration | 🧩 Implementiert · Abnahme offen | 2/2 | GAME-04 | ausstehend | ausstehend |
-| [OPS-04](#ops-04) | Team-Raum betreiben: Sicherung, Wiederherstellung, Aufbewahrung, Zustand | 🧩 Implementiert · Abnahme offen | 3/4 | TEAM-02 | ausstehend | ausstehend |
+| [OPS-04](#ops-04) | Team-Raum betreiben: Sicherung, Wiederherstellung, Aufbewahrung, Zustand | 🧩 Implementiert · Abnahme offen | 4/4 | TEAM-02 | ausstehend | ausstehend |
 | [DEFER-01](#defer-01) | GitHub-Login, externes Materialrepo und Registry | ⏸ Zurückgestellt | 0/1 | — | ausstehend | ausstehend |
 | [DEFER-02](#defer-02) | Optionale Discord-Integration | ⏸ Zurückgestellt | 0/1 | AUTH-01 | ausstehend | ausstehend |
 | [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm | 🧩 Implementiert · Abnahme offen | 2/3 | COOP-02, GAME-08 | ausstehend | ausstehend |
@@ -2442,20 +2441,20 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### OPS-04
 
-**Team-Raum betreiben: Sicherung, Wiederherstellung, Aufbewahrung, Zustand** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Team-Raum sichern und wiederherstellen“) · Zuständiger Thread: „Team-Raum sichern und wiederherstellen“ · Aktualisiert: 2026-11-06T21:09:31.710Z
+**Team-Raum betreiben: Sicherung, Wiederherstellung, Aufbewahrung, Zustand** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Team-Raum sichern und wiederherstellen“) · Zuständiger Thread: „Team-Raum sichern und wiederherstellen“ · Aktualisiert: 2026-11-07T04:34:07.557Z
 
 - [x] OPS-04-S01: Überwachung (öffentlicher und Raum-Zustand), Datenmigration (Format v1, alte Räume ohne Umbau), Aufbewahrung (48 h alle, 30 Tage täglich, ungenutzte Räume nach 365 Tagen löschen, Tresor 90 Tage) und Wiederanlauf (Proben, Rücksprung, Point-in-Time-Recovery als zweite Linie) festgelegt: docs/architecture/team/TEAM_BACKUP.md.
 - [x] OPS-04-S02: Wiederherstellung mit getrenntem Speicher getestet: Tresor als eigenes Durable Object je Raum, Planstände/Dokumente einmal nach SHA-256, Sicherung per Alarm; Wiederherstellen ohne Verlust (Nummern laufen weiter, Planer reichen ihre Schritte über die neue Marke nach), gelöschter Raum mit alten Links zurück; Einheiten, echter Worker lokal und Browser.
 - [x] OPS-04-S03: Planer: „Sicherung und Zustand“ für die Bauleitung (Zustand, Jetzt sichern, Wiederherstellen, Raum löschen und zurückholen), online ohne Datei.
-- [ ] OPS-04-S04: Auf den echten Team-Raum ausrollen (Migration v2 RoomVault) und beide Proben gegen den Dienst laufen lassen.
+- [x] OPS-04-S04: Auf den echten Team-Raum ausgerollt (07.11.2026, Version 333e7fd5, Rücksprung 1fa77827, Migration v2 RoomVault); team_room_smoke, team_room_backup_smoke und team-room.e2e gegen den Dienst grün.
 
 **Abnahme:** Kein produktiver Teamstart ohne Rechte- und Restoreprüfung. Wiederherstellen verliert keinen Schritt, den ein Planer im Team hat. Alles im kostenlosen Cloudflare-Tarif, ohne Datei-Download.
 
-**Nächste Aktion:** Nach Philipps OK ausrollen (npx wrangler deploy) und team_room_smoke + team_room_backup_smoke gegen den Dienst; danach Abnahme TEAMBAU-31.
+**Nächste Aktion:** Abnahme TEAMBAU-31 mit zwei Geräten (sichern, wiederherstellen, löschen und zurückholen).
 
-**Nur Philipp:** Entscheiden oder Rückfrage beantworten: Ausrollen des Team-Raums mit Sicherung freigeben (S04). Auf echten Geräten und Browsern: Testfall TEAMBAU-31 mit zwei Geräten: sichern, wiederherstellen, löschen und zurückholen.
+**Nur Philipp:** Auf echten Geräten und Browsern: Testfall TEAMBAU-31 mit zwei Geräten: sichern, wiederherstellen, löschen und zurückholen.
 
-**Prüfstand:** Automatisch geprüft (Einheiten, echter Worker lokal mit Durable Objects und Alarmen, Browser); offen: Ausrollen auf den echten Dienst und Abnahme TEAMBAU-31.
+**Prüfstand:** Automatisch geprüft (Einheiten, echter Worker lokal mit Alarmen, Browser, beide Proben gegen den ausgerollten Dienst); offen: Abnahme TEAMBAU-31.
 
 **Nachweise:** [tests/unit/team/team-backup.test.mjs](../tests/unit/team/team-backup.test.mjs) — Schnappschuss, Wiederherstellen ohne Verlust mit zwei Planern, gelöschter Raum, Prüfsummen, Aufbewahrung.; [scripts/team/team_room_backup_smoke.mjs](../scripts/team/team_room_backup_smoke.mjs) — Gegen echten Worker (wrangler dev) grün, auch automatische Sicherung per Alarm.; [tests/e2e/team-backup.e2e.mjs](../tests/e2e/team-backup.e2e.mjs) — Planer-Oberfläche 1400/390 px.; [docs/architecture/team/TEAM_BACKUP.md](architecture/team/TEAM_BACKUP.md) — Betriebsregeln.
 

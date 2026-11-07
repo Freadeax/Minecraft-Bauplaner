@@ -9148,3 +9148,17 @@ TESTING.md: Hinweis zur Stabilisierung des Farmtests.
 - `docs/TESTING.md`
 - `scripts/mod/bridge_paperbots.mjs`
 
+## 2026-11-07T04:34:07.557Z · progress
+
+**Aufgaben:** OPS-04
+
+Team-Raum mit Sicherung ausgerollt (Version 333e7fd5, Rücksprung 1fa77827); Status, Grundprobe, Sicherungsprobe und team-room.e2e gegen den echten Dienst grün. Offen nur Abnahme TEAMBAU-31.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| OPS-04 | 🧩 Implementiert · Abnahme offen | 4/4 | Abnahme TEAMBAU-31 mit zwei Geräten (sichern, wiederherstellen, löschen und zurückholen). |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+
