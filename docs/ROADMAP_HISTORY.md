@@ -389,3 +389,39 @@ Block B (inaktive Threads): 17 Testfälle automatisch abgenommen – planer-abna
 - `apps/web/src/testing/autochecks.ts`
 - `docs/testing/TESTPLAN.md`
 
+## 2026-11-07T13:59:37.996Z · progress
+
+**Aufgaben:** QA-04
+
+Block B Nachtrag: Dateizuordnung der Abnahme-Prüfungen (planer-abnahmen, team-abnahmen, werkstatt-abnahme, team-backup, Mod-Simulator, Team-Raum-Starter, Paper-Bots weltplan, Exportprüfung) nach dem Umzug auf main.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Arbeitsstränge gemerged sind und die Mod mit diagnose veröffentlicht ist. Diagnose und Fehlerbehebung der offenen Fälle übernehmen ab 07.11. die Threads „Planer-Abnahmen ohne Nachweis automatisieren“ und „Mod-Abnahmen im Spiel automatisieren“. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/diagnostics.ts`
+- `apps/web/src/styles/shell.css`
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/theme/design.css`
+- `apps/web/src/views/SystemView.tsx`
+- `apps/web/src/views/map/useWorldShare.ts`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `apps/web/src/views/project/team/TeamBackup.tsx`
+- `apps/web/src/views/project/team/roomClient.ts`
+- `docs/TESTING.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/WorldModule.java`
+- `scripts/library/test_contribution_live.mjs`
+- `scripts/mod/bridge_paperbots.mjs`
+- `scripts/mod/export_check.mjs`
+- `scripts/mod/test_bridge_paper_bots.sh`
+- `tests/e2e/modSimulator.mjs`
+- `tests/e2e/planer-abnahmen.e2e.mjs`
+- `tests/e2e/start.mjs`
+- `tests/e2e/team-abnahmen.e2e.mjs`
+- `tests/e2e/team-backup.e2e.mjs`
+- `tests/e2e/teamRoomDev.mjs`
+- `tests/e2e/werkstatt-abnahme.e2e.mjs`
+

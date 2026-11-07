@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T13:38:50.330Z",
+  "updatedAt": "2026-11-07T13:59:37.996Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -8052,7 +8052,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T13:38:50.330Z",
+      "updatedAt": "2026-11-07T13:59:37.996Z",
       "area": "QA",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -14141,6 +14141,48 @@
           "done": 1,
           "total": 2,
           "next": "Protokolle der Tester in docs/testing/GERAETEMATRIX.md eintragen und Befunde beheben."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T13:59:37.996Z",
+      "kind": "progress",
+      "items": [
+        "QA-04"
+      ],
+      "summary": "Block B Nachtrag: Dateizuordnung der Abnahme-Prüfungen (planer-abnahmen, team-abnahmen, werkstatt-abnahme, team-backup, Mod-Simulator, Team-Raum-Starter, Paper-Bots weltplan, Exportprüfung) nach dem Umzug auf main.",
+      "files": [
+        "apps/web/src/app/diagnostics.ts",
+        "apps/web/src/styles/shell.css",
+        "apps/web/src/testing/autochecks.ts",
+        "apps/web/src/theme/design.css",
+        "apps/web/src/views/SystemView.tsx",
+        "apps/web/src/views/map/useWorldShare.ts",
+        "apps/web/src/views/project/ProjectView.tsx",
+        "apps/web/src/views/project/team/TeamBackup.tsx",
+        "apps/web/src/views/project/team/roomClient.ts",
+        "docs/TESTING.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/WorldModule.java",
+        "scripts/library/test_contribution_live.mjs",
+        "scripts/mod/bridge_paperbots.mjs",
+        "scripts/mod/export_check.mjs",
+        "scripts/mod/test_bridge_paper_bots.sh",
+        "tests/e2e/modSimulator.mjs",
+        "tests/e2e/planer-abnahmen.e2e.mjs",
+        "tests/e2e/start.mjs",
+        "tests/e2e/team-abnahmen.e2e.mjs",
+        "tests/e2e/team-backup.e2e.mjs",
+        "tests/e2e/teamRoomDev.mjs",
+        "tests/e2e/werkstatt-abnahme.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "QA-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Testphase starten, sobald die laufenden Arbeitsstränge gemerged sind und die Mod mit diagnose veröffentlicht ist. Diagnose und Fehlerbehebung der offenen Fälle übernehmen ab 07.11. die Threads „Planer-Abnahmen ohne Nachweis automatisieren“ und „Mod-Abnahmen im Spiel automatisieren“."
         }
       ]
     }
