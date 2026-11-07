@@ -8812,3 +8812,14 @@ SIZE-01-S06 und SPLIT-01-S07: Großbau (1,45 Mio. Blöcke) und eine im echten Sp
 - `tests/unit/formats/litematic.test.mjs`
 - `docs/testing/TESTPLAN.md`
 
+## 2026-11-07T02:04:39.741Z · progress
+
+**Aufgaben:** SIZE-01, SPLIT-01
+
+Nachtrag zu SIZE-01-S06/SPLIT-01-S07: docs/testing/TESTPLAN.md im Verlaufseintrag ergänzt (Testplan nach den neuen automatischen Abnahmen neu erzeugt).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| SIZE-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Rest von MOD-11 im eigenen Spiel (Bildrate auf echter Grafikkarte). Folgepunkt Leistung: Werkstatt, Projekt anlegen, Export und Senden blockieren bei 1,5 Mio. Blöcken die Seite 4–10 s (in den Hintergrundrechner verlagern); Mod-Zahlen mit Tausenderpunkt. |
+| SPLIT-01 | 🧩 Implementiert · Abnahme offen | 6/7 | Rest von BIB-11 mit einer eigenen Basis aus Philipps Welt. Bekannt: Brücke nimmt das Wasser darunter mit, Bibliotheksgebäude ohne Funktion. |
+

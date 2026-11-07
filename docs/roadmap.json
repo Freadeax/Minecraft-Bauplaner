@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T01:59:38.294Z",
+  "updatedAt": "2026-11-07T02:04:39.741Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -7457,7 +7457,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T01:59:38.294Z",
+      "updatedAt": "2026-11-07T02:04:39.741Z",
       "area": "BIBLIOTHEK",
       "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
@@ -8212,7 +8212,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T01:59:38.294Z",
+      "updatedAt": "2026-11-07T02:04:39.741Z",
       "area": "GROESSE",
       "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
@@ -26842,6 +26842,32 @@
         "tests/unit/formats/litematic.test.mjs",
         "docs/testing/TESTPLAN.md"
       ],
+      "snapshot": [
+        {
+          "id": "SIZE-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Rest von MOD-11 im eigenen Spiel (Bildrate auf echter Grafikkarte). Folgepunkt Leistung: Werkstatt, Projekt anlegen, Export und Senden blockieren bei 1,5 Mio. Blöcken die Seite 4–10 s (in den Hintergrundrechner verlagern); Mod-Zahlen mit Tausenderpunkt."
+        },
+        {
+          "id": "SPLIT-01",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Rest von BIB-11 mit einer eigenen Basis aus Philipps Welt. Bekannt: Brücke nimmt das Wasser darunter mit, Bibliotheksgebäude ohne Funktion."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T02:04:39.741Z",
+      "kind": "progress",
+      "items": [
+        "SIZE-01",
+        "SPLIT-01"
+      ],
+      "summary": "Nachtrag zu SIZE-01-S06/SPLIT-01-S07: docs/testing/TESTPLAN.md im Verlaufseintrag ergänzt (Testplan nach den neuen automatischen Abnahmen neu erzeugt).",
+      "files": [],
       "snapshot": [
         {
           "id": "SIZE-01",
