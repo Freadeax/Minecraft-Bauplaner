@@ -740,6 +740,8 @@ Team-Raum nimmt den Absender aus dem Schlüssel und prüft Rollen; eigene Schlü
 **Geänderte Dateien:**
 
 - `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/mod/releases.json`
 - `apps/web/src/views/mod/serverClient.ts`
 - `apps/web/src/views/project/team/TeamAccess.tsx`
 - `apps/web/src/views/project/team/TeamRoom.tsx`
@@ -747,6 +749,10 @@ Team-Raum nimmt den Absender aus dem Schlüssel und prüft Rollen; eigene Schlü
 - `docs/architecture/team/SIGNED_EVENTS.md`
 - `docs/architecture/team/TEAM_IDENTITY.md`
 - `docs/architecture/team/TEAM_LIVE.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.28.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.28.0.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.28.0.jar`
 - `mods/bauplaner-bridge/CHANGELOG.md`
 - `mods/bauplaner-bridge/VERSION`
 - `mods/bauplaner-bridge/mod-core/build.gradle`
