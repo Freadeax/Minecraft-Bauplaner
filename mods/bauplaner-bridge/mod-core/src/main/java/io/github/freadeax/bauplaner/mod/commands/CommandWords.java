@@ -35,7 +35,7 @@ public final class CommandWords {
         put(m, "an", "on"); put(m, "aus", "off"); put(m, "warnen", "warn"); put(m, "abschnitt", "section"); put(m, "weiter", "next");
         put(m, "roentgen", "xray"); put(m, "leistung", "performance"); put(m, "niedrig", "low"); put(m, "hoch", "high");
         // Website link and Weltplan
-        put(m, "verbinden", "connect"); put(m, "zulassen", "approve"); put(m, "ablehnen", "deny");
+        put(m, "verbinden", "connect"); put(m, "zulassen", "approve"); put(m, "ablehnen", "deny"); put(m, "trennen", "disconnect");
         put(m, "markieren", "mark"); put(m, "markierungen", "marks"); put(m, "loeschen", "delete"); put(m, "ebenen", "layers");
         put(m, "gruppe", "group"); put(m, "gelaende", "terrain"); put(m, "vergessen", "forget");
         // Team

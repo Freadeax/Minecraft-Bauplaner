@@ -13,6 +13,7 @@ import { ProjectsView } from './views/ProjectsView';
 import { installDiagnostics } from './app/diagnostics';
 import { lazyPage } from './app/lazyPage';
 import { registerOffline } from './app/offline';
+import { blockForeignFrame } from './app/frameGuard';
 import './styles/style.css';
 import './styles/catalog.css';
 import './styles/schem.css';
@@ -63,8 +64,11 @@ function App() {
   </Shell>;
 }
 
-installErrorCapture();
-installDiagnostics();
-registerOffline();
-initTextures();
-createRoot(document.getElementById('root')!).render(<App />);
+// RELEASE-01: in a frame of another site the planner does not start (GitHub Pages cannot send frame headers).
+if (!blockForeignFrame()) {
+  installErrorCapture();
+  installDiagnostics();
+  registerOffline();
+  initTextures();
+  createRoot(document.getElementById('root')!).render(<App />);
+}

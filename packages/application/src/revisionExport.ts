@@ -4,6 +4,8 @@ import type { LitematicExportReport } from '../../formats/src/litematicWrite.js'
 import type { SchemAnchor, SchemExportReport, UnselectedPolicy } from '../../formats/src/schemWrite.js';
 import type { NbtTag } from '../../voxel/src/types.js';
 import { LEGACY_MOD_MAX_VOLUME } from '../../voxel/src/sizeLimits.js';
+import { exportSafetyLines, sanitizeForExport } from '../../voxel/src/exportSafety.js';
+import type { ExportSafetyReport } from '../../voxel/src/exportSafety.js';
 import { DomainError } from '../../domain/src/core/types.js';
 import type { AssetVersion, BlueprintRevision, Project } from '../../domain/src/core/types.js';
 
@@ -33,6 +35,11 @@ export interface SchemExportSettings {
   readonly anchor: SchemAnchor;
   readonly unselected: UnselectedPolicy;
   readonly author?: string;
+  /**
+   * RELEASE-01 sicherer Modus: Befehlsblöcke, Befehls-Minecarts, Klickbefehle, Befehlsgegenstände, Spawner-Inhalte
+   * sowie Struktur- und Verbundblöcke werden nicht mitgeschrieben. Gemeldet werden sie immer.
+   */
+  readonly safeMode?: boolean;
 }
 
 export interface RevisionExport {
@@ -44,6 +51,8 @@ export interface RevisionExport {
   readonly report: SchemExportReport | LitematicExportReport;
   /** Domain notes in addition to the format report (profile, DataVersion sources). */
   readonly notes: readonly string[];
+  /** RELEASE-01: command and operator-only parts of the plan; `removed` = left out by the safe mode. */
+  readonly safety: ExportSafetyReport & { readonly removed: boolean };
 }
 
 import { dataVersionFromProfile, resolveRevision, revisionForExport } from '../../domain/src/versions/revisionExport.js';
@@ -145,21 +154,27 @@ export async function exportRevisionSchem(project: Project, revisionId: string, 
     if (sections.cells.length <= LEGACY_MOD_MAX_VOLUME) b.value.SectionCells = { type: 'byteArray', value: Array.from(sections.cells, v => (v >= 128 ? v - 256 : v)) };
     if ((project.site?.sections.length ?? 0) > MAX_FILE_SECTIONS) notes.push(`Nur die ersten ${MAX_FILE_SECTIONS} Bauabschnitte gehen in die Datei.`);
   }
+  // RELEASE-01: always report command parts; the safe mode writes the plan without them.
+  const safeMode = settings.safeMode === true;
+  const checked = sanitizeForExport(resolution.world);
+  const safety = { ...checked.report, removed: safeMode && checked.report.total > 0 };
+  notes.push(...exportSafetyLines(checked.report, safeMode));
+  const world = safeMode ? checked.world : resolution.world;
   const date = Date.parse(revision.createdAt);
   const format = settings.format ?? 'schem';
   if (format !== 'schem' && format !== 'litematic') throw new DomainError('EXPORT_FORMAT', `Unbekanntes Exportformat ${String(format)}.`);
   if (format === 'litematic') {
-    const out = await writeLitematic(resolution.world, {
+    const out = await writeLitematic(world, {
       dataVersion: settings.dataVersion, anchor: settings.anchor, unselected: settings.unselected, regionName: project.name,
       metadata: { name: `${project.name} · Revision ${revision.number}`, ...(settings.author?.trim() && { author: settings.author.trim() }), ...(revision.comment && { description: revision.comment }), ...(Number.isSafeInteger(date) && { date }), extra },
     });
-    return { format, revision, fileName: exportFileName(project, revision, format), bytes: out.bytes, sha256: out.sha256, report: out.report, notes };
+    return { format, revision, fileName: exportFileName(project, revision, format), bytes: out.bytes, sha256: out.sha256, report: out.report, notes, safety };
   }
-  const out = await writeSchemV3(resolution.world, {
+  const out = await writeSchemV3(world, {
     dataVersion: settings.dataVersion, anchor: settings.anchor, unselected: settings.unselected,
     metadata: { name: `${project.name} · Revision ${revision.number}`, ...(settings.author?.trim() && { author: settings.author.trim() }), ...(Number.isSafeInteger(date) && { date }), extra },
   });
-  return { format, revision, fileName: exportFileName(project, revision), bytes: out.bytes, sha256: out.sha256, report: out.report, notes };
+  return { format, revision, fileName: exportFileName(project, revision), bytes: out.bytes, sha256: out.sha256, report: out.report, notes, safety };
 }
 
 

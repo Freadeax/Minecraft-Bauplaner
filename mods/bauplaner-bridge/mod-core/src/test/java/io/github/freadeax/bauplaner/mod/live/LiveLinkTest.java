@@ -74,6 +74,55 @@ class LiveLinkTest {
     }
 
     @Test
+    void pairedBrowsersShowWebsiteDeviceAndPurposeAndCanBeRemovedOneByOne() {
+        var s = server(List.of());
+        String id = Json.str(Json.obj(Json.parse(s.handle(req("POST", "/v1/pair/ask", SITE, null, "{\"device\":\"Chrome · Windows\"}")).text()), "a").get("request"), "id", 100);
+        assertEquals(SITE, s.pendingAsk().origin);
+        s.approveAsk();
+        String chrome = Json.str(Json.obj(Json.parse(s.handle(req("GET", "/v1/pair/ask?request=" + id, SITE, null, null)).text()), "s").get("token"), "token", 200);
+        now.addAndGet(5_000);
+        String code = s.openPairing();
+        String other = Json.str(Json.obj(Json.parse(s.handle(req("POST", "/v1/pair", "https://bauplaner.pages.dev", null, "{\"code\":\"" + code + "\",\"device\":\"Firefox\"}")).text()), "x").get("token"), "token", 200);
+        assertEquals(200, s.handle(req("GET", "/v1/chunks?c=0,0", SITE, chrome, null)).status());
+        assertEquals(200, s.handle(req("POST", "/v1/plan?name=a.schem", SITE, chrome, "x")).status());
+        assertEquals(200, s.handle(req("GET", "/v1/status", SITE, chrome, null)).status());
+
+        var list = s.accessList();
+        assertEquals(2, list.size());
+        var a = list.get(0);
+        assertEquals("Chrome · Windows", a.device);
+        assertEquals(SITE, a.origin);
+        assertEquals(1_000_000, a.pairedAt);
+        assertEquals(List.of("world", "plan", "status"), a.uses());
+        assertEquals(1_005_000, a.lastSeen());
+        assertEquals("Firefox", list.get(1).device);
+        assertEquals("https://bauplaner.pages.dev", list.get(1).origin);
+        assertEquals(List.of(), list.get(1).uses());
+        assertTrue(a.id.matches("[0-9a-f]{6}"));
+        assertNotEquals(a.id, list.get(1).id);
+        for (String key : List.of(chrome, other)) assertFalse(s.accessState().contains(key), "der Schlüssel selbst wird nie als Gerätedaten gespeichert");
+
+        // Restart: keys from disk plus the saved details.
+        var again = server(List.of(chrome, other));
+        again.restoreAccess(s.accessState() + ",kaputt;;");
+        assertEquals("Chrome · Windows", again.accessList().get(0).device);
+        assertEquals("https://bauplaner.pages.dev", again.accessList().get(1).origin);
+        assertEquals(List.of(), again.accessList().get(0).uses(), "Nutzung zählt ab Spielstart");
+
+        // One browser removed: its key stops working, the other keeps its access.
+        assertFalse(s.revokeAccess("000000"));
+        assertTrue(s.revokeAccess(list.get(1).id));
+        assertEquals(401, s.handle(req("GET", "/v1/status", SITE, other, null)).status());
+        assertEquals(200, s.handle(req("GET", "/v1/status", SITE, chrome, null)).status());
+        assertEquals(1, s.accessList().size());
+        assertEquals(List.of(chrome), saved.get(saved.size() - 1));
+        // Keys known from before 0.28.0 are listed with unknown details.
+        var old = server(List.of("A".repeat(43)));
+        assertEquals("", old.accessList().get(0).origin);
+        assertEquals(0, old.accessList().get(0).pairedAt);
+    }
+
+    @Test
     void pairingByClickCanBeDeniedExpiresAndIsLimited() {
         var s = server(List.of());
         String a = Json.str(Json.obj(Json.parse(s.handle(req("POST", "/v1/pair/ask", SITE, null, "{}")).text()), "a").get("request"), "id", 100);

@@ -10,6 +10,14 @@ Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publi
 
 - Zwei Schalter im Planer (Team live → „Was mein Spiel mit dem Team teilt“): Meine Position teilen, Aufnahmen auf Anfrage senden. Das Spiel übernimmt sie sofort und merkt sie sich mit dem Team-Raum. Position aus nimmt deine Koordinaten sofort aus „Gerade da“; Aufnahmen aus lehnt Anfragen aus dem Team ab (dein eigenes `/bauplaner team aufnahme` geht weiter). Bisher eingerichtete Räume behalten beides an.
 
+**Who may access the game / Wer Zugriff auf das Spiel hat**
+
+- The pairing question now names the website (for example freadeax.github.io) next to the device, and says what the planner may do after “Allow”: read your position and the world around you, load and place plans, set marks, hand over team building.
+- `/buildplanner connect status` and the status tab of the menu list every paired browser with website, device, pairing time, last use and what it has used since the game started. `/buildplanner connect disconnect <id>` removes a single browser; the others stay paired. The keys themselves are never shown or stored next to these details.
+
+- Die Kopplungsfrage nennt jetzt neben dem Gerät die Website (zum Beispiel freadeax.github.io) und sagt, was der Planer nach „Zulassen“ darf: deine Position und die Welt um dich lesen, Pläne laden und platzieren, Markierungen setzen, Teambau übergeben.
+- `/bauplaner verbinden status` und der Status-Reiter im Menü listen jeden gekoppelten Browser mit Website, Gerät, Kopplungszeit, letzter Nutzung und dem, was er seit Spielstart genutzt hat. `/bauplaner verbinden trennen <Kennung>` trennt einen einzelnen Browser; die anderen bleiben gekoppelt. Die Schlüssel selbst werden nie angezeigt oder neben diesen Angaben gespeichert.
+
 ## 0.27.1 – 2026-11-07
 
 **Nothing lost offline, honest diagnosis / Offline geht nichts verloren, ehrliche Diagnose**

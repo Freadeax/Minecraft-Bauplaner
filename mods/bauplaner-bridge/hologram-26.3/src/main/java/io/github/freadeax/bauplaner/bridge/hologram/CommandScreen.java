@@ -291,6 +291,8 @@ public final class CommandScreen extends Screen {
         boolean plugin = con != null && con.getCommands().getRoot().getChild("bp") != null;
         out.add(row(server + " · Build-Studio-Plugin: " + (plugin ? t("ja (/bp)", "yes (/bp)") : t("nein", "no")), plugin ? HudCard.ACCENT : HudCard.MUTED));
         out.add(row(client.link().statusText(), HudCard.MUTED));
+        // RELEASE-01: who has access and what for, one row per paired browser.
+        for (String b : client.link().browserLines()) out.add(row(b, HudCard.MUTED));
         statusCache = out;
         return out;
     }

@@ -68,14 +68,69 @@ public final class LiveLink implements LiveLinkServer.Handler {
         try { port = Integer.parseInt(p.getProperty("port", String.valueOf(LiveLinkServer.DEFAULT_PORT))); } catch (NumberFormatException ignored) { }
         List<String> tokens = Arrays.stream(p.getProperty("schluessel", "").split(",")).filter(s -> !s.isBlank()).toList();
         server = new LiveLinkServer(new LiveLinkServer.Info(version, loader, minecraft), this, tokens, this::saveTokens, System::currentTimeMillis);
+        // RELEASE-01: which website and device holds each key (never the key itself).
+        server.restoreAccess(p.getProperty("geraete", ""));
         server.onAsk(a -> {
             Minecraft mc = Minecraft.getInstance();
-            mc.execute(() -> McCompat.chat(mc, Component.literal("[Build Studio] " + t("Der Planer („" + a.device + "“) möchte sich mit dem Spiel verbinden. J drücken → „Planer zulassen“.", "The planner (“" + a.device + "”) wants to connect to the game. Press J → “Allow planner”."))));
+            mc.execute(() -> McCompat.chat(mc, Component.literal("[Build Studio] " + t("Der Planer („" + a.device + "“) auf " + site(a.origin) + " möchte sich mit dem Spiel verbinden. J drücken → „Planer zulassen“.",
+                    "The planner (“" + a.device + "”) on " + site(a.origin) + " wants to connect to the game. Press J → “Allow planner”."))));
         });
     }
 
     /** A website waits for "Zulassen" (LINK-03); null if none. */
     public String pendingAsk() { var a = server.pendingAsk(); return a == null ? null : a.device; }
+
+    /** RELEASE-01: the waiting request as the player reads it: device, website and what it may do after "Zulassen". */
+    public String pendingAskText() {
+        var a = server.pendingAsk();
+        if (a == null) return null;
+        return t("Der Planer („" + a.device + "“) auf " + site(a.origin) + " möchte sich mit dem Spiel verbinden. Danach darf er: " + MAY_DE + ". Trennen jederzeit: /bauplaner verbinden status.",
+                "The planner (“" + a.device + "”) on " + site(a.origin) + " wants to connect to the game. It may then: " + MAY_EN + ". Disconnect any time: /buildplanner connect status.");
+    }
+
+    private static final String MAY_DE = "deine Position und die Welt um dich lesen, Pläne laden und platzieren, Markierungen setzen, Teambau übergeben";
+    private static final String MAY_EN = "read your position and the world around you, load and place plans, set marks, hand over team building";
+
+    /** Host of a website origin for the player ("freadeax.github.io"); "unbekannte Website" when unknown. */
+    static String site(String origin) {
+        if (origin == null || origin.isBlank()) return t("unbekannter Website", "unknown website");
+        return origin.replaceFirst("^https?://", "");
+    }
+
+    /** RELEASE-01: every paired browser – website, device, since when, last use, what it used – one line each. */
+    public List<String> browserLines() {
+        long now = System.currentTimeMillis();
+        List<String> out = new java.util.ArrayList<>();
+        for (LiveLinkServer.Access a : server.accessList()) {
+            String uses = a.uses().stream().map(LiveLinkServer::purposeText).collect(java.util.stream.Collectors.joining(", "));
+            String since = a.pairedAt > 0 ? new java.text.SimpleDateFormat("dd.MM. HH:mm").format(new java.util.Date(a.pairedAt)) : t("vor 0.28.0", "before 0.28.0");
+            out.add("[" + a.id + "] " + (a.device.isEmpty() ? "Browser" : a.device) + " · " + site(a.origin) + " · " + t("gekoppelt ", "paired ") + since
+                    + " · " + (a.lastSeen() > 0 ? t("zuletzt vor ", "last used ") + ago(now - a.lastSeen()) + t("", " ago") + " · " + t("genutzt: ", "used: ") + (uses.isEmpty() ? "–" : uses) : t("seit Spielstart nicht genutzt", "not used since game start")));
+        }
+        return out;
+    }
+
+    private static String ago(long ms) {
+        long s = Math.max(0, ms / 1000);
+        if (s < 60) return s + " s";
+        if (s < 3600) return s / 60 + " min";
+        return s / 3600 + " h";
+    }
+
+    public List<String> browserIds() { return server.accessList().stream().map(a -> a.id).toList(); }
+
+    /** Removes one paired browser by the id shown in {@link #browserLines()}. */
+    public String revokeBrowser(String id) {
+        return server.revokeAccess(id) ? t("Browser [" + id + "] getrennt. Er muss sich neu koppeln.", "Browser [" + id + "] disconnected. It has to pair again.")
+                : t("Kein gekoppelter Browser mit der Kennung [" + id + "]. Liste: /bauplaner verbinden status.", "No paired browser with id [" + id + "]. List: /buildplanner connect status.");
+    }
+
+    /** Status plus the list of paired browsers (chat command). */
+    public String statusWithBrowsers() {
+        List<String> lines = browserLines();
+        if (lines.isEmpty()) return statusText();
+        return statusText() + "\n" + String.join("\n", lines) + "\n" + t("Einzeln trennen: /bauplaner verbinden trennen <Kennung>.", "Disconnect one: /buildplanner connect disconnect <id>.");
+    }
 
     public String approve() {
         String device = server.approveAsk();
@@ -908,6 +963,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
     private void saveTokens(Collection<String> tokens) {
         Properties p = load();
         p.setProperty("schluessel", String.join(",", tokens));
+        if (server != null) p.setProperty("geraete", server.accessState());
         store(p);
     }
 

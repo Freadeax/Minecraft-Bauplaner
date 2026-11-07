@@ -15,7 +15,7 @@ Stand: 2026-11-07T19:33:20.416Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 2 |
 | 🚧 In Arbeit | 5 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 101 |
+| 🧩 Implementiert · Abnahme offen | 102 |
 | ✅ Im beschriebenen Umfang geprüft | 35 |
 | ⏸ Zurückgestellt | 3 |
 
@@ -33,7 +33,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Arbeitsstrang
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 14 | 0 | 12 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 4 | 0 | 3 | 1 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
-| [Performance und Stabilität](#bereich-perf) | 5 | 0 | 3 | 3 |
+| [Performance und Stabilität](#bereich-perf) | 6 | 0 | 3 | 3 |
 | [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 8 | 0 | 5 | 15 |
 | [Testphase, Qualität und Betrieb](#bereich-qa) | 3 | 0 | 3 | 8 |
 | [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 2 | 0 | 0 | 0 |
@@ -205,6 +205,7 @@ Abgeschlossen oder zurückgestellt: LINK-01 (geprüft).
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Olympus auf deinem Rechner, dazu Firefox/Safari (S06). |
 | [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 9/9 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | — |
 | [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | GERAET-03 auf #/testphase: auf dem iPad (Safari) den Planer einmal laden, dann im Flugmodus neu öffnen; einmal die Mod über https://bauplaner.pages.dev/Minecraft-Bauplaner/ verbinden. |
+| [RELEASE-01](#release-01) | Browser-Schutz und Release-Check | 🧩 Implementiert · Abnahme offen 5/7 | P1 | „Sicherheitsheader und Release-Check einführen“ | — |
 
 Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF-03 (geprüft).
 
@@ -649,6 +650,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [NAME-01](#name-01) | Neuer Produktname „LMNT — Build Studio“ auf Seite, Mod, Plugin und Modrinth | 🧩 Implementiert · Abnahme offen | 3/4 | UI-03, GAME-12 | ausstehend | ausstehend |
 | [PRIV-01](#priv-01) | Datenschutz und Freigaben verständlich: was geht wohin, wer sieht es, Speicherstatus und Umzug | 🚧 In Arbeit | 6/8 | COOP-07, WORLD-SHARE-01, BACKUP-02 | ausstehend | ausstehend |
 | [HARDEN-01](#harden-01) | Importe und Team-Raum gegen Missbrauch härten | 🧩 Implementiert · Abnahme offen | 2/3 | TEAM-02 | ausstehend | ausstehend |
+| [RELEASE-01](#release-01) | Browser-Schutz und Release-Check: Sicherheitsheader auf Cloudflare Pages, Einbettungsschutz auf GitHub Pages, Release-Prüfung, sicherer Schem/Litematic-Export, Browserliste in der Mod | 🧩 Implementiert · Abnahme offen | 5/7 | PERF-06, FORMAT-02, LINK-03 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -3931,6 +3933,30 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/unit/building/zip-limits.test.mjs](../tests/unit/building/zip-limits.test.mjs) — Nachgestellte Befunde: gespeicherter 128-KiB-Eintrag mit 10-Byte-Angabe, Entpack-Bombe, geteiltes Budget, Abbruch, PNG-Prüfung, GZIP-Grenzen.; [tests/unit/team/team-room-abuse.test.mjs](../tests/unit/team/team-room-abuse.test.mjs) — Größen beim Lesen, Origin, Adressen, Eimer, Erstellungsfenster, Quelltextregeln des Workers.; [scripts/team/team_room_abuse_smoke.mjs](../scripts/team/team_room_abuse_smoke.mjs) — Probe gegen wrangler dev: 403 fremde Seite, 404 create über Raum, 413, 4408 nach 10 s, 4401, 4413, 429 Raumflut.; [docs/architecture/team/TEAM_LIVE.md](architecture/team/TEAM_LIVE.md) — §15 Grenzen.
 
 **Dateiumfang:** `apps/web/src/blockmodels/zip.ts`, `apps/web/src/blockmodels/pack.ts`, `apps/web/src/blockmodels/assets.ts`, `apps/web/src/blockmodels/TexturePanel.tsx`, `apps/web/src/jobs/packJob.ts`, `apps/web/src/jobs/jobs.ts`, `apps/web/src/views/project/team/roomClient.ts`, `packages/domain/src/team/team.ts`, `packages/domain/src/index.ts`, `services/team-room/src/guard.js`, `services/team-room/src/index.js`, `services/team-room/wrangler.toml`, `services/team-room/README.md`, `scripts/team/team_room_abuse_smoke.mjs`, `tests/unit/building/zip-limits.test.mjs`, `tests/unit/team/team-room-abuse.test.mjs`, `docs/architecture/team/TEAM_LIVE.md`, `docs/architecture/team/TEAM_BACKUP.md`, `docs/architecture/formate/BLOCK_MODELS.md`. **Abhängigkeiten:** TEAM-02. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### RELEASE-01
+
+**Browser-Schutz und Release-Check: Sicherheitsheader auf Cloudflare Pages, Einbettungsschutz auf GitHub Pages, Release-Prüfung, sicherer Schem/Litematic-Export, Browserliste in der Mod** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Sicherheitsheader und Release-Check einführen“ · Arbeitsstrang: „Sicherheitsheader und Release-Check einführen“ · Aktualisiert: 2026-11-07T19:44:24.512Z
+
+- [x] RELEASE-01-S01: Cloudflare Pages: HSTS, durchgesetzte CSP (frame-ancestors none, object-src none, base-uri self), volle CSP als Report-Only, X-Frame-Options, Permissions-Policy, COOP aus einer Quelle (security_headers.mjs).
+- [x] RELEASE-01-S02: GitHub Pages: Grenzen dokumentiert, Meta-CSP und Einbettungsschutz im Programm (fremder Rahmen startet den Planer nicht).
+- [x] RELEASE-01-S03: Release-Check npm run check:release: npm audit, Gradle-Wrapper und Distribution-Prüfsumme, Mod-JARs gegen releases.json, beide Adressen und Modrinth, HTTPS und Live-Header, Geheimnisse im Artefakt; Offline-Teil läuft im Publish-Skript.
+- [x] RELEASE-01-S04: Sicherer Exportmodus: Befehlsblöcke, Befehls-Minecarts, Klickbefehle, Befehlsgegenstände, Spawner, Struktur-/Verbundblöcke immer melden, auf Wunsch weglassen (Schem und Litematic).
+- [x] RELEASE-01-S05: Mod (Quelle, nächste Version): Kopplungsfrage nennt die Website, Browserliste mit Website, Gerät, Zeit, Zwecken, einzelnes Trennen.
+- [ ] RELEASE-01-S06: Volle CSP durchsetzen, nachdem über eigene Team-Raum-Adressen entschieden ist (connect-src).
+- [ ] RELEASE-01-S07: Mod-Version mit Browserliste bauen, im echten Spiel prüfen und auf Modrinth veröffentlichen.
+
+**Abnahme:** Browsertest: Hauptwege ohne einen CSP-Verstoß, fremde Einbettung mit und ohne Header verhindert. npm run check:release nach dem Publish ohne Fehler. Sicherer Export: Datei enthält keine Befehle mehr, Schildtext und übrige Gegenstände bleiben.
+
+**Nächste Aktion:** Entscheidung Philipp: eigene Team-Raum-Adressen beim Durchsetzen der CSP erlauben oder nicht; Mod-Version mit Browserliste mit dem nächsten Mod-Release ausliefern.
+
+**Prüfstand:** wird mit dem Publish ergänzt
+
+**Nachweise:** [tests/e2e/security-headers.e2e.mjs](../tests/e2e/security-headers.e2e.mjs) — dist-web mit Cloudflare-Headern: null CSP-Verstöße auf allen Hauptwegen, Gegenprobe, Einbettung blockiert.; [tests/unit/formats/export-safety.test.mjs](../tests/unit/formats/export-safety.test.mjs) — Meldung, Entfernen und Dateiinhalt für Schem und Litematic.; [tests/unit/tooling/cloudflare-pages.test.mjs](../tests/unit/tooling/cloudflare-pages.test.mjs) — _headers und Meta-CSP aus security_headers.mjs.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java) — Browserliste, Zwecke, Neustart, einzelnes Trennen.
+
+**Dateiumfang:** `scripts/pages/security_headers.mjs`, `scripts/pages/publish_cloudflare.mjs`, `scripts/pages/publish_main_pages.sh`, `scripts/checks/release_check.mjs`, `apps/web/index.html`, `apps/web/src/app/frameGuard.ts`, `apps/web/src/main.tsx`, `apps/web/src/views/project/ExportTab.tsx`, `packages/voxel/src/exportSafety.ts`, `packages/application/src/revisionExport.ts`, `mods/bauplaner-bridge/`, `tests/`, `docs/architecture/betrieb/SICHERHEITSHEADER.md`, `docs/operations/VEROEFFENTLICHUNG.md`, `SECURITY.md`. **Abhängigkeiten:** PERF-06, FORMAT-02, LINK-03. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

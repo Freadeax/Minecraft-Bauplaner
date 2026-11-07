@@ -276,7 +276,7 @@ export const ACCEPTANCE: Readonly<Record<string, readonly string[]>> = {
   'COOP-06': ['TEAMBAU-21', 'TEAMBAU-03', 'TEAMBAU-24'], 'PROJ-01': ['PROJ-09', 'PROJ-10'], 'PROJ-02': ['PROJ-16', 'PROJ-13'], 'GAME-10': ['MOD-25'], 'GAME-12': ['MOD-25', 'MOD-26', 'MOD-28'], 'NAME-01': ['START-01', 'MOD-29'], 'COOP-07': ['TEAMBAU-25', 'LINK-07'], 'COOP-09': ['TEAMBAU-25'], 'COOP-10': ['TEAMBAU-27', 'TEAMBAU-25'], 'COOP-11': ['TEAMBAU-28'], 'PROJ-03': ['PROJ-10'], 'MAP-07': ['KARTE-07'], 'MAP-02': ['KARTE-08'], 'PROJ-04': ['PROJ-21'], 'PROJ-05': ['PROJ-10'], 'TERRAIN-04': ['PROJ-24'], 'TERRAIN-05': ['PROJ-26'], 'TEAM-02': ['TEAMBAU-29'], 'TEAM-03': ['TEAMBAU-30'], 'OPS-04': ['TEAMBAU-31'], 'HARDEN-01': ['GERAET-05', 'TEAMBAU-25'], 'BACKUP-03': ['TEAMBAU-31'], 'GUIDE-01': ['START-08'], 'WORLD-SHARE-01': ['KARTE-10', 'KARTE-08', 'KARTE-12'], 'CORE-04': ['PROJ-21', 'WERK-01', 'WERK-09'], 'STRUCT-01': ['START-03', 'GERAET-03'], 'DOC-02': ['START-01'], 'UI-03': ['START-01', 'GERAET-04'],
   'PROD-01': ['PROJ-12'], 'PROD-02': ['PROJ-13'], 'PROD-03': ['PROJ-12', 'PROJ-13'], 'PROD-04': ['PROJ-13'], 'PROD-05': ['LAGER-10', 'PROJ-12'],
   'LINK-01': ['LINK-01'], 'LINK-02': ['LINK-01', 'LINK-05'], 'LINK-03': ['LIVE-01', 'LINK-01'], 'LINK-04': ['LINK-01', 'LINK-12'], 'LINK-05': ['LINK-04'], 'LINK-06': ['LINK-05'], 'LINK-07': ['LINK-07'], 'FALLBACK-01': ['LINK-09'], 'LINK-10': ['LINK-09'], 'LINK-11': ['LINK-12', 'LINK-13'], 'COOP-08': ['LAGER-10', 'PROJ-12', 'TEAMBAU-28'],
-  'GAME-06': ['LINK-14'],
+  'GAME-06': ['LINK-14'], 'RELEASE-01': ['DATEI-01', 'LIVE-01', 'START-01'],
 };
 
 /** Wo ein Fall geprüft werden kann: nur im Browser, mit Minecraft (Mod) oder auf einem Paper-Server mit Plugin. */

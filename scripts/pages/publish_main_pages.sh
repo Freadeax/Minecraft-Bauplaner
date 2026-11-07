@@ -14,6 +14,8 @@ node scripts/roadmap/roadmap.mjs check-change "$source^" "$source"
 
 # Core tests, strict types, web build and artifact/documentation checks.
 LMNT_SOURCE_SHA=$source npm run check
+# RELEASE-01: Mod-JARs gegen releases.json, Gradle-Wrapper-Einstellungen, keine Zugangsdaten im Artefakt.
+node scripts/checks/release_check.mjs --offline
 index=$(mktemp); rm -f "$index"
 trap 'rm -f "$index" "$index.lock"' EXIT
 tree=$(node scripts/pages/prepare_main_pages.mjs "$source" dist-web "$index")

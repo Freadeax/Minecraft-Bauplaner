@@ -9,12 +9,14 @@ import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } 
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { SECURITY_HEADERS } from './security_headers.mjs';
 
 export const PROJECT = 'bauplaner';
 const WRANGLER = 'wrangler@4.151.2';
 const BASE = 'Minecraft-Bauplaner';
 
-/** `_headers`: hashed program files and the catalogue never change; entry points always revalidate. */
+/** `_headers`: hashed program files and the catalogue never change; entry points always revalidate.
+ * Every response carries the browser protection from security_headers.mjs (RELEASE-01). */
 export const HEADERS = `/${BASE}/assets/*
   Cache-Control: public, max-age=31536000, immutable
 /${BASE}/sw.js
@@ -26,8 +28,7 @@ export const HEADERS = `/${BASE}/assets/*
 /${BASE}/deployment.json
   Cache-Control: no-cache
 /*
-  X-Content-Type-Options: nosniff
-  Referrer-Policy: strict-origin-when-cross-origin
+${Object.entries(SECURITY_HEADERS).map(([k, v]) => `  ${k}: ${v}`).join('\n')}
 `;
 export const REDIRECTS = `/ /${BASE}/ 302
 /${BASE} /${BASE}/ 301

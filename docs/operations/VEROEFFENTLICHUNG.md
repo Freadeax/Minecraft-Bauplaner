@@ -10,6 +10,7 @@ Wie Website, Mod und Team-Raum ausgeliefert werden. Ergänzt [Hosting](../archit
 | Website (Spiegel) | Cloudflare Pages `bauplaner.pages.dev` | läuft im selben Skript mit, einzeln `npm run publish:cloudflare` | `https://bauplaner.pages.dev/Minecraft-Bauplaner/deployment.json` |
 | Mod und Plugin (Download) | `downloads/mod/` + Seite `#/mod` | `node scripts/mod/release_mod.mjs <adapter> "<geprüft>"` | Eintrag in `apps/web/src/views/mod/releases.json` |
 | Mod und Plugin (Modrinth) | Projekt `bauplaner-bridge` | `node scripts/mod/modrinth_publish.mjs release` | Versionsliste auf Modrinth |
+| Release-Check | beide Adressen, Modrinth, Abhängigkeiten | `npm run check:release` | Tabelle ✓/⚠/✗, Exitcode |
 | Team-Raum | Cloudflare Worker | `cd services/team-room && npx wrangler deploy` | `node scripts/team/team_room_smoke.mjs <adresse>` |
 
 Zugangsdaten (`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `MODRINTH_TOKEN`) kommen nur aus Umgebungsvariablen und liegen nie im Repository. GitHub Actions werden nicht verwendet.
@@ -25,7 +26,7 @@ GitHub Pages liefert `main` aus der Repository-Wurzel aus. Damit der Quellcode e
 5. Commit `deploy: main <sha> in repository root` mit dem Quellcommit als Eltern, normaler Push ohne Force. Hat sich `main` zwischenzeitlich bewegt, bricht das Skript ab.
 6. Sind die Cloudflare-Zugangsdaten gesetzt, wird dasselbe Artefakt nach Cloudflare Pages geladen.
 
-Danach den Live-Stand prüfen: `deployment.json` muss den Quellcommit nennen. Die Dateien `index.html`, `assets/`, `deployment.json`, `examples/`, `sw.js`, `favicon.svg`, `.nojekyll` und `THIRD_PARTY_NOTICES.txt` in der Wurzel werden ausschließlich so geschrieben.
+Danach den Live-Stand prüfen: `npm run check:release -- --commit <quellcommit>` (Live-Header, HTTPS, Mod-JARs auf beiden Adressen und Modrinth, `deployment.json`), siehe [Browser-Schutz und Release-Check](../architecture/betrieb/SICHERHEITSHEADER.md). Vor dem Commit läuft der lokale Teil (`--offline`) schon im Skript mit. Die Dateien `index.html`, `assets/`, `deployment.json`, `examples/`, `sw.js`, `favicon.svg`, `.nojekyll` und `THIRD_PARTY_NOTICES.txt` in der Wurzel werden ausschließlich so geschrieben.
 
 Artefakt-Commits brauchen keinen neuen Roadmap-Eintrag; jede Quelländerung dagegen schon (siehe [CONTRIBUTING](../../CONTRIBUTING.md)).
 

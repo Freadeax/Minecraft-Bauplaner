@@ -12582,6 +12582,112 @@
       "thread": "Importe und Team-Worker gegen Missbrauch härten",
       "philipp": [],
       "orphans": []
+    },
+    {
+      "id": "RELEASE-01",
+      "title": "Browser-Schutz und Release-Check: Sicherheitsheader auf Cloudflare Pages, Einbettungsschutz auf GitHub Pages, Release-Prüfung, sicherer Schem/Litematic-Export, Browserliste in der Mod",
+      "phase": "P4",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Arbeitsstrang „Sicherheitsheader und Release-Check einführen“",
+      "dependencies": [
+        "PERF-06",
+        "FORMAT-02",
+        "LINK-03"
+      ],
+      "scope": [
+        "scripts/pages/security_headers.mjs",
+        "scripts/pages/publish_cloudflare.mjs",
+        "scripts/pages/publish_main_pages.sh",
+        "scripts/checks/release_check.mjs",
+        "apps/web/index.html",
+        "apps/web/src/app/frameGuard.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/src/views/project/ExportTab.tsx",
+        "packages/voxel/src/exportSafety.ts",
+        "packages/application/src/revisionExport.ts",
+        "mods/bauplaner-bridge/",
+        "tests/",
+        "docs/architecture/betrieb/SICHERHEITSHEADER.md",
+        "docs/operations/VEROEFFENTLICHUNG.md",
+        "SECURITY.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "RELEASE-01-S01",
+          "title": "Cloudflare Pages: HSTS, durchgesetzte CSP (frame-ancestors none, object-src none, base-uri self), volle CSP als Report-Only, X-Frame-Options, Permissions-Policy, COOP aus einer Quelle (security_headers.mjs).",
+          "done": true
+        },
+        {
+          "id": "RELEASE-01-S02",
+          "title": "GitHub Pages: Grenzen dokumentiert, Meta-CSP und Einbettungsschutz im Programm (fremder Rahmen startet den Planer nicht).",
+          "done": true
+        },
+        {
+          "id": "RELEASE-01-S03",
+          "title": "Release-Check npm run check:release: npm audit, Gradle-Wrapper und Distribution-Prüfsumme, Mod-JARs gegen releases.json, beide Adressen und Modrinth, HTTPS und Live-Header, Geheimnisse im Artefakt; Offline-Teil läuft im Publish-Skript.",
+          "done": true
+        },
+        {
+          "id": "RELEASE-01-S04",
+          "title": "Sicherer Exportmodus: Befehlsblöcke, Befehls-Minecarts, Klickbefehle, Befehlsgegenstände, Spawner, Struktur-/Verbundblöcke immer melden, auf Wunsch weglassen (Schem und Litematic).",
+          "done": true
+        },
+        {
+          "id": "RELEASE-01-S05",
+          "title": "Mod (Quelle, nächste Version): Kopplungsfrage nennt die Website, Browserliste mit Website, Gerät, Zeit, Zwecken, einzelnes Trennen.",
+          "done": true
+        },
+        {
+          "id": "RELEASE-01-S06",
+          "title": "Volle CSP durchsetzen, nachdem über eigene Team-Raum-Adressen entschieden ist (connect-src).",
+          "done": false
+        },
+        {
+          "id": "RELEASE-01-S07",
+          "title": "Mod-Version mit Browserliste bauen, im echten Spiel prüfen und auf Modrinth veröffentlichen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Browsertest: Hauptwege ohne einen CSP-Verstoß, fremde Einbettung mit und ohne Header verhindert.",
+        "npm run check:release nach dem Publish ohne Fehler.",
+        "Sicherer Export: Datei enthält keine Befehle mehr, Schildtext und übrige Gegenstände bleiben."
+      ],
+      "next": "Entscheidung Philipp: eigene Team-Raum-Adressen beim Durchsetzen der CSP erlauben oder nicht; Mod-Version mit Browserliste mit dem nächsten Mod-Release ausliefern.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/e2e/security-headers.e2e.mjs",
+          "note": "dist-web mit Cloudflare-Headern: null CSP-Verstöße auf allen Hauptwegen, Gegenprobe, Einbettung blockiert."
+        },
+        {
+          "path": "tests/unit/formats/export-safety.test.mjs",
+          "note": "Meldung, Entfernen und Dateiinhalt für Schem und Litematic."
+        },
+        {
+          "path": "tests/unit/tooling/cloudflare-pages.test.mjs",
+          "note": "_headers und Meta-CSP aus security_headers.mjs."
+        },
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+          "note": "Browserliste, Zwecke, Neustart, einzelnes Trennen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "wird mit dem Publish ergänzt"
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-07T19:44:24.512Z",
+      "area": "PERF",
+      "thread": "Sicherheitsheader und Release-Check einführen",
+      "philipp": [],
+      "orphans": []
     }
   ],
   "events": [
@@ -14856,6 +14962,55 @@
           "done": 5,
           "total": 6,
           "next": "Abnahme durch Philipp (S06, BIB-02)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T19:44:24.512Z",
+      "kind": "progress",
+      "items": [
+        "RELEASE-01"
+      ],
+      "summary": "Browser-Schutz und Release-Check: Sicherheitsheader für Cloudflare Pages (CSP durchgesetzt für Einbettung/Plugins, volle CSP als Report-Only, HSTS, Permissions-Policy), Einbettungsschutz und Meta-CSP für GitHub Pages, npm run check:release, sicherer Schem/Litematic-Export, Browserliste in der Mod (Quelle, nächste Mod-Version)",
+      "files": [
+        "SECURITY.md",
+        "apps/web/index.html",
+        "apps/web/src/app/frameGuard.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/project/ExportTab.tsx",
+        "docs/TESTING.md",
+        "docs/architecture/betrieb/SICHERHEITSHEADER.md",
+        "docs/operations/VEROEFFENTLICHUNG.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/gradle/wrapper/gradle-wrapper.properties",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandScreen.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LinkPrompt.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandWords.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "package.json",
+        "packages/application/src/revisionExport.ts",
+        "packages/voxel/src/exportSafety.ts",
+        "packages/voxel/src/index.ts",
+        "scripts/checks/release_check.mjs",
+        "scripts/pages/publish_cloudflare.mjs",
+        "scripts/pages/publish_main_pages.sh",
+        "scripts/pages/security_headers.mjs",
+        "tests/e2e/security-headers.e2e.mjs",
+        "tests/unit/formats/export-safety.test.mjs",
+        "tests/unit/tooling/cloudflare-pages.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "RELEASE-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 7,
+          "next": "Entscheidung Philipp: eigene Team-Raum-Adressen beim Durchsetzen der CSP erlauben oder nicht; Mod-Version mit Browserliste mit dem nächsten Mod-Release ausliefern."
         }
       ]
     }

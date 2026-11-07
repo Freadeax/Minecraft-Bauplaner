@@ -644,3 +644,46 @@ Bibliothek vergleichbar und filterbar: jede Gebäude-, Generator- und Ensembleka
 - `tests/e2e/planer-abnahmen.e2e.mjs`
 - `tests/unit/catalog/compare.test.mjs`
 
+## 2026-11-07T19:44:24.512Z · progress
+
+**Aufgaben:** RELEASE-01
+
+Browser-Schutz und Release-Check: Sicherheitsheader für Cloudflare Pages (CSP durchgesetzt für Einbettung/Plugins, volle CSP als Report-Only, HSTS, Permissions-Policy), Einbettungsschutz und Meta-CSP für GitHub Pages, npm run check:release, sicherer Schem/Litematic-Export, Browserliste in der Mod (Quelle, nächste Mod-Version)
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| RELEASE-01 | 🧩 Implementiert · Abnahme offen | 5/7 | Entscheidung Philipp: eigene Team-Raum-Adressen beim Durchsetzen der CSP erlauben oder nicht; Mod-Version mit Browserliste mit dem nächsten Mod-Release ausliefern. |
+
+**Geänderte Dateien:**
+
+- `SECURITY.md`
+- `apps/web/index.html`
+- `apps/web/src/app/frameGuard.ts`
+- `apps/web/src/main.tsx`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/project/ExportTab.tsx`
+- `docs/TESTING.md`
+- `docs/architecture/betrieb/SICHERHEITSHEADER.md`
+- `docs/operations/VEROEFFENTLICHUNG.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/gradle/wrapper/gradle-wrapper.properties`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LinkPrompt.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandWords.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
+- `package.json`
+- `packages/application/src/revisionExport.ts`
+- `packages/voxel/src/exportSafety.ts`
+- `packages/voxel/src/index.ts`
+- `scripts/checks/release_check.mjs`
+- `scripts/pages/publish_cloudflare.mjs`
+- `scripts/pages/publish_main_pages.sh`
+- `scripts/pages/security_headers.mjs`
+- `tests/e2e/security-headers.e2e.mjs`
+- `tests/unit/formats/export-safety.test.mjs`
+- `tests/unit/tooling/cloudflare-pages.test.mjs`
+

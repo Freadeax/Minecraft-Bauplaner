@@ -142,6 +142,8 @@ public final class LiveLinkServer implements AutoCloseable {
     private final LongSupplier clock;
     private final Consumer<Collection<String>> saveTokens;
     private final LinkedHashSet<String> tokens = new LinkedHashSet<>();
+    /** RELEASE-01: who holds each key (website, device, since when, what it used). */
+    private final Map<String, Access> access = new LinkedHashMap<>();
     private String pairingCode;
     private long pairingUntil;
     private int pairingAttempts;
@@ -207,10 +209,12 @@ public final class LiveLinkServer implements AutoCloseable {
     public static final class Ask {
         public final String id;
         public final String device;
+        /** Website that asked (RELEASE-01), e.g. https://freadeax.github.io; "" without Origin header. */
+        public final String origin;
         final long until;
         String state = "waiting";
         String token;
-        Ask(String id, String device, long until) { this.id = id; this.device = device; this.until = until; }
+        Ask(String id, String device, String origin, long until) { this.id = id; this.device = device; this.origin = origin; this.until = until; }
         public String state() { return state; }
     }
 
@@ -228,7 +232,7 @@ public final class LiveLinkServer implements AutoCloseable {
     public synchronized String approveAsk() {
         Ask a = pendingAsk();
         if (a == null) return null;
-        a.token = newToken();
+        a.token = newToken(a.device, a.origin);
         a.state = "ok";
         return a.device;
     }
@@ -246,7 +250,7 @@ public final class LiveLinkServer implements AutoCloseable {
         asks.removeIf(a -> now > a.until + 60_000L);
     }
 
-    private String ask(String device) {
+    private String ask(String device, String origin) {
         Ask a;
         synchronized (this) {
             expireAsks();
@@ -254,8 +258,7 @@ public final class LiveLinkServer implements AutoCloseable {
             if (waiting >= MAX_ASKS) throw new HttpError(429, "Es warten schon " + waiting + " Anfragen im Spiel. Dort zulassen oder ablehnen.");
             byte[] raw = new byte[18];
             random.nextBytes(raw);
-            String name = device == null ? "" : device.replaceAll("[\\p{Cntrl}]", "").trim();
-            a = new Ask(Base64.getUrlEncoder().withoutPadding().encodeToString(raw), name.isEmpty() ? "Browser" : name.length() > 40 ? name.substring(0, 40) : name, clock.getAsLong() + ASK_MS);
+            a = new Ask(Base64.getUrlEncoder().withoutPadding().encodeToString(raw), cleanDevice(device), origin == null ? "" : origin, clock.getAsLong() + ASK_MS);
             asks.add(a);
         }
         onAsk.accept(a);
@@ -276,14 +279,125 @@ public final class LiveLinkServer implements AutoCloseable {
         return "{\"state\":" + Json.quote(a.state.equals("done") ? "expired" : a.state) + "}";
     }
 
-    private synchronized String newToken() {
+    private synchronized String newToken(String device, String origin) {
         byte[] raw = new byte[32];
         random.nextBytes(raw);
         String token = Base64.getUrlEncoder().withoutPadding().encodeToString(raw);
         tokens.add(token);
-        while (tokens.size() > MAX_TOKENS) tokens.remove(tokens.iterator().next());
+        access.put(token, new Access(token, device, origin, clock.getAsLong()));
+        while (tokens.size() > MAX_TOKENS) { String old = tokens.iterator().next(); tokens.remove(old); access.remove(old); }
         saveTokens.accept(List.copyOf(tokens));
         return token;
+    }
+
+    static String cleanDevice(String device) {
+        String name = device == null ? "" : device.replaceAll("[\\p{Cntrl}]", "").trim();
+        return name.isEmpty() ? "Browser" : name.length() > 40 ? name.substring(0, 40) : name;
+    }
+
+    // ------------------------------------------------------------------ paired browsers (RELEASE-01)
+
+    /**
+     * One paired browser: which website, which device, since when, and what it has used since the game started.
+     * The game shows this list ("/bauplaner verbinden status", J menu), so the player sees who has access and why,
+     * and can remove a single browser. Purposes and last use are kept in memory only.
+     */
+    public static final class Access {
+        final String token;
+        /** Short fingerprint of the key (not the key), to name the browser in commands. */
+        public final String id;
+        public final String device;
+        /** "" when unknown (paired before 0.28.0). */
+        public final String origin;
+        /** 0 when unknown. */
+        public final long pairedAt;
+        private long lastSeen;
+        private final LinkedHashSet<String> uses = new LinkedHashSet<>();
+        Access(String token, String device, String origin, long pairedAt) {
+            this.token = token; this.id = fingerprint(token); this.device = device == null || device.isBlank() ? "" : cleanDevice(device);
+            this.origin = origin == null ? "" : origin; this.pairedAt = pairedAt;
+        }
+        public synchronized long lastSeen() { return lastSeen; }
+        /** Purpose keys in first-use order, see {@link #PURPOSES}. */
+        public synchronized List<String> uses() { return List.copyOf(uses); }
+        synchronized void used(String purpose, long now) { lastSeen = now; if (purpose != null) uses.add(purpose); }
+    }
+
+    /** Purpose of each route, as the player reads it. Keys stay stable; texts come from {@link #purposeText}. */
+    public static final List<String> PURPOSES = List.of("status", "world", "plan", "marks", "team", "server");
+
+    static String purposeOf(String route) {
+        String path = route.substring(route.indexOf(' ') + 1);
+        if (path.equals("/v1/status") || path.equals("/v1/players")) return "status";
+        if (path.equals("/v1/chunks") || path.startsWith("/v1/terrain") || path.equals("/v1/box") || path.equals("/v1/scan")) return "world";
+        if (path.equals("/v1/plan") || path.equals("/v1/placement") || path.equals("/v1/section") || path.equals("/v1/group")) return "plan";
+        if (path.startsWith("/v1/marks")) return "marks";
+        if (path.startsWith("/v1/team") || path.startsWith("/v1/room")) return "team";
+        if (path.startsWith("/v1/server")) return "server";
+        return null;
+    }
+
+    public static String purposeText(String key) {
+        return switch (key) {
+            case "status" -> io.github.freadeax.bauplaner.mod.Lang.t("Spielerposition lesen", "read player position");
+            case "world" -> io.github.freadeax.bauplaner.mod.Lang.t("Welt und Gelände lesen", "read world and terrain");
+            case "plan" -> io.github.freadeax.bauplaner.mod.Lang.t("Pläne laden und platzieren", "load and place plans");
+            case "marks" -> io.github.freadeax.bauplaner.mod.Lang.t("Markierungen", "marks");
+            case "team" -> io.github.freadeax.bauplaner.mod.Lang.t("Teambau und Team-Raum", "team building and team room");
+            case "server" -> io.github.freadeax.bauplaner.mod.Lang.t("Server-Kopplung", "server link");
+            default -> key;
+        };
+    }
+
+    static String fingerprint(String token) {
+        try {
+            byte[] d = MessageDigest.getInstance("SHA-256").digest(token.getBytes(StandardCharsets.UTF_8));
+            return String.format(Locale.ROOT, "%02x%02x%02x", d[0], d[1], d[2]);
+        } catch (java.security.NoSuchAlgorithmException e) { throw new IllegalStateException(e); }
+    }
+
+    /** Paired browsers, oldest first. */
+    public synchronized List<Access> accessList() {
+        List<Access> out = new ArrayList<>();
+        for (String t : tokens) out.add(access.computeIfAbsent(t, k -> new Access(k, "", "", 0)));
+        return out;
+    }
+
+    /** Removes one browser by its fingerprint; false if none matches. */
+    public synchronized boolean revokeAccess(String id) {
+        String hit = null;
+        for (String t : tokens) if (fingerprint(t).equalsIgnoreCase(id == null ? "" : id.trim())) hit = t;
+        if (hit == null) return false;
+        revoke(hit);
+        return true;
+    }
+
+    /** Persistable metadata (fingerprint, device, website, pairing time) – never the key itself. */
+    public synchronized String accessState() {
+        StringBuilder b = new StringBuilder();
+        Base64.Encoder e = Base64.getUrlEncoder().withoutPadding();
+        for (Access a : accessList()) {
+            if (b.length() > 0) b.append(',');
+            b.append(a.id).append(';').append(e.encodeToString(a.device.getBytes(StandardCharsets.UTF_8))).append(';')
+                    .append(e.encodeToString(a.origin.getBytes(StandardCharsets.UTF_8))).append(';').append(a.pairedAt);
+        }
+        return b.toString();
+    }
+
+    /** Restores {@link #accessState()} for the known keys; unknown or broken entries are ignored. */
+    public synchronized void restoreAccess(String state) {
+        if (state == null || state.isBlank()) return;
+        Map<String, String> byId = new LinkedHashMap<>();
+        for (String t : tokens) byId.put(fingerprint(t), t);
+        Base64.Decoder d = Base64.getUrlDecoder();
+        for (String entry : state.split(",")) {
+            String[] f = entry.split(";", -1);
+            if (f.length != 4 || !byId.containsKey(f[0])) continue;
+            try {
+                access.put(byId.get(f[0]), new Access(byId.get(f[0]), new String(d.decode(f[1]), StandardCharsets.UTF_8),
+                        new String(d.decode(f[2]), StandardCharsets.UTF_8), Long.parseLong(f[3])));
+            } catch (IllegalArgumentException ignored) { /* broken entry: the browser stays, its details read "unbekannt" */ }
+        }
     }
 
     // ------------------------------------------------------------------ pairing by code
@@ -303,34 +417,31 @@ public final class LiveLinkServer implements AutoCloseable {
     /** Forgets every paired website (all browsers must pair again). */
     public synchronized void revokeAll() {
         tokens.clear();
+        access.clear();
         saveTokens.accept(List.copyOf(tokens));
     }
 
-    private synchronized String pair(String code) {
+    private synchronized String pair(String code, String device, String origin) {
         if (!pairingOpen()) throw new HttpError(403, "Keine Kopplung offen. Im Spiel /bauplaner verbinden eingeben und den Code hier eintragen.");
         if (code == null || !constantEquals(code.trim(), pairingCode)) {
             if (++pairingAttempts >= PAIRING_ATTEMPTS) pairingCode = null;
             throw new HttpError(403, pairingCode == null ? "Zu viele falsche Codes. Im Spiel erneut /bauplaner verbinden eingeben." : "Code stimmt nicht.");
         }
         pairingCode = null;
-        byte[] raw = new byte[32];
-        random.nextBytes(raw);
-        String token = Base64.getUrlEncoder().withoutPadding().encodeToString(raw);
-        tokens.add(token);
-        while (tokens.size() > MAX_TOKENS) tokens.remove(tokens.iterator().next());
-        saveTokens.accept(List.copyOf(tokens));
-        return token;
+        return newToken(device == null ? "Browser (Code)" : device, origin);
     }
 
-    private synchronized boolean tokenValid(String token) {
-        if (token == null) return false;
-        boolean ok = false;
-        for (String t : tokens) ok |= constantEquals(token, t);
-        return ok;
+    /** The stored key equal to {@code token} (constant-time compare over all keys), or null. */
+    private synchronized String holder(String token) {
+        if (token == null) return null;
+        String hit = null;
+        for (String t : tokens) if (constantEquals(token, t)) hit = t;
+        return hit;
     }
 
     private synchronized void revoke(String token) {
         tokens.removeIf(t -> constantEquals(token, t));
+        access.keySet().removeIf(t -> !tokens.contains(t));
         saveTokens.accept(List.copyOf(tokens));
     }
 
@@ -375,20 +486,24 @@ public final class LiveLinkServer implements AutoCloseable {
                             + ",\"features\":[" + String.join(",", FEATURES.stream().map(Json::quote).toList()) + "]}");
                 case "POST /v1/pair/ask": {
                     Map<String, Object> body = r.body().length == 0 ? Map.of() : Json.obj(Json.parse(text(r, 4096)), "Anfrage");
-                    return ok(h, ask(body.get("device") instanceof String s ? s : null));
+                    return ok(h, ask(body.get("device") instanceof String s ? s : null, origin));
                 }
                 case "GET /v1/pair/ask": return ok(h, askState(r.query().get("request")));
                 case "POST /v1/pair": {
                     Map<String, Object> body = Json.obj(Json.parse(text(r, 4096)), "Kopplung");
                     String code = body.get("code") instanceof String s ? s : null;
-                    return ok(h, "{\"token\":" + Json.quote(pair(code)) + "}");
+                    return ok(h, "{\"token\":" + Json.quote(pair(code, body.get("device") instanceof String d ? d : null, origin)) + "}");
                 }
                 default:
                     break;
             }
             if (!r.path().startsWith("/v1/")) return error(h, 404, "Unbekannte Adresse.");
             String token = r.headers().get(TOKEN_HEADER);
-            if (!tokenValid(token)) return error(h, 401, "Nicht gekoppelt. Auf der Website „Verbinden“ wählen und im Spiel „Zulassen“ klicken.");
+            String key = holder(token);
+            if (key == null) return error(h, 401, "Nicht gekoppelt. Auf der Website „Verbinden“ wählen und im Spiel „Zulassen“ klicken.");
+            Access who;
+            synchronized (this) { who = access.computeIfAbsent(key, k -> new Access(k, "", "", 0)); }
+            who.used(purposeOf(route), clock.getAsLong());
             switch (route) {
                 case "GET /v1/status": return ok(h, handler.status());
                 case "GET /v1/chunks": return ok(h, handler.chunks(chunkList(r.query().get("c"))));

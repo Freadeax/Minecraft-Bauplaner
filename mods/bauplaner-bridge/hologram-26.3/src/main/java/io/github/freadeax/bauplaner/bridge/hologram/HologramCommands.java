@@ -79,7 +79,11 @@ public final class HologramCommands {
                         // LINK-03: the buttons "Planer zulassen/ablehnen" in the J menu run these.
                         .then(HologramCommands.<S>literal("zulassen").executes(c -> said(link.approve())))
                         .then(HologramCommands.<S>literal("ablehnen").executes(c -> said(link.deny())))
-                        .then(HologramCommands.<S>literal("status").executes(c -> said(link.statusText())))
+                        .then(HologramCommands.<S>literal("status").executes(c -> said(link.statusWithBrowsers())))
+                        // RELEASE-01: remove one paired browser by the id from "verbinden status".
+                        .then(HologramCommands.<S>literal("trennen").then(HologramCommands.<S, String>argument("kennung", StringArgumentType.word())
+                                .suggests((c, b) -> { link.browserIds().forEach(b::suggest); return b.buildFuture(); })
+                                .executes(c -> said(link.revokeBrowser(StringArgumentType.getString(c, "kennung"))))))
                         .then(HologramCommands.<S>literal("port").then(HologramCommands.<S, Integer>argument("port", IntegerArgumentType.integer(1024, 65535))
                                 .executes(c -> kept(link.setPort(IntegerArgumentType.getInteger(c, "port")))))),
                 // Weltplan layers (GAME-08): list, hide/show one, show all.

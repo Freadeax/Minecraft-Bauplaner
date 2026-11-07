@@ -12,6 +12,7 @@ Wie LMNT — Build Studio geprüft wird, mit welchen Befehlen und mit welchem le
 | Andere Browser | `npm run test:e2e:firefox`, `npm run test:e2e:webkit` | dieselben Browsertests in Firefox und WebKit |
 | Großdateien | `npm run test:grossbau` | Großstadt (1,45 Mio. Blöcke) und Spielbasis im echten Spiel, Browserläufe aus `tests/big/` |
 | Formate | `npm run format:check-schem` | Schem-Roundtrip mit unabhängigem Leser |
+| Release-Check | `npm run check:release` (`-- --offline`, `-- --commit <sha>`) | npm audit, Gradle-Wrapper und Distribution-Prüfsumme, Mod-JARs gegen `releases.json`, beide Adressen und Modrinth, HTTPS und Sicherheitsheader live, keine Zugangsdaten im Artefakt ([Browser-Schutz](architecture/betrieb/SICHERHEITSHEADER.md)) |
 
 Einzelne Prüfungen: `npm run typecheck`, `npm run check:architecture`, `npm run check:roadmap`, `npm run check:docs`, `npm run check:testplan`, `npm run check:library`.
 
@@ -37,6 +38,7 @@ Diese Läufe starten echte Minecraft-Clients oder Paper-Server (kopflos) und sin
 | `npm run check` | grün |
 | Browsertests Chromium | 235/235 grün (96 Dateien, Stand LIB-07; `planer-abnahmen` einzeln nachgelaufen; `team-room.e2e` danach 10 Läufe hintereinander grün, `offline.e2e` 6/6) |
 | Firefox, WebKit, iPad-/iPhone-Profile | grün für Werkstatt, Weltkarte und Grafik |
+| RELEASE-01 Browser-Schutz (07.11.) | `npm run check` grün; Browsertests 233/234 im Gesamtlauf, `team-room.e2e` danach 5 von 6 Einzelläufen grün (bekanntes Zeitverhalten, unverändert); `security-headers.e2e` null CSP-Verstöße; Mod-Kern-JUnit und Fabric-Build grün |
 | Platzierung im Spiel | Katalog, Generatoren und Gelände 670 Pläne, Basis 28, Großprojekte 169 + 13 auf Gelände: jeweils 0 Abweichungen |
 | Exporte im Spiel | 22/22 Fälle |
 | Großbau | 1,45 Mio. Blöcke im Spiel aufgebaut und geprüft |

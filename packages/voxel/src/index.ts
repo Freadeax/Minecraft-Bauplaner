@@ -26,3 +26,5 @@ export { nbtFamily, profileNbtFamilies, blockEntityTypeOf, blockEntityType, tran
 export type { NbtFamily, BlockEntityTransformResult } from './nbtTransforms.js';
 export { CONTAINER_SLOTS, MAX_STACK, SIGN_LINES, SIGN_COLORS, editableContent, slotLabel, readContainer, checkContainer, withContainer, readSign, checkSign, withSign } from './blockContentEdit.js';
 export type { ContentKind, SlotItem, ContainerEdit, SignEdit } from './blockContentEdit.js';
+export { scanExportSafety, sanitizeForExport, exportSafetyLines, EXPORT_SAFETY_LABEL, COMMAND_BLOCK_IDS, COMMAND_MINECART_ID } from './exportSafety.js';
+export type { ExportSafetyKind, ExportSafetyFinding, ExportSafetyReport } from './exportSafety.js';

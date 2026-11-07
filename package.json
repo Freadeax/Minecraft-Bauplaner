@@ -24,6 +24,7 @@
     "dev": "vite --host 127.0.0.1",
     "preview": "vite preview --host 127.0.0.1",
     "publish:cloudflare": "node scripts/pages/publish_cloudflare.mjs",
+    "check:release": "node scripts/checks/release_check.mjs",
     "test:grossbau": "scripts/size/test_grossbau_ingame.sh",
     "test:e2e": "node --test --test-concurrency=1 tests/e2e/*.e2e.mjs",
     "test:e2e:firefox": "node scripts/checks/e2e_engine.mjs firefox",

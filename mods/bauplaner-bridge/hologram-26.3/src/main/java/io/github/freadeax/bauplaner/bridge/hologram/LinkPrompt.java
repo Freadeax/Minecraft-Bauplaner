@@ -19,8 +19,8 @@ final class LinkPrompt {
 
     static Question current(HologramClient c) {
         if (c == null) return null;
-        String device = c.link().pendingAsk();
-        if (device != null) return new Question(Kind.PLANER, t("Der Planer („" + device + "“) möchte sich mit dem Spiel verbinden.", "The planner (“" + device + "”) wants to connect to the game."),
+        String ask = c.link().pendingAskText();
+        if (ask != null) return new Question(Kind.PLANER, ask,
                 t("Planer zulassen", "Allow planner"), t("Ablehnen", "Deny"));
         if (c.team().sync().asking()) return new Question(Kind.TEAM, t("Dieser Server hat das Build-Studio-Plugin. Teambau und Server-Kopplung erlauben?", "This server has the Build Studio plugin. Allow team building and the server link?"),
                 t("Teambau erlauben", "Allow team building"), t("Nein", "No"));

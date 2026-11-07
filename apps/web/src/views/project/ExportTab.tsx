@@ -3,6 +3,8 @@ import { suggestDataVersion, canonicalJson } from '../../../../../packages/domai
 import { prepareRevisionExport, EXPORT_FORMAT_LABEL, KNOWN_DATA_VERSIONS } from '../../../../../packages/application/src/index.js';
 import type { ExportFormat, RevisionExport } from '../../../../../packages/application/src/index.js';
 import { litematicVersionFor } from '../../../../../packages/formats/src/index.js';
+import { scanExportSafety, EXPORT_SAFETY_LABEL } from '../../../../../packages/voxel/src/index.js';
+import type { ExportSafetyKind } from '../../../../../packages/voxel/src/index.js';
 import type { SchemAnchor, UnselectedPolicy } from '../../../../../packages/formats/src/index.js';
 import { useApp } from '../../app/context';
 import { download, errorText, formatNumber } from '../../app/ui';
@@ -28,6 +30,7 @@ export function ExportTab({ session }: { session: ProjectSession }) {
   const [unselected, setUnselected] = useState<UnselectedPolicy>('air');
   const [comment, setComment] = useState('');
   const [author, setAuthor] = useState('');
+  const [safeMode, setSafeMode] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState<RevisionExport | null>(null);
@@ -39,6 +42,8 @@ export function ExportTab({ session }: { session: ProjectSession }) {
   const world = resolved?.world ?? null;
   const box = world ? [0, 1, 2].map(i => world.bounds.maxExclusive[i]! - world.bounds.min[i]!) : null;
   const volume = box ? box[0]! * box[1]! * box[2]! : 0;
+  // RELEASE-01: command and operator-only parts of the current state, shown before the export.
+  const safety = useMemo(() => world ? scanExportSafety(world) : null, [world]);
   const last = project.revisions.at(-1);
   const current = last && canonicalJson(last.instances) === canonicalJson(project.instances) && canonicalJson(last.links) === canonicalJson(project.links) ? last : null;
 
@@ -46,7 +51,7 @@ export function ExportTab({ session }: { session: ProjectSession }) {
     setError(''); setBusy(true);
     try {
       const prepared = await prepareRevisionExport(project, library.versions,
-        { format, dataVersion: dv, anchor, unselected, author },
+        { format, dataVersion: dv, anchor, unselected, author, safeMode },
         { ...(revisionId !== undefined && { revisionId }), comment });
       const out = prepared.output;
       // A failed writer leaves no new revision in the session or repository.
@@ -99,6 +104,16 @@ export function ExportTab({ session }: { session: ProjectSession }) {
           </select>
         </label>
         <p className="muted">Löschzellen werden immer als minecraft:air geschrieben; ausdrückliche Luft behält ihren Luftzustand. Ob Luft beim Einfügen räumt, entscheidet das Einfügewerkzeug.</p>
+        <label className="check"><input type="checkbox" checked={safeMode} onChange={e => setSafeMode(e.target.checked)} aria-label="Sicherer Modus" /> Sicherer Modus: Befehlsblöcke, Befehls-Minecarts, Klickbefehle, Spawner-Inhalte sowie Struktur- und Verbundblöcke weglassen</label>
+        {safety && safety.total > 0
+          ? <div className={`notice ${safeMode ? '' : 'warning'}`} role="note" aria-label="Befehle im Plan">
+            <strong>{safeMode ? 'Wird beim Export entfernt:' : 'Der Plan enthält Befehle oder Betreiberblöcke:'}</strong>
+            <ul>{(Object.keys(safety.counts) as ExportSafetyKind[]).filter(k => safety.counts[k]).map(k => <li key={k}>{safety.counts[k]}× {EXPORT_SAFETY_LABEL[k]}</li>)}</ul>
+            <details><summary>Stellen anzeigen</summary><ul className="safety-findings">{safety.findings.slice(0, 50).map((f, i) => <li key={i}><code>{f.position.join(' / ')}</code> {EXPORT_SAFETY_LABEL[f.kind]} ({f.id}){f.detail ? <>: <code>{f.detail}</code></> : null}</li>)}</ul>
+              {safety.findings.length > 50 && <p className="muted">… und {safety.findings.length - 50} weitere.</p>}</details>
+            <p className="muted">Der Planer führt diese Befehle nie aus. Beim Einfügen in Minecraft gelten die Regeln des Zielservers und des Einfügewerkzeugs.</p>
+          </div>
+          : safety && <p className="muted">Keine Befehlsblöcke, Befehls-Minecarts, Klickbefehle oder Betreiberblöcke im Plan.</p>}
         <label>Autor (optional)<input type="text" value={author} maxLength={120} onChange={e => setAuthor(e.target.value)} /></label>
         <label>Kommentar zur Revision<input type="text" value={comment} maxLength={500} onChange={e => setComment(e.target.value)} placeholder="Schem-Export" disabled={!!current} /></label>
         {saveBlocked && <p className="notice warning" role="alert">Der gespeicherte Stand ist nicht aktuell. Erst neu laden, dann exportieren.</p>}
@@ -144,6 +159,7 @@ function ExportReport({ result }: { result: RevisionExport }) {
       <div><dt>Nicht ausgewählt</dt><dd>{formatNumber(report.counts.unselected)} als {report.unselectedState}</dd></div>
       <div><dt>BlockEntities</dt><dd>{report.blockEntities}{report.convertedBlockEntities ? ` (${report.convertedBlockEntities} aus Roh-NBT übertragen)` : ''}</dd></div>
       <div><dt>Dateigröße</dt><dd>{formatNumber(result.bytes.byteLength)} Bytes (GZip)</dd></div>
+      <div><dt>Sicherer Modus</dt><dd>{result.safety.removed ? `${result.safety.total} Stellen entfernt` : result.safety.total ? `aus, ${result.safety.total} Stellen enthalten` : 'nichts zu entfernen'}</dd></div>
       <div><dt>SHA-256</dt><dd className="hash">{result.sha256}</dd></div>
     </dl>
     <ul>{[...result.notes, ...report.warnings].map((w, i) => <li key={i}>{w}</li>)}</ul>
