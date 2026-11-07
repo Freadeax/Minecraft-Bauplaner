@@ -1464,10 +1464,30 @@ async function gzip(bytes: Uint8Array): Promise<Uint8Array> {
   const stream = new Blob([bytes as Uint8Array<ArrayBuffer>]).stream().pipeThrough(new CompressionStream('gzip'));
   return new Uint8Array(await new Response(stream).arrayBuffer());
 }
-async function gunzip(bytes: Uint8Array): Promise<Uint8Array> {
-  const stream = new Blob([bytes as Uint8Array<ArrayBuffer>]).stream().pipeThrough(new DecompressionStream('gzip'));
-  return new Uint8Array(await new Response(stream).arrayBuffer());
+/**
+ * GZip with a cap on the inflated size (P1 Härtung 07.11.2026): the bytes are counted while they come and the
+ * stream stops at the first byte over `maxBytes` – a small code or plan cannot unfold into gigabytes.
+ */
+export async function gunzipCapped(bytes: Uint8Array, maxBytes: number): Promise<Uint8Array> {
+  const reader = new Blob([bytes as Uint8Array<ArrayBuffer>]).stream().pipeThrough(new DecompressionStream('gzip')).getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > maxBytes) throw new DomainError('LIMIT', `Entpackt größer als ${Math.round(maxBytes / 1_000_000) || 1} MB – abgebrochen.`);
+      chunks.push(value);
+    }
+  } finally { void reader.cancel().catch(() => { /* finished */ }); }
+  const out = new Uint8Array(total);
+  let o = 0;
+  for (const c of chunks) { out.set(c, o); o += c.byteLength; }
+  return out;
 }
+/** A report code holds at most a few hundred events; its JSON stays far below this. */
+export const MAX_REPORT_CODE_JSON = 1_000_000;
 const b64url = (bytes: Uint8Array) => {
   let s = ''; for (const b of bytes) s += String.fromCharCode(b);
   return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -1494,8 +1514,8 @@ export async function decodeReportCode(code: string): Promise<{ teamId: string; 
   if (!m) throw new DomainError('CODE', 'Das ist kein Meldecode (er beginnt mit „BPT1:“ und hat vier Teile).');
   if ((await sha256Hex(m[2]!)).slice(0, 8) !== m[3]) throw new DomainError('CODE', 'Der Meldecode ist unvollständig oder verändert (Prüfsumme passt nicht). Bitte ganz kopieren.');
   let parsed: unknown;
-  try { parsed = JSON.parse(new TextDecoder().decode(await gunzip(fromB64url(m[2]!)))); }
-  catch { throw new DomainError('CODE', 'Der Meldecode lässt sich nicht entpacken.'); }
+  try { parsed = JSON.parse(new TextDecoder().decode(await gunzipCapped(fromB64url(m[2]!), MAX_REPORT_CODE_JSON))); }
+  catch (e) { throw new DomainError('CODE', e instanceof DomainError ? `Der Meldecode ist zu groß (${e.message}).` : 'Der Meldecode lässt sich nicht entpacken.'); }
   if (!isObj(parsed) || typeof parsed.t !== 'string' || !Array.isArray(parsed.e)) throw new DomainError('CODE', 'Der Meldecode hat keinen gültigen Inhalt.');
   if (teamTag(parsed.t) !== m[1]) throw new DomainError('CODE', 'Der Meldecode ist beschädigt (Teamkennung passt nicht).');
   return { teamId: parsed.t, events: (parsed.e as unknown[]).map(checkTeamEvent).sort(compareEvents) };

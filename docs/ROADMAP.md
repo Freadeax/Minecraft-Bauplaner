@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T19:17:28.843Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T19:38:18.474Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-07T19:17:28.843Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 2 |
 | 🚧 In Arbeit | 5 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 99 |
+| 🧩 Implementiert · Abnahme offen | 100 |
 | ✅ Im beschriebenen Umfang geprüft | 35 |
 | ⏸ Zurückgestellt | 3 |
 
@@ -28,7 +28,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Arbeitsstrang
 | [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 29 | 0 | 29 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 0 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
-| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 17 | 0 | 14 | 1 |
+| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 18 | 0 | 14 | 1 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 14 | 0 | 12 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 4 | 0 | 3 | 1 |
@@ -133,6 +133,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [COOP-09](#coop-09) | Team live im Alltag | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
 | [COOP-10](#coop-10) | Client zuerst | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | TEAMBAU-27 mit Mitspielern: Mod 0.15.0, Team live, ohne Plugin bauen und Kiste öffnen. |
 | [COOP-11](#coop-11) | Verlauf verdichten | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | TEAMBAU-28: einen echten Teamstand verdichten und mit einem Mitspieler abgleichen. |
+| [HARDEN-01](#harden-01) | Importe und Team-Raum gegen Missbrauch härten | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Importe und Team-Worker gegen Missbrauch härten“ | — |
 | [LINK-04](#link-04) | Planer | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Testplan-Bereich LINK durchgehen. |
 | [LINK-05](#link-05) | Zweiter Weg über den Team-Raum | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern. |
 | [OPS-04](#ops-04) | Team-Raum betreiben | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Testfall TEAMBAU-31 mit zwei Geräten: sichern, wiederherstellen, löschen und zurückholen. |
@@ -643,6 +644,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GUIDE-01](#guide-01) | Anleitung „Wie geh ich es an?“: eigener Reiter mit Wegen nach Ziel, jeder Schritt mit Grafik, kurzem Satz und Link an die passende Stelle | 🧩 Implementiert · Abnahme offen | 4/5 | UI-02, GAME-11, TERRAIN-04, LINK-11 | ausstehend | ausstehend |
 | [NAME-01](#name-01) | Neuer Produktname „LMNT — Build Studio“ auf Seite, Mod, Plugin und Modrinth | 🧩 Implementiert · Abnahme offen | 3/4 | UI-03, GAME-12 | ausstehend | ausstehend |
 | [PRIV-01](#priv-01) | Datenschutz und Freigaben verständlich: was geht wohin, wer sieht es, Speicherstatus und Umzug | 🚧 In Arbeit | 6/8 | COOP-07, WORLD-SHARE-01, BACKUP-02 | ausstehend | ausstehend |
+| [HARDEN-01](#harden-01) | Importe und Team-Raum gegen Missbrauch härten | 🧩 Implementiert · Abnahme offen | 2/3 | TEAM-02 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -3880,6 +3882,26 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [docs/architecture/betrieb/DATENSCHUTZ.md](architecture/betrieb/DATENSCHUTZ.md) — Datenwege, Freigaben, Speicher und Umzug.; [tests/e2e/privacy.e2e.mjs](../tests/e2e/privacy.e2e.mjs) — Fußzeile, Datenschutz-Seite, fremde Webkarte.; [tests/e2e/release-data.e2e.mjs](../tests/e2e/release-data.e2e.mjs) — Release-Datenprobe.
 
 **Dateiumfang:** `apps/web/`, `tests/`, `mods/bauplaner-bridge/`, `docs/architecture/betrieb/`, `docs/operations/`, `docs/testing/TESTPLAN.md`, `docs/TESTING.md`. **Abhängigkeiten:** COOP-07, WORLD-SHARE-01, BACKUP-02. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### HARDEN-01
+
+**Importe und Team-Raum gegen Missbrauch härten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Importe und Team-Worker gegen Missbrauch härten“ · Arbeitsstrang: „Importe und Team-Worker gegen Missbrauch härten“ · Aktualisiert: 2026-11-07T19:38:18.474Z
+
+- [x] HARDEN-01-S01: ZIP/JAR: wirklich gelesene und entpackte Bytes zählen, gefälschte Größen sofort abbrechen, gemeinsames Budget je Import, Abbruch; PNG-Kopfprüfung; Laden/Entpacken/Bildprüfung im abbrechbaren Hintergrund-Worker. GZIP von Planständen und Meldecodes mit Obergrenze.
+- [x] HARDEN-01-S02: Team-Raum: Raumerstellung je Anschluss und gesamt begrenzt (RoomGate), create nur intern, Origin-Prüfung bei Anlegen und WebSocket, Größen vor dem Parsen, Anmeldung binnen 10 s, Grenzen für Anfragen, Verbindungen und Nachrichten, Aufbewahrung nur durch Nutzung mit gültigem Schlüssel.
+- [ ] HARDEN-01-S03: Neue Fassung des Team-Raums ausrollen und Probe gegen den echten Dienst.
+
+**Abnahme:** Ein ZIP-Eintrag mit falscher Größenangabe oder ein Entpack-Bombe bricht beim ersten Byte über der Grenze ab. Mehrere Pakete eines Imports teilen ein Budget. Fremde Browser-Seiten können weder Räume anlegen noch live verbinden; Mod und Plugin verbinden wie bisher. Übergroße Anfragen werden vor dem Parsen abgewiesen; stumme Verbindungen nach 10 s geschlossen. Anonyme Anfragen verlängern die Aufbewahrung nicht.
+
+**Nächste Aktion:** Team-Raum ausrollen (wrangler deploy mit Migration v3 RoomGate), danach Missbrauchsprobe, Rauchtest und Sicherungsprobe gegen den echten Dienst.
+
+**Prüfstand:** Automatisch geprüft (Node-Tests, wrangler dev); Ausrollen des Team-Raums wartet auf Freigabe.
+
+**Nachweise:** [tests/unit/building/zip-limits.test.mjs](../tests/unit/building/zip-limits.test.mjs) — Nachgestellte Befunde: gespeicherter 128-KiB-Eintrag mit 10-Byte-Angabe, Entpack-Bombe, geteiltes Budget, Abbruch, PNG-Prüfung, GZIP-Grenzen.; [tests/unit/team/team-room-abuse.test.mjs](../tests/unit/team/team-room-abuse.test.mjs) — Größen beim Lesen, Origin, Adressen, Eimer, Erstellungsfenster, Quelltextregeln des Workers.; [scripts/team/team_room_abuse_smoke.mjs](../scripts/team/team_room_abuse_smoke.mjs) — Probe gegen wrangler dev: 403 fremde Seite, 404 create über Raum, 413, 4408 nach 10 s, 4401, 4413, 429 Raumflut.; [docs/architecture/team/TEAM_LIVE.md](architecture/team/TEAM_LIVE.md) — §15 Grenzen.
+
+**Dateiumfang:** `apps/web/src/blockmodels/zip.ts`, `apps/web/src/blockmodels/pack.ts`, `apps/web/src/blockmodels/assets.ts`, `apps/web/src/blockmodels/TexturePanel.tsx`, `apps/web/src/jobs/packJob.ts`, `apps/web/src/jobs/jobs.ts`, `apps/web/src/views/project/team/roomClient.ts`, `packages/domain/src/team/team.ts`, `packages/domain/src/index.ts`, `services/team-room/src/guard.js`, `services/team-room/src/index.js`, `services/team-room/wrangler.toml`, `services/team-room/README.md`, `scripts/team/team_room_abuse_smoke.mjs`, `tests/unit/building/zip-limits.test.mjs`, `tests/unit/team/team-room-abuse.test.mjs`, `docs/architecture/team/TEAM_LIVE.md`, `docs/architecture/team/TEAM_BACKUP.md`, `docs/architecture/formate/BLOCK_MODELS.md`. **Abhängigkeiten:** TEAM-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

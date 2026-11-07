@@ -13,6 +13,11 @@ class_name = "TeamRoom"
 name = "VAULTS"
 class_name = "RoomVault"
 
+# P1 Härtung 07.11.2026: Zähler für neue Räume je Anschluss und gesamt (docs/architecture/team/TEAM_LIVE.md §15).
+[[durable_objects.bindings]]
+name = "GATES"
+class_name = "RoomGate"
+
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["TeamRoom"]
@@ -20,6 +25,10 @@ new_sqlite_classes = ["TeamRoom"]
 [[migrations]]
 tag = "v2"
 new_sqlite_classes = ["RoomVault"]
+
+[[migrations]]
+tag = "v3"
+new_sqlite_classes = ["RoomGate"]
 
 # Kennung der ausgerollten Version für /v1/status (kostenlos).
 [version_metadata]

@@ -4,14 +4,13 @@
 import { DurableObject } from 'cloudflare:workers';
 import { RoomCore, RoomError, ControlRelay, checkControl, cleanPresence, randomKey, sha256, LIMITS, PROTOCOL, VERSION, PING, PONG } from './core.js';
 import { VaultCore, backupInto, RETENTION, REASONS, DAY_MS } from './vault.js';
+// P1 Härtung 07.11.2026 (TEAM_LIVE.md §15): sizes before parsing, Herkunft, limits for creation, requests, connections.
+import { ABUSE, ALLOWED_ORIGINS, Buckets, clientAddress, countCreation, originAllowed, readBytes, readJson, readText, tooMany } from './guard.js';
 
 // bauplaner.pages.dev: zweite Adresse auf Cloudflare Pages (PERF-06, docs/architecture/betrieb/OFFLINE.md).
-const ALLOWED_ORIGINS = ['https://freadeax.github.io', 'https://bauplaner.pages.dev', 'http://127.0.0.1', 'http://localhost'];
-
 function cors(request, env) {
   const origin = request.headers.get('Origin') ?? '';
-  const extra = (env.ALLOWED_ORIGINS ?? '').split(',').map(s => s.trim()).filter(Boolean);
-  const ok = [...ALLOWED_ORIGINS, ...extra].some(o => origin === o || origin.startsWith(`${o}:`));
+  const ok = !!origin && originAllowed(origin, env.ALLOWED_ORIGINS);
   return { 'Access-Control-Allow-Origin': ok ? origin : ALLOWED_ORIGINS[0], 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Authorization, Content-Type, If-Match', 'Access-Control-Max-Age': '86400', Vary: 'Origin' };
 }
@@ -30,11 +29,18 @@ export default {
       if (parts.length === 2 && parts[1] === 'status') return json({ ok: true, protocol: PROTOCOL, version: VERSION, at: new Date().toISOString(),
         features: ['guards', 'docs', 'scans', 'control', 'backups', 'admin-rotate'], retention: RETENTION, deployment: env.CF_VERSION_METADATA?.id ?? null }, 200, { ...h, 'Cache-Control': 'no-store' });
       if (parts.length === 2 && parts[1] === 'rooms' && request.method === 'POST') {
+        // Creating is open to everyone (no account) – so it is limited per address and for the whole service.
+        if (!originAllowed(request.headers.get('Origin'), env.ALLOWED_ORIGINS)) return json({ error: 'herkunft', message: 'Räume legt nur der Planer an.' }, 403, h);
+        const body = await readBytes(request, ABUSE.body.create);
+        const gate = await allowCreation(env, clientAddress(request));
+        if (!gate.ok) return json({ error: 'zu-viele', message: 'Zu viele neue Team-Räume von diesem Anschluss – bitte später erneut versuchen.' }, 429, { ...h, 'Retry-After': String(gate.retryAfter) });
         const room = `r_${randomKey(12)}`;
         const stub = env.ROOMS.get(env.ROOMS.idFromName(room));
-        return withCors(await stub.fetch(new Request(`https://room/create?room=${room}`, { method: 'POST', body: request.body, headers: request.headers })), h);
+        return withCors(await stub.fetch(new Request(`https://room/create?room=${room}`, { method: 'POST', body, headers: { 'Content-Type': 'application/json' } })), h);
       }
       if (parts[1] === 'rooms' && parts[2] && /^r_[A-Za-z0-9_-]{6,40}$/.test(parts[2])) {
+        // `create` is internal (only the creation route above, with its limits, may reach it).
+        if (parts[3] === 'create') return json({ error: 'nicht-gefunden', message: 'Unbekannte Adresse.' }, 404, h);
         const stub = env.ROOMS.get(env.ROOMS.idFromName(parts[2]));
         const inner = new URL(`https://room/${parts.slice(3).join('/')}`);
         inner.search = url.search;
@@ -45,10 +51,20 @@ export default {
       }
       return json({ error: 'nicht-gefunden', message: 'Unbekannte Adresse.' }, 404, h);
     } catch (e) {
+      if (e instanceof RoomError) return json({ error: e.code, message: e.message }, e.status, h);
       return json({ error: 'fehler', message: String(e?.message ?? e) }, 500, h);
     }
   },
 };
+
+/** Room creation through the gates: one per address and one for the whole service (RoomGate). */
+async function allowCreation(env, address) {
+  if (!env.GATES) return { ok: true };
+  const gate = name => env.GATES.get(env.GATES.idFromName(name));
+  const mine = await gate(`adresse:${address}`).count({ perHour: ABUSE.create.perHour, perDay: ABUSE.create.perDay });
+  if (!mine.ok) return mine;
+  return gate('alle').count({ perHour: ABUSE.create.allPerDay, perDay: ABUSE.create.allPerDay });
+}
 
 function withCors(response, h) {
   const r = new Response(response.body, response);
@@ -108,6 +124,9 @@ export class TeamRoom extends DurableObject {
     this.store = new SqlStore(ctx.storage.sql, ctx.storage);
     this.core = new RoomCore(this.store);
     this.relay = new ControlRelay();
+    this.requests = new Buckets(ABUSE.requests);
+    this.connects = new Buckets(ABUSE.connects);
+    this.messages = new Buckets(ABUSE.messages);
     // Mod and plugin send a ping every 30 s; answering it must not wake the room from hibernation.
     try { this.ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair(PING, PONG)); } catch { /* older runtime: webSocketMessage answers */ }
   }
@@ -116,92 +135,112 @@ export class TeamRoom extends DurableObject {
     const url = new URL(request.url);
     const path = url.pathname.replace(/^\/+/, '');
     this.roomName = request.headers.get('X-Team-Room') ?? this.roomName;
+    const address = clientAddress(request);
     try {
-      if (this.core.created) await this.activity();
+      if (path !== 'live' && path !== 'create' && !this.requests.take(address)) throw tooMany('Zu viele Anfragen an diesen Team-Raum – kurz warten.', this.requests.retryAfter(address));
       const ops = await this.opsRoute(path, request, url);
       if (ops) return ops;
       if (path === 'create' && request.method === 'POST') {
-        const body = await request.json().catch(() => ({}));
+        const body = await readJson(request, ABUSE.body.create, { empty: true }).catch(e => { if (e instanceof RoomError) throw e; return {}; });
         return json(await this.core.create({ room: url.searchParams.get('room'), teamId: body.teamId, name: body.name }), 201);
       }
       if (path === 'live') {
         if (request.headers.get('Upgrade') !== 'websocket') return json({ error: 'websocket', message: 'Nur WebSocket.' }, 426);
         this.core.info();
+        // Browsers always send their Origin: only the planner's own pages may open a live connection. Mod and plugin send none.
+        if (!originAllowed(request.headers.get('Origin'), this.env.ALLOWED_ORIGINS)) return json({ error: 'herkunft', message: 'Diese Seite darf sich nicht mit dem Team-Raum verbinden.' }, 403);
+        const open = this.ctx.getWebSockets();
+        if (open.length >= ABUSE.socketsPerRoom) return json({ error: 'raum-voll', message: `Der Team-Raum hat schon ${ABUSE.socketsPerRoom} Verbindungen.` }, 503, { 'Retry-After': '30' });
+        if (open.filter(ws => ws.deserializeAttachment()?.addr === address).length >= ABUSE.socketsPerAddress || !this.connects.take(address))
+          throw tooMany('Zu viele Verbindungen von diesem Anschluss – kurz warten.', 10);
         const pair = new WebSocketPair();
-        // Authentication happens with the first message (browsers cannot set headers on WebSockets).
+        // Authentication happens with the first message (browsers cannot set headers on WebSockets); without a valid
+        // hello within ABUSE.helloMs the connection is closed.
         this.ctx.acceptWebSocket(pair[1]);
-        pair[1].serializeAttachment({ authed: false });
+        pair[1].serializeAttachment({ authed: false, openedAt: Date.now(), addr: address });
+        // The socket object of this request goes stale once it is answered; the sweep looks the sockets up again.
+        setTimeout(() => this.sweepUnauthed(), ABUSE.helloMs + 50);
         return new Response(null, { status: 101, webSocket: pair[0] });
       }
-      if (path === '' && request.method === 'GET') { await this.core.auth(bearer(request)); return json({ ...this.core.info(), serverOnline: !!this.serverSocket() }, 200); }
+      if (path === '' && request.method === 'GET') { await this.authed(request); return json({ ...this.core.info(), serverOnline: !!this.serverSocket() }, 200); }
       // LINK-05: a signed control message for the Paper plugin; any room key may send, the plugin decides.
       if (path === 'control' && request.method === 'POST') {
-        await this.core.auth(bearer(request));
-        const message = checkControl(await request.json());
+        await this.authed(request);
+        const message = checkControl(await readJson(request, ABUSE.body.control));
         const ws = this.serverSocket();
         if (!ws) throw new RoomError(409, 'server-offline', 'Der Server ist gerade nicht mit dem Team-Raum verbunden (Server aus oder Raum dort nicht verbunden).');
         return json(await this.relay.ask(frame => ws.send(JSON.stringify(frame)), message), 200);
       }
       if (path === 'events' && request.method === 'POST') {
-        const role = await this.core.auth(bearer(request));
-        const body = await request.json();
+        const role = await this.authed(request);
+        const body = await readJson(request, ABUSE.body.events);
         const answer = this.core.append(body, role);
         if (answer.added?.length) { this.broadcast({ type: 'events', events: answer.added, cursor: answer.cursor }); await this.changed(); }
         const { added: _a, ...out } = answer;
         return json(out, 200);
       }
       if (path === 'events' && request.method === 'GET') {
-        await this.core.auth(bearer(request));
+        await this.authed(request);
         return json(this.core.since(url.searchParams.get('after') ?? '', url.searchParams.get('limit')), 200);
       }
       if (path === 'header') {
-        if (request.method === 'PUT') { await this.core.auth(bearer(request), 'admin'); this.core.setHeader(await request.json()); this.broadcast({ type: 'header' }); await this.changed(); return json({ ok: true }, 200); }
-        await this.core.auth(bearer(request)); return json(this.core.getHeader(), 200);
+        if (request.method === 'PUT') { await this.authed(request, 'admin'); this.core.setHeader(await readJson(request, ABUSE.body.header)); this.broadcast({ type: 'header' }); await this.changed(); return json({ ok: true }, 200); }
+        await this.authed(request); return json(this.core.getHeader(), 200);
       }
       if (path.startsWith('plan/')) {
         const sha = path.slice(5);
-        if (request.method === 'PUT') { await this.core.auth(bearer(request), 'admin'); await this.core.putPlan(sha, new Uint8Array(await request.arrayBuffer())); this.broadcast({ type: 'plan', sha }); await this.changed(); return json({ ok: true }, 200); }
-        await this.core.auth(bearer(request));
+        if (request.method === 'PUT') { await this.authed(request, 'admin'); await this.core.putPlan(sha, await readBytes(request, ABUSE.body.plan)); this.broadcast({ type: 'plan', sha }); await this.changed(); return json({ ok: true }, 200); }
+        await this.authed(request);
         return new Response(this.core.getPlan(sha), { status: 200, headers: { 'Content-Type': 'application/gzip' } });
       }
       // LINK-07: recordings from the players' mods (no server file needed).
-      if (path === 'scans' && request.method === 'GET') { await this.core.auth(bearer(request)); return json({ scans: this.core.scans() }, 200); }
+      if (path === 'scans' && request.method === 'GET') { await this.authed(request); return json({ scans: this.core.scans() }, 200); }
       if (path.startsWith('scans/')) {
         const id = path.slice(6);
         if (request.method === 'PUT') {
-          await this.core.auth(bearer(request));
-          const meta = await this.core.putScan(id, await request.arrayBuffer(), { file: url.searchParams.get('file'), projectId: url.searchParams.get('project'), revision: url.searchParams.get('revision'), by: url.searchParams.get('by') });
+          await this.authed(request);
+          const meta = await this.core.putScan(id, (await readBytes(request, ABUSE.body.scan)).buffer, { file: url.searchParams.get('file'), projectId: url.searchParams.get('project'), revision: url.searchParams.get('revision'), by: url.searchParams.get('by') });
           this.broadcast({ type: 'scan', scan: meta });
           return json(meta, 200);
         }
-        await this.core.auth(bearer(request));
+        await this.authed(request);
         return new Response(this.core.getScan(id), { status: 200, headers: { 'Content-Type': 'application/octet-stream' } });
       }
       // WORLD-SHARE-01: shared documents (Weltplan with markers, list of server web maps).
-      if (path === 'docs' && request.method === 'GET') { await this.core.auth(bearer(request)); return json({ docs: this.core.docs() }, 200); }
+      if (path === 'docs' && request.method === 'GET') { await this.authed(request); return json({ docs: this.core.docs() }, 200); }
       if (path.startsWith('doc/')) {
         const name = path.slice(4);
         if (request.method === 'PUT') {
-          const role = await this.core.auth(bearer(request));
-          const meta = await this.core.putDoc(name, await request.text(), { by: url.searchParams.get('by'), ifMatch: request.headers.get('If-Match')?.replace(/"/g, '') }, role);
+          const role = await this.authed(request);
+          const meta = await this.core.putDoc(name, await readText(request, ABUSE.body.doc), { by: url.searchParams.get('by'), ifMatch: request.headers.get('If-Match')?.replace(/"/g, '') }, role);
           this.broadcast({ type: 'doc', name, rev: meta.rev, by: meta.by, at: meta.at });
           await this.changed();
           return json(meta, 200);
         }
-        await this.core.auth(bearer(request));
+        await this.authed(request);
         return new Response(this.core.getDoc(name, url.searchParams.get('known')), { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
       }
       if (path === 'rotate' && request.method === 'POST') {
-        await this.core.auth(bearer(request), 'admin');
+        await this.authed(request, 'admin');
         const wer = url.searchParams.get('wer'), who = wer === 'server' || wer === 'admin' ? wer : 'member';
         const r = await this.core.rotate(who); this.closeRole(who); await this.changed(); return json(r, 200);
       }
       return json({ error: 'nicht-gefunden', message: 'Unbekannte Adresse.' }, 404);
     } catch (e) {
-      if (e instanceof RoomError) return json({ error: e.code, message: e.message }, e.status);
+      if (e instanceof RoomError) return json({ error: e.code, message: e.message }, e.status, e.retryAfter ? { 'Retry-After': String(e.retryAfter) } : undefined);
       if (e instanceof SyntaxError) return json({ error: 'json', message: 'Kein gültiges JSON.' }, 400);
       throw e;
     }
+  }
+
+  /**
+   * Checks the key of a request; only then the use counts as activity that pushes the deletion of an unused room
+   * back (P1 Härtung: anonymous requests – wrong key, no key – never keep a room alive).
+   */
+  async authed(request, need) {
+    const role = await this.core.auth(bearer(request), need);
+    await this.activity();
+    return role;
   }
 
   // ------------------------------------------------------------ OPS-04: Sicherung, Wiederherstellung, Aufbewahrung
@@ -261,7 +300,7 @@ export class TeamRoom extends DurableObject {
   /** Admin of the room – or, when the room is gone, the admin key of its newest backup. */
   async authAdmin(request) {
     const key = bearer(request);
-    if (this.core.created) { await this.core.auth(key, 'admin'); return true; }
+    if (this.core.created) { await this.core.auth(key, 'admin'); await this.activity(); return true; }
     const hash = this.roomName ? await this.vault().adminHash() : undefined;
     if (!hash) throw new RoomError(404, 'raum-fehlt', 'Diesen Team-Raum gibt es nicht (mehr), und es gibt keine Sicherung von ihm.');
     if (!key || await sha256(key) !== hash) throw new RoomError(401, 'schluessel-falsch', 'Der Verwaltungsschlüssel passt nicht.');
@@ -282,14 +321,14 @@ export class TeamRoom extends DurableObject {
     }
     if (path === 'backups' && request.method === 'GET') { await this.authAdmin(request); return json({ backups: await this.vault().list(), reasons: REASONS }, 200); }
     if (path === 'backups' && request.method === 'POST') {
-      await this.core.auth(bearer(request), 'admin');
+      await this.authed(request, 'admin');
       const last = Date.parse(this.ops().lastBackupAt ?? '') || 0;
       if (Date.now() - last < RETENTION.manualEveryMs) throw new RoomError(429, 'sicherung-zu-oft', 'Gerade eben gesichert – bitte eine Minute warten.');
       return json(await this.backup('manuell'), 201);
     }
     if (path === 'restore' && request.method === 'POST') {
       const exists = await this.authAdmin(request);
-      const body = await request.json();
+      const body = await readJson(request, ABUSE.body.small);
       if (typeof body?.backup !== 'string' || !/^bk_[A-Za-z0-9_-]{4,40}$/.test(body.backup)) throw new RoomError(400, 'sicherung-id', 'Welche Sicherung? (backup fehlt)');
       const vault = this.vault();
       const before = exists ? await this.backup('vor-wiederherstellung') : null;
@@ -306,7 +345,7 @@ export class TeamRoom extends DurableObject {
       return json({ ok: true, ...r, from: body.backup, keys: exists ? 'unveraendert' : 'aus-sicherung', ...(before && { before: before.id }) }, 200);
     }
     if (path === '' && request.method === 'DELETE') {
-      await this.core.auth(bearer(request), 'admin');
+      await this.authed(request, 'admin');
       if (url.searchParams.get('bestaetigen') !== this.store.getMeta('room').room) throw new RoomError(400, 'bestaetigen', 'Zum Löschen die Raum-ID als ?bestaetigen= mitschicken.');
       return json(await this.deleteRoom('loeschen'), 200);
     }
@@ -314,14 +353,25 @@ export class TeamRoom extends DurableObject {
   }
 
   async webSocketMessage(ws, raw) {
+    const att = ws.deserializeAttachment() ?? {};
+    // P1 Härtung: size, login time and pace are checked before a message is even parsed.
+    const size = typeof raw === 'string' ? raw.length : raw.byteLength;
+    if (size > ABUSE.messageBytes) { ws.send(JSON.stringify({ type: 'error', error: 'zu-gross', message: 'Nachricht größer als 1 MB.' })); return ws.close(4413, 'zu-gross'); }
+    if (!att.authed) {
+      if (att.openedAt && Date.now() - att.openedAt > ABUSE.helloMs) return ws.close(4408, 'anmeldung-fehlt');
+      const tries = (att.tries ?? 0) + 1;
+      if (tries > ABUSE.preAuthMessages) return ws.close(4401, 'schluessel-fehlt');
+      ws.serializeAttachment({ ...att, tries });
+    } else if (!this.messages.take(ws)) {
+      return ws.send(JSON.stringify({ type: 'error', error: 'zu-schnell', message: 'Zu viele Nachrichten – kurz warten.' }));
+    }
     let msg;
     try { msg = JSON.parse(typeof raw === 'string' ? raw : new TextDecoder().decode(raw)); } catch { return ws.send(JSON.stringify({ type: 'error', error: 'json' })); }
-    const att = ws.deserializeAttachment() ?? {};
     try {
       if (msg.type === 'hello') {
         const role = await this.core.auth(msg.key);
         const presence = cleanPresence(msg, undefined, role);
-        ws.serializeAttachment({ authed: true, role, presence });
+        ws.serializeAttachment({ authed: true, role, presence, ...(att.addr && { addr: att.addr }) });
         await this.activity();
         ws.send(JSON.stringify({ type: 'welcome', ...this.core.info() }));
         let feed;
@@ -369,6 +419,14 @@ export class TeamRoom extends DurableObject {
   }
   webSocketError(ws) { this.sendPresence(ws); }
 
+  /** Closes every connection that has not said hello with a valid key within ABUSE.helloMs (P1 Härtung). */
+  sweepUnauthed(now = Date.now()) {
+    for (const ws of this.ctx.getWebSockets()) {
+      const a = ws.deserializeAttachment();
+      if (a && !a.authed && now - (a.openedAt ?? 0) >= ABUSE.helloMs) { try { ws.send(JSON.stringify({ type: 'error', error: 'anmeldung-fehlt', message: 'Ohne Anmeldung (hello mit Schlüssel) wird die Verbindung geschlossen.' })); ws.close(4408, 'anmeldung-fehlt'); } catch { /* closed */ } }
+    }
+  }
+
   /** The newest live connection of the Paper plugin (server key), or null. */
   serverSocket() {
     const all = this.ctx.getWebSockets().filter(ws => { const a = ws.deserializeAttachment(); return a?.authed && a.role === 'server'; });
@@ -387,6 +445,22 @@ export class TeamRoom extends DurableObject {
   closeRole(role) {
     for (const ws of this.ctx.getWebSockets()) if (ws.deserializeAttachment()?.role === role) ws.close(4403, 'schluessel-erneuert');
   }
+}
+
+/**
+ * P1 Härtung (07.11.2026): counts room creations of one address (or of the whole service, name `alle`) in fixed
+ * hour and day windows. Only the stateless Worker calls it (RPC); there is no public route into a gate.
+ */
+export class RoomGate extends DurableObject {
+  async count(limits) {
+    const now = Date.now();
+    const r = countCreation(await this.ctx.storage.get('w'), now, limits);
+    await this.ctx.storage.put('w', r.state);
+    // Forget the address a day after its last creation.
+    await this.ctx.storage.setAlarm(now + 2 * 86_400_000);
+    return { ok: r.ok, ...(r.retryAfter && { retryAfter: r.retryAfter }) };
+  }
+  async alarm() { await this.ctx.storage.deleteAll(); }
 }
 
 /**

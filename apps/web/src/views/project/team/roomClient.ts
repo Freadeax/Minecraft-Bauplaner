@@ -1,7 +1,7 @@
 // Team-Raum client (COOP-07, docs/architecture/team/TEAM_LIVE.md): HTTP calls and the live connection.
 // The sync logic itself is pure (packages/domain/src/team/teamSync.ts); this file only moves bytes.
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { LINK_TIMING, afterRestore, confirm, deriveSignKey, ingest, linkDead, nextBatch, numberPage, reconnectDelay, retryDelay, signBatch, trackOutbox } from '../../../../../../packages/domain/src/index.js';
+import { LINK_TIMING, MAX_BACKUP_BYTES, afterRestore, gunzipCapped, confirm, deriveSignKey, ingest, linkDead, nextBatch, numberPage, reconnectDelay, retryDelay, signBatch, trackOutbox } from '../../../../../../packages/domain/src/index.js';
 import type { AppendAnswer, Batch, FeedAnswer, RoomTeam, SeqEvent, StaleStep, TeamEvent, TeamLive } from '../../../../../../packages/domain/src/index.js';
 
 const URL_KEY = 'bauplaner.teamraum.adresse';
@@ -80,6 +80,8 @@ export async function sha256Hex(bytes: Uint8Array): Promise<string> {
   const d = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes as BufferSource));
   return [...d].map(b => b.toString(16).padStart(2, '0')).join('');
 }
+/** As the room stores them (core.js LIMITS.planBytes) and at most one backup plus team data unpacked (P1 Härtung). */
+const PLAN_GZ_BYTES = 25 * 1024 * 1024, PLAN_JSON_BYTES = MAX_BACKUP_BYTES + 10_000_000;
 /** Uploads a plan snapshot (a team package with plan, gzip) and returns its SHA-256. */
 export async function putPlan(live: TeamLive, text: string): Promise<string> {
   const raw = new TextEncoder().encode(text);
@@ -90,8 +92,9 @@ export async function putPlan(live: TeamLive, text: string): Promise<string> {
 }
 export async function getPlan(live: Pick<TeamLive, 'url' | 'room' | 'key'>, sha: string): Promise<string> {
   const gz = await call<Uint8Array>(live.url, `/v1/rooms/${live.room}/plan/${sha}`, { key: live.key });
+  if (gz.byteLength > PLAN_GZ_BYTES) throw new RoomError(0, 'plan-groesse', 'Planstand aus dem Team-Raum ist größer als 25 MB.');
   if (await sha256Hex(gz) !== sha) throw new RoomError(0, 'pruefsumme', 'Planstand aus dem Team-Raum ist beschädigt.');
-  return await new Response(new Blob([gz as BlobPart]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+  return new TextDecoder().decode(await gunzipCapped(gz, PLAN_JSON_BYTES));
 }
 
 /** Block position a game reports for the live map (LINK-07). */

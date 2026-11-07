@@ -51,29 +51,73 @@ export function zipEntries(bytes: Uint8Array, limits: ZipLimits = ZIP_LIMITS): Z
   return out;
 }
 
-async function inflateRaw(data: Uint8Array, expected: number): Promise<Uint8Array> {
-  const stream = new Blob([data as BlobPart]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
-  const result = new Uint8Array(await new Response(stream).arrayBuffer());
-  if (result.length !== expected) throw new ZipError('Eintrag hat eine falsche Länge.');
-  return result;
+/**
+ * Shared extraction budget (P1 Härtung 07.11.2026): several archives of one import draw from the same budget, and
+ * every byte counted is a byte really read or inflated – the sizes in the ZIP directory are only a first check.
+ */
+export class ZipBudget {
+  left: number;
+  constructor(left: number) { this.left = left; }
+  /** Charges `n` bytes; throws as soon as the budget is exceeded. */
+  take(n: number): void {
+    this.left -= n;
+    if (this.left < 0) throw new ZipError(`Entpackte Daten überschreiten das Speicherbudget dieses Imports (höchstens ${Math.round(ZIP_LIMITS.maxExtractedBytes / 1e6)} MB für alle Dateien zusammen).`);
+  }
+}
+export interface ZipReadOptions {
+  /** Shared budget for several archives; default: a fresh one of `limits.maxExtractedBytes`. */
+  readonly budget?: ZipBudget;
+  /** Aborts between entries and while inflating. */
+  readonly signal?: AbortSignal;
+}
+
+const aborted = (signal?: AbortSignal) => { if (signal?.aborted) throw Object.assign(new Error('Abgebrochen.'), { name: 'AbortError' }); };
+
+/**
+ * Inflates one entry and counts the bytes as they come: more than `expected` (the size from the directory) or than
+ * the budget allows stops the stream at once, so a forged directory cannot make the browser inflate gigabytes.
+ */
+async function inflateRaw(data: Uint8Array, expected: number, name: string, budget: ZipBudget, signal?: AbortSignal): Promise<Uint8Array> {
+  const reader = new Blob([data as BlobPart]).stream().pipeThrough(new DecompressionStream('deflate-raw')).getReader();
+  const out = new Uint8Array(expected);
+  let got = 0;
+  try {
+    for (;;) {
+      aborted(signal);
+      let chunk: ReadableStreamReadResult<Uint8Array>;
+      try { chunk = await reader.read(); } catch { throw new ZipError(`${name}: Daten sind beschädigt.`); }
+      if (chunk.done) break;
+      const n = chunk.value.byteLength;
+      if (got + n > expected) throw new ZipError(`${name}: Eintrag ist größer als im ZIP-Verzeichnis angegeben.`);
+      budget.take(n);
+      out.set(chunk.value, got); got += n;
+    }
+  } finally { void reader.cancel().catch(() => { /* finished */ }); }
+  if (got !== expected) throw new ZipError(`${name}: Eintrag hat eine falsche Länge.`);
+  return out;
 }
 
 /** Extracts the wanted entries (stored or deflated). */
 export async function readZip(bytes: Uint8Array, want: (name: string) => boolean, limits: ZipLimits = ZIP_LIMITS,
-  progress?: (done: number, total: number) => void): Promise<Map<string, Uint8Array>> {
+  progress?: (done: number, total: number) => void, options: ZipReadOptions = {}): Promise<Map<string, Uint8Array>> {
+  const { budget = new ZipBudget(limits.maxExtractedBytes), signal } = options;
   const entries = zipEntries(bytes, limits).filter(e => want(e.name));
   const files = new Map<string, Uint8Array>();
-  let total = 0, done = 0;
+  let done = 0;
   for (const e of entries) {
+    aborted(signal);
     if (e.size > limits.maxEntryBytes) throw new ZipError(`${e.name}: Eintrag zu groß.`);
-    total += e.size;
-    if (total > limits.maxExtractedBytes) throw new ZipError(`Entpackte Daten größer als ${Math.round(limits.maxExtractedBytes / 1e6)} MB.`);
+    if (e.size > budget.left) budget.take(e.size);
     if (e.offset + 30 > bytes.length || u32(bytes, e.offset) !== 0x04034b50) throw new ZipError(`${e.name}: lokaler Kopf fehlt.`);
     const start = e.offset + 30 + u16(bytes, e.offset + 26) + u16(bytes, e.offset + 28);
     const raw = bytes.subarray(start, start + e.compressedSize);
     if (raw.length !== e.compressedSize) throw new ZipError(`${e.name}: abgeschnitten.`);
-    if (e.method === 0) files.set(e.name, raw.slice());
-    else if (e.method === 8) files.set(e.name, await inflateRaw(raw, e.size));
+    if (e.method === 0) {
+      // Stored: the bytes copied are the compressed size – it has to match the declared size exactly.
+      if (e.compressedSize !== e.size) throw new ZipError(`${e.name}: Eintrag hat eine falsche Länge.`);
+      budget.take(raw.length);
+      files.set(e.name, raw.slice());
+    } else if (e.method === 8) files.set(e.name, await inflateRaw(raw, e.size, e.name, budget, signal));
     else throw new ZipError(`${e.name}: Kompressionsverfahren ${e.method} nicht unterstützt.`);
     if (++done % 200 === 0) progress?.(done, entries.length);
   }

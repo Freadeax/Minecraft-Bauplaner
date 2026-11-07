@@ -16,7 +16,7 @@ Stand 01.11.2026. Betrachter, Katalogbilder, Bildergalerie, Ebenenpläne und Ver
 
 | Datei | Aufgabe |
 | --- | --- |
-| `zip.ts` | ZIP/JAR-Leser ohne Abhängigkeit (Zentralverzeichnis, `DecompressionStream('deflate-raw')`), Grenzen für Archiv, Einträge und entpackte Bytes; ZIP64/mehrteilig abgewiesen. |
+| `zip.ts` | ZIP/JAR-Leser ohne Abhängigkeit (Zentralverzeichnis, `DecompressionStream('deflate-raw')`), Grenzen für Archiv, Einträge und entpackte Bytes; ZIP64/mehrteilig abgewiesen. Seit 07.11.2026 zählt er die wirklich gelesenen und entpackten Bytes (eine gefälschte Größe im Verzeichnis bricht sofort ab), alle Dateien eines Imports teilen ein Budget (`ZipBudget`, 120 MB samt behaltener Quelle), Abbruch über `AbortSignal`. Laden, Entpacken und Bildprüfung (PNG-Kopf: Seite ≤ 4096 px, Höhe ≤ 65 536 px, ≤ 4,2 Mio. Pixel, sonst verworfen) laufen im Hintergrund-Worker (`jobs/packJob.ts`) und lassen sich abbrechen. |
 | `model.ts` | Blockstates (`variants`, `multipart` mit `OR`/`AND`), Modellvererbung, Texturvariablen (auch `{sprite, force_translucent}` und Variablen ohne `#` wie bei `heavy_core`), Elemente mit `uv`, Flächenrotation, alter `rotation`-Achse mit `rescale` und neuer x/y/z-Form, Varianten-`x`/`y`, `uvlock`, `cullface`, `tintindex`, `shade`. Ergebnis: gebackene Vierecke je Zustand (gecacht). |
 | `shapes.ts` | Eigene Formen für alle 1286 Blöcke ohne Texturquelle, und für Blockentity-Blöcke (Truhen, Schilder, Banner, Köpfe, Betten, Shulkerkisten, Krug), deren Aussehen Minecraft nicht über Blockmodelle beschreibt. |
 | `tint.ts` | Färbung für Gras, Laub, Wasser, Redstone-Stärke, Stängel (Ebenen-Standardwerte, kein Biom). |

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { DEFAULT_VERSION, installFromFiles, installFromMojang, releaseVersions, removeTextures, usePackStatus } from './assets';
+import { cancelTextureLoad, DEFAULT_VERSION, installFromFiles, installFromMojang, releaseVersions, removeTextures, usePackStatus } from './assets';
 
 /**
  * Blockdarstellung: where the user decides between the own shapes in average
@@ -50,7 +50,7 @@ export function TextureDialog() {
     <h2 id="texture-title">Blockdarstellung</h2>
     <p className="texture-state" role="status">
       {status.state === 'ready' ? <><b>Originaltexturen aktiv:</b> {status.meta.sources.map(s => s.label).join(' + ')} · {status.meta.files.toLocaleString('de-DE')} Dateien · {mb(status.meta.bytes)}, nur in diesem Browser gespeichert.</>
-        : status.state === 'loading' ? <><b>{status.step}</b>{status.fraction !== undefined && <progress max={1} value={status.fraction} />}</>
+        : status.state === 'loading' ? <><b>{status.step}</b>{status.fraction !== undefined && <progress max={1} value={status.fraction} />} <button type="button" onClick={cancelTextureLoad}>Abbrechen</button></>
         : status.state === 'error' ? <><b>Fehler:</b> {status.message}{meta && <> Weiter aktiv: {meta.sources.map(s => s.label).join(' + ')}.</>}</>
         : <><b>Eigene Formen:</b> Treppen, Stufen, Zäune, Türen, Pflanzen und alle übrigen Blöcke in eigener Nachbildung mit Durchschnittsfarben. Für die echten Minecraft-Texturen und -Modelle eine Quelle laden.</>}
     </p>

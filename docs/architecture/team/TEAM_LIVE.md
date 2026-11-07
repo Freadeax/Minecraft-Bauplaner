@@ -158,3 +158,28 @@ Wiederherstellung die Marke `epoch`; Ankunftsnummern laufen über alle je ausgeg
 nötig); Live-Verbindungen werden mit 4012 (wiederhergestellt) bzw. 4404 (gelöscht) getrennt. Der Planer legt bei
 neuer Marke seine Planer-Ereignisse noch einmal in den Postausgang (`afterRestore`). Mod und Plugin brauchen keine
 Änderung: sie verbinden sich nach der Trennung wie immer neu. Alles Weitere: `TEAM_BACKUP.md`.
+
+## 15. Schutz gegen Missbrauch (07.11.2026, HARDEN-01)
+
+Der Raumdienst ist ohne Konto erreichbar. Damit niemand ihn fluten oder fremde Räume künstlich am Leben halten kann,
+gelten seit dem 07.11.2026 diese Grenzen (Logik in `services/team-room/src/guard.js`, Werte in `ABUSE`):
+
+| Was | Grenze |
+|---|---|
+| Neue Räume | 20 je Stunde und 60 je Tag pro Anschluss (IPv6 je /64), 2000 je Tag für den ganzen Dienst; gezählt im Durable Object `RoomGate`, Antwort 429 mit `Retry-After` |
+| Anlegen über einen Raum | `/v1/rooms/{raum}/create` ist nicht erreichbar (404); Räume entstehen nur über `POST /v1/rooms` mit den Grenzen oben |
+| Herkunft (Origin) | Browser nur von den Planer-Adressen (GitHub Pages, bauplaner.pages.dev, lokal mit Port, `ALLOWED_ORIGINS`); fremde Seiten bekommen 403 beim Anlegen und beim WebSocket-Upgrade. Mod und Paper-Plugin senden keine Origin und melden sich nur mit ihrem Schlüssel an |
+| Größe einer Anfrage | vor dem Parsen und beim Lesen gezählt: Anlegen 4 KB, Ereignisse 1 MB, Kopfdaten 1,06 MB, Planstand 25 MB, Aufnahme 8 MB, Dokument 4 MB, Steuerung 1 MB; sonst 413 |
+| Anfragen | je Anschluss und Raum 300 auf einmal, danach 5 je Sekunde (429) |
+| Verbindungen | 64 je Raum, 16 je Anschluss und Raum, neue Verbindungen 30 auf einmal und dann eine je 2 s |
+| Anmeldung | `hello` mit gültigem Schlüssel binnen 10 s, sonst Code 4408; mehr als 3 Nachrichten vor der Anmeldung oder ein falscher Schlüssel: 4401 |
+| Nachrichten | höchstens 1 MB je Nachricht (4413), 120 auf einmal und 10 je Sekunde je Verbindung (Antwort `zu-schnell`) |
+| Aufbewahrung | nur Anfragen und Verbindungen mit gültigem Schlüssel zählen als Nutzung und schieben das Löschen unbenutzter Räume hinaus |
+
+Die Eimer liegen im Speicher des Raums und beginnen nach dem Ruhezustand wieder voll: sie bremsen Fluten, sie sind
+keine Abrechnung. Probe gegen einen laufenden Dienst: `node scripts/team/team_room_abuse_smoke.mjs <adresse>`
+(mit `ABUSE_CREATE_PROBE=1` zusätzlich die Raumgrenze, nur lokal).
+
+Auf Seite des Planers gilt dasselbe für Entpacken: Planstände aus dem Raum höchstens 25 MB gepackt und 110 MB
+entpackt, Meldecodes höchstens 1 MB entpackt, jeweils beim Lesen gezählt (`gunzipCapped`).
+

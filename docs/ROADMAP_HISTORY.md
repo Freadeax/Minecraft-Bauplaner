@@ -562,3 +562,38 @@ Datenschutz und Freigaben: Seite #/datenschutz mit allen Datenwegen aus einer Li
 - `tests/e2e/release-data.e2e.mjs`
 - `tests/unit/web/dataFlows.test.mjs`
 
+## 2026-11-07T19:38:18.474Z · progress
+
+**Aufgaben:** HARDEN-01
+
+ZIP/GZIP-Importe zählen echte Bytes mit gemeinsamem Budget im abbrechbaren Worker; Team-Raum mit Grenzen für Raumerstellung, Verbindungen, Nachrichten, Origin-Prüfung, Anmelde-Timeout, Größen vor dem Parsen, Aufbewahrung nur mit Schlüssel. check 1056/1056, e2e 231/231, Proben unter wrangler dev grün; Ausrollen offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| HARDEN-01 | 🧩 Implementiert · Abnahme offen | 2/3 | Team-Raum ausrollen (wrangler deploy mit Migration v3 RoomGate), danach Missbrauchsprobe, Rauchtest und Sicherungsprobe gegen den echten Dienst. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/blockmodels/TexturePanel.tsx`
+- `apps/web/src/blockmodels/assets.ts`
+- `apps/web/src/blockmodels/pack.ts`
+- `apps/web/src/blockmodels/zip.ts`
+- `apps/web/src/jobs/jobs.ts`
+- `apps/web/src/jobs/packJob.ts`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/project/team/roomClient.ts`
+- `docs/TESTING.md`
+- `docs/architecture/formate/BLOCK_MODELS.md`
+- `docs/architecture/team/TEAM_BACKUP.md`
+- `docs/architecture/team/TEAM_LIVE.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/team/team.ts`
+- `scripts/team/team_room_abuse_smoke.mjs`
+- `services/team-room/README.md`
+- `services/team-room/src/guard.js`
+- `services/team-room/src/index.js`
+- `services/team-room/wrangler.toml`
+- `tests/unit/building/zip-limits.test.mjs`
+- `tests/unit/team/team-room-abuse.test.mjs`
+

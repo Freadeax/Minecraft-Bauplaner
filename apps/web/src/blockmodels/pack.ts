@@ -1,6 +1,6 @@
 import { location, spriteFile } from './model.ts';
 import type { ModelSource } from './model.ts';
-import { readZip } from './zip.ts';
+import { readZip, ZipBudget, ZIP_LIMITS } from './zip.ts';
 
 /**
  * Texture sources (Blockdarstellung). Mojang's models and textures are never
@@ -69,18 +69,51 @@ export function referencedSprites(files: ReadonlyMap<string, Uint8Array>): Set<s
 }
 
 /**
+ * Image check (P1 Härtung 07.11.2026): a texture must be a real PNG whose header names a sane size, before any
+ * browser decoder sees it – a few kilobytes of PNG may otherwise claim a picture of gigapixels. Block textures are
+ * 16–512 px wide; animated ones are strips (width × n·width).
+ */
+export const TEXTURE_LIMITS = Object.freeze({ maxSide: 4096, maxHeight: 65_536, maxPixels: 4_194_304 });
+export function pngSize(bytes: Uint8Array): { width: number; height: number } | null {
+  const sig = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+  if (bytes.length < 33 || sig.some((b, i) => bytes[i] !== b)) return null;
+  // First chunk must be IHDR (length 13).
+  if (bytes[8] !== 0 || bytes[9] !== 0 || bytes[10] !== 0 || bytes[11] !== 13 || String.fromCharCode(...bytes.subarray(12, 16)) !== 'IHDR') return null;
+  const be = (o: number) => ((bytes[o]! << 24) | (bytes[o + 1]! << 16) | (bytes[o + 2]! << 8) | bytes[o + 3]!) >>> 0;
+  return { width: be(16), height: be(20) };
+}
+export function textureOk(bytes: Uint8Array): boolean {
+  const size = pngSize(bytes);
+  if (!size) return false;
+  const { width, height } = size;
+  return width >= 1 && height >= 1 && width <= TEXTURE_LIMITS.maxSide && height <= TEXTURE_LIMITS.maxHeight && width * height <= TEXTURE_LIMITS.maxPixels;
+}
+
+export interface ExtractOptions {
+  /** Shared by all archives of one import (P1 Härtung): the sum of everything extracted stays bounded. */
+  readonly budget?: ZipBudget;
+  readonly signal?: AbortSignal;
+}
+
+/**
  * Extracts blockstates, block models and the textures those models use from
  * one archive (jar or zip). Later archives override earlier ones file by file,
- * as resource packs do.
+ * as resource packs do. Textures that fail the image check are left out.
  */
-export async function extractArchive(bytes: Uint8Array, into: Map<string, Uint8Array>, progress?: Progress): Promise<number> {
-  const models = await readZip(bytes, name => MODEL_FILE.test(name), undefined, (d, t) => progress?.('Modelle entpacken', t ? d / t : undefined));
+export async function extractArchive(bytes: Uint8Array, into: Map<string, Uint8Array>, progress?: Progress, options: ExtractOptions = {}): Promise<number> {
+  const budget = options.budget ?? new ZipBudget(ZIP_LIMITS.maxExtractedBytes);
+  const zip = { budget, ...(options.signal && { signal: options.signal }) };
+  const models = await readZip(bytes, name => MODEL_FILE.test(name), undefined, (d, t) => progress?.('Modelle entpacken', t ? d / t : undefined), zip);
   for (const [k, v] of models) into.set(k, v);
   const wanted = new Set([...referencedSprites(into)].map(spriteFile));
   const textures = await readZip(bytes, name => TEXTURE_FILE.test(name) && (wanted.has(name) || wanted.has(name.replace(/\.mcmeta$/, ''))), undefined,
-    (d, t) => progress?.('Texturen entpacken', t ? d / t : undefined));
-  for (const [k, v] of textures) into.set(k, v);
-  return models.size + textures.size;
+    (d, t) => progress?.('Texturen entpacken', t ? d / t : undefined), zip);
+  let kept = 0;
+  for (const [k, v] of textures) {
+    if (k.endsWith('.png') && !textureOk(v)) continue;
+    into.set(k, v); kept++;
+  }
+  return models.size + kept;
 }
 
 async function sha1(bytes: Uint8Array): Promise<string> {
@@ -94,8 +127,8 @@ async function fetchJson(url: string): Promise<unknown> {
   return r.json();
 }
 
-async function download(url: string, size: number, progress?: Progress): Promise<Uint8Array> {
-  const r = await fetch(url);
+async function download(url: string, size: number, progress?: Progress, signal?: AbortSignal): Promise<Uint8Array> {
+  const r = await fetch(url, { ...(signal && { signal }) });
   if (!r.ok || !r.body) throw new Error(`Download fehlgeschlagen (${r.status}).`);
   const reader = r.body.getReader(), chunks: Uint8Array[] = [];
   let got = 0;
@@ -103,6 +136,8 @@ async function download(url: string, size: number, progress?: Progress): Promise
     const { done, value } = await reader.read();
     if (done) break;
     chunks.push(value); got += value.length;
+    // Never more than announced in Mojang's (checksummed) version file.
+    if (got > size) { void reader.cancel(); throw new Error('Der Download ist größer als angekündigt und wird verworfen.'); }
     progress?.(`Client-Jar laden (${Math.round(got / 1e6)} von ${Math.round(size / 1e6)} MB)`, size ? got / size : undefined);
   }
   const out = new Uint8Array(got);
@@ -119,7 +154,7 @@ export async function mojangReleases(): Promise<MojangVersion[]> {
 }
 
 /** Downloads the official client jar of `version` from Mojang, verifies its SHA-1 and extracts the block assets. */
-export async function loadFromMojang(version: string, progress?: Progress): Promise<{ files: Map<string, Uint8Array>; info: PackSourceInfo }> {
+export async function loadFromMojang(version: string, progress?: Progress, signal?: AbortSignal): Promise<{ files: Map<string, Uint8Array>; info: PackSourceInfo }> {
   progress?.('Versionsliste von Mojang laden');
   const releases = await mojangReleases();
   const entry = releases.find(v => v.id === version);
@@ -127,22 +162,31 @@ export async function loadFromMojang(version: string, progress?: Progress): Prom
   const detail = await fetchJson(entry.url) as { downloads?: { client?: { url: string; sha1: string; size: number } } };
   const client = detail.downloads?.client;
   if (!client) throw new Error(`Für ${version} ist kein Client-Download angegeben.`);
-  const bytes = await download(client.url, client.size, progress);
+  if (!(client.size > 0 && client.size <= ZIP_LIMITS.maxArchiveBytes)) throw new Error('Die angegebene Größe der Client-Jar ist unplausibel.');
+  const bytes = await download(client.url, client.size, progress, signal);
   progress?.('Prüfsumme kontrollieren');
   const hash = await sha1(bytes);
   if (hash !== client.sha1) throw new Error('Die heruntergeladene Datei hat eine falsche Prüfsumme und wird verworfen.');
   const files = new Map<string, Uint8Array>();
-  await extractArchive(bytes, files, progress);
+  await extractArchive(bytes, files, progress, { ...(signal && { signal }) });
   return { files, info: { label: `Minecraft ${version} (Mojang)`, kind: 'mojang', version, sha1: hash, bytes: bytes.length } };
 }
 
-/** Extracts the block assets of user files in order (client jar first, then resource packs or mod jars). */
-export async function loadFromFiles(list: readonly File[], base: Map<string, Uint8Array> = new Map(), progress?: Progress): Promise<{ files: Map<string, Uint8Array>; infos: PackSourceInfo[] }> {
+/**
+ * Extracts the block assets of user files in order (client jar first, then resource packs or mod jars). All files
+ * share one budget, minus what the kept base already holds, so many small packs cannot add up past the limit.
+ */
+export async function loadFromFiles(list: readonly File[], base: Map<string, Uint8Array> = new Map(),
+  progress?: Progress, signal?: AbortSignal, heldElsewhere = 0): Promise<{ files: Map<string, Uint8Array>; infos: PackSourceInfo[] }> {
   const files = new Map(base), infos: PackSourceInfo[] = [];
+  let held = heldElsewhere;
+  for (const v of base.values()) held += v.length;
+  const budget = new ZipBudget(Math.max(0, ZIP_LIMITS.maxExtractedBytes - held));
   for (const file of list) {
     progress?.(`${file.name} lesen`);
+    if (file.size > ZIP_LIMITS.maxArchiveBytes) throw new Error(`${file.name} ist größer als ${Math.round(ZIP_LIMITS.maxArchiveBytes / 1e6)} MB.`);
     const bytes = new Uint8Array(await file.arrayBuffer());
-    const count = await extractArchive(bytes, files, progress);
+    const count = await extractArchive(bytes, files, progress, { budget, ...(signal && { signal }) });
     if (!count) throw new Error(`${file.name} enthält keine Blockmodelle oder Texturen (assets/…/blockstates, models, textures).`);
     infos.push({ label: file.name, kind: 'file', sha1: await sha1(bytes), bytes: bytes.length });
   }

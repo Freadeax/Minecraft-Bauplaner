@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T19:17:28.843Z",
+  "updatedAt": "2026-11-07T19:38:18.474Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -12386,6 +12386,96 @@
         }
       ],
       "orphans": []
+    },
+    {
+      "id": "HARDEN-01",
+      "title": "Importe und Team-Raum gegen Missbrauch härten",
+      "phase": "P4",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Arbeitsstrang „Importe und Team-Worker gegen Missbrauch härten“",
+      "dependencies": [
+        "TEAM-02"
+      ],
+      "scope": [
+        "apps/web/src/blockmodels/zip.ts",
+        "apps/web/src/blockmodels/pack.ts",
+        "apps/web/src/blockmodels/assets.ts",
+        "apps/web/src/blockmodels/TexturePanel.tsx",
+        "apps/web/src/jobs/packJob.ts",
+        "apps/web/src/jobs/jobs.ts",
+        "apps/web/src/views/project/team/roomClient.ts",
+        "packages/domain/src/team/team.ts",
+        "packages/domain/src/index.ts",
+        "services/team-room/src/guard.js",
+        "services/team-room/src/index.js",
+        "services/team-room/wrangler.toml",
+        "services/team-room/README.md",
+        "scripts/team/team_room_abuse_smoke.mjs",
+        "tests/unit/building/zip-limits.test.mjs",
+        "tests/unit/team/team-room-abuse.test.mjs",
+        "docs/architecture/team/TEAM_LIVE.md",
+        "docs/architecture/team/TEAM_BACKUP.md",
+        "docs/architecture/formate/BLOCK_MODELS.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "HARDEN-01-S01",
+          "title": "ZIP/JAR: wirklich gelesene und entpackte Bytes zählen, gefälschte Größen sofort abbrechen, gemeinsames Budget je Import, Abbruch; PNG-Kopfprüfung; Laden/Entpacken/Bildprüfung im abbrechbaren Hintergrund-Worker. GZIP von Planständen und Meldecodes mit Obergrenze.",
+          "done": true
+        },
+        {
+          "id": "HARDEN-01-S02",
+          "title": "Team-Raum: Raumerstellung je Anschluss und gesamt begrenzt (RoomGate), create nur intern, Origin-Prüfung bei Anlegen und WebSocket, Größen vor dem Parsen, Anmeldung binnen 10 s, Grenzen für Anfragen, Verbindungen und Nachrichten, Aufbewahrung nur durch Nutzung mit gültigem Schlüssel.",
+          "done": true
+        },
+        {
+          "id": "HARDEN-01-S03",
+          "title": "Neue Fassung des Team-Raums ausrollen und Probe gegen den echten Dienst.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Ein ZIP-Eintrag mit falscher Größenangabe oder ein Entpack-Bombe bricht beim ersten Byte über der Grenze ab.",
+        "Mehrere Pakete eines Imports teilen ein Budget.",
+        "Fremde Browser-Seiten können weder Räume anlegen noch live verbinden; Mod und Plugin verbinden wie bisher.",
+        "Übergroße Anfragen werden vor dem Parsen abgewiesen; stumme Verbindungen nach 10 s geschlossen.",
+        "Anonyme Anfragen verlängern die Aufbewahrung nicht."
+      ],
+      "next": "Team-Raum ausrollen (wrangler deploy mit Migration v3 RoomGate), danach Missbrauchsprobe, Rauchtest und Sicherungsprobe gegen den echten Dienst.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/unit/building/zip-limits.test.mjs",
+          "note": "Nachgestellte Befunde: gespeicherter 128-KiB-Eintrag mit 10-Byte-Angabe, Entpack-Bombe, geteiltes Budget, Abbruch, PNG-Prüfung, GZIP-Grenzen."
+        },
+        {
+          "path": "tests/unit/team/team-room-abuse.test.mjs",
+          "note": "Größen beim Lesen, Origin, Adressen, Eimer, Erstellungsfenster, Quelltextregeln des Workers."
+        },
+        {
+          "path": "scripts/team/team_room_abuse_smoke.mjs",
+          "note": "Probe gegen wrangler dev: 403 fremde Seite, 404 create über Raum, 413, 4408 nach 10 s, 4401, 4413, 429 Raumflut."
+        },
+        {
+          "path": "docs/architecture/team/TEAM_LIVE.md",
+          "note": "§15 Grenzen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Automatisch geprüft (Node-Tests, wrangler dev); Ausrollen des Team-Raums wartet auf Freigabe."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-07T19:38:18.474Z",
+      "area": "TEAM",
+      "thread": "Importe und Team-Worker gegen Missbrauch härten",
+      "philipp": [],
+      "orphans": []
     }
   ],
   "events": [
@@ -14566,6 +14656,47 @@
           "done": 6,
           "total": 8,
           "next": "S05 auf der Schlüssel-API des Team-Identitäten-Pakets bauen; S03 mit Mod 0.28.0 ausliefern."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T19:38:18.474Z",
+      "kind": "progress",
+      "items": [
+        "HARDEN-01"
+      ],
+      "summary": "ZIP/GZIP-Importe zählen echte Bytes mit gemeinsamem Budget im abbrechbaren Worker; Team-Raum mit Grenzen für Raumerstellung, Verbindungen, Nachrichten, Origin-Prüfung, Anmelde-Timeout, Größen vor dem Parsen, Aufbewahrung nur mit Schlüssel. check 1056/1056, e2e 231/231, Proben unter wrangler dev grün; Ausrollen offen.",
+      "files": [
+        "apps/web/src/blockmodels/TexturePanel.tsx",
+        "apps/web/src/blockmodels/assets.ts",
+        "apps/web/src/blockmodels/pack.ts",
+        "apps/web/src/blockmodels/zip.ts",
+        "apps/web/src/jobs/jobs.ts",
+        "apps/web/src/jobs/packJob.ts",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/project/team/roomClient.ts",
+        "docs/TESTING.md",
+        "docs/architecture/formate/BLOCK_MODELS.md",
+        "docs/architecture/team/TEAM_BACKUP.md",
+        "docs/architecture/team/TEAM_LIVE.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/team/team.ts",
+        "scripts/team/team_room_abuse_smoke.mjs",
+        "services/team-room/README.md",
+        "services/team-room/src/guard.js",
+        "services/team-room/src/index.js",
+        "services/team-room/wrangler.toml",
+        "tests/unit/building/zip-limits.test.mjs",
+        "tests/unit/team/team-room-abuse.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "HARDEN-01",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Team-Raum ausrollen (wrangler deploy mit Migration v3 RoomGate), danach Missbrauchsprobe, Rauchtest und Sicherungsprobe gegen den echten Dienst."
         }
       ]
     }

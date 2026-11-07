@@ -143,7 +143,7 @@ export { OWN_GP_ROUTE_PREFIX, QUARTER_SLOTS, MAX_OWN_QUARTERS, grossprojektFromC
 export type { OwnGrossprojektInput, OwnGrossprojekt } from './catalog/ownGrossprojekt.js';
 export { TEAM_SCHEMA_VERSION, MAX_TEAM_EVENTS, TEAM_ROLES, TEAM_ROLE_LABEL, TEAM_ROLE_TEXT, NOTE_TAGS, NOTE_TAG_LABEL, PLAYER_NAME, isKnownEvent, checkTeamEvent, compareEvents, checkTeam,
   createTeam, teamEvent, appendEvents, mergeTeam, SECTION_TEAM_STATUS_LABEL, canTeam, teamView, eventLabel, describeEvent, authorize, laterThan, teamAssignments,
-  REPORT_CODE_PREFIX, MAX_REPORT_CODE, encodeReportCode, decodeReportCode, TEAM_PACKAGE_FORMAT, TEAM_PACKAGE_VERSION, buildTeamPackage, teamPackageFileName, readTeamPackage,
+  REPORT_CODE_PREFIX, MAX_REPORT_CODE, MAX_REPORT_CODE_JSON, gunzipCapped, encodeReportCode, decodeReportCode, TEAM_PACKAGE_FORMAT, TEAM_PACKAGE_VERSION, buildTeamPackage, teamPackageFileName, readTeamPackage,
   teamStatusText, TEAM_SERVER_FORMAT, teamServerFile, teamServerFileName, headerFingerprint, readTeamServerFile, programBuilders, teamContextOf, takeOverPlan, joinedOnly, STORE_PURPOSES, STORE_PROTECTIONS, teamIntoProgram, SERVER_ONLY_KINDS, whereInPlan, digestInfo, coveredByDigest, effectiveEvents, foldTeam, MAX_CREW, PROTECT_MODES, PROTECT_MODE_LABEL } from './team/team.js';
 export { compactTeam, compactBefore, digestProjection, DIGEST_PART_CHARS } from './team/teamDigest.js';
 export { hasTeamAccess, teamAccessKinds, withoutTeamAccess, keepTeamAccess, teamAccessOf, checkPassword, sealTeamAccess, peekTeamAccess, openTeamAccess, restoreTeamAccess, teamAccessFileName, retrustAfterRekey, numberPage, TEAM_ACCESS_FORMAT, TEAM_ACCESS_VERSION, TEAM_ACCESS_ITERATIONS, MIN_PASSWORD } from './team/teamAccess.js';

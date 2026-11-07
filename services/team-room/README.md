@@ -61,4 +61,9 @@ Die Raumlogik (`src/core.js`) hat keine Cloudflare-Abhängigkeit und wird in `te
 
 20 000 Ereignisse je Raum, 4 KB je Ereignis, 200 je Stapel, Planstand bis 25 MB (die neuesten drei bleiben).
 
+**Missbrauchsschutz (07.11.2026):** Raumerstellung je Anschluss begrenzt (Durable Object `RoomGate`), Herkunft
+der Browser beim Anlegen und beim WebSocket-Upgrade geprüft, Größen vor dem Parsen, Anmeldung binnen 10 s,
+Grenzen für Anfragen, Verbindungen und Nachrichten; Aufbewahrung verlängert nur Nutzung mit gültigem Schlüssel.
+Details: docs/architecture/team/TEAM_LIVE.md §15; Probe `node scripts/team/team_room_abuse_smoke.mjs <adresse>`.
+
 **Gleichzeitige Änderungen (TEAM-02):** Ein Stapel ist eine Transaktion; `guards` (Ereignis-ID → Lesestand) lässt entscheidende Schritte als `stale` zurückkommen, wenn jemand anderes denselben Abschnitt, dieselbe Kiste, Notiz oder Rolle danach geändert hat. Ohne `guards` (Mod, Plugin) bleibt alles wie bisher. Details: docs/architecture/team/TEAM_LIVE.md §13.

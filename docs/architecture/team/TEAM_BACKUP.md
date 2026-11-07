@@ -54,7 +54,8 @@ Steuernachrichten, Stapelantworten.
 | Raum ohne Nutzung | nach 365 Tagen ohne Öffnen gelöscht (letzte Sicherung „lange unbenutzt“) |
 | Tresor eines gelöschten Raums | 90 Tage, dann weg |
 
-„Benutzt“ = irgendeine Anfrage oder Live-Verbindung an den Raum; geschrieben wird das höchstens einmal am Tag.
+„Benutzt“ = eine Anfrage oder Live-Verbindung mit gültigem Schlüssel; Anfragen ohne oder mit falschem Schlüssel
+zählen seit dem 07.11.2026 nicht mehr (TEAM_LIVE.md §15). Geschrieben wird das höchstens einmal am Tag.
 Planstände und Dokumente, die keine verbleibende Sicherung mehr braucht, löscht der Tresor sofort mit.
 Ein Raum, der vor OPS-04 angelegt und seitdem nie mehr geöffnet wurde, hat keinen Alarm und wird nicht von selbst
 gelöscht (Cloudflare kann Durable Objects nicht aufzählen); beim nächsten Öffnen bekommt er einen.

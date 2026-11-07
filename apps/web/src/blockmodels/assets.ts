@@ -3,6 +3,7 @@ import type { Atlas } from './atlas.ts';
 import type { BlockRenderer } from './mesh.ts';
 import type { PackMeta, PackSourceInfo, TexturePack } from './pack.ts';
 import { fallbackRenderer } from './renderers.ts';
+import { isAbort, runJob, workersAvailable } from '../jobs/client';
 
 export const DEFAULT_VERSION = '26.3';
 const packKit = () => import('./packKit.ts');
@@ -97,13 +98,44 @@ async function install(files: Map<string, Uint8Array>, sources: readonly PackSou
   setStatus({ state: 'ready', meta: next.meta });
 }
 
+/**
+ * P1 Härtung (07.11.2026): download, unzipping and image check run in the background worker; `cancelTextureLoad`
+ * ends it at once and the previous source stays. Without workers (Node checks) the same code runs in place.
+ */
+let running: AbortController | null = null;
+export function cancelTextureLoad(): void { running?.abort(); }
+
+async function loadInBackground(input: { mode: 'mojang'; version: string } | { mode: 'files'; files: readonly File[]; held: number }, base: Map<string, Uint8Array>):
+  Promise<{ files: Map<string, Uint8Array>; infos: PackSourceInfo[] }> {
+  running?.abort();
+  const ctrl = new AbortController();
+  running = ctrl;
+  const progress = (step: string, fraction?: number | null) => setStatus({ state: 'loading', step, ...(fraction !== null && fraction !== undefined && { fraction }) });
+  try {
+    if (workersAvailable()) {
+      const out = await runJob('pack', input, { signal: ctrl.signal, onProgress: p => progress(p.step, p.fraction) });
+      const files = new Map(base);
+      for (const [k, v] of out.files) files.set(k, v);
+      return { files, infos: out.infos };
+    }
+    const m = await packKit();
+    if (input.mode === 'mojang') { const r = await m.loadFromMojang(input.version, progress, ctrl.signal); return { files: r.files, infos: [r.info] }; }
+    return await m.loadFromFiles(input.files, base, progress, ctrl.signal);
+  } finally { if (running === ctrl) running = null; }
+}
+
+const loadFailure = (e: unknown) => {
+  if (isAbort(e)) { setStatus(pack ? { state: 'ready', meta: pack.meta } : { state: 'none' }); return; }
+  failure(e);
+};
+
 /** Downloads the client jar of `version` from Mojang into this browser. */
 export async function installFromMojang(version: string): Promise<void> {
   try {
     setStatus({ state: 'loading', step: 'Verbindung zu Mojang' });
-    const { files, info } = await (await packKit()).loadFromMojang(version, (step, fraction) => setStatus({ state: 'loading', step, fraction }));
-    await install(files, [info]);
-  } catch (e) { failure(e); }
+    const { files, infos } = await loadInBackground({ mode: 'mojang', version }, new Map());
+    await install(files, infos);
+  } catch (e) { loadFailure(e); }
 }
 
 /** Adds user files (client jar, resource packs, mod jars); `add` keeps the current source underneath. */
@@ -111,9 +143,11 @@ export async function installFromFiles(list: readonly File[], add: boolean): Pro
   try {
     setStatus({ state: 'loading', step: 'Dateien lesen' });
     const base = add && pack ? new Map(pack.files) : new Map<string, Uint8Array>();
-    const { files, infos } = await (await packKit()).loadFromFiles(list, base, (step, fraction) => setStatus({ state: 'loading', step, fraction }));
+    let held = 0;
+    for (const v of base.values()) held += v.length;
+    const { files, infos } = await loadInBackground({ mode: 'files', files: list, held }, base);
     await install(files, [...(add && pack ? pack.meta.sources : []), ...infos]);
-  } catch (e) { failure(e); }
+  } catch (e) { loadFailure(e); }
 }
 
 export async function removeTextures(): Promise<void> {
