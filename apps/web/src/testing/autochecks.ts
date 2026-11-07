@@ -311,6 +311,56 @@ export const AUTO_CHECKS: readonly AutoCheck[] = [
   { caseId: 'LIVE-03', scope: 'teil', covers: '„Gelände um mich lesen“ liest geladene Chunks; „📍 Punkt, wo ich stehe“ und „Weltplan ins Spiel senden“ blenden die Einträge im Spiel als Markierungen ein.', remaining: '„Spur als Weg“ und Mitspieler auf der Karte.', command: 'scripts/mod/test_bridge_ingame.sh (Browserteil: scripts/mod/bridge_browser.mjs, braucht npm run build)', evidence: '07.11.2026, Mod 0.25.0 aus dem Quellstand: echter Minecraft-26.3-Client (Fabric, weston/llvmpipe) gegen den gebauten Planer in Chromium (vite preview), nichts nachgebildet' },
   { caseId: 'LIVE-04', scope: 'teil', covers: 'Im Spiel mit den Tasten verschoben und gedreht: der Planer meldet die andere Lage, „Lage aus dem Spiel übernehmen“ setzt das Projekt dorthin, der Fortschritt kommt live; „Baustand holen“ legt die Aufnahme im Projekt ab.', remaining: 'Die Aufnahme unter „Bauen“ je Bauschritt ansehen.', command: 'scripts/mod/test_bridge_ingame.sh (Browserteil: scripts/mod/bridge_browser.mjs, braucht npm run build)', evidence: '07.11.2026, Mod 0.25.0 aus dem Quellstand: echter Minecraft-26.3-Client (Fabric, weston/llvmpipe) gegen den gebauten Planer in Chromium (vite preview), nichts nachgebildet' },
   { caseId: 'PROJ-24', scope: 'teil', covers: 'Ohne Datei: „Gelände aus dem Spiel übernehmen“ legt eine Geländeaufnahme „aus dem Spiel“ mit Biomen an; „Gelände aus dem Spiel prüfen“ zeigt das Urteil mit „Quelle: Blöcke aus dem Spiel (geladene Chunks)“; 3000 Blöcke entfernt kommt das Gelände aus dem Geländegedächtnis; die Landschaft wird nach Biomen bemalt. Dabei behoben: Testreihenfolge, damit die Prüfung am Bauplatz läuft.', remaining: 'Notfall-Import aus Regionsdateien (#/welt) und der Hinweis auf die fehlende Richtung beim eigenen Bauplatz.', command: 'scripts/mod/test_bridge_ingame.sh (Browserteil: scripts/mod/bridge_browser.mjs, braucht npm run build)', evidence: '07.11.2026, Mod 0.25.0 aus dem Quellstand: echter Minecraft-26.3-Client (Fabric, weston/llvmpipe) gegen den gebauten Planer in Chromium (vite preview), nichts nachgebildet' },
+  // ── Block 5 Geräte (QA-02, PERF-06, UI-03, UX-01, GUIDE-01, LIB-02/03, BACKUP-02): dieselben Abläufe in drei Engines.
+  {
+    caseId: 'START-01', scope: 'teil',
+    covers: 'Frischer Browser: Startbildschirm, dann Projektzentrale ohne Fehlermeldung; Standardthema „Werkbank“ schon beim ersten Bild; WCAG-Kontrast aller sichtbaren Texte auf Projektzentrale, Anleitung, Bibliothek, Generatoren, Weltkarte, Spiel, Systemcheck und den Reitern Editor/Bauen/Material/Baustelle/Team hell und dunkel; Bewegung reduzieren; iPad-Profil mit 44-px-Zielen ohne Querscrollen – in Chromium, Firefox und WebKit. Dabei behoben: Bibliothek wuchs in WebKit bis zum Absturz.',
+    remaining: 'Ansehen auf dem echten iPad und PC: wirken Knöpfe, Karten und Reiter überall gleich, flackert nichts beim Seitenwechsel (Geschmack und echte Bildschirme).',
+    command: 'npm run build && node --test --test-concurrency=1 tests/e2e/design.e2e.mjs tests/e2e/app.e2e.mjs && npm run test:e2e:firefox -- tests/e2e/design.e2e.mjs tests/e2e/app.e2e.mjs && npm run test:e2e:webkit -- tests/e2e/design.e2e.mjs tests/e2e/app.e2e.mjs',
+    evidence: '07.11.2026, Block 5 Geräte auf main + Fixes: grün in Chromium, Firefox 1555 (xvfb) und WebKit 2370 (Safari-Engine) im Container',
+  },
+  {
+    caseId: 'START-03', scope: 'teil',
+    covers: 'Sicherungsstand mit Alter und „Sichern“, Protokoll, Prüfen; „Alles sichern“ lädt die Datei herunter (auch in WebKit/Safari), Wiederherstellen in einem leeren Browser mit Prüfplan, identischer Stand wird übersprungen, lokal geänderter als Kopie, manipulierte Datei abgewiesen; Abschnittsstände einfrieren und zurücksetzen. Dabei behoben: in Safari war die Download-Adresse nach 1 s ungültig (iPad fragt erst nach), Speichern hing bei einem Speicherfehler.',
+    remaining: 'Auf dem iPad: Download-Frage von Safari bestätigen und die Datei aus „Dateien“ wieder einspielen.',
+    command: 'npm run build && node --test --test-concurrency=1 tests/e2e/persistence.e2e.mjs tests/e2e/backup-reminder.e2e.mjs && npm run test:e2e:firefox -- tests/e2e/persistence.e2e.mjs tests/e2e/backup-reminder.e2e.mjs && npm run test:e2e:webkit -- tests/e2e/persistence.e2e.mjs tests/e2e/backup-reminder.e2e.mjs',
+    evidence: '07.11.2026, Block 5 Geräte auf main + Fixes: grün in Chromium, Firefox 1555 (xvfb) und WebKit 2370 (Safari-Engine) im Container',
+  },
+  {
+    caseId: 'START-08', scope: 'teil',
+    covers: 'Anleitung: sechs Wege, Bild und Satz je Schritt, Knöpfe führen an die Stelle, Haken und Fortschritt bleiben nach Neuladen, Handybreite ohne Überstand – in Chromium, Firefox und WebKit.',
+    remaining: 'Ob die Sätze verständlich sind und die Bilder zum Spiel passen, kann nur ein Mensch sagen.',
+    command: 'npm run build && node --test --test-concurrency=1 tests/e2e/guide.e2e.mjs && npm run test:e2e:firefox -- tests/e2e/guide.e2e.mjs && npm run test:e2e:webkit -- tests/e2e/guide.e2e.mjs',
+    evidence: '07.11.2026, Block 5 Geräte auf main + Fixes: grün in Chromium, Firefox 1555 (xvfb) und WebKit 2370 (Safari-Engine) im Container',
+  },
+  {
+    caseId: 'START-10', scope: 'teil',
+    covers: 'Vier Hauptbereiche und Anleitung, Fußzeilen-Wege, eingeklappte Bereiche (Speicher & Sicherung, Weitere Wege, Kreativ-Werkzeuge, Abschnittsstände, Zeitbudget) öffnen vollständig, bei 1400 und 390 px – in Chromium, Firefox und WebKit.',
+    remaining: 'Strg+K/⌘K auf der echten Tastatur (Mac) und das Gefühl „Wichtigstes zuerst“.',
+    command: 'npm run build && node --test --test-concurrency=1 tests/e2e/simple-ui.e2e.mjs && npm run test:e2e:firefox -- tests/e2e/simple-ui.e2e.mjs && npm run test:e2e:webkit -- tests/e2e/simple-ui.e2e.mjs',
+    evidence: '07.11.2026, Block 5 Geräte auf main + Fixes: grün in Chromium, Firefox 1555 (xvfb) und WebKit 2370 (Safari-Engine) im Container',
+  },
+  {
+    caseId: 'START-11', scope: 'teil',
+    covers: 'Projektreiter in vier Schritten mit Kurzsatz je Reiter, aktiver Schritt hervorgehoben, Bibliothek in drei Gruppen; iPad-Profil: alle Reiter in der Leiste, mindestens 44 px hoch – in Chromium, Firefox und WebKit.',
+    remaining: 'Kurzsätze lesen und beurteilen.',
+    command: 'npm run build && node --test --test-concurrency=1 tests/e2e/simple-ui.e2e.mjs tests/e2e/design.e2e.mjs && npm run test:e2e:firefox -- tests/e2e/simple-ui.e2e.mjs tests/e2e/design.e2e.mjs && npm run test:e2e:webkit -- tests/e2e/simple-ui.e2e.mjs tests/e2e/design.e2e.mjs',
+    evidence: '07.11.2026, Block 5 Geräte auf main + Fixes: grün in Chromium, Firefox 1555 (xvfb) und WebKit 2370 (Safari-Engine) im Container',
+  },
+  {
+    caseId: 'BIB-07', scope: 'teil',
+    covers: 'Sammlung mit Kategorie und Unterordner, Gebäude aufnehmen, Version festhalten, Notiz, Katalogfilter nach Sammlung, bleibt nach Neuladen; Vorlagen und Telefonbreite 390 px – in Chromium, Firefox und WebKit. Dabei behoben: Vorschaubilder aus dem Speicher luden in Safari nicht (Offline-Speicher, Privatfenster).',
+    remaining: 'Ordner per Finger verschieben auf dem echten iPad.',
+    command: 'npm run build && node --test --test-concurrency=1 tests/e2e/collections.e2e.mjs tests/e2e/thumb-store.e2e.mjs && npm run test:e2e:firefox -- tests/e2e/collections.e2e.mjs tests/e2e/thumb-store.e2e.mjs && npm run test:e2e:webkit -- tests/e2e/collections.e2e.mjs tests/e2e/thumb-store.e2e.mjs',
+    evidence: '07.11.2026, Block 5 Geräte auf main + Fixes: grün in Chromium, Firefox 1555 (xvfb) und WebKit 2370 (Safari-Engine) im Container',
+  },
+  {
+    caseId: 'GERAET-02', scope: 'teil',
+    covers: 'Schem-Testdatei im Betrachter und eine .schem über das Dateifeld als Bauteil gespeichert (Importbericht, Name, Detailseite mit Format) – in Chromium, Firefox und WebKit. Dabei behoben: „Als neues Bauteil speichern“ hing in WebKit/Safari-Privatfenstern.',
+    remaining: 'Die Dateiauswahl des Geräts selbst (iPad „Dateien“, Android „Downloads“) lässt sich nicht automatisieren.',
+    command: 'npm run build && node --test --test-concurrency=1 tests/e2e/app.e2e.mjs tests/e2e/persistence.e2e.mjs && npm run test:e2e:firefox -- tests/e2e/app.e2e.mjs tests/e2e/persistence.e2e.mjs && npm run test:e2e:webkit -- tests/e2e/app.e2e.mjs tests/e2e/persistence.e2e.mjs',
+    evidence: '07.11.2026, Block 5 Geräte auf main + Fixes: grün in Chromium, Firefox 1555 (xvfb) und WebKit 2370 (Safari-Engine) im Container',
+  },
 ];
 
 export function autoCheckOf(caseId: string): AutoCheck | undefined {

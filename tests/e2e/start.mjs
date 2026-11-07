@@ -21,3 +21,18 @@ export async function openSampleProject(page, timeout = START_TIMEOUT) {
 export async function openStorage(page) {
   await page.locator('details.storage-more').evaluate(d => { d.open = true; });
 }
+
+/**
+ * Block 5: „Verbindung abgelehnt“ in allen Engines (Chromium, Firefox, WebKit). Der Planer fragt die Mod auf
+ * 127.0.0.1 ab; ohne laufende Mod ist das erwartet und kein Fehler.
+ */
+export const REFUSED = /ERR_CONNECTION_REFUSED|Could not connect to (127\.0\.0\.1|localhost)|NS_ERROR_CONNECTION_REFUSED|resource at http:\/\/(127\.0\.0\.1|localhost):\d+\/.*CORS request did not succeed/;
+
+/**
+ * Block 5: Meldungen, die nur WebKit unter Playwright als Seitenfehler meldet, ohne dass die Seite etwas falsch macht:
+ * - Playwright fängt Downloads ab; WebKit meldet das abgebrochene Laden der blob:-Adresse („Cannot load blob … due to
+ *   access control checks“).
+ * - Beim Verlassen einer Seite mitten in einer Hintergrundarbeit meldet das alte Dokument „Context is stopped“.
+ * Nur in Tests mit Download bzw. schnellem Seitenwechsel herausfiltern.
+ */
+export const WEBKIT_NOISE = /^(Cannot load blob:)?h?ttp:\/\/127\.0\.0\.1:\d+\/[0-9a-f-]{36} due to access control checks\.$|^Context is stopped$/;

@@ -41,15 +41,39 @@ function open(revision: string): Promise<Cache | null> {
 
 const requestOf = (key: string) => new Request(`https://vorschau.invalid/${encodeURIComponent(`${key}@${globalThis.devicePixelRatio || 1}`)}`);
 
-/** The stored image as an object URL, or undefined. */
+/**
+ * The stored image as a data URL, or undefined.
+ * Block 5 (WebKit/Safari): only bytes cross the Cache API here, never a Blob or an object URL – Safari refuses
+ * object URLs in <img> while the offline store controls the page, and Blob bodies in private tabs
+ * („Cannot load blob … due to access control checks“). A data URL loads everywhere.
+ */
 export async function readStoredShot(revision: string, key: string): Promise<string | undefined> {
   try {
     const cache = await open(revision);
     const hit = await cache?.match(requestOf(key));
     if (!hit) return undefined;
-    const blob = await hit.blob();
-    return blob.size ? URL.createObjectURL(blob) : undefined;
+    const bytes = new Uint8Array(await hit.arrayBuffer());
+    return bytes.length ? `data:${hit.headers.get('content-type') || 'image/png'};base64,${toBase64(bytes)}` : undefined;
   } catch { return undefined; }
+}
+
+function toBase64(bytes: Uint8Array): string {
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+
+/** Decodes a data URL without fetch(): Safari blocks fetch() of data: URLs while a service worker controls the page. */
+export function dataUrlBytes(dataUrl: string): { type: string; bytes: Uint8Array } {
+  const comma = dataUrl.indexOf(',');
+  const head = dataUrl.slice(5, comma);
+  const type = head.split(';')[0] || 'application/octet-stream';
+  const body = dataUrl.slice(comma + 1);
+  if (!head.endsWith(';base64')) return { type, bytes: new TextEncoder().encode(decodeURIComponent(body)) };
+  const bin = atob(body);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return { type, bytes };
 }
 
 /** Keeps a rendered image (data URL) for later starts; failures are ignored. */
@@ -58,7 +82,7 @@ export function storeShot(revision: string, key: string, dataUrl: string): void 
   void (async () => {
     const cache = await open(revision);
     if (!cache) return;
-    const blob = await (await fetch(dataUrl)).blob();
-    await cache.put(requestOf(key), new Response(blob, { headers: { 'content-type': blob.type } }));
+    const { type, bytes } = dataUrlBytes(dataUrl);
+    await cache.put(requestOf(key), new Response(bytes as Uint8Array<ArrayBuffer>, { headers: { 'content-type': type } }));
   })().catch(() => {});
 }

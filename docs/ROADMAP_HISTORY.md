@@ -8738,3 +8738,37 @@ Block 3: Mod 0.25.0 im echten Spiel in drei Fenstergrößen und mit dem echten P
 - `scripts/mod/test_bridge_ingame.sh`
 - `scripts/mod/test_bridge_ingame_forge.sh`
 
+## 2026-11-07T01:55:22.675Z · progress
+
+**Aufgaben:** QA-02, PERF-06, UI-03, UX-01, GUIDE-01, LIB-02, LIB-03, BACKUP-02
+
+Block 5 Geräte: Abläufe in Chromium, Firefox und WebKit automatisch abgenommen (27/27 je Engine), Safari-Fehler behoben (Vorschaubilder, Download-Adresse, hängendes Speichern); START-01/03/08/10/11, BIB-07, GERAET-02 teilweise automatisch geprüft; echte Geräte bleiben bei Philipp
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| QA-02 | 🚧 In Arbeit | 1/2 | Protokolle der Tester in docs/testing/GERAETEMATRIX.md eintragen und Befunde beheben. |
+| PERF-06 | 🚧 In Arbeit | 3/3 | Abnahme: Safari/iPad und Firefox (Offline-Speicher); Verbindung Mod ↔ Planer einmal über https://bauplaner.pages.dev/Minecraft-Bauplaner/ im echten Spiel. |
+| UI-03 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme START-20/21 durch Philipp am iPad; gruppierte Projektreiter aus „Bedienung vereinfachen“ und Anleitung optisch mitziehen; Werte an das Mod-Menü weitergeben. |
+| UX-01 | 🚧 In Arbeit | 6/6 | Philipps Abnahme START-10..13 im Browser und auf dem iPad. Optik übernimmt „Planer-Oberfläche schön neu gestalten“. |
+| GUIDE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (START-08/09); Begriffe mit „Bedienung des Planers vereinfachen“ (Reiter-Kurzsätze) und UI-03 abgleichen. |
+| LIB-02 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme auf echten Geräten (QA-02); Rückmeldung zur Bedienung der Sammlungen einholen. |
+| LIB-03 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme auf echten Geräten (QA-02); Vorlagen für Anlagen (Compounds) und BUILD-05 prüfen. |
+| BACKUP-02 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme auf echten Geräten (QA-02), besonders Safari-Downloads; Rückmeldung zur Erinnerungsschwelle (7 Tage) einholen. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/idbRepository.ts`
+- `apps/web/src/app/ui.tsx`
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/thumbnail/Thumb.tsx`
+- `apps/web/src/thumbnail/thumbStore.ts`
+- `apps/web/src/views/ViewerView.tsx`
+- `docs/TESTING.md`
+- `docs/testing/GERAETEMATRIX.md`
+- `docs/testing/TESTPLAN.md`
+- `tests/e2e/offline.e2e.mjs`
+- `tests/e2e/persistence.e2e.mjs`
+- `tests/e2e/simple-ui.e2e.mjs`
+- `tests/e2e/start.mjs`
+- `tests/e2e/thumb-store.e2e.mjs`
+

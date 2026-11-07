@@ -4,7 +4,7 @@ import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
-import { openSampleProject, waitForStart } from './start.mjs';
+import { openSampleProject, waitForStart, REFUSED } from './start.mjs';
 
 const PORT = 4339, BASE = `http://127.0.0.1:${PORT}/Minecraft-Bauplaner/`;
 let server, browser;
@@ -81,6 +81,6 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     assert.ok(await p.getByRole('heading', { name: 'Gemeinsam bauen im Spiel (ab Mod 0.10.0)' }).isVisible());
     assert.ok(await fits(p));
     // Die Mod-Seite sucht die Mod auf diesem PC; ohne laufendes Spiel lehnt 127.0.0.1 ab.
-    assert.deepEqual(errors.filter(e => !/ERR_CONNECTION_REFUSED/.test(e)), []);
+    assert.deepEqual(errors.filter(e => !REFUSED.test(e)), []);
   } finally { await context.close(); }
 });

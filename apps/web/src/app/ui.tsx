@@ -9,7 +9,9 @@ export function download(name: string, data: BlobPart, type = 'application/octet
   const url = URL.createObjectURL(new Blob([data], { type }));
   const a = document.createElement('a');
   a.href = url; a.download = name; a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  // Block 5: Safari (iPad/iPhone) asks before a download and loads the address only after the tap; released after 1 s
+  // the download failed („Cannot load blob … due to access control checks“). One minute is enough for the question.
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
 
 export const formatNumber = (n: number): string => n.toLocaleString('de-DE');

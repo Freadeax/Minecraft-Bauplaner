@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T01:42:20.153Z",
+  "updatedAt": "2026-11-07T01:55:22.675Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -1068,7 +1068,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T22:02:05.657Z",
+      "updatedAt": "2026-11-07T01:55:22.675Z",
       "area": "QA",
       "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
@@ -1421,7 +1421,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:55:22.675Z",
       "area": "PLANER",
       "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
@@ -2793,7 +2793,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:55:22.675Z",
       "area": "PERF",
       "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [],
@@ -4154,7 +4154,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:55:22.675Z",
       "area": "BIBLIOTHEK",
       "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
@@ -4220,7 +4220,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:55:22.675Z",
       "area": "BIBLIOTHEK",
       "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
@@ -6095,7 +6095,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:55:22.675Z",
       "area": "PLANER",
       "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
@@ -11835,7 +11835,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:55:22.675Z",
       "area": "PLANER",
       "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
@@ -11919,7 +11919,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:55:22.675Z",
       "area": "PLANER",
       "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
@@ -26688,6 +26688,95 @@
           "done": 7,
           "total": 8,
           "next": "Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T01:55:22.675Z",
+      "kind": "progress",
+      "items": [
+        "QA-02",
+        "PERF-06",
+        "UI-03",
+        "UX-01",
+        "GUIDE-01",
+        "LIB-02",
+        "LIB-03",
+        "BACKUP-02"
+      ],
+      "summary": "Block 5 Geräte: Abläufe in Chromium, Firefox und WebKit automatisch abgenommen (27/27 je Engine), Safari-Fehler behoben (Vorschaubilder, Download-Adresse, hängendes Speichern); START-01/03/08/10/11, BIB-07, GERAET-02 teilweise automatisch geprüft; echte Geräte bleiben bei Philipp",
+      "files": [
+        "apps/web/src/app/idbRepository.ts",
+        "apps/web/src/app/ui.tsx",
+        "apps/web/src/testing/autochecks.ts",
+        "apps/web/src/thumbnail/Thumb.tsx",
+        "apps/web/src/thumbnail/thumbStore.ts",
+        "apps/web/src/views/ViewerView.tsx",
+        "docs/TESTING.md",
+        "docs/testing/GERAETEMATRIX.md",
+        "docs/testing/TESTPLAN.md",
+        "tests/e2e/offline.e2e.mjs",
+        "tests/e2e/persistence.e2e.mjs",
+        "tests/e2e/simple-ui.e2e.mjs",
+        "tests/e2e/start.mjs",
+        "tests/e2e/thumb-store.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "QA-02",
+          "status": "in_progress",
+          "done": 1,
+          "total": 2,
+          "next": "Protokolle der Tester in docs/testing/GERAETEMATRIX.md eintragen und Befunde beheben."
+        },
+        {
+          "id": "PERF-06",
+          "status": "in_progress",
+          "done": 3,
+          "total": 3,
+          "next": "Abnahme: Safari/iPad und Firefox (Offline-Speicher); Verbindung Mod ↔ Planer einmal über https://bauplaner.pages.dev/Minecraft-Bauplaner/ im echten Spiel."
+        },
+        {
+          "id": "UI-03",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme START-20/21 durch Philipp am iPad; gruppierte Projektreiter aus „Bedienung vereinfachen“ und Anleitung optisch mitziehen; Werte an das Mod-Menü weitergeben."
+        },
+        {
+          "id": "UX-01",
+          "status": "in_progress",
+          "done": 6,
+          "total": 6,
+          "next": "Philipps Abnahme START-10..13 im Browser und auf dem iPad. Optik übernimmt „Planer-Oberfläche schön neu gestalten“."
+        },
+        {
+          "id": "GUIDE-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (START-08/09); Begriffe mit „Bedienung des Planers vereinfachen“ (Reiter-Kurzsätze) und UI-03 abgleichen."
+        },
+        {
+          "id": "LIB-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme auf echten Geräten (QA-02); Rückmeldung zur Bedienung der Sammlungen einholen."
+        },
+        {
+          "id": "LIB-03",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme auf echten Geräten (QA-02); Vorlagen für Anlagen (Compounds) und BUILD-05 prüfen."
+        },
+        {
+          "id": "BACKUP-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme auf echten Geräten (QA-02), besonders Safari-Downloads; Rückmeldung zur Erinnerungsschwelle (7 Tage) einholen."
         }
       ]
     }

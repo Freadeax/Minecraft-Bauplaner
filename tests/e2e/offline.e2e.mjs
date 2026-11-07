@@ -58,11 +58,13 @@ test('Offline-Speicher: installiert, hält alle Programmdateien, startet ohne Ne
   for (const a of manifest.assets) assert.ok(files.has(`/Minecraft-Bauplaner/${a}`), `cached: ${a}`);
 
   // Next start: program files come from the service worker, not the network.
+  // Playwright reports service-worker responses only in Chromium; Firefox/WebKit prove it with the offline start below.
+  const swEvents = browser.browserType().name() === 'chromium';
   const fromNetwork = [];
   p.on('response', r => { if (r.url().includes('/assets/') && !r.url().includes('catalog-') && !r.fromServiceWorker()) fromNetwork.push(r.url()); });
   await p.reload();
   await waitForStart(p);
-  assert.deepEqual(fromNetwork, [], 'no program file loaded from the network on reload');
+  if (swEvents) assert.deepEqual(fromNetwork, [], 'no program file loaded from the network on reload');
 
   // Without network the app still starts, including a page loaded on demand.
   await ctx.setOffline(true);

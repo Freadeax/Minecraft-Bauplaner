@@ -19,6 +19,8 @@ import { readStoredShot, storeShot } from './thumbStore';
  * textures); without WebGL the plain 2D cube renderer stands in.
  */
 const cache = new Map<string, string>();
+/** Keys whose image came from the store of an earlier start (shown as data-from="store"; tests and diagnosis). */
+const fromStore = new Set<string>();
 const queue: (() => Promise<void>)[] = [];
 let running = false;
 
@@ -72,8 +74,9 @@ export async function shotUrl(cacheKey: string, payload: Pick<VoxelPayload, 'cel
   let url = cache.get(key);
   if (url === undefined) {
     const rev = await revision();
-    url = (rev && await readStoredShot(rev, key)) || await render(payload, width, height, kit, options);
-    if (rev) storeShot(rev, key, url);
+    const stored = rev ? await readStoredShot(rev, key) : undefined;
+    url = stored || await render(payload, width, height, kit, options);
+    if (stored) fromStore.add(key); else if (rev) storeShot(rev, key, url);
     cache.set(key, url);
   }
   return url;
@@ -122,7 +125,7 @@ export function Thumb({ cacheKey, payload, alt, width = 320, height = 220, class
     const start = (first: boolean) => { setWaiting(false); void revision().then(async rev => {
       const stored = rev ? await readStoredShot(rev, key) : undefined;
       if (cancelled) return;
-      if (stored) { cache.set(key, stored); setSrc(stored); return; }
+      if (stored) { cache.set(key, stored); fromStore.add(key); setSrc(stored); return; }
       if (first) queue.unshift(job); else queue.push(job);
       pump();
     }); };
@@ -134,7 +137,7 @@ export function Thumb({ cacheKey, payload, alt, width = 320, height = 220, class
     io.observe(el);
     return () => { cancelled = true; io.disconnect(); };
   }, [key, width, height, eager]);
-  return <div ref={ref} className={`${className}${src === null ? ` loading${waiting ? ' waiting' : ''}` : ''}`}>
+  return <div ref={ref} className={`${className}${src === null ? ` loading${waiting ? ' waiting' : ''}` : ''}`} data-from={src ? (fromStore.has(key) ? 'store' : 'render') : undefined}>
     {src ? <img src={src} alt={alt} width={width} height={height} decoding="async" draggable={false} />
       : src === '' ? <span className="thumb-empty" aria-label={`${alt}: keine Vorschau`}>keine Vorschau</span> : null}
   </div>;

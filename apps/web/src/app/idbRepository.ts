@@ -148,6 +148,8 @@ export class IdbRepository implements Repository {
       let result: T, failure: unknown = null;
       tx.oncomplete = () => resolve(result);
       tx.onabort = () => reject(failure ?? new Error(storageErrorText(tx.error)));
+      // Block 5: WebKit reports a failed put as transaction error without a later abort event; reject here so a save never hangs.
+      tx.onerror = event => { const target = event.target as IDBRequest | null; reject(failure ?? new Error(storageErrorText(target?.error ?? tx.error))); };
       Promise.resolve().then(() => body(tx)).then(r => { result = r; }, e => { failure = e; try { tx.abort(); } catch { /* already finished */ } });
     });
   }

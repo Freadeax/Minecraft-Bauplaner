@@ -51,8 +51,8 @@ export function ViewerView(){
     try{const response=await fetch(`${import.meta.env.BASE_URL}examples/${path}`);if(!response.ok)throw new Error('Testdatei konnte nicht geladen werden.');const blob=await response.blob();if(id!==job.current)return;await openFile(new File([blob],name));}
     catch(e){if(id===job.current){setBusy(false);setNotice(e instanceof Error?e.message:'Testdatei konnte nicht geladen werden.');}}
   };
-  const saveOriginal=()=>{const source=original.current;if(!source)return;const url=URL.createObjectURL(new Blob([source.buffer],{type:'application/octet-stream'}));const a=document.createElement('a');a.href=url;a.download=source.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
-  const save=()=>{const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='LMNT-Voxelplan.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+  const saveOriginal=()=>{const source=original.current;if(!source)return;const url=URL.createObjectURL(new Blob([source.buffer],{type:'application/octet-stream'}));const a=document.createElement('a');a.href=url;a.download=source.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),60_000);};
+  const save=()=>{const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='LMNT-Voxelplan.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),60_000);};
   const chosen=selected&&selected.kind!=='erase'?payload.palette[selected.paletteIndex]:null;
   // Still images are cached per payload object: every new file or rotation gets its own key.
   const shotKey=useMemo(()=>`betrachter:${++shotSeq}`,[payload]);const [planTab,setPlanTab]=useState<SchemTab>('bilder');
