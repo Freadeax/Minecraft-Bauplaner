@@ -3,8 +3,8 @@ import { countBlocks } from '../../../../packages/voxel/src/index.js';
 import type { Cell } from '../../../../packages/voxel/src/index.js';
 import { applyOperation, buildCatalog, buildingInfo, createAsset, createEnsembleProject, createProject, ensemblesWith, facetCounts, FACETS, familyMembers,
   latestVersions, newInstance, projectContext, queryCatalog, resolveProject, similarEntries, suggestForProject, updateAssetMeta, withFacets,
-  ENSEMBLES, ANLAGEN, GROSSPROJEKTE, GENERATORS, SORT_LABEL, STAGES, variantGroup, assetIdsIn, templateFromEnsemble, collectionTree, flattenTree, isContributionId } from '../../../../packages/domain/src/index.js';
-import type { Asset, AssetVersionSource, BuildingFacets, CatalogEntry, Ensemble, OriginalFile, Project, SortKey } from '../../../../packages/domain/src/index.js';
+  ENSEMBLES, ANLAGEN, GROSSPROJEKTE, GENERATORS, SORT_LABEL, STAGES, variantGroup, assetIdsIn, templateFromEnsemble, collectionTree, flattenTree, isContributionId, PLOT_PRESETS, STYLE_PALETTES, profileFit } from '../../../../packages/domain/src/index.js';
+import type { Asset, AssetVersionSource, BuildingFacets, CatalogEntry, CatalogQuery, Ensemble, OriginalFile, Project, SortKey } from '../../../../packages/domain/src/index.js';
 import { href, navigate } from '../app/router';
 import type { LibraryPage } from '../app/router';
 import { useApp } from '../app/context';
@@ -34,6 +34,7 @@ import { GrossprojektePage } from './library/GrossprojektePage';
 import { FacetFields, facetsFromForm } from './library/FacetFields';
 import { useCardView, useCompare, useFavorites, MAX_COMPARE } from './library/prefs';
 import { SHOTS } from '../thumbnail/views';
+import { standardOrShot } from '../thumbnail/StandardViews';
 import type { ShotView } from '../thumbnail/views';
 import { Viewer } from '../Viewer';
 import { Thumb } from '../thumbnail/Thumb';
@@ -42,16 +43,25 @@ import { decodeLibraryState, encodeLibraryState } from './library/urlState';
 import { useUserLibrary } from './library/userLibrary';
 import { CollectionsPage } from './library/CollectionsPage';
 import { TemplatesPage } from './library/TemplatesPage';
+import { PalettesPage } from './library/PalettesPage';
 import { CollectionPicker } from './library/CollectionPicker';
 import './library/collections.css';
 import '../styles/navGroups.css';
 
+/** Values with their number of occurrences, most frequent first, then alphabetically. */
+const countBy = (values: readonly string[]): [string, number][] => {
+  const m = new Map<string, number>();
+  for (const v of values) m.set(v, (m.get(v) ?? 0) + 1);
+  return [...m].sort(([a, x], [b, y]) => y - x || (a < b ? -1 : 1));
+};
 const size = (b: { min: readonly number[]; maxExclusive: readonly number[] }) => b.maxExclusive.map((n, i) => n - b.min[i]!).join(' × ');
 const SORTS = Object.keys(SORT_LABEL) as SortKey[];
 const PAGE_SIZE = 48;
 const KATEGORIE = FACETS.find(f => f.key === 'kategorie')!;
 const FACET_KEYS = FACETS.map(f => f.key);
-const CARD_VIEWS: readonly ShotView[] = ['so', 'sw', 'nw', 'no', 'oben', 'sued'];
+/** Blickrichtungen der Karten; "innen" ist der einheitliche Schnitt (LIB-07), "so" = Außen, "oben" = Draufsicht. */
+const CARD_VIEWS: readonly (ShotView | 'innen')[] = ['so', 'innen', 'oben', 'sw', 'nw', 'no', 'sued'];
+const CARD_VIEW_TITLE = (v: ShotView | 'innen') => v === 'innen' ? 'Innen: Schnitt in Augenhöhe' : v === 'so' ? 'Außen: isometrisch von Südosten' : v === 'oben' ? 'Oben: Draufsicht' : SHOTS.find(x => x.id === v)!.title;
 /** Facets offered as "Stöbern" rows on the clean overview (category has its own strip). */
 const BROWSE_FACETS = FACETS.filter(f => f.key === 'stil' || f.key === 'biom');
 const readUrl = (search: string | undefined) => decodeLibraryState(search ?? '', FACET_KEYS, { sorts: SORTS, stages: STAGES });
@@ -129,7 +139,22 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
   const collectionOptions = useMemo(() => flattenTree(collectionTree(userLib.collections)), [userLib.collections]);
   const results = allResults.filter(e => (!onlyFavorites || favorites.has(e.asset.id)) && (!collectionIds || collectionIds.has(e.asset.id)));
   const families = useMemo(() => familyMembers(catalog.entries), [catalog]);
+  const entryById = useMemo(() => new Map(catalog.entries.map(e => [e.asset.id, e])), [catalog]);
+  const entryOf = useCallback((assetId: string) => entryById.get(assetId), [entryById]);
   const counts = facetCounts(catalog.entries, catalogQuery);
+  // LIB-07: mods and profiles present in the library, and how many entries each quick choice would leave.
+  const modList = useMemo(() => countBy(catalog.entries.filter(e => !e.asset.archived).flatMap(e => e.metrics.modNamespaces)).map(([ns, count]) => ({ ns, count })), [catalog]);
+  const profileList = useMemo(() => countBy(catalog.entries.filter(e => !e.asset.archived).map(e => profileFit(e.version.payload).key)).map(([id, count]) => ({ id, count })), [catalog]);
+  const quick = useMemo(() => {
+    const base = { ...filters, text: query, collapseFamilies: collapse };
+    const n = (patch: Partial<CatalogQuery>) => queryCatalog(catalog.entries, { ...base, ...patch }).length;
+    return {
+      plots: Object.fromEntries(PLOT_PRESETS.map(p => [p.id, n({ plot: p.plot })])),
+      effort: Object.fromEntries([1, 2, 3, 4, 5].map(level => [level, n({ effortMax: level })])),
+      checked: n({ gameChecked: true }),
+      vanilla: n({ vanillaOnly: true }),
+    };
+  }, [catalog, filters, query, collapse]);
   const categoryCounts = facetCounts(catalog.entries, { ...catalogQuery, facets: { ...filters.facets, kategorie: [] } }).kategorie;
   const total = catalog.entries.filter(e => !e.asset.archived).length;
   const activeKategorie = filters.facets?.kategorie ?? [];
@@ -336,7 +361,8 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
       <a href={compare.ids.length ? libHref('compare', compare.ids.join(',')) : libHref('compare', '-')} aria-current={page === 'compare' ? 'page' : undefined}>Vergleich <small>{compare.ids.length}</small></a></span>
     <span className="lib-tab-group" role="group" aria-label="Nach Maß" title="Bauwerke mit eigenen Maßen erzeugen"><span className="lib-tab-group-label" aria-hidden="true">Nach Maß</span>
       <a href={libHref('generators')} aria-current={page === 'generators' ? 'page' : undefined}>Generatoren <small>{GENERATORS.length}</small></a>
-      <a href={libHref('templates')} aria-current={page === 'templates' ? 'page' : undefined}>Vorlagen <small>{userLib.templates.filter(t => !t.archived).length}</small></a></span>
+      <a href={libHref('templates')} aria-current={page === 'templates' ? 'page' : undefined}>Vorlagen <small>{userLib.templates.filter(t => !t.archived && t.body.kind !== 'palette').length}</small></a>
+      <a href={libHref('palettes')} aria-current={page === 'palettes' ? 'page' : undefined}>Paletten <small>{STYLE_PALETTES.length + userLib.templates.filter(t => !t.archived && t.body.kind === 'palette').length}</small></a></span>
     <span className="lib-tab-group" role="group" aria-label="Größer planen" title="Ganze Basen, Anlagen und Großprojekte"><span className="lib-tab-group-label" aria-hidden="true">Größer planen</span>
       <a href={libHref('grossprojekte')} aria-current={page === 'grossprojekte' ? 'page' : undefined}>Großprojekte <small>{GROSSPROJEKTE.length}</small></a>
       <a href={libHref('base')} aria-current={page === 'base' ? 'page' : undefined}>Basisplaner</a>
@@ -376,7 +402,7 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
       {tray}</div>;
   }
   if (page === 'ensembles') return <div className="page">{header}{tabs}{notices}
-    <EnsemblesPage id={id} byAsset={byAsset} names={assetNames} versions={library.versions} libHref={libHref} onCreate={e => void createFromEnsemble(e)}
+    <EnsemblesPage id={id} byAsset={byAsset} names={assetNames} versions={library.versions} libHref={libHref} entryOf={entryOf} onCreate={e => void createFromEnsemble(e)}
       onSaveTemplate={e => void saveEnsembleTemplate(e)}
       collections={e => <CollectionPicker lib={userLib} item={{ kind: 'ensemble', ensembleId: e.id }} label={e.name} collectionHref={collectionHref} onMessage={m => say(m)} />} /></div>;
   if (page === 'collections') return <div className="page">{header}{tabs}{notices}
@@ -384,6 +410,8 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
       browseHref={cid => href({ view: 'library', ...(projectId && { projectId }), search: encodeLibraryState({ query: '', filters: {}, descending: false, collapse: true, layout: 'raster', onlyFavorites: false, collection: cid }, FACET_KEYS) })} /></div>;
   if (page === 'templates') return <div className="page">{header}{tabs}{notices}
     <TemplatesPage id={id} lib={userLib} projects={projects} libHref={libHref} onMessage={m => say(m)} /></div>;
+  if (page === 'palettes') return <div className="page">{header}{tabs}{notices}
+    <PalettesPage id={id} lib={userLib} entries={catalog.entries} favorites={favorites.ids} compare={compare.ids} libHref={libHref} onMessage={m => say(m)} /></div>;
   if (page === 'themes') return <div className="page">{header}{tabs}{notices}
     <BuildThemesPage entries={catalog.entries}
       browseHref={search => href({ view: 'library', ...(projectId && { projectId }), search })}
@@ -426,7 +454,7 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
           const c = row.get(value);
           if (!c) return null;
           return <li key={value}><button type="button" onClick={() => setFilters({ facets: { [f.key]: [value] } })}>
-            <Thumb cacheKey={c.entry.version.id} payload={() => c.entry.version.payload} alt="" width={168} height={96} className="thumb" view={cardView} />
+            <Thumb cacheKey={c.entry.version.id} payload={() => c.entry.version.payload} alt="" width={168} height={96} className="thumb" {...standardOrShot(cardView, c.entry.version.payload)} />
             <strong>{label}</strong><small>{c.count} Gebäude</small></button></li>;
         })}</ul></div>; })}
     </section>}
@@ -440,8 +468,8 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
       <div className="seg" role="group" aria-label="Darstellung">
         <button type="button" aria-pressed={layout === 'raster'} onClick={() => setLayout('raster')}>Raster</button>
         <button type="button" aria-pressed={layout === 'liste'} onClick={() => setLayout('liste')}>Liste</button></div>
-      <label className="view-dir">Blickrichtung<select value={cardView} aria-label="Blickrichtung der Vorschaubilder" onChange={e => setCardView(e.target.value as ShotView)}>
-        {CARD_VIEWS.map(v => <option key={v} value={v}>{SHOTS.find(x => x.id === v)!.title}</option>)}</select></label>
+      <label className="view-dir">Blickrichtung<select value={cardView} aria-label="Blickrichtung der Vorschaubilder" onChange={e => setCardView(e.target.value as ShotView | 'innen')}>
+        {CARD_VIEWS.map(v => <option key={v} value={v}>{CARD_VIEW_TITLE(v)}</option>)}</select></label>
       <button type="button" className="surprise" onClick={surprise} title="Zufälliges Gebäude aus den aktuellen Treffern">🎲 Überrasch mich</button>
     </section>
     <section className="catalog-layout">
@@ -455,7 +483,7 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
             <option value="">– alle Einträge –</option>
             {collectionId && !activeCollection && <option value={collectionId}>(Sammlung nicht gefunden)</option>}
             {collectionOptions.map(n => <option key={n.collection.id} value={n.collection.id}>{'\u00a0\u00a0'.repeat(n.depth)}{n.collection.name}</option>)}</select></label>}
-          <CatalogFilters filters={filters} onChange={setFilters} counts={counts} tags={tags} hideFacets={['kategorie']} />
+          <CatalogFilters filters={filters} onChange={setFilters} counts={counts} tags={tags} hideFacets={['kategorie']} mods={modList} profiles={profileList} quick={quick} />
         </div>
       </aside>
       <div className="catalog-main">

@@ -4,6 +4,8 @@ import { deepFreeze } from './library.js';
 import { applyOperation, checkTransform, createProject, newInstance } from '../core/project.js';
 import { memberTransform } from './ensembles.js';
 import type { Ensemble } from './ensembles.js';
+import { paletteProblems } from './stylePalettes.js';
+import type { PaletteRoles } from './stylePalettes.js';
 import { SAMPLE_PROFILE } from '../core/samples.js';
 import { DomainError } from '../core/types.js';
 import type { Asset, AssetVersion, ConnectorLink, GeneratorSource, Project } from '../core/types.js';
@@ -70,7 +72,9 @@ export interface TemplateMember {
 export type TemplateBody =
   /** Links use ConnectorLink with member ids in `instanceId`. */
   | { readonly kind: 'ensemble'; readonly members: readonly TemplateMember[]; readonly links: readonly ConnectorLink[] }
-  | { readonly kind: 'generator'; readonly source: GeneratorSource };
+  | { readonly kind: 'generator'; readonly source: GeneratorSource }
+  /** LIB-07: own Baustil-Palette (role → material set), applied to any building as a material variant. */
+  | { readonly kind: 'palette'; readonly roles: PaletteRoles };
 export type TemplateKind = TemplateBody['kind'];
 
 export type TemplateOrigin =
@@ -401,6 +405,11 @@ export function pinnedVersionIds(all: readonly Collection[]): Set<string> {
 // Templates
 
 function checkBody(body: TemplateBody): void {
+  if (body.kind === 'palette') {
+    const problems = paletteProblems(body.roles);
+    if (problems.length) fail(`Baustil-Palette: ${problems.join('; ')}`);
+    return;
+  }
   if (body.kind === 'generator') {
     const s = body.source;
     if (!s || typeof s.id !== 'string' || !s.id || !Number.isSafeInteger(s.version) || s.version < 1 || typeof s.params !== 'object' || s.params === null || Array.isArray(s.params))
@@ -558,6 +567,7 @@ export function createTemplateProject(t: LibraryTemplate, versions: ReadonlyMap<
 export function describeTemplate(t: Pick<LibraryTemplate, 'body'>): string {
   return t.body.kind === 'ensemble'
     ? `${t.body.members.length} Bauteil${t.body.members.length === 1 ? '' : 'e'}${t.body.links.length ? ` · ${t.body.links.length} Verbindung${t.body.links.length === 1 ? '' : 'en'}` : ''}`
+    : t.body.kind === 'palette' ? `Baustil-Palette · ${Object.keys(t.body.roles).length} Rollen`
     : `Generator ${t.body.source.id} v${t.body.source.version}`;
 }
 

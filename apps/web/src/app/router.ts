@@ -41,9 +41,9 @@ export type Route =
   | { readonly view: 'project'; readonly projectId: string; readonly tab: string }
   | { readonly view: 'not-found'; readonly path: string };
 
-export type LibraryPage = 'browse' | 'building' | 'ensembles' | 'compare' | 'generators' | 'themes' | 'collections' | 'templates' | 'facilities' | 'base' | 'grossprojekte';
-const LIBRARY_PAGES: Readonly<Record<string, LibraryPage>> = { gebaeude: 'building', ensembles: 'ensembles', vergleich: 'compare', generatoren: 'generators', bauwelten: 'themes', sammlungen: 'collections', vorlagen: 'templates', anlagen: 'facilities', basis: 'base', grossprojekte: 'grossprojekte' };
-const LIBRARY_SEGMENT: Readonly<Record<LibraryPage, string>> = { browse: '', building: 'gebaeude', ensembles: 'ensembles', compare: 'vergleich', generators: 'generatoren', themes: 'bauwelten', collections: 'sammlungen', templates: 'vorlagen', facilities: 'anlagen', base: 'basis', grossprojekte: 'grossprojekte' };
+export type LibraryPage = 'browse' | 'building' | 'ensembles' | 'compare' | 'generators' | 'themes' | 'collections' | 'templates' | 'facilities' | 'base' | 'grossprojekte' | 'palettes';
+const LIBRARY_PAGES: Readonly<Record<string, LibraryPage>> = { gebaeude: 'building', ensembles: 'ensembles', vergleich: 'compare', generatoren: 'generators', bauwelten: 'themes', sammlungen: 'collections', vorlagen: 'templates', anlagen: 'facilities', basis: 'base', grossprojekte: 'grossprojekte', paletten: 'palettes' };
+const LIBRARY_SEGMENT: Readonly<Record<LibraryPage, string>> = { browse: '', building: 'gebaeude', ensembles: 'ensembles', compare: 'vergleich', generators: 'generatoren', themes: 'bauwelten', collections: 'sammlungen', templates: 'vorlagen', facilities: 'anlagen', base: 'basis', grossprojekte: 'grossprojekte', palettes: 'paletten' };
 
 export function parseRoute(hash: string): Route {
   const raw = hash.replace(/^#/, ''), q = raw.indexOf('?');

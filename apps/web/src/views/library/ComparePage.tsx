@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
-import { facetLabel, FACETS, MATERIAL_GROUP_LABEL, STAGE_LABEL, stageIndex } from '../../../../../packages/domain/src/index.js';
+import { checkStatus, facetLabel, FACETS, MATERIAL_GROUP_LABEL, profileFit, smallestPlot, STAGE_LABEL, stageIndex, survivalEffort } from '../../../../../packages/domain/src/index.js';
 import type { BuildingMetrics, CatalogEntry } from '../../../../../packages/domain/src/index.js';
 import { formatNumber } from '../../app/ui';
-import { Thumb } from '../../thumbnail/Thumb';
+import { StandardViews } from '../../thumbnail/StandardViews';
 import { stars } from './BuildingCard';
 import { MaterialBar, pct } from './BuildingSheet';
 
@@ -15,8 +15,14 @@ interface Line {
 
 const LINES: readonly Line[] = [
   { label: 'Abmessungen (B × H × T)', show: m => m.size.join(' × ') },
-  { label: 'Grundfläche', show: m => `${formatNumber(m.footprint)} m²`, value: m => m.footprint },
+  { label: 'Grundfläche', show: m => <>{m.size[0]} × {m.size[2]} <small>{formatNumber(m.footprint)} m² bebaut</small></>, value: m => m.size[0] * m.size[2] },
+  { label: 'Passt auf Grundstück', show: m => smallestPlot(m)?.label ?? 'größer als 64 × 64', value: m => Math.max(m.size[0], m.size[2]) },
   { label: 'Höhe', show: m => `${m.size[1]} Blöcke`, value: m => m.size[1] },
+  { label: 'Materialaufwand', show: m => `${formatNumber(m.items.total)} Items · ${m.items.shulkerBoxes} Shulker`, value: m => m.items.total },
+  { label: 'Survival-Aufwand', show: m => { const e = survivalEffort(m); return <span className={`effort effort-${e.level}`} title={e.formula}>{e.label}</span>; }, value: m => survivalEffort(m).level },
+  { label: 'Minecraft-Profil', show: (_m, e) => { const f = profileFit(e.version.payload); return <span title={f.detail}>{f.label}</span>; } },
+  { label: 'Benötigte Mods', show: m => m.modNamespaces.length ? m.modNamespaces.join(', ') : 'keine (Vanilla)' },
+  { label: 'Prüfstand', show: (_m, e) => { const c = checkStatus(e); return <span className={`badge check check-${c.state}`} title={c.detail}>{c.state === 'spiel' || c.state === 'hinweis' ? '✓ ' : ''}{c.label}</span>; } },
   { label: 'Blöcke', show: m => formatNumber(m.blocks), value: m => m.blocks },
   { label: 'Blocktypen', show: m => m.distinctBlocks, value: m => m.distinctBlocks },
   { label: 'Schwierigkeit', show: m => <span className="stars">{stars(m.difficulty.level)}</span>, value: m => m.difficulty.level },
@@ -48,7 +54,7 @@ export function ComparePage({ entries, missing, libHref, onRemove }: {
     {entries.length === 0 ? <p className="muted">Noch nichts im Vergleich. In der Bibliothek auf ⇄ tippen, um bis zu vier Gebäude nebeneinanderzustellen.</p> :
     <div className="compare-scroll"><table className="compare-table" style={{ ['--cols' as string]: entries.length }}>
       <thead><tr><th scope="col"><span className="sr-only">Kennwert</span></th>{entries.map(e => <th key={e.asset.id} scope="col">
-        <a href={libHref('building', e.asset.id)}><Thumb cacheKey={e.version.id} payload={() => e.version.payload} alt={`Vorschau ${e.asset.name}`} width={220} height={150} /><strong>{e.asset.name}</strong></a>
+        <a href={libHref('building', e.asset.id)}><StandardViews cacheKey={e.version.id} payload={() => e.version.payload} name={e.asset.name} width={110} height={84} /><strong>{e.asset.name}</strong></a>
         <small>{[...e.facets.kategorie, ...e.facets.stil].map(v => facetLabel(e.facets.kategorie.includes(v) ? 'kategorie' : 'stil', v)).join(' · ')}</small>
         <button type="button" className="text-button" onClick={() => onRemove(e.asset.id)} aria-label={`${e.asset.name} aus dem Vergleich nehmen`}>entfernen</button></th>)}</tr></thead>
       <tbody>{LINES.map(line => {
@@ -60,6 +66,6 @@ export function ComparePage({ entries, missing, libHref, onRemove }: {
         {FACETS.filter(f => f.key !== 'kategorie').map(f => <tr key={f.key}><th scope="row">{f.label} <span className="badge source">Angabe</span></th>
           {entries.map(e => <td key={e.asset.id}>{e.facets[f.key].map(v => facetLabel(f.key, v)).join(', ') || '–'}</td>)}</tr>)}
       </tbody></table></div>}
-    {entries.length > 1 && <p className="small-note">Markiert: kleinster (▼) und größter (▲) Wert je Zeile. Das ist keine Bewertung – mehr Blöcke sind nicht „besser“.</p>}
+    {entries.length > 1 && <p className="small-note">Markiert: kleinster (▼) und größter (▲) Wert je Zeile. Das ist keine Bewertung – mehr Blöcke sind nicht „besser“. Alle Bilder in derselben Kamera: außen von Südosten, innen als Schnitt in Augenhöhe über dem Hauptboden, oben als Draufsicht.</p>}
   </section>;
 }

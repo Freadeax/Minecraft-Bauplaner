@@ -6,6 +6,7 @@ import { computeMaterials } from '../materials/materials.js';
 import type { Resolution } from '../core/compose.js';
 import { latestReleaseId } from '../versions/updateState.js';
 import type { Asset, AssetVersion, Connector, Project } from '../core/types.js';
+import { checkStatus, isGameChecked, modsAvailable, profileFit, survivalEffort } from './compare.js';
 
 /**
  * Gebäudekatalog (B9): building suggestions over the asset library.
@@ -406,10 +407,10 @@ export function buildCatalog(assets: readonly Asset[], versions: ReadonlyMap<str
   return { entries, missing };
 }
 
-export type SortKey = 'name' | 'blocks' | 'footprint' | 'height' | 'difficulty' | 'buildTime' | 'items' | 'stage' | 'newest' | 'match';
+export type SortKey = 'name' | 'blocks' | 'footprint' | 'height' | 'difficulty' | 'buildTime' | 'items' | 'effort' | 'stage' | 'newest' | 'match';
 export const SORT_LABEL: Readonly<Record<SortKey, string>> = {
   match: 'Passend zum Projekt', name: 'Name', blocks: 'Blockanzahl', footprint: 'Grundfläche', height: 'Höhe',
-  difficulty: 'Schwierigkeit', buildTime: 'Bauzeit (Schätzung)', items: 'Bauitems', stage: 'Spielphase', newest: 'Zuletzt geändert',
+  difficulty: 'Schwierigkeit', buildTime: 'Bauzeit (Schätzung)', items: 'Bauitems', effort: 'Survival-Aufwand', stage: 'Spielphase', newest: 'Zuletzt geändert',
 };
 
 export interface Plot { readonly width: number; readonly depth: number; readonly height?: number; readonly allowRotation: boolean }
@@ -422,6 +423,14 @@ export interface CatalogQuery {
   readonly blockClasses?: readonly BlockClass[];
   /** Only vanilla namespaces (no mod blocks). */
   readonly vanillaOnly?: boolean;
+  /** LIB-07: mods the player has; entries needing any other mod are hidden (empty list = vanilla only). */
+  readonly mods?: readonly string[];
+  /** LIB-07: profile fit keys (profileFit: JAVA_PROFILE_ID = all states exist in 26.3, "abweichend"), any of them. */
+  readonly profiles?: readonly string[];
+  /** LIB-07: highest Survival-Aufwand (1–5, survivalEffort). */
+  readonly effortMax?: number;
+  /** LIB-07: only entries whose exact content stood unchanged in the real game (Spielprüfstand). */
+  readonly gameChecked?: boolean;
   readonly difficultyMax?: number;
   readonly difficultyMin?: number;
   readonly maxBlocks?: number;
@@ -476,6 +485,10 @@ function matches(e: CatalogEntry, q: CatalogQuery, except?: FacetKey): boolean {
   if (q.plot && !fitsPlot(m, q.plot)) return false;
   if (q.blockClasses?.length && !q.blockClasses.includes(m.blockClass)) return false;
   if (q.vanillaOnly && m.modNamespaces.length) return false;
+  if (q.mods && !modsAvailable(m, q.mods)) return false;
+  if (q.profiles?.length && !q.profiles.includes(profileFit(e.version.payload).key)) return false;
+  if (q.effortMax !== undefined && survivalEffort(m).level > q.effortMax) return false;
+  if (q.gameChecked && !isGameChecked(checkStatus(e))) return false;
   if (q.onlyComplete && !m.items.complete) return false;
   if (q.withConnectors && !m.connectors.length) return false;
   if (q.connectorType && !m.connectors.some(c => c.type === q.connectorType)) return false;
@@ -489,6 +502,7 @@ function matches(e: CatalogEntry, q: CatalogQuery, except?: FacetKey): boolean {
 const SORT_VALUE: Readonly<Record<Exclude<SortKey, 'name' | 'match' | 'newest'>, (e: CatalogEntry) => number>> = {
   blocks: e => e.metrics.blocks, footprint: e => e.metrics.footprint, height: e => e.metrics.size[1],
   difficulty: e => e.metrics.difficulty.level, buildTime: e => e.metrics.buildTime.minutes, items: e => e.metrics.items.total,
+  effort: e => survivalEffort(e.metrics).level * 1e9 + e.metrics.items.total,
   stage: e => RANK[e.metrics.progression.stage],
 };
 

@@ -8,6 +8,8 @@
 # Aufruf: scripts/mod/test_game_placement.sh [satz ...]   (Standard: catalog generators; weitere Sätze gelaende,
 # basis, grossprojekte, grossprojekteGelaende oder alle – siehe scripts/mod/placement_worlds.mjs)
 # Bericht: $BAUPLANER_PLACEMENT_OUT/bericht.md (Standard: ein Temp-Ordner, der erhalten bleibt, wenn etwas abweicht).
+# Prüfstand für die Bibliothek (LIB-07): BAUPLANER_PRUEFSTAND_OUT=packages/domain/src/catalog/pruefstand.ts schreibt
+# das Ergebnis je Gebäude (mit Inhalts-Hash) und Generator, das jede Bibliothekskarte zeigt.
 # Nicht Teil von `npm run check` (einige Minuten). Große Projektwelten: BAUPLANER_PLACEMENT_XMX=8G.
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
@@ -57,4 +59,4 @@ if ! grep -qx ok "$probe/done.txt" 2>/dev/null; then
   echo "Spielprüfung nicht durchgelaufen (Protokoll $work/server.log)"; exit 1
 fi
 grep -E "(WARN|ERROR)\]: \[PlacementProbe\]" "$work/server.log" && { echo "Warnungen des Test-Plugins"; exit 1; }
-node scripts/mod/game_placement.mjs verify "$probe"
+BAUPLANER_PAPER_BUILD=$(basename "$jar" .jar | sed 's/^paper-//') node scripts/mod/game_placement.mjs verify "$probe"

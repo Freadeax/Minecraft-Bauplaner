@@ -44,11 +44,12 @@ export function TemplatesPage({ id, lib, projects, libHref, onMessage }: {
 }) {
   const { library } = useApp();
   const [showArchived, setShowArchived] = useState(false);
-  const template = id ? lib.templates.find(t => t.id === id) : undefined;
+  // Baustil-Paletten (LIB-07) are templates too but have their own page.
+  const template = id ? lib.templates.find(t => t.id === id && t.body.kind !== 'palette') : undefined;
   if (!lib.loaded) return <p role="status">Vorlagen werden geladen …</p>;
   if (template) return <TemplateDetail key={template.id} template={template} lib={lib} library={library} projects={projects} libHref={libHref} onMessage={onMessage} />;
-  const list = lib.templates.filter(t => showArchived || !t.archived).sort((a, b) => a.name.localeCompare(b.name, 'de'));
-  const archived = lib.templates.filter(t => t.archived).length;
+  const list = lib.templates.filter(t => t.body.kind !== 'palette' && (showArchived || !t.archived)).sort((a, b) => a.name.localeCompare(b.name, 'de'));
+  const archived = lib.templates.filter(t => t.archived && t.body.kind !== 'palette').length;
   return <section className="templates" aria-label="Vorlagen">
     {lib.error && <div className="notice warning" role="alert">Vorlagen konnten nicht vollständig gelesen werden: {lib.error}</div>}
     {id && <div className="notice warning" role="alert">Vorlage „{id}“ gibt es nicht (mehr).</div>}

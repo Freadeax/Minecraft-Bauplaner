@@ -133,12 +133,12 @@ test('BIB-01: Suche, Kategorie, Größe, Spielphase, Seite 2; Zurück und neuer 
   await p.getByRole('group', { name: 'Filter Größe' }).getByRole('button', { name: /^Mittel/ }).click();
   await p.waitForFunction(() => /q=Turm/.test(decodeURIComponent(location.hash)));
   await results.first().waitFor();
-  const cards = await results.evaluateAll(lis => lis.map(li => ({ text: li.textContent ?? '', kicker: li.querySelector('.bcard-kicker')?.textContent ?? '', size: li.querySelector('.bcard-facts span')?.textContent ?? '', stage: li.querySelector('.stage')?.textContent ?? '' })));
+  const cards = await results.evaluateAll(lis => lis.map(li => ({ text: li.textContent ?? '', kicker: li.querySelector('.bcard-kicker')?.textContent ?? '', size: li.querySelector('.bcard-facts dd')?.textContent ?? '', stage: li.querySelector('.stage')?.textContent ?? '' })));
   assert.ok(cards.length > 0, 'Treffer');
   for (const c of cards) {
     assert.match(c.kicker, /^Befestigung/, `Kategorie: ${c.kicker}`);
     assert.match(c.stage, /Erster Tag|Frühes Spiel|Mittleres Spiel/, `Spielphase: ${c.stage}`);
-    const [w, , d] = c.size.split('×').map(Number);
+    const [w, d] = c.size.split('×').map(Number); // LIB-07: Karte zeigt Grundfläche Breite × Tiefe
     assert.ok(w * d > 25, `Größe Mittel (bebaute Fläche 26–100 m², Kasten größer): ${c.size}`);
   }
   const filtered = cards.length;

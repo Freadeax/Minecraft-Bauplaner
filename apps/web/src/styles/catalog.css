@@ -122,7 +122,26 @@ input:not([type]), input[type=search], input[type=text], input[inputmode], texta
 .bcard-body { display: grid; gap: 5px; padding: 12px 14px 14px; }
 .bcard-body strong { font-size: 15px; font-weight: 600; line-height: 1.3; padding-right: 64px; }
 .bcard-kicker { font-size: 12px; color: var(--muted); }
-.bcard-facts { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: #b7c7ce; margin-top: 2px; }
+.bcard-facts { display: grid; grid-template-columns: repeat(4, minmax(0, auto)); justify-content: space-between; gap: 2px 10px; font-size: 12px; color: #b7c7ce; margin: 4px 0 0; }
+/* LIB-07: dieselben vier Vergleichswerte auf jeder Karte, Beschriftung klein darüber */
+.bcard-facts > div { display: flex; flex-direction: column; min-width: 0; }
+.bcard-facts dt { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; opacity: .75; }
+.bcard-facts dd { margin: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.effort-1, .effort-2 { color: var(--ds-success); }
+.effort-4 { color: var(--ds-warning); }
+.effort-5 { color: var(--ds-danger); }
+.bcard-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin-top: 6px; font-size: 11px; }
+.bcard-badges .badge, .badge.check, .badge.profile { border: 1px solid var(--line); background: var(--ds-surface-2); color: inherit; }
+.badge.check.check-spiel, .badge.check.check-hinweis { border-color: color-mix(in srgb, var(--ds-success) 55%, var(--line)); color: var(--ds-success); }
+.badge.check.check-abweichung { border-color: color-mix(in srgb, var(--ds-danger) 55%, var(--line)); color: var(--ds-danger); }
+.badge.check.check-neu { border-color: color-mix(in srgb, var(--ds-warning) 55%, var(--line)); color: var(--ds-warning); }
+.badge.check-offen { opacity: .85; }
+.bcard-badges .stars { margin-left: auto; }
+.filter-hint { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; }
+.std-views { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 8px 0; }
+.std-views figure { margin: 0; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.std-views figcaption { font-size: 11px; color: var(--muted); text-align: center; }
+.std-views .thumb { width: 100%; height: auto; }
 .bcard-facts .stars, .stars { color: var(--gold); letter-spacing: 1px; }
 .bcard-actions { position: absolute; right: 8px; top: 8px; display: flex; gap: 6px; z-index: 2; }
 .icon-button { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .12); background: rgba(10, 21, 29, .86); color: #d6e4e8; font-size: 16px; line-height: 1; }
@@ -221,11 +240,12 @@ input:not([type]), input[type=search], input[type=text], input[inputmode], texta
 
 /* ---------- Vergleich ---------- */
 .compare-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
-.compare-table { width: 100%; border-collapse: collapse; min-width: calc(180px + var(--cols) * 200px); font-size: 13px; }
+.compare-table { width: 100%; border-collapse: collapse; min-width: calc(180px + var(--cols) * 260px); font-size: 13px; }
 .compare-table th, .compare-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
 .compare-table thead th { vertical-align: bottom; }
 .compare-table thead a { display: grid; gap: 6px; color: inherit; }
-.compare-table thead .thumb { height: 130px; border-radius: 10px; background: radial-gradient(ellipse at 50% 62%, #2c4b58, #132a37); }
+.compare-table thead .thumb { height: 84px; border-radius: 8px; background: radial-gradient(ellipse at 50% 62%, #2c4b58, #132a37); }
+.compare-table thead .std-views { margin: 0; }
 .compare-table thead strong { font-size: 14px; }
 .compare-table thead small { display: block; font-size: 11.5px; color: var(--muted); font-weight: 400; }
 .compare-table tbody th { color: var(--muted); font-weight: 500; width: 180px; }
@@ -303,7 +323,7 @@ input:not([type]), input[type=search], input[type=text], input[inputmode], texta
   .bcard-body { padding: 10px; }
   .bcard-body strong { font-size: 13.5px; padding-right: 0; }
   .bcard-facts { font-size: 11px; gap: 2px 8px; }
-  .bcard-facts span:nth-child(4) { display: none; }
+  .bcard-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .bcard-kicker { font-size: 11px; }
   .icon-button { width: 30px; height: 30px; font-size: 14px; }
   .bcard-stage { font-size: 9px; }
@@ -440,3 +460,30 @@ footer a:hover { color: var(--mint); }
 .mod-command-list li .badge { margin-left: 6px; font-size: 11px; }
 .mod-command-list code { font-size: 12px; overflow-wrap: anywhere; }
 .mod-command-list small { color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+/* LIB-07: Prüfstand in den Kennzahlkacheln */
+.stat-tiles dd.check-spiel, .stat-tiles dd.check-hinweis { color: var(--ds-success); }
+.stat-tiles dd.check-abweichung { color: var(--ds-danger); }
+.stat-tiles dd.check-neu { color: var(--ds-warning); }
+
+/* LIB-07: Baustil-Paletten */
+.palette-grid { list-style: none; margin: 12px 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 10px; }
+.palette-card { display: flex; flex-direction: column; gap: 6px; height: 100%; padding: 12px; border: 1px solid var(--line); border-radius: var(--ds-r-md); background: var(--ds-surface); color: inherit; text-decoration: none; }
+.palette-card:hover, .palette-card.on { border-color: var(--ds-accent-line); }
+.palette-card.on { box-shadow: var(--ds-ring); }
+.palette-card small { color: var(--muted); font-size: 12px; }
+.palette-roles { display: flex; flex-wrap: wrap; gap: 4px; }
+.palette-roles span { font-size: 11px; padding: 2px 6px; border-radius: var(--ds-r-pill); background: var(--ds-surface-2); border: 1px solid var(--line); }
+.palette-detail { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); align-items: start; }
+.palette-meta { display: grid; gap: 8px; margin-bottom: 8px; }
+.palette-preview { list-style: none; margin: 10px 0; padding: 0; display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); }
+.palette-preview li { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 8px; border: 1px solid var(--line); border-radius: var(--ds-r-sm); background: var(--ds-surface-2); }
+.palette-preview li > div:last-child { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 2px; }
+.palette-preview figure { margin: 0; }
+.palette-preview figcaption, .palette-preview small { font-size: 11px; color: var(--muted); }
+.palette-preview .thumb { height: 104px; border-radius: 6px; background: radial-gradient(ellipse at 50% 62%, #2c4b58, #132a37); }
+.palette-none { display: grid; place-items: center; font-size: 12px; color: var(--muted); text-align: center; border: 1px dashed var(--line); border-radius: 6px; padding: 6px; }
+.palette-pick, .palette-save { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; }
+.palette-save { flex-direction: row; flex-wrap: wrap; align-items: flex-end; gap: 8px; }
+.palette-save label { flex: 1 1 220px; }
+.palette-save small { flex-basis: 100%; }

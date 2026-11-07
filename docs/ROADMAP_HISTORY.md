@@ -597,3 +597,50 @@ ZIP/GZIP-Importe zählen echte Bytes mit gemeinsamem Budget im abbrechbaren Work
 - `tests/unit/building/zip-limits.test.mjs`
 - `tests/unit/team/team-room-abuse.test.mjs`
 
+## 2026-11-07T19:33:20.416Z · progress
+
+**Aufgaben:** LIB-07
+
+Bibliothek vergleichbar und filterbar: jede Gebäude-, Generator- und Ensemblekarte zeigt Grundfläche, Höhe, Material, Survival-Aufwand, Minecraft-Profil und Prüfstand (Ergebnis je Gebäude aus dem Paper-26.3-Lauf, 559 Pläne ohne Abweichung, geänderte Inhalte = neu prüfen); Filter Grundstück, Survival-Aufwand, benötigte Mods, nur geprüft; einheitliche Ansichten außen/innen/oben; 8 Baustil-Paletten plus eigene, auf Merkliste/Sammlungen anwendbar. Prüfung: npm run check, 235 Browsertests, library-compare 4/4. Offen: Abnahme durch Philipp (BIB-02).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LIB-07 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp (S06, BIB-02). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/router.ts`
+- `apps/web/src/styles/catalog.css`
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/thumbnail/StandardViews.tsx`
+- `apps/web/src/thumbnail/views.ts`
+- `apps/web/src/views/LibraryView.tsx`
+- `apps/web/src/views/library/BuildingCard.tsx`
+- `apps/web/src/views/library/BuildingDetail.tsx`
+- `apps/web/src/views/library/CatalogFilters.tsx`
+- `apps/web/src/views/library/CollectionsPage.tsx`
+- `apps/web/src/views/library/ComparePage.tsx`
+- `apps/web/src/views/library/EnsemblesPage.tsx`
+- `apps/web/src/views/library/GeneratorsPage.tsx`
+- `apps/web/src/views/library/PalettesPage.tsx`
+- `apps/web/src/views/library/TemplatesPage.tsx`
+- `apps/web/src/views/library/VersionsSection.tsx`
+- `apps/web/src/views/library/paletteVariants.ts`
+- `apps/web/src/views/library/templateWorld.ts`
+- `apps/web/src/views/library/urlState.ts`
+- `docs/TESTING.md`
+- `docs/architecture/bibliothek/CATALOG.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/catalog/catalog.ts`
+- `packages/domain/src/catalog/collections.ts`
+- `packages/domain/src/catalog/compare.ts`
+- `packages/domain/src/catalog/pruefstand.ts`
+- `packages/domain/src/catalog/stylePalettes.ts`
+- `packages/domain/src/index.ts`
+- `scripts/mod/game_placement.mjs`
+- `scripts/mod/test_game_placement.sh`
+- `tests/e2e/library-compare.e2e.mjs`
+- `tests/e2e/planer-abnahmen.e2e.mjs`
+- `tests/unit/catalog/compare.test.mjs`
+

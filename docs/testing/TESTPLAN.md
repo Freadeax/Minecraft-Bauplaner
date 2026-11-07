@@ -28,7 +28,7 @@ Katalog mit Gebäuden, Ensembles, Generatoren, Sammlungen, Vorlagen, Anlagen, Ba
 | ID | Fall | Stufe | Schritte | Erwartet |
 |---|---|---|---|---|
 | BIB-01<br><small>früher BIB-18</small> | Katalog durchsuchen und filtern ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek)) | kern | 1. Bibliothek öffnen, Suchbegriff eingeben (z. B. „Turm“), Kategorie, Größe und Spielphase filtern, auf Seite 2 blättern.<br>2. Ein Gebäude öffnen und mit „Zurück“ des Browsers zurückgehen.<br>3. Adresse kopieren und in neuem Tab öffnen. | Treffer passen zum Filter, Vorschaubilder erscheinen ohne langes Nachladen; nach „Zurück“ sind Filter, Suchwort und Seite wie vorher; der neue Tab zeigt dieselbe Suche. (Abnahme PERF-03) |
-| BIB-02<br><small>früher BIB-04, BIB-17</small> | Detailseite, Vergleich und Bauversionen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek)) | kern | 1. Ein Gebäude öffnen, Ansichten „Bilder“, „Ebenen“ und „Versionen“ durchklicken, 3D drehen und zoomen.<br>2. Zwei bis drei Gebäude merken und den Vergleich öffnen.<br>3. Ein eigenes Bauteil in der Werkstatt um ein paar Blöcke verschieben, eine Truhe oder ein Schild ändern, als neue Version speichern; unter „Bauversionen & Varianten“ beide Versionen vergleichen. | 3D flüssig, Ebenen einzeln ansehbar, Materialliste plausibel; der Vergleich stellt Gebäude mit Maßen und Material nebeneinander; der Versionsvergleich meldet „ist verschoben“ mit dem richtigen Versatz und die Truhe bzw. das Schild als Inhaltsänderung. (Abnahme DIFF-01) |
+| BIB-02<br><small>früher BIB-04, BIB-17</small> | Detailseite, Vergleich und Bauversionen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek)) | kern | 1. Ein Gebäude öffnen, Ansichten „Bilder“, „Ebenen“ und „Versionen“ durchklicken, 3D drehen und zoomen.<br>2. Zwei bis drei Gebäude merken und den Vergleich öffnen.<br>3. Ein eigenes Bauteil in der Werkstatt um ein paar Blöcke verschieben, eine Truhe oder ein Schild ändern, als neue Version speichern; unter „Bauversionen & Varianten“ beide Versionen vergleichen.<br>4. Karten und Vergleich: Grundfläche, Höhe, Material, Survival-Aufwand, Minecraft-Profil und Prüfstand lesen, Blickrichtung „Innen“ und „Oben“ stellen; Filter Grundstück 16 × 16, Survival-Aufwand „Überschaubar“, „Keine (nur Vanilla)“ und „Nur im Spiel geprüft“ setzen.<br>5. Reiter „Paletten“: eine mitgelieferte Palette öffnen, eine Rolle ändern, als eigene speichern und auf die Merkliste anwenden. | 3D flüssig, Ebenen einzeln ansehbar, Materialliste plausibel; der Vergleich stellt Gebäude mit Maßen und Material nebeneinander; der Versionsvergleich meldet „ist verschoben“ mit dem richtigen Versatz und die Truhe bzw. das Schild als Inhaltsänderung. Jede Karte zeigt dieselben sechs Werte, jeder Treffer passt auf 16 × 16 und zum Aufwand; der Vergleich zeigt je Gebäude die Bilder außen, innen (Schnitt) und oben. Palettenvarianten erscheinen bei ihren Ausgangsgebäuden, Form und Ausrichtung unverändert. (Abnahme DIFF-01, LIB-07) |
 | BIB-03<br><small>früher BIB-05, BIB-09</small> | Gebäude, Ensemble oder Anlage übernehmen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek)) | kern | 1. Auf der Detailseite ein Gebäude einem Projekt hinzufügen und das Projekt öffnen.<br>2. Unter „Ensembles“ eins als Projekt übernehmen.<br>3. Unter „Anlagen“ eine Anlage mit Konfliktvorschau ansehen und übernehmen; „Bauwelten“ durchblättern. | Das Gebäude steht im Editor und ist auswählbar; alle Gebäude des Ensembles stehen ohne Überschneidung an sinnvoller Stelle; Konflikte der Anlage werden markiert und die Übernahme legt sie in ein Projekt. |
 | BIB-06<br><small>früher BIB-08</small> | Generatoren und Vorlagen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek/generatoren)) | kern | 1. Generatoren öffnen (Haus, Turm, Mauer, Brücke, Dach …), Maße und Stil ändern.<br>2. Ergebnis als Bauteil speichern; dieselben Werte als Vorlage speichern und wieder öffnen. | Vorschau ändert sich sofort, keine schwebenden Blöcke; das Bauteil erscheint in der Bibliothek; die Vorlage stellt genau die gespeicherten Werte wieder her. |
 | BIB-07 | Eigene Sammlungen und Ordner ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek/sammlungen)) | vertieft | 1. Eine Sammlung anlegen, Gebäude hinzufügen, Ordner anlegen und verschieben. | Sammlung bleibt nach dem Neuladen erhalten; Katalogfilter nach Sammlung funktioniert. |
@@ -213,7 +213,7 @@ Lagerkisten des Teams im freiwilligen Paper-Plugin (COOP-05): markieren, zählen
 
 Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan.ts), geordnet nach dem Ort, den die Abnahme braucht. Ein Paket gilt als abgenommen, wenn alle genannten Fälle ✓ sind; Ob ein Paket noch auf Abnahme wartet, steht in `docs/ROADMAP.md`.
 
-### Nur im Browser (47 Pakete)
+### Nur im Browser (46 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -223,7 +223,6 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | COOP-06 | TEAMBAU-21, TEAMBAU-03, TEAMBAU-24 |
 | COOP-09 | TEAMBAU-25 |
 | COOP-11 | TEAMBAU-28 |
-| DIFF-01 | BIB-02, PROJ-07 |
 | DOC-02 | START-01 |
 | EDIT-01 | WERK-03 |
 | EDIT-02 | WERK-01 |
@@ -265,7 +264,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | VIEW-01 | DATEI-01, GERAET-04 |
 | VIEW-02 | GERAET-05, DATEI-01 |
 
-### Mit Minecraft (Mod oder Spiel) (48 Pakete)
+### Mit Minecraft (Mod oder Spiel) (50 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -277,6 +276,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | COOP-07 | TEAMBAU-25, LINK-07 |
 | COOP-10 | TEAMBAU-27, TEAMBAU-25 |
 | CORE-04 | PROJ-21, WERK-01, WERK-09 |
+| DIFF-01 | BIB-02, PROJ-07 |
 | EDIT-04 | WERK-03, MOD-18 |
 | EDIT-06 | WERK-08, WERK-09 |
 | ENTITY-01 | DATEI-08 |
@@ -295,6 +295,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | GROSS-01 | BIB-13, PROJ-09, BIB-21 |
 | LIB-04 | BIB-03, BIB-12 |
 | LIB-05 | BIB-12 |
+| LIB-07 | BIB-02 |
 | LINK-05 | LINK-04 |
 | LINK-07 | LINK-07 |
 | LINK-10 | LINK-09 |
@@ -345,7 +346,7 @@ Fälle, deren beobachtbares Ergebnis ein reproduzierbarer Test im Repository nac
 | Fall | Umfang | Nachgewiesen | Bleibt von Hand | Befehl | Nachweis |
 |---|---|---|---|---|---|
 | BIB-01 | automatisch geprüft | Sichtbare Vorschaubilder sind in wenigen Sekunden da (auch nach dem Scrollen); „Turm“ + Kategorie Befestigung + Spielphase „Mittleres Spiel“ + Größe „Mittel“: jede Karte passt zu Kategorie, Phase und Größe, der Suchbegriff grenzt wirklich ein; „Weitere 48 laden“ (Seite 2), Gebäude öffnen und „Zurück“: Suchwort, Filter, Anzahl und letzte Karte wie vorher; die kopierte Adresse in einem neuen Tab zeigt dieselben Treffer. | – | `npm run test:e2e -- tests/e2e/planer-abnahmen.e2e.mjs && npm run test:e2e:firefox -- tests/e2e/planer-abnahmen.e2e.mjs && npm run test:e2e:webkit -- tests/e2e/planer-abnahmen.e2e.mjs` | 07.11.2026, main a902c4e + Block B: Chromium, Firefox 1555 (xvfb) und WebKit 2370 im Container grün |
-| BIB-02 | teilweise automatisch geprüft | Versionsvergleich mit einer im Spiel geänderten Truhe und einem geänderten Schild, mit WorldEdit zwei Blöcke weiter gespeichert: der Vergleich meldet die Verschiebung um 2 Blöcke und genau zwei Inhaltsänderungen (Inhalt, Schild), keine weiteren Abweichungen. | Detailseite, 3D, Ebenen, Gebäudevergleich und der Versionsvergleich in der Werkstatt-Oberfläche. | `scripts/mod/test_exports_ingame.sh` | 06.11.2026, main b786572 + Block 1 (Exportprüfung), Minecraft 26.3 Fabric-Clientspieltest mit Litematica 0.29.1 und WorldEdit 7.4.6, headless (weston/Mesa): 22/22 Prüfungen bestanden |
+| BIB-02 | teilweise automatisch geprüft | Versionsvergleich mit einer im Spiel geänderten Truhe und einem geänderten Schild, mit WorldEdit zwei Blöcke weiter gespeichert: der Vergleich meldet die Verschiebung um 2 Blöcke und genau zwei Inhaltsänderungen (Inhalt, Schild), keine weiteren Abweichungen. Dazu (LIB-07) Chromium 1400/390 px: jede Karte zeigt Grundfläche, Höhe, Material, Survival-Aufwand, Profil Java 26.3 und Prüfstand; Grundstück 16 × 16 und Aufwand filtern über die Adresse, jeder Treffer passt; Aufwand, „nur Vanilla“ und „nur im Spiel geprüft“ über die Filterleiste; Innenansicht ändert die Bilder; Detail mit Ansichten außen/innen/oben, Vergleich mit allen neuen Zeilen, Generator- und Ensemblekarten mit Prüfstand; eigene Palette speichern und auf die Merkliste anwenden, Varianten erscheinen in der Bibliothek. Einheitstests: Aufwandsformel, Grundstücke, Prüfstand-Abgleich über den Inhalts-Hash (geändert = „neu prüfen“), Ensemble-Rechteck, Schnitthöhe, Palettenrollen und exakter Tausch, Palette als Vorlage mit Verlauf. | Detailseite, 3D, Ebenen und der Versionsvergleich in der Werkstatt-Oberfläche; ob Vergleichswerte und Baustil-Paletten beim Aussuchen helfen und gut aussehen, kann nur ein Mensch beurteilen. | `scripts/mod/test_exports_ingame.sh && node --test tests/unit/catalog/compare.test.mjs && node --test tests/e2e/library-compare.e2e.mjs` | 06.11.2026, main b786572 + Block 1 (Exportprüfung), Minecraft 26.3 Fabric-Clientspieltest mit Litematica 0.29.1 und WorldEdit 7.4.6, headless (weston/Mesa): 22/22 Prüfungen bestanden; 07.11.2026 LIB-07: Prüfstand-Lauf Paper 26.3 Build 244, 559 Pläne ohne Abweichung, Ergebnis je Gebäude in packages/domain/src/catalog/pruefstand.ts |
 | BIB-03 | automatisch geprüft | Dorfbrunnen über „＋ Ins Projekt übernehmen“ → „Zum Editor →“ steht im Projekt und ist auswählbar; Ensemble Marktdorf als Projekt ist „geometrisch konfliktfrei“, jedes Gebäude an eigener Stelle; „Bauwelten“ zeigt alle Welten; Anlage „Landleben“ mit verschobener Handwerkerzeile markiert Konflikte, die Übernahme geht erst nach Bestätigung und legt das Projekt mit allen Bauteilen an. | – | `npm run test:e2e -- tests/e2e/planer-abnahmen.e2e.mjs && npm run test:e2e:firefox -- tests/e2e/planer-abnahmen.e2e.mjs && npm run test:e2e:webkit -- tests/e2e/planer-abnahmen.e2e.mjs` | 07.11.2026, main a902c4e + Block B: Chromium, Firefox 1555 (xvfb) und WebKit 2370 im Container grün |
 | BIB-06 | teilweise automatisch geprüft | Jeder Generator (Haus, Turm, Mauer, Brücke, Dach, Treppenhaus, Kirche, Hafen, Torhaus, Windmühle, Brunnen, Arena) mit Standardwerten, allen Vorlagen, allen Stilen, drei Würfelwerten und beiden Bereichsenden im echten Paper-26.3-Server gesetzt und vom Spiel aktualisiert: keine schwebenden oder abfallenden Blöcke, keine anderen Verbindungen, kein auslaufendes Wasser. | Bedienung im Browser: Maße und Stil ändern, als Bauteil und als Vorlage speichern und wieder öffnen. | `scripts/mod/test_game_placement.sh generators` | 06.11.2026, Paper 26.3 Build 244 (Java 25), Quellstand BLOCK-02-S07: 559 Pläne (358 Katalog-Gebäude, 201 Generator-Fälle), 878.974 Blöcke, 0 Abweichungen; der erste Lauf fand 47 Gebäude und den Brunnen-Generator, alle behoben. |
 | BIB-07 | teilweise automatisch geprüft | Sammlung mit Kategorie und Unterordner, Gebäude aufnehmen, Version festhalten, Notiz, Katalogfilter nach Sammlung, bleibt nach Neuladen; Vorlagen und Telefonbreite 390 px – in Chromium, Firefox und WebKit. Dabei behoben: Vorschaubilder aus dem Speicher luden in Safari nicht (Offline-Speicher, Privatfenster). | Ordner per Finger verschieben auf dem echten iPad. | `npm run build && node --test --test-concurrency=1 tests/e2e/collections.e2e.mjs tests/e2e/thumb-store.e2e.mjs && npm run test:e2e:firefox -- tests/e2e/collections.e2e.mjs tests/e2e/thumb-store.e2e.mjs && npm run test:e2e:webkit -- tests/e2e/collections.e2e.mjs tests/e2e/thumb-store.e2e.mjs` | 07.11.2026, Block 5 Geräte auf main + Fixes: grün in Chromium, Firefox 1555 (xvfb) und WebKit 2370 (Safari-Engine) im Container |

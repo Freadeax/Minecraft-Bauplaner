@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T19:38:18.474Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T19:33:20.416Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-07T19:38:18.474Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 2 |
 | 🚧 In Arbeit | 5 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 100 |
+| 🧩 Implementiert · Abnahme offen | 101 |
 | ✅ Im beschriebenen Umfang geprüft | 35 |
 | ⏸ Zurückgestellt | 3 |
 
@@ -26,7 +26,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Arbeitsstrang
 | Bereich | Offen | Verwaist | Nur Philipp | Geprüft |
 |---|---:|---:|---:|---:|
 | [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 29 | 0 | 29 | 2 |
-| [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 0 | 10 | 4 |
+| [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 11 | 0 | 11 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 18 | 0 | 14 | 1 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
@@ -91,6 +91,7 @@ Abgeschlossen oder zurückgestellt: UI-01 (geprüft), UI-02 (geprüft).
 | [LIB-04](#lib-04) | Gebäudebibliothek v3 | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Redstone-Bauten im Spiel abnehmen. |
 | [LIB-05](#lib-05) | Bibliothek im Stil der Vorlagen | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Große Testphase vorbereiten und betreuen“ | Einige neu gezeichnete Gebäude im Spiel ansehen (S08). |
 | [LIB-06](#lib-06) | Bibliotheksbeiträge | 🧩 Implementiert · Abnahme offen 5/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Eigenes Bauwerk einreichen und das Paket hochladen (BIB-15/16). |
+| [LIB-07](#lib-07) | Bibliothek vergleichbar und filterbar | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Bibliothek vergleichbar und filterbar machen“ | Bibliothek vergleichen, filtern und eine Baustil-Palette anwenden (BIB-02). |
 | [SPLIT-01](#split-01) | Gebäude aus großen Modellen herauslösen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Echte Litematic-Basen zum Herauslösen bereitstellen (S05). |
 
 Abgeschlossen oder zurückgestellt: LIB-01 (geprüft), GEN-01 (geprüft), WORLD-02 (geprüft), BUILD-05 (geprüft).
@@ -349,6 +350,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **EDIT-05** · Zauberstab, Stapeln, Extrudieren und Wendel in der Werkstatt abnehmen (S07).
 - **LIB-02** · Rückmeldung zur Bedienung der Sammlungen.
 - **LIB-03** · Eigene Ensembles und Generatorvorlagen ausprobieren.
+- **LIB-07** · Bibliothek vergleichen, filtern und eine Baustil-Palette anwenden (BIB-02).
 - **PROJ-01** · Reiter „Planung“ abnehmen (PROJ-09…11).
 - **PROD-01** · Reiter „Produktion“ abnehmen (PROJ-12).
 - **PROD-02** · Engpässe und Zeitplanvergleich prüfen (PROJ-13).
@@ -431,6 +433,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **OPS-04 · Team-Raum betreiben: Sicherung, Wiederherstellung, Aufbewahrung, Zustand** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-31 mit zwei Geräten (sichern, wiederherstellen, löschen und zurückholen).
 - **DOC-02 · Repository übersichtlich: README als Überblick, Doku-Index, Funktionsstand und Prüfstand neu, interne Arbeitsnotizen und Verlauf aus dem Repository** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Durchsicht von README und Doku-Index durch Philipp.
 - **BACKUP-03 · Sicherungen ohne Team-Schlüssel, Team-Zugang verschlüsselt, Verwaltungsschlüssel wechseln** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Team-Raum-Dienst mit dem neuen Wechselweg ausrollen (bis dahin meldet der Planer „zu alte Version“ und empfiehlt einen neuen Raum).
+- **LIB-07 · Bibliothek vergleichbar und filterbar: gleiche Vergleichswerte auf jeder Karte (Grundfläche, Höhe, Material, Survival-Aufwand, Minecraft-Profil, Prüfstand), Filter Grundstück/Aufwand/Mods/geprüft, einheitliche Ansichten außen/innen/oben, wiederverwendbare Baustil-Paletten** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06, BIB-02).
 - **PRIV-01 · Datenschutz und Freigaben verständlich: was geht wohin, wer sieht es, Speicherstatus und Umzug** — 🚧 In Arbeit, 6/8 Teilschritte. Nächster Schritt: S05 auf der Schlüssel-API des Team-Identitäten-Pakets bauen; S03 mit Mod 0.28.0 ausliefern.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
@@ -566,6 +569,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LIB-04](#lib-04) | Gebäudebibliothek v3: Inhalte in alle Richtungen | 🧩 Implementiert · Abnahme offen | 4/4 | LIB-01 | ausstehend | ausstehend |
 | [LIB-05](#lib-05) | Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren | 🧩 Implementiert · Abnahme offen | 7/8 | LIB-04, BLOCK-02, GEN-02 | ausstehend | ausstehend |
 | [LIB-06](#lib-06) | Bibliotheksbeiträge: eigene Bauwerke (Importe, Werkstatt, Generator) als festen Katalogeintrag für alle einreichen – Beitragspaket mit Prüfsumme und Rechtebestätigung, GitHub-Formular, Übernahme-Skript, Auslieferung wie mitgelieferte Gebäude | 🧩 Implementiert · Abnahme offen | 5/7 | LIB-02, LIB-05, PERF-04, UPDATE-01 | ausstehend | ausstehend |
+| [LIB-07](#lib-07) | Bibliothek vergleichbar und filterbar: gleiche Vergleichswerte auf jeder Karte (Grundfläche, Höhe, Material, Survival-Aufwand, Minecraft-Profil, Prüfstand), Filter Grundstück/Aufwand/Mods/geprüft, einheitliche Ansichten außen/innen/oben, wiederverwendbare Baustil-Paletten | 🧩 Implementiert · Abnahme offen | 5/6 | LIB-04, LIB-05, BLOCK-02 | ausstehend | ausstehend |
 | [BASE-01](#base-01) | Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen | 🧩 Implementiert · Abnahme offen | 5/6 | BUILD-05, TERRAIN-01, BLOCK-02 | ausstehend | ausstehend |
 | [SPLIT-01](#split-01) | Gebäude aus großen Modellen herauslösen: Gebäude, Felder, Gehege und Wegenetz erkennen, einzeln oder zusammen als Bauteile speichern, als Projekt an alter Stelle aufteilen | 🧩 Implementiert · Abnahme offen | 6/7 | LIB-04, WORLD-IMPORT-01, PERF-04 | ausstehend | ausstehend |
 | [GROSS-01](#gross-01) | Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt | 🧩 Implementiert · Abnahme offen | 7/8 | BUILD-05, BASE-01, LIB-05 | ausstehend | ausstehend |
@@ -2625,6 +2629,31 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/unit/catalog/contribution.test.mjs](../tests/unit/catalog/contribution.test.mjs) — Kennung, Angaben, Rundreise mit Blockinhalten, Manipulation, Ausschlüsse, Auslieferung und Katalogabgleich 1.0→2.0, Register, Skript im Testordner.; [tests/e2e/contribution.e2e.mjs](../tests/e2e/contribution.e2e.mjs) — Chromium 1400/390 px: Litematic importieren, Paket erstellen, Datei mit readContribution prüfen, GitHub-Link, keine seitliche Überbreite.; [docs/architecture/bibliothek/CONTRIBUTIONS.md](architecture/bibliothek/CONTRIBUTIONS.md) — Ablauf, Paketformat, Prüfungen, Auslieferung und Grenzen.
 
 **Dateiumfang:** `packages/domain/src/catalog/contribution.ts`, `packages/domain/src/community/`, `packages/domain/src/catalog/buildings.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/library/ContributePanel.tsx`, `apps/web/src/views/library/BuildingDetail.tsx`, `apps/web/src/views/library/BuildingCard.tsx`, `apps/web/src/views/LibraryView.tsx`, `apps/web/src/jobs/libraryJob.ts`, `apps/web/src/app/repository.ts`, `apps/web/src/styles/catalog.css`, `apps/web/src/testing/testplan.ts`, `scripts/library/library_intake.mjs`, `package.json`, `.github/ISSUE_TEMPLATE/bibliotheksbeitrag.yml`, `tests/unit/catalog/contribution.test.mjs`, `tests/e2e/contribution.e2e.mjs`, `docs/`. **Abhängigkeiten:** LIB-02, LIB-05, PERF-04, UPDATE-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### LIB-07
+
+**Bibliothek vergleichbar und filterbar: gleiche Vergleichswerte auf jeder Karte (Grundfläche, Höhe, Material, Survival-Aufwand, Minecraft-Profil, Prüfstand), Filter Grundstück/Aufwand/Mods/geprüft, einheitliche Ansichten außen/innen/oben, wiederverwendbare Baustil-Paletten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Bibliothek vergleichbar und filterbar machen“ · Arbeitsstrang: „Bibliothek vergleichbar und filterbar machen“ · Aktualisiert: 2026-11-07T19:33:20.416Z
+
+- [x] LIB-07-S01: Vergleichswerte im Kern (compare.ts): Survival-Aufwand mit offener Formel, Profil nach Inhalt gegen Java 26.3, benötigte Mods, Grundstück-Schnellwahl, Ensemble-Werte; nur abgeleitet, keine neue Speicherform.
+- [x] LIB-07-S02: Prüfstand je Gebäude und Generator: Spielprüfstand schreibt pruefstand.ts mit Inhalts-Hash; Lauf 07.11.2026 Paper 26.3 Build 244, 559 Pläne ohne Abweichung. Geänderte Gebäude zeigen „Neu prüfen“.
+- [x] LIB-07-S03: Karten, Detailseite, Vergleich, Generator- und Ensemblekarten mit denselben Werten; Filter Grundstück, Survival-Aufwand, Mods, Profil, nur im Spiel geprüft, Sortierung nach Aufwand, alles in der Adresse.
+- [x] LIB-07-S04: Einheitliche Ansichten außen, innen (Schnitt in Augenhöhe über dem Hauptboden), oben auf Detailseite, im Vergleich und wählbar auf den Karten.
+- [x] LIB-07-S05: Baustil-Paletten: 8 mitgelieferte, eigene als Vorlage (Art palette, Verlauf, Sicherung); anwendbar auf einer Gebäudeseite oder auf Merkliste, Vergleich und Sammlung; Ergebnis Materialvarianten.
+- [ ] LIB-07-S06: Abnahme durch Philipp (Testfall BIB-02).
+
+**Abnahme:** Jede Gebäude-, Generator- und Ensemblekarte zeigt Grundfläche, Höhe, Material, Survival-Aufwand, Profil und Prüfstand; „Im Spiel geprüft“ nur für genau den Inhalt, der im echten Server unverändert blieb. Filter Grundstück, Survival-Aufwand, Mods und „nur im Spiel geprüft“ grenzen korrekt ein und stehen in der Adresse. Eine Palette macht aus mehreren Gebäuden Materialvarianten im selben Stil, Form und Ausrichtung jedes Blocks unverändert; eigene Paletten überstehen Sicherung und Wiederherstellung.
+
+**Nächste Aktion:** Abnahme durch Philipp (S06, BIB-02).
+
+**Nur Philipp:** Im Planer abnehmen: Bibliothek vergleichen, filtern und eine Baustil-Palette anwenden (BIB-02).
+
+**Prüfstand:** npm run check und Browsertests grün; Abnahme durch Philipp offen.
+
+**Nachweise:** [tests/unit/catalog/compare.test.mjs](../tests/unit/catalog/compare.test.mjs) — Aufwandsformel, Grundstücke, Prüfstand-Abgleich über den Inhalts-Hash, Katalogabfrage, Ensemble-Rechteck, Adresse, Schnitthöhe, Paletten und Vorlage.; [tests/e2e/library-compare.e2e.mjs](../tests/e2e/library-compare.e2e.mjs) — Chromium 1400/390 px: Karten, Filter, Innenansicht, Detail, Vergleich, Generatoren, Ensembles, eigene Palette auf Merkliste.; [docs/architecture/bibliothek/CATALOG.md](architecture/bibliothek/CATALOG.md) — Abschnitt LIB-07: Werte, Formeln, Prüfstand, Filter, Ansichten, Paletten.
+
+**Dateiumfang:** `packages/domain/src/catalog/compare.ts`, `packages/domain/src/catalog/pruefstand.ts`, `packages/domain/src/catalog/stylePalettes.ts`, `packages/domain/src/catalog/catalog.ts`, `packages/domain/src/catalog/collections.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/LibraryView.tsx`, `apps/web/src/views/library/`, `apps/web/src/thumbnail/`, `apps/web/src/app/router.ts`, `apps/web/src/styles/catalog.css`, `apps/web/src/testing/`, `scripts/mod/game_placement.mjs`, `scripts/mod/test_game_placement.sh`, `tests/unit/catalog/compare.test.mjs`, `tests/e2e/library-compare.e2e.mjs`, `tests/e2e/planer-abnahmen.e2e.mjs`, `docs/`. **Abhängigkeiten:** LIB-04, LIB-05, BLOCK-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

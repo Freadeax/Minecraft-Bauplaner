@@ -22,7 +22,7 @@ const stateString = s => s.id + (Object.keys(s.properties ?? {}).length
 export const SETS = {
   async *catalog() {
     const { BUILDING_SPECS } = await import('../../dist/domain/src/index.js');
-    for (const s of BUILDING_SPECS) yield { name: `Gebäude ${s.id}`, payload: s.payload() };
+    for (const s of BUILDING_SPECS) yield { name: `Gebäude ${s.id}`, payload: s.payload(), ref: { building: s.id } };
   },
   async *generators() {
     const { GENERATORS, runGenerator, presetValues, defaultsOf, rollParams, STYLES } = await import('../../dist/domain/src/index.js');
@@ -37,7 +37,7 @@ export const SETS = {
         const sig = `${payload.cells.length}:${JSON.stringify(payload.bounds)}:${payload.palette.length}`;
         if (seen.has(sig)) continue; // same output as an earlier case (e.g. a style the generator ignores)
         seen.add(sig);
-        yield { name: `Generator ${g.id} ${label}`, payload };
+        yield { name: `Generator ${g.id} ${label}`, payload, ref: { generator: g.id } };
       }
     }
   },
@@ -126,21 +126,69 @@ export function classify(d) {
   return { kind: 'connects', note: `${want.id}: ${changed.map(k => `${k} ${want.props[k]}→${got.props[k]}`).join(', ')}` };
 }
 
+/**
+ * LIB-07: writes the Prüfstand record the library shows on every card (packages/domain/src/catalog/pruefstand.ts).
+ * Buildings are keyed by asset id with the first 16 characters of their content hash, so a changed building is
+ * shown as "neu prüfen". Sets that did not run keep their previous entries.
+ */
+export function writeRecord(file, outcome, plans) {
+  let old = { buildings: {}, generators: {} };
+  try { old = JSON.parse(readFileSync(file, 'utf8').replace(/^[\s\S]*?= /, '').replace(/;\s*$/, '')); } catch { /* first run or hand-written placeholder */ }
+  const buildings = {}, generators = {};
+  for (const [f, result] of outcome) {
+    const metaFile = join(dir, 'meta', f);
+    if (!existsSync(metaFile)) continue;
+    const meta = JSON.parse(readFileSync(metaFile, 'utf8'));
+    if (meta.building) buildings[meta.building] = [meta.hash, result];
+    if (meta.generator) { const g = generators[meta.generator] ??= { cases: 0, ok: 0 }; g.cases++; if (result !== 'abweichung') g.ok++; }
+  }
+  const record = {
+    format: 'bauplaner/pruefstand-v1', checkedAt: new Date().toISOString().slice(0, 10),
+    server: process.env.BAUPLANER_PAPER_BUILD ? `Paper ${process.env.BAUPLANER_PAPER_BUILD}` : 'Paper',
+    plans,
+    buildings: Object.keys(buildings).length ? buildings : old.buildings,
+    generators: Object.keys(generators).length ? generators : old.generators,
+  };
+  const sorted = o => Object.fromEntries(Object.entries(o).sort(([a], [b]) => a < b ? -1 : 1));
+  writeFileSync(file, [
+    '// Erzeugt von scripts/mod/test_game_placement.sh (BAUPLANER_PRUEFSTAND_OUT), nicht von Hand ändern.',
+    "import type { PruefstandRecord } from './compare.js';",
+    '',
+    'export const PRUEFSTAND: PruefstandRecord = {',
+    `  format: '${record.format}', checkedAt: '${record.checkedAt}', server: ${JSON.stringify(record.server)}, plans: ${record.plans},`,
+    '  buildings: {',
+    ...Object.entries(sorted(record.buildings)).map(([id, v]) => `    ${JSON.stringify(id)}: ${JSON.stringify(v)},`),
+    '  },',
+    '  generators: {',
+    ...Object.entries(sorted(record.generators)).map(([id, v]) => `    ${JSON.stringify(id)}: ${JSON.stringify(v)},`),
+    '  },',
+    '};',
+    ''].join('\n'));
+  console.log(`Prüfstand festgehalten: ${Object.keys(record.buildings).length} Gebäude, ${Object.keys(record.generators).length} Generatoren → ${file}`);
+}
+
 if (!main) {
   // imported as a module (SETS, jobText, classify)
 } else if (mode === 'prepare') {
   rmSync(join(dir, 'parts'), { recursive: true, force: true });
   mkdirSync(join(dir, 'jobs'), { recursive: true });
   mkdirSync(join(dir, 'parts'), { recursive: true });
+  rmSync(join(dir, 'meta'), { recursive: true, force: true });
+  mkdirSync(join(dir, 'meta'), { recursive: true });
+  const { payloadHash } = await import('../../dist/domain/src/index.js');
+  const { createPayload } = await import('../../dist/voxel/src/index.js');
   const sets = !wanted.length ? ['catalog', 'generators'] : wanted.includes('alle') ? Object.keys(SETS) : wanted;
   let n = 0, blocks = 0;
   for (const set of sets) {
     if (!SETS[set]) throw new Error(`Unbekannter Satz ${set} (${Object.keys(SETS).join(', ')})`);
-    for await (const { name, payload } of SETS[set]()) {
+    for await (const { name, payload, ref } of SETS[set]()) {
       const text = jobText(name, payload);
       blocks += text.split('\n').length - 2;
       const file = String(n++).padStart(5, '0');
       writeFileSync(join(dir, 'jobs', `${file}.txt`), text);
+      // LIB-07: which catalogue entry or generator this plan belongs to, for the Prüfstand record shown in the library.
+      if (ref?.building) writeFileSync(join(dir, 'meta', `${file}.json`), JSON.stringify({ building: ref.building, hash: (await payloadHash(createPayload(payload))).slice(0, 16) }));
+      else if (ref?.generator) writeFileSync(join(dir, 'meta', `${file}.json`), JSON.stringify({ generator: ref.generator }));
       if (payload.parts) writeFileSync(join(dir, 'parts', `${file}.json`), JSON.stringify(partsOf(payload)));
     }
   }
@@ -148,7 +196,7 @@ if (!main) {
 } else {
   const files = readdirSync(join(dir, 'results')).filter(f => f.endsWith('.json')).sort();
   const jobs = readdirSync(join(dir, 'jobs')).filter(f => f.endsWith('.txt'));
-  const counts = {}, bad = [], infos = [];
+  const counts = {}, bad = [], infos = [], outcome = new Map();
   let blocks = 0;
   for (const f of files) {
     const r = JSON.parse(readFileSync(join(dir, 'results', f), 'utf8'));
@@ -192,7 +240,9 @@ if (!main) {
     if (outside && !found.some(f => /^leaks/.test(f))) found.push(`leaks: ${outside} Zellen Flüssigkeit außerhalb des Plans (über abgeleitete Wasserzellen)`);
     if (info.length || seams) infos.push({ name: r.name, info, seams });
     if (found.length) bad.push({ name: r.name, found });
+    outcome.set(f, found.length ? 'abweichung' : info.length || seams ? 'hinweis' : 'ok');
   }
+  if (process.env.BAUPLANER_PRUEFSTAND_OUT) writeRecord(process.env.BAUPLANER_PRUEFSTAND_OUT, outcome, jobs.length);
   const lines = [`# Spielprüfung ${new Date().toISOString().slice(0, 10)}`, '',
     `${files.length} von ${jobs.length} Plänen im echten Server geprüft, ${blocks} Blöcke. Abweichungen: ${JSON.stringify(counts)}.`, ''];
   for (const b of bad) lines.push(`## ${b.name}`, '', ...b.found.slice(0, 40).map(l => `- ${l}`), b.found.length > 40 ? `- … ${b.found.length - 40} weitere` : '', '');

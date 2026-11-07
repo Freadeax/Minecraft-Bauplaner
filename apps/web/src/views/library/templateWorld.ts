@@ -16,4 +16,5 @@ export function ensembleWorld(e: Ensemble, byAsset: ReadonlyMap<string, AssetVer
 /** Thumbnail cache key: content-addressed versions plus layout make it stable across reloads. */
 export const templateThumbKey = (t: LibraryTemplate) => t.body.kind === 'ensemble'
   ? `tpl:${t.body.members.map(m => `${m.assetVersionId}@${m.transform.position.join(',')}/${m.transform.quarterTurns}${m.transform.mirrorX ? 'm' : ''}`).join(';')}`
+  : t.body.kind === 'palette' ? `tplpal:${JSON.stringify(t.body.roles)}`
   : `tplgen:${t.body.source.id}:v${t.body.source.version}:${JSON.stringify(t.body.source.params)}`;

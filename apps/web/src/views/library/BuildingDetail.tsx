@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { Cell } from '../../../../../packages/voxel/src/index.js';
-import { facetLabel, isContributionId, SIZE_CLASS_LABEL, STAGE_HINT, STAGE_LABEL } from '../../../../../packages/domain/src/index.js';
+import { compareFacts, facetLabel, isContributionId, SIZE_CLASS_LABEL, STAGE_HINT, STAGE_LABEL } from '../../../../../packages/domain/src/index.js';
+import { StandardViews } from '../../thumbnail/StandardViews';
 import type { Asset, AssetVersion, BuildingFacets, BuildingInfo, CatalogEntry, Ensemble, Project, Similar, Suggestion } from '../../../../../packages/domain/src/index.js';
 import { formatNumber } from '../../app/ui';
 import { DIM_MARK, HIT_MARK } from '../../viewer/marks';
@@ -59,6 +60,7 @@ export function BuildingDetail({ entry, asset, latest, versions, info, group, va
   collections?: ReactNode;
 }) {
   const m = entry.metrics;
+  const facts = compareFacts(entry);
   const [target, setTarget] = useState(project?.id ?? projects[0]?.id ?? '');
   const targetId = projects.some(p => p.id === target) ? target : project?.id ?? projects[0]?.id ?? '';
   const [connectorMarks, setConnectorMarksState] = useState<Highlight>(null);
@@ -102,8 +104,12 @@ export function BuildingDetail({ entry, asset, latest, versions, info, group, va
           <div title={m.buildTime.assumptions}><dt>Bauzeit</dt><dd>≈ {m.buildTime.minutes} min</dd><small>Schätzung</small></div>
           <div><dt>Material</dt><dd>{m.items.shulkerBoxes} Shulker</dd><small>{formatNumber(m.items.total)} Items · {m.items.lines} Sorten</small></div>
           <div><dt>Schlafplätze</dt><dd>{m.beds}</dd><small>{m.lightSources} Lichtquellen</small></div>
+          <div title={facts.effort.formula}><dt>Survival-Aufwand</dt><dd className={`effort effort-${facts.effort.level}`}>{facts.effort.label}</dd><small>{facts.effort.factors.map(f => f.label).join(' · ') || 'wenig Material, frühe Blöcke'}</small></div>
+          <div title={facts.profileFit.detail}><dt>Minecraft</dt><dd>{facts.profile}</dd><small>{facts.mods.length ? `braucht ${facts.mods.join(', ')}` : 'keine Mods nötig'}</small></div>
+          <div title={facts.check.detail}><dt>Prüfstand</dt><dd className={`check-${facts.check.state}`}>{facts.check.state === 'spiel' || facts.check.state === 'hinweis' ? 'Im Spiel ✓' : facts.check.label}</dd><small>{facts.plot ? `passt auf ${facts.plot.label}` : 'größer als 64 × 64'}</small></div>
         </dl>
         <MaterialBar entry={entry} />
+        <StandardViews cacheKey={latest.id} payload={() => latest.payload} name={asset.name} width={160} height={110} />
         <GeneratedInfo version={latest} />
         {group.length > 1 && <div className="variant-row" role="group" aria-label="Varianten">
           <span className="filter-label">{info?.family?.label ?? asset.name}: {group.length} Varianten · <a href={libHref('building', asset.id, 'versionen')}

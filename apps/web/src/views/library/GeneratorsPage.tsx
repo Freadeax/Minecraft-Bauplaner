@@ -1,6 +1,7 @@
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { addGeneratedVersion, analyzeVersion, applyOperation, checkReproducible, createGeneratedAsset, defaultsOf, describeParams, generatorById, generatorSourceOf, newInstance, presetValues, resolveProject,
-  rollParams, runGenerator, compoundById, createCompoundProject, COMPOUNDS, GENERATORS, editTemplate, templateFromGenerator } from '../../../../../packages/domain/src/index.js';
+  rollParams, runGenerator, compoundById, createCompoundProject, COMPOUNDS, GENERATORS, editTemplate, templateFromGenerator, generatorCheck, profileFit, survivalEffort } from '../../../../../packages/domain/src/index.js';
+import type { BuildingMetrics } from '../../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersion, CompoundBuild, GeneratorRun, LibraryTemplate, ParamValue, ParamValues, Project, ReproCheck, Resolution } from '../../../../../packages/domain/src/index.js';
 import type { UserLibrary } from './userLibrary';
 import { useApp } from '../../app/context';
@@ -30,6 +31,15 @@ export function parseGeneratorRoute(id: string | undefined): { generatorId?: str
  * asset being edited), so catalogue, editor, materials and export use it as
  * any other part.
  */
+const metricCache = new Map<string, BuildingMetrics>();
+/** Kennwerte des Standardlaufs eines Generators, je Algorithmusversion einmal berechnet (LIB-07). */
+function defaultMetrics(id: string, version: number, run: GeneratorRun): BuildingMetrics {
+  const key = `${id}:v${version}`;
+  let m = metricCache.get(key);
+  if (!m) { m = analyzeVersion({ id: key, payload: run.payload, connectors: run.connectors }); metricCache.set(key, m); }
+  return m;
+}
+
 export function GeneratorsPage({ id, projects, libHref, onSaved, userLib, onMessage }: {
   id: string | undefined;
   projects: readonly Project[];
@@ -48,10 +58,20 @@ export function GeneratorsPage({ id, projects, libHref, onSaved, userLib, onMess
     <p className="muted section-lead">Bauwerke nach Maß: Maße, Stil und Details wählen, Vorschau sofort sehen und als eigenes Bauteil speichern. Gleiche Werte ergeben immer dasselbe Bauwerk; die Werte werden mit der Version gespeichert.</p>
     <ul className="card-grid-auto gen-cards">{GENERATORS.map(g => {
       const run = runGenerator(g.id);
+      const m = defaultMetrics(g.id, g.version, run), check = generatorCheck(g.id), effort = survivalEffort(m);
       return <li key={g.id}><article className="ecard gen-card">
         <a href={libHref('generators', g.id)} className="gen-card-open" aria-label={`Generator ${g.name} öffnen`}>
           <Thumb cacheKey={`gen:${g.id}:v${g.version}`} payload={() => run.payload} alt={`Vorschau ${g.name}`} width={360} height={220} />
-          <div className="bcard-body"><strong>{g.name}</strong><span className="ecard-text">{g.description}</span></div></a>
+          <div className="bcard-body"><strong>{g.name}</strong><span className="ecard-text">{g.description}</span>
+            <dl className="bcard-facts" aria-label="Vergleichswerte mit Standardwerten">
+              <div title="Grundfläche Breite × Tiefe mit Standardwerten; Maße sind einstellbar"><dt>Grundfläche</dt><dd>{m.size[0]}×{m.size[2]}</dd></div>
+              <div><dt>Höhe</dt><dd>{m.size[1]}</dd></div>
+              <div><dt>Material</dt><dd>{formatNumber(m.items.total)} Items</dd></div>
+              <div title={effort.formula}><dt>Survival</dt><dd className={`effort effort-${effort.level}`}>{effort.label}</dd></div>
+            </dl>
+            <span className="bcard-badges"><span className="badge profile" title={profileFit(run.payload).detail}>{profileFit(run.payload).label}</span>
+              {check ? <span className={`badge check check-${check.ok === check.cases ? 'spiel' : 'abweichung'}`} title={check.detail}>{check.ok === check.cases ? '✓ ' : '! '}{check.label}</span>
+                : <span className="badge check check-offen">Nicht geprüft</span>}</span></div></a>
         <div className="gen-presets" aria-label={`Vorlagen ${g.name}`}>{g.presets.map(p => <a key={p.id} className="chip-link" href={libHref('generators', `${g.id}~${p.id}`)}>{p.label}</a>)}
           {userLib?.templates.filter(t => !t.archived && t.body.kind === 'generator' && t.body.source.id === g.id).map(t => <a key={t.id} className="chip-link own-template" href={libHref('generators', `${g.id}!${t.id}`)} title="Eigene Vorlage">★ {t.name}</a>)}</div>
       </article></li>;
@@ -149,6 +169,8 @@ function GeneratorWorkbench({ generatorId, presetId, assetId, projects, libHref,
           <div><dt>Blöcke</dt><dd>{formatNumber(metrics.blocks)}</dd><small>{metrics.distinctBlocks} Blocktypen</small></div>
           <div title={metrics.buildTime.assumptions}><dt>Bauzeit</dt><dd>≈ {metrics.buildTime.minutes} min</dd><small>{stars(metrics.difficulty.level)}</small></div>
           <div><dt>Material</dt><dd>{metrics.items.shulkerBoxes} Shulker</dd><small>{formatNumber(metrics.items.total)} Items{metrics.items.complete ? '' : ' · unvollständig'}</small></div>
+          <div title={survivalEffort(metrics).formula}><dt>Survival-Aufwand</dt><dd className={`effort effort-${survivalEffort(metrics).level}`}>{survivalEffort(metrics).label}</dd><small>{run ? profileFit(run.payload).label : ''}</small></div>
+          {generatorCheck(generator.id) && <div title={generatorCheck(generator.id)!.detail}><dt>Prüfstand</dt><dd className={generatorCheck(generator.id)!.ok === generatorCheck(generator.id)!.cases ? 'check-spiel' : 'check-abweichung'}>{generatorCheck(generator.id)!.cases} Fälle</dd><small>im echten Spiel geprüft</small></div>}
         </dl>}
         {run && run.notes.length > 0 && <ul className="gen-notes">{run.notes.map((n, i) => <li key={i}>{n}</li>)}</ul>}
         {run && run.issues.length > 0 && <ul className="gen-issues" role="status">{run.issues.map((n, i) => <li key={i}>{n.message}</li>)}</ul>}

@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import type { ReactNode } from 'react';
 import { countBlocks } from '../../../../../packages/voxel/src/index.js';
-import { createEnsembleProject, missingMembers, resolveProject, ENSEMBLES } from '../../../../../packages/domain/src/index.js';
-import type { AssetVersion, Ensemble } from '../../../../../packages/domain/src/index.js';
+import { createEnsembleProject, groupFacts, missingMembers, profileLabel, resolveProject, ENSEMBLES } from '../../../../../packages/domain/src/index.js';
+import type { AssetVersion, CatalogEntry, Ensemble, GroupFacts } from '../../../../../packages/domain/src/index.js';
 import { formatNumber } from '../../app/ui';
 import { Viewer } from '../../Viewer';
 import { Thumb } from '../../thumbnail/Thumb';
@@ -19,8 +19,25 @@ function ensembleWorld(ensemble: Ensemble, byAsset: ReadonlyMap<string, AssetVer
  * Ensembles: shipped buildings as a ready layout. Overview as cards with a
  * preview of the whole layout, detail with the 3D view and "Als Projekt anlegen".
  */
-export function EnsemblesPage({ id, byAsset, names, versions, libHref, onCreate, onSaveTemplate, collections }: {
+/** Vergleichswerte einer Gruppe wie auf jeder Gebäudekarte (LIB-07). */
+export function GroupFactsView({ facts }: { facts: GroupFacts }) {
+  return <>
+    <dl className="bcard-facts" aria-label="Vergleichswerte">
+      <div title="Umfassendes Rechteck der Aufstellung, Breite × Tiefe"><dt>Grundfläche</dt><dd>{facts.size[0]}×{facts.size[2]}</dd></div>
+      <div><dt>Höhe</dt><dd>{facts.size[1]}</dd></div>
+      <div title={`Summe aller Gebäude, ${facts.shulkerBoxes} Shulkerkisten`}><dt>Material</dt><dd>{formatNumber(facts.items)} Items</dd></div>
+      <div title={facts.effort.formula}><dt>Survival</dt><dd className={`effort effort-${facts.effort.level}`}>{facts.effort.label}</dd></div>
+    </dl>
+    <span className="bcard-badges">
+      <span className="badge profile" title={facts.mods.length ? `braucht ${facts.mods.join(', ')}` : 'nur Vanilla-Blöcke'}>{facts.profiles.map(profileLabel).join(', ')}{facts.mods.length ? ` + ${facts.mods.length} Mods` : ''}</span>
+      <span className={`badge check check-${facts.checked === facts.members ? 'spiel' : facts.checked ? 'neu' : 'offen'}`} title="Gebäude, deren genauer Stand auf dem Spielprüfstand im echten Server unverändert blieb">{facts.checked === facts.members ? `✓ alle ${facts.members} im Spiel geprüft` : `${facts.checked} von ${facts.members} im Spiel geprüft`}</span>
+    </span></>;
+}
+
+export function EnsemblesPage({ id, byAsset, names, versions, libHref, onCreate, onSaveTemplate, collections, entryOf }: {
   id: string | undefined;
+  /** Katalogeintrag eines Gebäudes, für die Vergleichswerte der Gruppe. */
+  entryOf?(assetId: string): CatalogEntry | undefined;
   byAsset: ReadonlyMap<string, AssetVersion>;
   names: ReadonlyMap<string, string>;
   versions: ReadonlyMap<string, AssetVersion>;
@@ -41,7 +58,8 @@ export function EnsemblesPage({ id, byAsset, names, versions, libHref, onCreate,
       <Thumb cacheKey={`ens:${e.id}:${e.members.map(mb => byAsset.get(mb.assetId)?.id ?? '-').join(',')}`}
         payload={() => ensembleWorld(e, byAsset, names, versions)?.world ?? null} alt={`Vorschau ${e.name}`} width={360} height={220} />
       <div className="bcard-body"><strong>{e.name}</strong><span className="bcard-kicker">{e.members.length} Gebäude · {e.tags.join(' · ')}</span>
-        <span className="ecard-text">{e.description}</span></div></a></li>)}</ul>
+        <span className="ecard-text">{e.description}</span>
+        {(() => { const f = entryOf && groupFacts(e.members, entryOf); return f ? <GroupFactsView facts={f} /> : null; })()}</div></a></li>)}</ul>
   </section>;
 
   const missing = missingMembers(ensemble, byAsset);
@@ -55,6 +73,7 @@ export function EnsemblesPage({ id, byAsset, names, versions, libHref, onCreate,
       <div className="detail-summary ensemble-sheet">
         <span className="panel-kicker">ENSEMBLE</span><h2 className="detail-title">{ensemble.name}</h2>
         <p className="detail-lead">{ensemble.description}</p>
+        {(() => { const f = entryOf && groupFacts(ensemble.members, entryOf); return f ? <GroupFactsView facts={f} /> : null; })()}
         {world && <dl className="stat-tiles">
           <div><dt>Fläche</dt><dd>{world.world ? size(world.world.bounds) : '–'}</dd></div>
           <div><dt>Blöcke</dt><dd>{world.world ? formatNumber(countBlocks(world.world).blocks) : '–'}</dd></div>

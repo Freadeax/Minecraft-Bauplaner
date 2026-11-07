@@ -105,3 +105,40 @@ export function shotFileName(name: string, view: ShotView, cutY?: number): strin
   const base = name.toLowerCase().replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'bauwerk';
   return `${base}-${view}${cutY === undefined ? '' : `-schnitt-y${cutY}`}.png`;
 }
+
+/**
+ * Einheitliche Ansichten (LIB-07): jede Karte, jede Detailseite und der Vergleich zeigen
+ * dieselben drei Bilder in derselben Kamera, damit Bauwerke direkt vergleichbar sind.
+ * "Innen" ist ein Schnitt in Augenhöhe über dem Hauptboden (interiorCutY), aus Südosten.
+ */
+export type StandardView = 'aussen' | 'innen' | 'oben';
+export const STANDARD_VIEWS: readonly { readonly id: StandardView; readonly label: string; readonly title: string; readonly view: ShotView }[] = [
+  { id: 'aussen', label: 'Außen', title: 'Außen: isometrisch von Südosten', view: 'so' },
+  { id: 'innen', label: 'Innen', title: 'Innen: Schnitt in Augenhöhe über dem Hauptboden, von Südosten', view: 'so' },
+  { id: 'oben', label: 'Oben', title: 'Oben: Draufsicht, Norden oben', view: 'oben' },
+];
+
+/**
+ * Schnitthöhe für die Innenansicht: der unterste Boden, der mindestens 40 % der bebauten
+ * Spalten deckt (Fundament oder Erdgeschossboden), plus zwei Blöcke Augenhöhe. Ohne solchen
+ * Boden (Turm, Statue, Weg) oder bei einem Bau von höchstens drei Schichten gibt es keinen
+ * sinnvollen Schnitt: undefined, die Innenansicht zeigt dann den ganzen Bau.
+ */
+export function interiorCutY(blocks: readonly Pick<ShotBlock, 'x' | 'y' | 'z'>[]): number | undefined {
+  if (!blocks.length) return undefined;
+  const columns = new Set<string>(), perLayer = new Map<number, Set<string>>();
+  let minY = Infinity, maxY = -Infinity;
+  for (const b of blocks) {
+    const col = `${b.x},${b.z}`;
+    columns.add(col);
+    let layer = perLayer.get(b.y);
+    if (!layer) { layer = new Set(); perLayer.set(b.y, layer); }
+    layer.add(col);
+    if (b.y < minY) minY = b.y; if (b.y > maxY) maxY = b.y;
+  }
+  if (maxY - minY < 3) return undefined;
+  for (let y = minY; y <= maxY - 3; y++) {
+    if ((perLayer.get(y)?.size ?? 0) >= columns.size * 0.4) return Math.min(maxY - 1, y + 2);
+  }
+  return undefined;
+}

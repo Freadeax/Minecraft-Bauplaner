@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T19:38:18.474Z",
+  "updatedAt": "2026-11-07T19:33:20.416Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -44,6 +44,7 @@
     "OPS-04",
     "DOC-02",
     "BACKUP-03",
+    "LIB-07",
     "PRIV-01"
   ],
   "policy": {
@@ -7397,6 +7398,111 @@
       "orphans": []
     },
     {
+      "id": "LIB-07",
+      "title": "Bibliothek vergleichbar und filterbar: gleiche Vergleichswerte auf jeder Karte (Grundfläche, Höhe, Material, Survival-Aufwand, Minecraft-Profil, Prüfstand), Filter Grundstück/Aufwand/Mods/geprüft, einheitliche Ansichten außen/innen/oben, wiederverwendbare Baustil-Paletten",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Arbeitsstrang „Bibliothek vergleichbar und filterbar machen“",
+      "dependencies": [
+        "LIB-04",
+        "LIB-05",
+        "BLOCK-02"
+      ],
+      "scope": [
+        "packages/domain/src/catalog/compare.ts",
+        "packages/domain/src/catalog/pruefstand.ts",
+        "packages/domain/src/catalog/stylePalettes.ts",
+        "packages/domain/src/catalog/catalog.ts",
+        "packages/domain/src/catalog/collections.ts",
+        "packages/domain/src/index.ts",
+        "apps/web/src/views/LibraryView.tsx",
+        "apps/web/src/views/library/",
+        "apps/web/src/thumbnail/",
+        "apps/web/src/app/router.ts",
+        "apps/web/src/styles/catalog.css",
+        "apps/web/src/testing/",
+        "scripts/mod/game_placement.mjs",
+        "scripts/mod/test_game_placement.sh",
+        "tests/unit/catalog/compare.test.mjs",
+        "tests/e2e/library-compare.e2e.mjs",
+        "tests/e2e/planer-abnahmen.e2e.mjs",
+        "docs/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "LIB-07-S01",
+          "title": "Vergleichswerte im Kern (compare.ts): Survival-Aufwand mit offener Formel, Profil nach Inhalt gegen Java 26.3, benötigte Mods, Grundstück-Schnellwahl, Ensemble-Werte; nur abgeleitet, keine neue Speicherform.",
+          "done": true
+        },
+        {
+          "id": "LIB-07-S02",
+          "title": "Prüfstand je Gebäude und Generator: Spielprüfstand schreibt pruefstand.ts mit Inhalts-Hash; Lauf 07.11.2026 Paper 26.3 Build 244, 559 Pläne ohne Abweichung. Geänderte Gebäude zeigen „Neu prüfen“.",
+          "done": true
+        },
+        {
+          "id": "LIB-07-S03",
+          "title": "Karten, Detailseite, Vergleich, Generator- und Ensemblekarten mit denselben Werten; Filter Grundstück, Survival-Aufwand, Mods, Profil, nur im Spiel geprüft, Sortierung nach Aufwand, alles in der Adresse.",
+          "done": true
+        },
+        {
+          "id": "LIB-07-S04",
+          "title": "Einheitliche Ansichten außen, innen (Schnitt in Augenhöhe über dem Hauptboden), oben auf Detailseite, im Vergleich und wählbar auf den Karten.",
+          "done": true
+        },
+        {
+          "id": "LIB-07-S05",
+          "title": "Baustil-Paletten: 8 mitgelieferte, eigene als Vorlage (Art palette, Verlauf, Sicherung); anwendbar auf einer Gebäudeseite oder auf Merkliste, Vergleich und Sammlung; Ergebnis Materialvarianten.",
+          "done": true
+        },
+        {
+          "id": "LIB-07-S06",
+          "title": "Abnahme durch Philipp (Testfall BIB-02).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Jede Gebäude-, Generator- und Ensemblekarte zeigt Grundfläche, Höhe, Material, Survival-Aufwand, Profil und Prüfstand; „Im Spiel geprüft“ nur für genau den Inhalt, der im echten Server unverändert blieb.",
+        "Filter Grundstück, Survival-Aufwand, Mods und „nur im Spiel geprüft“ grenzen korrekt ein und stehen in der Adresse.",
+        "Eine Palette macht aus mehreren Gebäuden Materialvarianten im selben Stil, Form und Ausrichtung jedes Blocks unverändert; eigene Paletten überstehen Sicherung und Wiederherstellung."
+      ],
+      "next": "Abnahme durch Philipp (S06, BIB-02).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/unit/catalog/compare.test.mjs",
+          "note": "Aufwandsformel, Grundstücke, Prüfstand-Abgleich über den Inhalts-Hash, Katalogabfrage, Ensemble-Rechteck, Adresse, Schnitthöhe, Paletten und Vorlage."
+        },
+        {
+          "path": "tests/e2e/library-compare.e2e.mjs",
+          "note": "Chromium 1400/390 px: Karten, Filter, Innenansicht, Detail, Vergleich, Generatoren, Ensembles, eigene Palette auf Merkliste."
+        },
+        {
+          "path": "docs/architecture/bibliothek/CATALOG.md",
+          "note": "Abschnitt LIB-07: Werte, Formeln, Prüfstand, Filter, Ansichten, Paletten."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "npm run check und Browsertests grün; Abnahme durch Philipp offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-07T19:33:20.416Z",
+      "area": "BIBLIOTHEK",
+      "thread": "Bibliothek vergleichbar und filterbar machen",
+      "philipp": [
+        {
+          "kind": "planer",
+          "text": "Bibliothek vergleichen, filtern und eine Baustil-Palette anwenden (BIB-02)."
+        }
+      ],
+      "orphans": []
+    },
+    {
       "id": "BASE-01",
       "title": "Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen",
       "phase": "P3",
@@ -14697,6 +14803,59 @@
           "done": 2,
           "total": 3,
           "next": "Team-Raum ausrollen (wrangler deploy mit Migration v3 RoomGate), danach Missbrauchsprobe, Rauchtest und Sicherungsprobe gegen den echten Dienst."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T19:33:20.416Z",
+      "kind": "progress",
+      "items": [
+        "LIB-07"
+      ],
+      "summary": "Bibliothek vergleichbar und filterbar: jede Gebäude-, Generator- und Ensemblekarte zeigt Grundfläche, Höhe, Material, Survival-Aufwand, Minecraft-Profil und Prüfstand (Ergebnis je Gebäude aus dem Paper-26.3-Lauf, 559 Pläne ohne Abweichung, geänderte Inhalte = neu prüfen); Filter Grundstück, Survival-Aufwand, benötigte Mods, nur geprüft; einheitliche Ansichten außen/innen/oben; 8 Baustil-Paletten plus eigene, auf Merkliste/Sammlungen anwendbar. Prüfung: npm run check, 235 Browsertests, library-compare 4/4. Offen: Abnahme durch Philipp (BIB-02).",
+      "files": [
+        "apps/web/src/app/router.ts",
+        "apps/web/src/styles/catalog.css",
+        "apps/web/src/testing/autochecks.ts",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/thumbnail/StandardViews.tsx",
+        "apps/web/src/thumbnail/views.ts",
+        "apps/web/src/views/LibraryView.tsx",
+        "apps/web/src/views/library/BuildingCard.tsx",
+        "apps/web/src/views/library/BuildingDetail.tsx",
+        "apps/web/src/views/library/CatalogFilters.tsx",
+        "apps/web/src/views/library/CollectionsPage.tsx",
+        "apps/web/src/views/library/ComparePage.tsx",
+        "apps/web/src/views/library/EnsemblesPage.tsx",
+        "apps/web/src/views/library/GeneratorsPage.tsx",
+        "apps/web/src/views/library/PalettesPage.tsx",
+        "apps/web/src/views/library/TemplatesPage.tsx",
+        "apps/web/src/views/library/VersionsSection.tsx",
+        "apps/web/src/views/library/paletteVariants.ts",
+        "apps/web/src/views/library/templateWorld.ts",
+        "apps/web/src/views/library/urlState.ts",
+        "docs/TESTING.md",
+        "docs/architecture/bibliothek/CATALOG.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/catalog/catalog.ts",
+        "packages/domain/src/catalog/collections.ts",
+        "packages/domain/src/catalog/compare.ts",
+        "packages/domain/src/catalog/pruefstand.ts",
+        "packages/domain/src/catalog/stylePalettes.ts",
+        "packages/domain/src/index.ts",
+        "scripts/mod/game_placement.mjs",
+        "scripts/mod/test_game_placement.sh",
+        "tests/e2e/library-compare.e2e.mjs",
+        "tests/e2e/planer-abnahmen.e2e.mjs",
+        "tests/unit/catalog/compare.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "LIB-07",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp (S06, BIB-02)."
         }
       ]
     }

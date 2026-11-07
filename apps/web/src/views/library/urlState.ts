@@ -20,6 +20,11 @@ export interface UrlFilters {
   readonly withConnectors?: boolean;
   readonly withBeds?: boolean;
   readonly includeArchived?: boolean;
+  /** LIB-07: mods the player has (namespaces), Minecraft profiles, highest Survival-Aufwand, only game-checked. */
+  readonly mods?: readonly string[];
+  readonly profiles?: readonly string[];
+  readonly effortMax?: number;
+  readonly gameChecked?: boolean;
 }
 export interface LibraryUrlState {
   readonly query: string;
@@ -33,8 +38,8 @@ export interface LibraryUrlState {
   readonly collection?: string;
 }
 
-const FLAGS = [['onlyComplete', 'vollstaendig'], ['vanillaOnly', 'vanilla'], ['withConnectors', 'anschluesse'], ['withBeds', 'bett'], ['includeArchived', 'archiv']] as const;
-const LISTS = [['tags', 'tag'], ['sizeClasses', 'groesse'], ['blockClasses', 'umfang']] as const;
+const FLAGS = [['onlyComplete', 'vollstaendig'], ['vanillaOnly', 'vanilla'], ['withConnectors', 'anschluesse'], ['withBeds', 'bett'], ['includeArchived', 'archiv'], ['gameChecked', 'geprueft']] as const;
+const LISTS = [['tags', 'tag'], ['sizeClasses', 'groesse'], ['blockClasses', 'umfang'], ['mods', 'mods'], ['profiles', 'profil']] as const;
 const list = (v: string | null) => (v ?? '').split(',').map(s => s.trim()).filter(Boolean);
 const int = (v: string | null, min: number, max: number) => {
   if (v === null || !/^\d+$/.test(v)) return undefined;
@@ -50,6 +55,7 @@ export function encodeLibraryState(s: LibraryUrlState, facetKeys: readonly strin
   if (s.filters.difficultyMax !== undefined) p.set('schwierigkeit', String(s.filters.difficultyMax));
   if (s.filters.stageMax) p.set('phase', s.filters.stageMax);
   if (s.filters.maxBuildMinutes !== undefined) p.set('zeit', String(s.filters.maxBuildMinutes));
+  if (s.filters.effortMax !== undefined) p.set('aufwand', String(s.filters.effortMax));
   if (s.filters.plot) p.set('platz', [s.filters.plot.width, s.filters.plot.depth, ...(s.filters.plot.height !== undefined ? [s.filters.plot.height] : [])].join('x'));
   if (s.filters.plot && !s.filters.plot.allowRotation) p.set('drehen', '0');
   if (s.filters.origin && s.filters.origin !== 'alle') p.set('herkunft', s.filters.origin);
@@ -73,6 +79,7 @@ export function decodeLibraryState(search: string, facetKeys: readonly string[],
   const difficulty = int(p.get('schwierigkeit'), 1, 5); if (difficulty !== undefined) filters.difficultyMax = difficulty;
   const stage = p.get('phase'); if (stage && options.stages.includes(stage)) filters.stageMax = stage;
   const minutes = int(p.get('zeit'), 1, 100000); if (minutes !== undefined) filters.maxBuildMinutes = minutes;
+  const effort = int(p.get('aufwand'), 1, 5); if (effort !== undefined) filters.effortMax = effort;
   const plot = (p.get('platz') ?? '').split('x').map(v => int(v, 1, 100000));
   if (plot.length >= 2 && plot.length <= 3 && plot.every(v => v !== undefined)) filters.plot = { width: plot[0]!, depth: plot[1]!, ...(plot[2] !== undefined && { height: plot[2] }), allowRotation: p.get('drehen') !== '0' };
   const origin = p.get('herkunft'); if (origin === 'beispiele' || origin === 'eigene') filters.origin = origin;

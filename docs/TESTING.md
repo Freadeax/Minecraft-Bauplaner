@@ -35,7 +35,7 @@ Diese Läufe starten echte Minecraft-Clients oder Paper-Server (kopflos) und sin
 | Prüfung | Ergebnis |
 |---|---|
 | `npm run check` | grün |
-| Browsertests Chromium | 212/212 grün (91 Dateien; `team-room.e2e` danach 10 Läufe hintereinander grün, `offline.e2e` 6/6) |
+| Browsertests Chromium | 235/235 grün (96 Dateien, Stand LIB-07; `planer-abnahmen` einzeln nachgelaufen; `team-room.e2e` danach 10 Läufe hintereinander grün, `offline.e2e` 6/6) |
 | Firefox, WebKit, iPad-/iPhone-Profile | grün für Werkstatt, Weltkarte und Grafik |
 | Platzierung im Spiel | Katalog, Generatoren und Gelände 670 Pläne, Basis 28, Großprojekte 169 + 13 auf Gelände: jeweils 0 Abweichungen |
 | Exporte im Spiel | 22/22 Fälle |
@@ -46,6 +46,7 @@ Diese Läufe starten echte Minecraft-Clients oder Paper-Server (kopflos) und sin
 | Missbrauchsschutz (HARDEN-01) | `zip-limits` und `team-room-abuse` (Node) grün; `scripts/team/team_room_abuse_smoke.mjs` gegen `wrangler dev` grün (403 fremde Seite, 404 create über Raum, 413 vor dem Parsen, 4408 nach 10 s, 4401, 4413, 429 Raumflut); Browsertests 231/231 |
 | Abnahmen Block B (17 Testfälle) | `planer-abnahmen`, `team-abnahmen` (echter Team-Raum per `wrangler dev`, 2–3 Browser), `werkstatt-abnahme`: 17/17 in Chromium, Firefox und WebKit; `scripts/library/test_contribution_live.mjs` (Beitrag bis in den Export) und `test_bridge_paper_bots.sh weltplan` (gesperrter Bauplatz, Paper 1.21.11 und 26.1.2) grün |
 | Sicherungen ohne Team-Schlüssel (BACKUP-03) | `tests/unit/data/backup-secrets.test.mjs` 9/9, `tests/e2e/team-access.e2e.mjs` grün (Chromium): Projekt- und Gesamtsicherung ohne Einladungs-, Verwaltungs- und Serverschlüssel, Team-Zugang verschlüsselt, Verwaltungsschlüssel gewechselt |
+| Bibliothek vergleichbar (LIB-07) | `tests/unit/catalog/compare.test.mjs` 9/9, `tests/e2e/library-compare.e2e.mjs` 4/4 (1400/390 px); Prüfstand-Lauf 07.11. Paper 26.3 Build 244: 559 Pläne, 878.974 Blöcke, 0 Abweichungen, Ergebnis je Gebäude in `packages/domain/src/catalog/pruefstand.ts` |
 
 **Offen** sind Prüfungen, die nur Menschen leisten können: echte Mitspieler auf einem eigenen Server, echte iPhones und iPads, Bedienung und Gestaltung. Sie stehen als Testfälle unter [`#/testphase`](https://freadeax.github.io/Minecraft-Bauplaner/#/testphase) und im [Testplan](testing/TESTPLAN.md). Welche Testfälle automatisch nachgewiesen sind, steht dort unter „Automatische Abnahmen“.
 

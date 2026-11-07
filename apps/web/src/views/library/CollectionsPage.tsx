@@ -23,7 +23,7 @@ export function ItemThumb({ r, library, byAsset, names, width = 240, height = 15
 
 export function TemplateThumb({ t, library, width = 240, height = 150 }: { t: LibraryTemplate; library: Library; width?: number; height?: number }) {
   return <Thumb cacheKey={templateThumbKey(t)} alt="" width={width} height={height}
-    payload={() => { if (t.body.kind === 'ensemble') return templateWorld(t, library.versions)?.world ?? null; try { return runGenerator(t.body.source.id, t.body.source.params).payload; } catch { return null; } }} />;
+    payload={() => { if (t.body.kind === 'ensemble') return templateWorld(t, library.versions)?.world ?? null; if (t.body.kind === 'palette') return null; try { return runGenerator(t.body.source.id, t.body.source.params).payload; } catch { return null; } }} />;
 }
 
 function TreeList({ nodes, current, href }: { nodes: readonly CollectionNode[]; current: string | undefined; href(id: string): string }) {

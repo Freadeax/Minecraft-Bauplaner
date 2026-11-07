@@ -332,10 +332,10 @@ export const AUTO_CHECKS: readonly AutoCheck[] = [
   },
   {
     caseId: 'BIB-02', scope: 'teil',
-    covers: 'Versionsvergleich mit einer im Spiel geänderten Truhe und einem geänderten Schild, mit WorldEdit zwei Blöcke weiter gespeichert: der Vergleich meldet die Verschiebung um 2 Blöcke und genau zwei Inhaltsänderungen (Inhalt, Schild), keine weiteren Abweichungen.',
-    remaining: 'Detailseite, 3D, Ebenen, Gebäudevergleich und der Versionsvergleich in der Werkstatt-Oberfläche.',
-    command: 'scripts/mod/test_exports_ingame.sh',
-    evidence: '06.11.2026, main b786572 + Block 1 (Exportprüfung), Minecraft 26.3 Fabric-Clientspieltest mit Litematica 0.29.1 und WorldEdit 7.4.6, headless (weston/Mesa): 22/22 Prüfungen bestanden',
+    covers: 'Versionsvergleich mit einer im Spiel geänderten Truhe und einem geänderten Schild, mit WorldEdit zwei Blöcke weiter gespeichert: der Vergleich meldet die Verschiebung um 2 Blöcke und genau zwei Inhaltsänderungen (Inhalt, Schild), keine weiteren Abweichungen. Dazu (LIB-07) Chromium 1400/390 px: jede Karte zeigt Grundfläche, Höhe, Material, Survival-Aufwand, Profil Java 26.3 und Prüfstand; Grundstück 16 × 16 und Aufwand filtern über die Adresse, jeder Treffer passt; Aufwand, „nur Vanilla“ und „nur im Spiel geprüft“ über die Filterleiste; Innenansicht ändert die Bilder; Detail mit Ansichten außen/innen/oben, Vergleich mit allen neuen Zeilen, Generator- und Ensemblekarten mit Prüfstand; eigene Palette speichern und auf die Merkliste anwenden, Varianten erscheinen in der Bibliothek. Einheitstests: Aufwandsformel, Grundstücke, Prüfstand-Abgleich über den Inhalts-Hash (geändert = „neu prüfen“), Ensemble-Rechteck, Schnitthöhe, Palettenrollen und exakter Tausch, Palette als Vorlage mit Verlauf.',
+    remaining: 'Detailseite, 3D, Ebenen und der Versionsvergleich in der Werkstatt-Oberfläche; ob Vergleichswerte und Baustil-Paletten beim Aussuchen helfen und gut aussehen, kann nur ein Mensch beurteilen.',
+    command: 'scripts/mod/test_exports_ingame.sh && node --test tests/unit/catalog/compare.test.mjs && node --test tests/e2e/library-compare.e2e.mjs',
+    evidence: '06.11.2026, main b786572 + Block 1 (Exportprüfung), Minecraft 26.3 Fabric-Clientspieltest mit Litematica 0.29.1 und WorldEdit 7.4.6, headless (weston/Mesa): 22/22 Prüfungen bestanden; 07.11.2026 LIB-07: Prüfstand-Lauf Paper 26.3 Build 244, 559 Pläne ohne Abweichung, Ergebnis je Gebäude in packages/domain/src/catalog/pruefstand.ts',
   },
   {
     caseId: 'DATEI-02', scope: 'teil',
