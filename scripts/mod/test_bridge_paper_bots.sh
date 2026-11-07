@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Real-player test of the storage chests and yield stores of the Paper plugin (COOP-05, COOP-08, PROD-05; Testfälle
+# Real-player test of the storage chests, yield stores and Weltplan locks of the Paper plugin (COOP-05, COOP-08, PROD-05,
+# WORLD-SHARE-01; Testfälle KARTE-12,
 # LAGER-01..05, -07, -10, -11): two mineflayer bot players on a real Paper server, the team comes from a local team room.
 # Starts `npx wrangler dev` in services/team-room unless BAUPLANER_ROOM names a running one. Needs `npm run build:core`,
 # network to fill.papermc.io, the Mojang servers and the npm registry (mineflayer, only into the work folder).
 # Server and team room come from the shared bench scripts/mod/lib/multiplayer.mjs. Not part of `npm run check`.
-# Usage: scripts/mod/test_bridge_paper_bots.sh [lager|farm|alle] [version ...]
+# Usage: scripts/mod/test_bridge_paper_bots.sh [lager|farm|weltplan|alle] [version ...]
 #   (default: alle on 1.21.11 and, with JDK 25, 26.1.2 – mineflayer 4.39 speaks up to 26.1, not yet 26.3)
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
@@ -30,7 +31,7 @@ if [ -z "$room" ]; then
   for _ in $(seq 1 120); do grep -q "Ready on" "$work/wrangler.log" 2>/dev/null && break; sleep 1; done
   grep -q "Ready on" "$work/wrangler.log" || { cat "$work/wrangler.log"; echo "Team-Raum (wrangler dev) startet nicht"; exit 1; }
 fi
-parts=("$part"); [ "$part" = alle ] && parts=(lager farm)
+parts=("$part"); [ "$part" = alle ] && parts=(lager farm weltplan)
 for v in "${versions[@]}"; do
   case "$v" in 1.*) j=$java21 ;; *) j=${java25:?JDK 25 fehlt für Minecraft $v} ;; esac
   for p in "${parts[@]}"; do

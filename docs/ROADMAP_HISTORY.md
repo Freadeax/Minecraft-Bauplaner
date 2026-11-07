@@ -373,3 +373,19 @@ TEAM-03-S04: Mitbauer in Mod und Hologramm (Mod/Plugin 0.27.0) – crew im Plane
 |---|---|---:|---|
 | GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth prüft das Projekt weiter (Status processing, am 07.11.2026 nachgesehen); alle Versionen bis 0.26.0, Texte, Galerie und Offenlegungen sind aktuell (modrinth_publish.mjs plan). Kein Handlungsbedarf außer Abwarten. |
 
+## 2026-11-07T13:38:50.330Z · progress
+
+**Aufgaben:** QA-04, QA-02
+
+Block B (inaktive Threads): 17 Testfälle automatisch abgenommen – planer-abnahmen, team-abnahmen (echter Team-Raum, 2–3 Browser), werkstatt-abnahme in Chromium/Firefox/WebKit, BIB-15 bis in den Export (git worktree), KARTE-12 mit Bot-Spielern auf Paper 1.21.11/26.1.2, verzaubertes Schwert in der Exportprüfung im echten 26.3. Behoben: Projekt umbenennen, Gerät im Systemcheck, rotes Konflikt-Abzeichen, Ebenenschieber für Finger, Wiederverbinden nach Zurückholen des Team-Raums, Name statt Kennung im Weltplan, Plugin-Hinweis nach Umschalten. Grenzen: echte Geräte, REI, Mod-Hologramm.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Arbeitsstränge gemerged sind und die Mod mit diagnose veröffentlicht ist. Diagnose und Fehlerbehebung der offenen Fälle übernehmen ab 07.11. die Threads „Planer-Abnahmen ohne Nachweis automatisieren“ und „Mod-Abnahmen im Spiel automatisieren“. |
+| QA-02 | 🚧 In Arbeit | 1/2 | Protokolle der Tester in docs/testing/GERAETEMATRIX.md eintragen und Befunde beheben. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/autochecks.ts`
+- `docs/testing/TESTPLAN.md`
+

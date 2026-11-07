@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { RoomTeam } from '../../../../../../packages/domain/src/index.js';
 import { errorText } from '../../../app/ui';
-import { deleteRoom, getRoomState, listBackups, makeBackup, restoreBackup, serviceStatus } from './roomClient';
+import { deleteRoom, getRoomState, listBackups, makeBackup, restoreBackup, ROOM_RESTORED, serviceStatus } from './roomClient';
 import type { RoomBackup, RoomState } from './roomClient';
 
 const when = (iso?: string | null) => iso ? new Date(iso).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' }) : '–';
@@ -42,6 +42,7 @@ export function TeamBackup({ live, onMessage, onRestored }: { live: NonNullable<
     if (!ok) return;
     const r = await restoreBackup(live, b.id);
     onRestored();
+    window.dispatchEvent(new Event(ROOM_RESTORED));
     onMessage(`Team-Raum wiederhergestellt (${r.events} Schritte aus der Sicherung).${r.keys === 'aus-sicherung' ? ' Die Einladungslinks von damals gelten wieder.' : ''} Die Planer im Team reichen fehlende Schritte selbst nach.`);
   });
   const remove = () => run(async () => {

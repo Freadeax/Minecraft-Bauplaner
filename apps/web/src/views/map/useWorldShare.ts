@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  buildMapListDoc, buildWorldShareDoc, mapShapes, mergeMapLists, mergeShapes, mergeWorldItems, readMapListDoc, readWorldShareDoc, sameItems,
+  buildMapListDoc, buildWorldShareDoc, mapShapes, siteOf, teamContextOf, teamView, mergeMapLists, mergeShapes, mergeWorldItems, readMapListDoc, readWorldShareDoc, sameItems,
 } from '../../../../../packages/domain/src/index.js';
 import type { MapShape, Project, RoomTeam, SavedLiveMap, WorldItem } from '../../../../../packages/domain/src/index.js';
 import { DIMENSIONS } from '../../../../../packages/domain/src/world/worldmap.js';
@@ -13,7 +13,7 @@ import type { LiveMapSettings } from './liveMapConfig';
  * `karten`, services/team-room). This browser merges the room's version with its own and puts the result
  * back; the mods of the team and the Paper plugin read the same document. No file anywhere.
  */
-export interface ShareRoom { readonly projectId: string; readonly projectName: string; readonly teamName: string; readonly url: string; readonly room: string; readonly key: string; readonly keys: readonly string[]; readonly me: string }
+export interface ShareRoom { readonly projectId: string; readonly projectName: string; readonly teamName: string; readonly url: string; readonly room: string; readonly key: string; readonly keys: readonly string[]; readonly me: string; readonly who: string }
 
 /** Projects with a live Team-Raum (one per room, the first by name). Copies of a project may hold an older
  *  key (invitation renewed), so every key seen for the room is kept and tried in turn (admin keys first). */
@@ -26,7 +26,9 @@ export function shareRooms(projects: readonly Project[] | null): ShareRoom[] {
     if (list) { if (live.adminKey && !list.includes(live.adminKey)) list.unshift(live.adminKey); if (!list.includes(live.key)) list.push(live.key); continue; }
     const mine = [...new Set([live.adminKey, live.key].filter((k): k is string => !!k))];
     keys.set(live.room, mine);
-    out.push({ projectId: p.id, projectName: p.name, teamName: team.name, url: live.url, room: live.room, key: mine[0]!, keys: mine, me: team.self ?? 'planer' });
+    // Block B (KARTE-10): „zuletzt von …“ shows the player's name, not the builder id (bld_…).
+    const name = team.self ? teamView(team, teamContextOf(siteOf(p))).members.find(m => m.id === team.self)?.name : undefined;
+    out.push({ projectId: p.id, projectName: p.name, teamName: team.name, url: live.url, room: live.room, key: mine[0]!, keys: mine, me: team.self ?? 'planer', who: name ?? team.self ?? 'planer' });
   }
   return out;
 }
@@ -140,12 +142,12 @@ export function useWorldShare(opts: {
     const shapesKey = JSON.stringify(fresh);
     const sentShapes = (() => { try { return localStorage.getItem(baseKey('weltplan-marker', r.room)); } catch { return null; } })();
     if (merged.toSend || answer === null || shapesKey !== sentShapes) {
-      const doc = buildWorldShareDoc(merged.items, mergeShapes(remoteShapes ?? (answer?.unchanged ? lastShapes.current?.shapes : undefined), fresh, o.dimension), r.me);
+      const doc = buildWorldShareDoc(merged.items, mergeShapes(remoteShapes ?? (answer?.unchanged ? lastShapes.current?.shapes : undefined), fresh, o.dimension), r.who);
       const put = await putDoc(r, 'weltplan', doc, rev);
       writeBase('weltplan', r.room, { rev: put.rev, data: merged.items });
       lastShapes.current = { room: r.room, shapes: { ...doc.shapes } };
       try { localStorage.setItem(baseKey('weltplan-marker', r.room), shapesKey); } catch { /* resend next time */ }
-      setState(s => ({ ...s, rev: put.rev, by: r.me, at: put.at, message: note || s.message }));
+      setState(s => ({ ...s, rev: put.rev, by: r.who, at: put.at, message: note || s.message }));
     } else {
       writeBase('weltplan', r.room, { rev, data: [...remoteItems] });
       setState(s => ({ ...s, rev, ...(by && { by, at }), message: note || s.message }));
@@ -170,7 +172,7 @@ export function useWorldShare(opts: {
     if (merged.toSend || k(active) !== k(remote.active)) {
       if (!merged.maps.length && !active && answer === null) return;
       let put: { rev: number };
-      try { put = await putDoc(r, 'karten', buildMapListDoc(merged.maps, active, r.me), rev); }
+      try { put = await putDoc(r, 'karten', buildMapListDoc(merged.maps, active, r.who), rev); }
       catch (e) { if (e instanceof Error && /Kartenvorlage|Vorlage|URL/.test(e.message)) return; throw e; }
       writeBase('karten', r.room, { rev: put.rev, data: { maps: merged.maps, active } });
     } else writeBase('karten', r.room, { rev, data: remote });

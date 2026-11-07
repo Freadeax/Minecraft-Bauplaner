@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T13:30:53.193Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T13:38:50.330Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -930,7 +930,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### QA-02
 
-**Echte GPU-, Safari- und iPhone-Abnahme** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Arbeitsstrang „Liegengebliebene Datenpakete abarbeiten“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
+**Echte GPU-, Safari- und iPhone-Abnahme** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Arbeitsstrang „Liegengebliebene Datenpakete abarbeiten“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T13:38:50.330Z
 
 - [x] QA-02-S01: Geräte-/Browsermatrix und reproduzierbare Aufgaben definieren.
 - [ ] QA-02-S02: Dateiimport, IndexedDB, Touch, Themes und Layer auf echten Geräten prüfen.
@@ -2752,7 +2752,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### QA-04
 
-**Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Große Testphase vorbereiten und betreuen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:31:42.554Z
+**Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Große Testphase vorbereiten und betreuen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T13:38:50.330Z
 
 - [x] QA-04-S01: Testplan (eine Quelle: testplan.ts → TESTPLAN.md) mit Kern-/vertieften Fällen für alle Planer-Bereiche und die Mod.
 - [x] QA-04-S02: Seite #/testphase: Checklisten mit Protokoll im Browser, Protokoll-Export, Fehlerbericht mit automatischer Diagnose (Umgebung, Fehlerprotokoll, Konsole, Seiten) und GitHub-Issue-Vorbelegung.

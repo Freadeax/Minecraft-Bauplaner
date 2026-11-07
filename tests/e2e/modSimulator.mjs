@@ -143,7 +143,9 @@ export function startModSimulator(port, options = {}) {
   const V1_POINT_TYPES = new Set(['anker', 'ziel', 'lager', 'portal', 'farm', 'treffpunkt']);
   const allowed = o => o === 'https://freadeax.github.io' || /^http:\/\/(localhost|127\.0\.0\.1)(:\d{1,5})?$/.test(o);
   // Ground: grass at y 64, a pond (water at 62 over sand at 60) for x in 48..55, z in -8..-1.
-  const column = (x, z) => x >= 48 && x < 56 && z >= -8 && z < 0 ? [62, 1, 60, 2] : [64, 0, 63, 3];
+  // `options.column(x, z)` may replace it (Block B, KARTE-06: a plateau with a cliff); undefined keeps the default.
+  const pond = (x, z) => x >= 48 && x < 56 && z >= -8 && z < 0 ? [62, 1, 60, 2] : [64, 0, 63, 3];
+  const column = (x, z) => options.column?.(x, z) ?? pond(x, z);
   const server = http.createServer((req, res) => {
     const chunks = [];
     req.on('data', c => chunks.push(c));

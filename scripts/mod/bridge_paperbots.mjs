@@ -13,7 +13,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import assert from 'node:assert/strict';
-import { createTeam, teamEvent, appendEvents, teamView, teamServerFile, mergeTeam } from '../../dist/domain/src/index.js';
+import { createTeam, teamEvent, appendEvents, teamView, teamServerFile, mergeTeam, buildWorldShareDoc, mapShapes } from '../../dist/domain/src/index.js';
 import { farmStatuses } from '../../dist/domain/src/materials/productionPlan.js';
 import { paperServer, room } from './lib/multiplayer.mjs';
 
@@ -68,6 +68,13 @@ const { events: _events, ...headerOnly } = file;
 await teamRoom.header({ ...headerOnly, events: [], plan: { sha: 'c'.repeat(64), revisionNumber: 1, at: new Date().toISOString() } });
 assert.deepEqual((await teamRoom.append(team.events)).rejected, []);
 const feed = () => teamRoom.feed();
+// KARTE-12: the planner's Weltplan with one locked site, put into the room like the planner does (document „weltplan“).
+const OW = 'minecraft:overworld', LX = 1040, LZ = 1000;
+if (part === 'weltplan') {
+  const items = [{ kind: 'site', id: 'site_schmiede', name: 'Schmiede', note: '', dimension: OW, minX: LX, minZ: LZ, width: 8, length: 8, y: -60, projectId: null, locked: true }];
+  const put = await teamRoom.call(`/v1/rooms/${teamRoom.id}/doc/weltplan?by=bld_phil`, { method: 'PUT', body: JSON.stringify(buildWorldShareDoc(items, { [OW]: mapShapes(null, items, OW) }, 'Philipp')), headers: { 'If-Match': '0' } }, teamRoom.memberKey);
+  assert.equal(put.status, 200, JSON.stringify(put.body));
+}
 const plannerView = async () => { const merged = mergeTeam(team, { ...team, events: await feed() }); assert.equal(merged.clashes.length, 0); return { team: merged.team, view: teamView(merged.team, ctx) }; };
 const link = teamRoom.link;
 
@@ -133,15 +140,74 @@ try {
 
   if (part === 'lager') await storageDay(anna, ben);
   else if (part === 'farm') await farmDay(anna, ben);
+  else if (part === 'weltplan') await worldPlanDay(anna, ben);
   else throw new Error(`Unbekannter Teil ${part}`);
 
   assert.deepEqual(server.problems(), [], 'keine Warnungen oder Fehler des Plugins im Serverprotokoll');
-  console.log(`  Paper ${version} (Build ${build.id}): ${part === 'lager' ? 'Lagerkisten mit zwei Spielern' : 'Ertragsfarm'} – bestanden in ${Math.round((Date.now() - t0) / 1000)} s.`);
+  console.log(`  Paper ${version} (Build ${build.id}): ${{ lager: 'Lagerkisten mit zwei Spielern', farm: 'Ertragsfarm', weltplan: 'gesperrter Bauplatz' }[part]} – bestanden in ${Math.round((Date.now() - t0) / 1000)} s.`);
 } catch (error) {
   server.kill();
   throw error;
 }
 process.exit(0);
+
+// ================================================================== KARTE-12 (Block B, 07.11.2026)
+async function worldPlanDay(anna, ben) {
+  const x = LX + 3, z = LZ + 3;
+  await console_(`forceload add ${LX - 8} ${LZ - 8} ${LX + 16} ${LZ + 16}`, /forceload|Chunk|marked/i);
+  await until('Weltplan aus dem Team-Raum', async () => /1 Eintr[^\n]*1 gesperrt/.test(await console_('bauplaner weltplan', /Sperren: [^\n]*/)), 60);
+  assert.match(await console_('bauplaner weltplan sperren sperren', /Gesperrte Weltplan-Einträge: [^\n]*/), /geschützt/);
+  // Ben (no OP) in the locked site: placing, breaking and emptying a bucket are refused, the chat names the site.
+  await give(ben, 'minecraft:cobblestone', 4);
+  await goTo(ben, x, Y, z + 2);
+  let from = ben.text.length;
+  assert.equal(await place(ben, 'cobblestone', x, Y, z), false, 'Setzen im gesperrten Bauplatz verhindert');
+  assert.match(ben.text.slice(from), /Bauplatz „Schmiede“ ist im Weltplan gesperrt\. Hier kannst du nichts ändern\./);
+  await console_(`setblock ${x + 1} ${Y} ${z} minecraft:oak_planks`, /Changed the block|geändert/i);
+  await sleep(500);
+  await look(ben, x + 1, Y, z);
+  try { await ben.dig(ben.blockAt(new Vec3(x + 1, Y, z)), true); } catch { /* refused */ }
+  await sleep(800);
+  assert.ok(await blockIs(x + 1, Y, z, 'oak_planks'), 'Abbauen im gesperrten Bauplatz verhindert');
+  await give(ben, 'minecraft:water_bucket', 1);
+  await ben.equip(ben.registry.itemsByName.water_bucket.id, 'hand');
+  await look(ben, x - 1, Y - 1, z);
+  await sleep(300);
+  ben.activateItem(); await sleep(300); ben.deactivateItem(); await sleep(1000);
+  assert.equal(await blockIs(x - 1, Y, z, 'water'), false, 'Eimer im gesperrten Bauplatz verhindert');
+  step('KARTE-12 „sperren“: Setzen, Abbauen und Eimer im gesperrten Bauplatz verhindert, Chat nennt „Schmiede“');
+  // Outside the site Ben builds as usual.
+  await goTo(ben, LX - 4, Y, LZ - 2);
+  from = ben.text.length;
+  assert.equal(await place(ben, 'cobblestone', LX - 4, Y, LZ - 4), true, 'außerhalb frei');
+  assert.doesNotMatch(ben.text.slice(from), /gesperrt/);
+  // Gegenprobe für den Eimer: außerhalb läuft das Wasser aus (der Eimer-Test oben prüft also wirklich die Sperre).
+  await give(ben, 'minecraft:water_bucket', 1);
+  await ben.equip(ben.registry.itemsByName.water_bucket.id, 'hand');
+  await look(ben, LX - 6, Y - 1, LZ - 4);
+  await sleep(300);
+  ben.activateItem(); await sleep(300); ben.deactivateItem(); await sleep(1000);
+  assert.ok(await blockIs(LX - 6, Y, LZ - 4, 'water'), 'außerhalb leert der Eimer');
+  // „hinweis“: only the chat line, building goes through (right away after switching, no waiting).
+  assert.match(await console_('bauplaner weltplan sperren hinweis', /Gesperrte Weltplan-Einträge: [^\n]*/), /Hinweis im Chat/);
+  await goTo(ben, x, Y, z + 2);
+  from = ben.text.length;
+  assert.equal(await place(ben, 'cobblestone', x, Y, z), true, 'mit „hinweis“ erlaubt');
+  await until('Hinweiszeile', () => /„Schmiede“ ist im Weltplan gesperrt\. Bitte nur nach Absprache bauen\./.test(ben.text.slice(from)), 5);
+  step('KARTE-12 „hinweis“: Bauen erlaubt, nur die Chatzeile');
+  // OPs (bauplaner.weltplan.umgehen) are exempt from „sperren“.
+  await console_('bauplaner weltplan sperren sperren', /Gesperrte Weltplan-Einträge: [^\n]*/);
+  await console_('op Anna_MC', /Made Anna_MC a server operator|operator/i);
+  await give(anna, 'minecraft:cobblestone', 2);
+  await goTo(anna, x + 2, Y, z + 2);
+  from = anna.text.length;
+  assert.equal(await place(anna, 'cobblestone', x + 2, Y, z), true, 'OP darf im gesperrten Bauplatz bauen');
+  assert.doesNotMatch(anna.text.slice(from), /gesperrt/);
+  from = ben.text.length;
+  await goTo(ben, x + 1, Y, z + 3);
+  assert.equal(await place(ben, 'cobblestone', x + 1, Y, z + 1), false, 'für Ben weiter gesperrt');
+  step('KARTE-12 OP (bauplaner.weltplan.umgehen) ausgenommen, Ben weiter gesperrt');
+}
 
 // ================================================================== LAGER-01..05, -07, -11
 async function storageDay(anna, ben) {

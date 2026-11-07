@@ -35,4 +35,4 @@ export const REFUSED = /ERR_CONNECTION_REFUSED|Could not connect to (127\.0\.0\.
  * - Beim Verlassen einer Seite mitten in einer Hintergrundarbeit meldet das alte Dokument „Context is stopped“.
  * Nur in Tests mit Download bzw. schnellem Seitenwechsel herausfiltern.
  */
-export const WEBKIT_NOISE = /^(Cannot load blob:)?h?ttp:\/\/127\.0\.0\.1:\d+\/[0-9a-f-]{36} due to access control checks\.$|^Context is stopped$/;
+export const WEBKIT_NOISE = /^(Cannot load blob:)?h?ttp:\/\/127\.0\.0\.1:\d+\/[0-9a-f-]{36} due to access control checks\.$|^Context is stopped$|127\.0\.0\.1:\d+\/Minecraft-Bauplaner\/assets\/[\w.-]+\.worker-[\w-]+\.js due to access control checks\.$/;

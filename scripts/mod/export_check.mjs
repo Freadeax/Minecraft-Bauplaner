@@ -65,7 +65,9 @@ function testBuild(structureBlock = true) {
   };
   for (let x = 0; x < 7; x++) for (let z = 0; z < 7; z++) put([x, 0, z], mc('stone_bricks'));
   for (let x = 0; x < 7; x++) for (let y = 1; y < 5; y++) put([x, y, 0], mc('stone'));
-  const items = entries => list('compound', entries.map(([slot, id, count]) => compound({ Slot: b(slot), id: s(`minecraft:${id}`), count: i(count) })));
+  const items = entries => list('compound', entries.map(([slot, id, count, components]) => compound({ Slot: b(slot), id: s(`minecraft:${id}`), count: i(count), ...(components && { components: compound(components) }) })));
+  // WERK-09 (Block B): a named chest with an enchanted sword – name and enchantments must survive every export.
+  const sword = { 'minecraft:enchantments': compound({ 'minecraft:sharpness': i(3), 'minecraft:unbreaking': i(2) }) };
   // Rotated parts and blocks that hang on the wall.
   put([1, 1, 1], mc('oak_stairs', { facing: 'east', half: 'bottom', shape: 'straight', waterlogged: 'false' }));
   put([2, 1, 1], mc('oak_log', { axis: 'x' }));
@@ -82,7 +84,7 @@ function testBuild(structureBlock = true) {
     front_text: compound({ messages: list('string', [s('"Osten"'), s('""'), s('""'), s('""')]), color: s('blue'), has_glowing_text: b(1) }),
     back_text: compound({ messages: list('string', [s('""'), s('""'), s('""'), s('"Westen"')]), color: s('black'), has_glowing_text: b(0) }), is_waxed: b(1) }));
   // Containers: single chest, double chest (left half connects clockwise of its facing), barrel.
-  put([1, 1, 5], mc('chest', { facing: 'north', type: 'single', waterlogged: 'false' }), compound({ id: s('minecraft:chest'), Items: items([[0, 'bread', 12], [5, 'torch', 3], [26, 'oak_planks', 64]]) }));
+  put([1, 1, 5], mc('chest', { facing: 'north', type: 'single', waterlogged: 'false' }), compound({ id: s('minecraft:chest'), CustomName: s('Vorräte'), Items: items([[0, 'bread', 12], [1, 'diamond_sword', 1, sword], [5, 'torch', 3], [26, 'oak_planks', 64]]) }));
   put([3, 1, 5], mc('chest', { facing: 'north', type: 'left', waterlogged: 'false' }), compound({ id: s('minecraft:chest'), Items: items([[0, 'iron_ingot', 7]]) }));
   put([4, 1, 5], mc('chest', { facing: 'north', type: 'right', waterlogged: 'false' }), compound({ id: s('minecraft:chest'), Items: items([[13, 'emerald', 2]]) }));
   put([5, 1, 5], mc('barrel', { facing: 'up', open: 'false' }), compound({ id: s('minecraft:barrel'), Items: items([[4, 'apple', 9]]) }));
@@ -182,7 +184,12 @@ function beSummary(data) {
   const structure = c.id === 'minecraft:structure_block'
     ? Object.fromEntries(['mode', 'name', 'posX', 'posY', 'posZ', 'sizeX', 'sizeY', 'sizeZ', 'rotation', 'mirror'].map(k => [k, raw(k)])) : undefined;
   const sign = c.sign && { ...c.sign, colors: ['front_text', 'back_text'].map(k => t[k]?.value?.color?.value ?? 'black'), glow: ['front_text', 'back_text'].map(k => Number(t[k]?.value?.has_glowing_text?.value ?? 0)) };
-  return JSON.stringify({ id: c.id, items: [...c.items].sort((a, b2) => String(a.slot).localeCompare(String(b2.slot))), sign, name: c.name, structure });
+  // Item components that matter (WERK-09: enchantments, custom names), per slot.
+  const plain = tag => !tag || typeof tag !== 'object' ? tag : tag.type === 'compound' ? Object.fromEntries(Object.entries(tag.value).map(([k, v]) => [k, plain(v)]))
+    : tag.type === 'list' ? tag.value.map(plain) : typeof tag.value === 'bigint' ? String(tag.value) : tag.value;
+  const parts = (plain(t.Items) ?? []).filter(e => e?.components && (e.components['minecraft:enchantments'] || e.components['minecraft:custom_name']))
+    .map(e => ({ slot: e.Slot, enchantments: e.components['minecraft:enchantments'], customName: e.components['minecraft:custom_name'] })).sort((a, b2) => a.slot - b2.slot);
+  return JSON.stringify({ id: c.id, items: [...c.items].sort((a, b2) => String(a.slot).localeCompare(String(b2.slot))), sign, name: c.name, structure, ...(parts.length && { components: parts }) });
 }
 const round = v => Math.round(v * 1000) / 1000;
 function entitySummary(e, { paintingPos = true } = {}) {

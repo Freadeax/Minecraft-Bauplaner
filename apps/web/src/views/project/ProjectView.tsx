@@ -3,6 +3,7 @@ import { href } from '../../app/router';
 import { projectTabs } from './tabs';
 import { projectTabGroups } from './tabNames';
 import { useProjectSession } from './session';
+import type { ProjectSession } from './session';
 import { useApp } from '../../app/context';
 import { Icon, tabIcon } from '../../app/icons';
 import { useDocumentTitle } from '../../app/Shell';
@@ -59,7 +60,8 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
     <header className="project-head">
       <div className="project-title">
         <nav className="crumbs" aria-label="Pfad"><a className="crumb" href="#/">Projekte</a><span aria-hidden="true">›</span><span aria-current="page">{session.project.name}</span></nav>
-        <h1 className="page-title">{session.project.name}</h1>
+        <h1 className="page-title">{session.project.name}<button type="button" className="text-button project-rename" aria-label="Projekt umbenennen" title="Projekt umbenennen"
+          onClick={() => rename(session)}>✎</button></h1>
         <BackupChip repo={repo} project={session.project} /><UpdateChip project={session.project} projectId={projectId} /><TeamLiveChip project={session.project} />
       </div>
       <span className={`save-state ${session.saveState}`} role="status" title={session.saveError}>
@@ -87,6 +89,14 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
     {active ? <Suspense key={active.id} fallback={<div className="loading" role="status" data-page-loading="">Bereich wird geladen …</div>}><active.component session={session} /></Suspense> : <div className="notice" role="alert">Unbekannter Projektbereich „{tab}“.</div>}
     <TeamNews project={session.project} />
   </div></TeamRoomContext.Provider>;
+}
+
+/** START-02: Projekt umbenennen (eigener Rückgängig-Schritt, Speichern wie jede andere Änderung). */
+function rename(session: ProjectSession) {
+  const next = window.prompt('Neuer Projektname', session.project.name);
+  if (next === null || next.trim() === session.project.name) return;
+  const error = session.execute({ kind: 'project.rename', name: next });
+  if (error) window.alert(error);
 }
 
 const chipText = { never: 'noch nie gesichert', changed: 'seit Sicherung geändert', current: 'gesichert' } as const;

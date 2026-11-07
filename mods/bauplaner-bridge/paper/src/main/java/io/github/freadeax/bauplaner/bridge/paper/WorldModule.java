@@ -197,6 +197,7 @@ final class WorldModule implements Listener {
             }
             plugin.getConfig().set("weltplan.sperren", m);
             plugin.saveConfig();
+            lastHint.clear(); // KARTE-12 (Block B): after switching, the next try shows the new line at once (not after 60 s)
             s.sendMessage(PREFIX + t(s, "Gesperrte Weltplan-Einträge: ", "Locked world plan entries: ") + switch (m) {
                 case "sperren" -> t(s, "geschützt (Bauen dort verhindert)", "protected (building there is prevented)");
                 case "hinweis" -> t(s, "Hinweis im Chat, Bauen erlaubt", "notice in the chat, building allowed");

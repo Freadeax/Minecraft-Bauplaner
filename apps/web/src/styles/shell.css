@@ -197,3 +197,7 @@ kbd { font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; padding: 
 /* Blockdarstellung (VIEW-02) als gleich hohes Kopfzeilenelement. */
 .topbar .texture-chip { min-height: 40px; padding: 8px 12px; border-radius: var(--r-md); font-size: 12px; border-color: var(--line); color: var(--muted); background: var(--panel); }
 .topbar .texture-chip.ready { color: var(--mint); }
+/* START-02: Umbenennen-Knopf neben dem Projektnamen */
+.project-title .project-rename { font-size: 18px; margin-left: 8px; vertical-align: middle; min-width: 32px; min-height: 32px; opacity: .7; }
+.project-title .project-rename:hover, .project-title .project-rename:focus-visible { opacity: 1; }
+@media (pointer: coarse) { .project-title .project-rename { min-width: 44px; min-height: 44px; } }

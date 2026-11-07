@@ -9,9 +9,10 @@ import { join } from 'node:path';
 export const WRANGLER_VERSION = '4.158.0';
 
 /** Starts `wrangler dev` on 127.0.0.1:port; resolves when the worker answers. */
-export async function startTeamRoomDev(port, { timeout = 180_000 } = {}) {
+/** `vars` become `--var NAME:value` (e.g. BACKUP_DELAY_MS for automatic backups after seconds, Block B). */
+export async function startTeamRoomDev(port, { timeout = 180_000, vars = {} } = {}) {
   const persist = mkdtempSync(join(tmpdir(), 'team-room-dev-'));
-  const args = ['dev', '--port', String(port), '--ip', '127.0.0.1', '--persist-to', persist, '--log-level', 'warn', '--show-interactive-dev-session=false'];
+  const args = ['dev', '--port', String(port), '--ip', '127.0.0.1', '--persist-to', persist, '--log-level', 'warn', '--show-interactive-dev-session=false', ...Object.entries(vars).flatMap(([k, v]) => ['--var', `${k}:${v}`])];
   const [cmd, pre] = process.env.WRANGLER_BIN ? [process.env.WRANGLER_BIN, []] : ['npx', ['--yes', `wrangler@${WRANGLER_VERSION}`]];
   const child = spawn(cmd, [...pre, ...args], { cwd: new URL('../../services/team-room/', import.meta.url), env: { ...process.env, WRANGLER_SEND_METRICS: 'false', CI: '1' }, stdio: ['ignore', 'pipe', 'pipe'], detached: true });
   let log = '';

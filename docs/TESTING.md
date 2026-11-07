@@ -24,9 +24,9 @@ Diese Läufe starten echte Minecraft-Clients oder Paper-Server (kopflos) und sin
 | Mod-Kern | `scripts/mod/test_bridge.sh` | JUnit der Kerne und sprachübergreifender Formatabgleich mit dem Planer |
 | Mod im Spiel | `scripts/mod/test_bridge_ingame.sh` | Fabric-Client 26.3 mit Gametest: Hologramm, Oberfläche, Website-Verbindung, Team-Raum, auch mit Modpack |
 | NeoForge | `scripts/mod/test_bridge_ingame_forge.sh neoforge` | derselbe Ablauf im NeoForge-Client |
-| Exporte | `scripts/mod/test_exports_ingame.sh` | Litematica-, WorldEdit- und Vanilla-Exporte im echten Spiel, auch gedreht und gespiegelt |
+| Exporte | `scripts/mod/test_exports_ingame.sh` | Litematica-, WorldEdit- und Vanilla-Exporte im echten Spiel, auch gedreht und gespiegelt, mit Truheninhalt, verzaubertem Schwert, Schildern und Ausstattung |
 | Platzierung | `scripts/mod/test_game_placement.sh [satz]` | Katalog, Generatoren, Gelände, Basis und Großprojekte auf Paper 26.3 Block für Block gegen den Plan |
-| Paper-Plugin | `scripts/mod/test_bridge_paper*.sh` | Plugin auf Paper 1.18.2 bis 26.3: Teambau, Lagerkisten, Team-Raum, unterschriebene Ereignisse, Weltplan in BlueMap/Dynmap |
+| Paper-Plugin | `scripts/mod/test_bridge_paper*.sh` | Plugin auf Paper 1.18.2 bis 26.3: Teambau, Lagerkisten, Team-Raum, unterschriebene Ereignisse, Weltplan in BlueMap/Dynmap, gesperrte Weltplan-Flächen mit Bot-Spielern (`test_bridge_paper_bots.sh weltplan`) |
 | Mehrspieler | `scripts/mod/test_multiplayer.sh`, `test_multiplayer_client.sh` | echte Spieler als Bots und echter Client mit Mod am selben Server |
 | Weltimport | `scripts/mod/test_world_import_real.sh` | Regionsdateien aus echten 26.3-Welten |
 
@@ -42,6 +42,7 @@ Diese Läufe starten echte Minecraft-Clients oder Paper-Server (kopflos) und sin
 | Großbau | 1,45 Mio. Blöcke im Spiel aufgebaut und geprüft |
 | Paper-Plugin | 1.21.11 und 26.3 für Team, Lager, Team-Raum, Unterschriften |
 | Team-Raum live | Status, Rauchprobe, Sicherungsprobe und `team-room.e2e` gegen den echten Dienst |
+| Abnahmen Block B (17 Testfälle) | `planer-abnahmen`, `team-abnahmen` (echter Team-Raum per `wrangler dev`, 2–3 Browser), `werkstatt-abnahme`: 17/17 in Chromium, Firefox und WebKit; `scripts/library/test_contribution_live.mjs` (Beitrag bis in den Export) und `test_bridge_paper_bots.sh weltplan` (gesperrter Bauplatz, Paper 1.21.11 und 26.1.2) grün |
 
 **Offen** sind Prüfungen, die nur Menschen leisten können: echte Mitspieler auf einem eigenen Server, echte iPhones und iPads, Bedienung und Gestaltung. Sie stehen als Testfälle unter [`#/testphase`](https://freadeax.github.io/Minecraft-Bauplaner/#/testphase) und im [Testplan](testing/TESTPLAN.md). Welche Testfälle automatisch nachgewiesen sind, steht dort unter „Automatische Abnahmen“.
 

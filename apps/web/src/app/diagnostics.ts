@@ -70,6 +70,46 @@ function webgl(): string {
   } catch { return 'nicht ermittelbar'; }
 }
 
+/**
+ * GERAET-01 (Block B, 07.11.2026): kurze, lesbare Gerätebeschreibung für den Systemcheck und das Testprotokoll –
+ * Browser mit Version, System und Grafik –, damit ein Befund einer Zeile der Gerätematrix zugeordnet werden kann.
+ * Reine Auswertung von Browserangaben; iPadOS meldet sich in Safari als Mac, erkennbar an den Touchpunkten.
+ */
+export function describeBrowser(ua: string): string {
+  const v = (re: RegExp) => ua.match(re)?.[1]?.split('.')[0];
+  if (/Edg\//.test(ua)) return `Edge ${v(/Edg\/([\d.]+)/)}`;
+  if (/OPR\//.test(ua)) return `Opera ${v(/OPR\/([\d.]+)/)}`;
+  if (/Firefox\//.test(ua)) return `Firefox ${v(/Firefox\/([\d.]+)/)}`;
+  if (/FxiOS\//.test(ua)) return `Firefox (iOS) ${v(/FxiOS\/([\d.]+)/)}`;
+  if (/CriOS\//.test(ua)) return `Chrome (iOS) ${v(/CriOS\/([\d.]+)/)}`;
+  if (/Chrome\//.test(ua)) return `${/HeadlessChrome/.test(ua) ? 'Chromium (ohne Fenster)' : 'Chrome'} ${v(/Chrome\/([\d.]+)/)}`;
+  if (/Safari\//.test(ua) && /Version\//.test(ua)) return `Safari ${ua.match(/Version\/([\d.]+)/)?.[1] ?? ''}`.trim();
+  if (/AppleWebKit\//.test(ua)) return 'Safari-Engine (WebKit)';
+  return 'unbekannter Browser';
+}
+
+export function describeSystem(ua: string, touchPoints: number): string {
+  const ios = ua.match(/(?:iPhone|CPU) OS (\d+)[_.](\d+)/);
+  if (/iPad/.test(ua) || (/Macintosh/.test(ua) && touchPoints > 1)) return ios ? `iPadOS ${ios[1]}.${ios[2]}` : 'iPadOS';
+  if (/iPhone/.test(ua)) return ios ? `iOS ${ios[1]}.${ios[2]}` : 'iOS';
+  if (/Android/.test(ua)) return `Android ${ua.match(/Android ([\d.]+)/)?.[1] ?? ''}`.trim();
+  if (/Windows NT 10/.test(ua)) return 'Windows 10/11';
+  if (/Windows/.test(ua)) return 'Windows';
+  if (/Mac OS X/.test(ua)) return `macOS ${ua.match(/Mac OS X ([\d_]+)/)?.[1]?.replace(/_/g, '.') ?? ''}`.trim();
+  if (/CrOS/.test(ua)) return 'ChromeOS';
+  if (/Linux/.test(ua)) return 'Linux';
+  return 'unbekannt';
+}
+
+/** Browser, System und Grafik dieses Geräts in Worten (Systemcheck, Testprotokoll). */
+export function deviceSummary(): { readonly browser: string; readonly system: string; readonly graphics: string; readonly input: string } {
+  const touch = navigator.maxTouchPoints ?? 0;
+  return {
+    browser: describeBrowser(navigator.userAgent), system: describeSystem(navigator.userAgent, touch), graphics: webgl(),
+    input: touch > 0 ? `Touch (${touch} Punkte)` : 'Maus/Tastatur',
+  };
+}
+
 const mb = (n: number) => `${Math.round(n / 1_048_576).toLocaleString('de-DE')} MB`;
 
 /** Liest Browser, Gerät, Grafik und Speicher aus; nichts davon verlässt den Rechner. */
@@ -87,8 +127,8 @@ export async function collectEnvironment(input: EnvironmentInput = {}): Promise<
     ['Build', build?.sourceCommit ? `${build.sourceCommit.slice(0, 7)}${build.builtAt ? ` (${build.builtAt})` : ''}` : 'unbekannt (Entwicklung oder Manifest fehlt)'],
     ['Adresse', `${location.origin}${location.pathname}`],
     ['Seite', location.hash || '#/'],
-    ['Browser', brands ? `${brands} · ${navigator.userAgent}` : navigator.userAgent],
-    ['System', nav.userAgentData?.platform ?? navigator.platform ?? 'unbekannt'],
+    ['Browser', `${describeBrowser(navigator.userAgent)} · ${brands ? `${brands} · ` : ''}${navigator.userAgent}`],
+    ['System', `${describeSystem(navigator.userAgent, navigator.maxTouchPoints ?? 0)} · ${nav.userAgentData?.platform ?? navigator.platform ?? 'unbekannt'}`],
     ['Sprache / Zeitzone', `${navigator.language} · ${Intl.DateTimeFormat().resolvedOptions().timeZone}`],
     ['Bildschirm', `${screen.width}×${screen.height} · Fenster ${innerWidth}×${innerHeight} · Pixeldichte ${devicePixelRatio}`],
     ['Eingabe', navigator.maxTouchPoints > 0 ? `Touch (${navigator.maxTouchPoints} Punkte)` : 'Maus/Tastatur'],

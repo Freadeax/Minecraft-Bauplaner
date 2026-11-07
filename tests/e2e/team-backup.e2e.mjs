@@ -89,7 +89,7 @@ function fakeService() {
       if (rest === 'events' && req.method() === 'POST') {
         const role = await core.auth(key);
         const { added, ...out } = core.append(req.postDataJSON(), role);
-        if (added.length) broadcast(id, { type: 'events', events: added, cursor: out.cursor });
+        if (added?.length) broadcast(id, { type: 'events', events: added, cursor: out.cursor });
         return json(out);
       }
       if (rest === 'events') { await core.auth(key); return json(core.since(url.searchParams.get('after') ?? '')); }
@@ -119,7 +119,7 @@ function fakeService() {
         } else if (msg.type === 'append' && s.authed) {
           const { added, ...out } = core.append(msg, s.role);
           ws.send(JSON.stringify({ type: 'appended', batch: msg.batch, ...out }));
-          if (added.length) broadcast(id, { type: 'events', events: added, cursor: out.cursor });
+          if (added?.length) broadcast(id, { type: 'events', events: added, cursor: out.cursor });
         }
       } catch (e) { ws.send(JSON.stringify({ type: 'error', error: e.code ?? 'fehler', message: e.message })); if (e.status === 401 || e.status === 404) ws.close({ code: 4401 }); }
     });
@@ -158,6 +158,8 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await panel.locator('summary').first().click();
     await panel.getByTestId('backup-service').filter({ hasText: /^erreichbar$/ }).waitFor();
     await panel.getByTestId('backup-last').filter({ hasText: 'noch keine' }).waitFor();
+    // The planner of the Bauleitung hands in its signing key (team.trust, GAME-06) right after going live; back up after it.
+    for (let i = 0; i < 50 && !core.since('').events.some(e => e.kind === 'team.trust'); i++) await p.waitForTimeout(200);
     await panel.getByRole('button', { name: 'Jetzt sichern' }).click();
     await p.getByText(/Team-Raum gesichert \(\d+ Schritte/).first().waitFor();
     await panel.getByRole('list', { name: 'Sicherungen' }).getByText('von Hand').waitFor();

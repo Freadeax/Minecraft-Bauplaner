@@ -10,6 +10,7 @@ import { offlineState, setOffline } from '../app/offline';
 import type { OfflineState } from '../app/offline';
 import type { StorageInfo } from '../app/repository';
 import { errorText, formatNumber } from '../app/ui';
+import { deviceSummary } from '../app/diagnostics';
 
 const mb = (n: number) => `${(n / 1_048_576).toLocaleString('de-DE', { maximumFractionDigits: 1 })} MB`;
 const base = import.meta.env.BASE_URL;
@@ -100,6 +101,7 @@ export function SystemView() {
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState(loggedErrors);
   const [caps] = useState(() => capabilities(repo.kind));
+  const [device] = useState(deviceSummary);
 
   useEffect(() => onErrorLogged(() => setErrors(loggedErrors())), []);
   useEffect(() => {
@@ -159,6 +161,17 @@ export function SystemView() {
             : <div className="system-bad" role="alert"><p>{delivery.problems.length} von {delivery.checked} Dateien weichen ab – bitte die Seite ohne Cache neu laden (Strg+Umschalt+R).</p>
               <ul>{delivery.problems.map(p => <li key={p.path}><code>{p.path}</code> – {p.verdict === 'missing' ? 'fehlt' : 'verändert'} ({p.detail})</li>)}</ul></div>)}
         </> : <p className="muted">{manifestError ? `Kein Build-Manifest (${manifestError}). In der Entwicklungsumgebung ist das normal.` : 'Manifest wird geladen …'}</p>}
+      </section>
+
+      <section className="system-card" aria-labelledby="sys-device">
+        <h2 id="sys-device">Dieses Gerät</h2>
+        <dl className="system-facts" data-testid="device-facts">
+          <div><dt>Browser</dt><dd>{device.browser}</dd></div>
+          <div><dt>System</dt><dd>{device.system}</dd></div>
+          <div><dt>Grafik</dt><dd>{device.graphics}</dd></div>
+          <div><dt>Eingabe</dt><dd>{device.input}</dd></div>
+        </dl>
+        <p className="muted">Für das Testprotokoll: diese Angaben beim Namen dazuschreiben (z. B. „Philipp · iPad“).</p>
       </section>
 
       <section className="system-card" aria-labelledby="sys-caps">

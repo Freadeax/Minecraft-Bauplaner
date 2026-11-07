@@ -6,6 +6,8 @@ import type { AppendAnswer, Batch, FeedAnswer, RoomTeam, StaleStep, TeamEvent, T
 
 const URL_KEY = 'bauplaner.teamraum.adresse';
 /** Team-Raum of the project (Cloudflare worker bauplaner-team, services/team-room); own rooms can be entered instead. */
+/** Window event: the room was restored from a backup in this browser, so the live link reconnects at once. */
+export const ROOM_RESTORED = 'bauplaner:team-raum-zurueck';
 export const DEFAULT_ROOM_URL = 'https://bauplaner-team.team-room.workers.dev';
 export const readRoomUrl = (): string => { try { return localStorage.getItem(URL_KEY) || DEFAULT_ROOM_URL; } catch { return DEFAULT_ROOM_URL; } };
 export const saveRoomUrl = (url: string) => { try { localStorage.setItem(URL_KEY, url.trim().replace(/\/+$/, '')); } catch { /* private mode */ } };
@@ -198,7 +200,7 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
     if (!roomKey || !latest.current?.live) return;
     // One poll loop and one reconnect timer at most: every failed WebSocket used to start another poll chain,
     // so a blocked WebSocket multiplied the HTTP requests with each retry.
-    let stopped = false, failures = 0, polling = false;
+    let stopped = false, failures = 0, polling = false, deleted = false;
     let openTimer: ReturnType<typeof setTimeout> | undefined, pollTimer: ReturnType<typeof setTimeout> | undefined;
     const schedulePoll = (ms: number) => { clearTimeout(pollTimer); pollTimer = setTimeout(() => { void poll(); }, ms); };
     const poll = async () => {
@@ -231,6 +233,7 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
       // OPS-04: room deleted by the Bauleitung (or after a long time unused); it can bring it back from a backup.
       if (code === 4404) {
         setError('Der Team-Raum wurde gelöscht. Die Bauleitung kann ihn unter „Sicherung und Zustand“ aus der letzten Sicherung zurückholen.');
+        deleted = true;
         clearTimeout(openTimer); openTimer = setTimeout(open, 60_000); // comes back by itself once it is restored
         return;
       }
@@ -291,10 +294,14 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
     const gone = () => { if (ws.current) drop(ws.current); };
     window.addEventListener('online', now);
     window.addEventListener('offline', gone);
+    // Block B (TEAMBAU-31): the Bauleitung just restored the room in this browser – reconnect at once instead of waiting.
+    // Only for a deleted room (waiting a minute); a live socket gets the room's own 4012 close and reconnects by itself.
+    const back = () => { if (!stopped && deleted && !ws.current) { deleted = false; failures = 0; clearTimeout(openTimer); open(); } };
+    window.addEventListener(ROOM_RESTORED, back);
     document.addEventListener('visibilitychange', onVisible);
     return () => {
       stopped = true; clearTimeout(openTimer); clearTimeout(pollTimer); clearInterval(heartbeat); clearTimeout(answerTimer.current);
-      window.removeEventListener('online', now); window.removeEventListener('offline', gone); document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('online', now); window.removeEventListener('offline', gone); window.removeEventListener(ROOM_RESTORED, back); document.removeEventListener('visibilitychange', onVisible);
       const socket = ws.current; ws.current = null;
       if (socket) { socket.onopen = socket.onmessage = socket.onclose = socket.onerror = null; try { socket.close(); } catch { /* closed */ } }
       setConnected(false);
