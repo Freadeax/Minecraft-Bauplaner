@@ -2,6 +2,7 @@ import { controlMessage, liveCan, readServerRoom } from '../../../../../packages
 import type { LiveHello, ServerInfo, ServerOp, ServerPairing, ServerRoom } from '../../../../../packages/domain/src/index.js';
 import { LiveError, deviceName, liveApi, readLiveSettings, writeLiveToken } from '../map/liveClient';
 import { MODEL_MAX_FILE_BYTES } from '../../../../../packages/voxel/src/sizeLimits.js';
+import { ROOM_URL_REFUSED, roomUrlAllowed } from '../project/team/roomAddress';
 
 /**
  * Server link of this browser (LINK-04, docs/architecture/team/AUTO_LINK.md). The owner key of each paired server
@@ -106,6 +107,7 @@ export function rememberRoom(serverId: string, room: ServerRoom): void {
 }
 
 async function roomCall(room: ServerRoom, path: string, init: RequestInit = {}): Promise<Record<string, unknown>> {
+  if (!roomUrlAllowed(room.url)) throw new LiveError(ROOM_URL_REFUSED, 0);
   let r: Response;
   try {
     r = await fetch(`${room.url}/v1/rooms/${room.room}${path}`, { ...init, headers: { Authorization: `Bearer ${room.key}`, ...(init.body ? { 'Content-Type': 'application/json' } : {}) } });

@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-10T12:11:16.244Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-10T12:48:36.436Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -209,7 +209,7 @@ Abgeschlossen oder zurückgestellt: LINK-01 (geprüft).
 | [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 9/9 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | — |
 | [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | GERAET-03 auf #/testphase: auf dem iPad (Safari) den Planer einmal laden, dann im Flugmodus neu öffnen; einmal die Mod über https://bauplaner.pages.dev/Minecraft-Bauplaner/ verbinden. |
 | [PERF-07](#perf-07) | Ladezeit | 🧩 Implementiert · Abnahme offen 6/6 | P1 | **verwaist** | — |
-| [RELEASE-01](#release-01) | Browser-Schutz und Release-Check | 🧩 Implementiert · Abnahme offen 5/7 | P1 | „Sicherheitsheader und Release-Check einführen“ | — |
+| [RELEASE-01](#release-01) | Browser-Schutz und Release-Check | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Sicherheitsheader und Release-Check einführen“ | — |
 
 Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF-03 (geprüft).
 
@@ -666,7 +666,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [PRIV-01](#priv-01) | Datenschutz und Freigaben verständlich: was geht wohin, wer sieht es, Speicherstatus und Umzug | 🧩 Implementiert · Abnahme offen | 8/8 | COOP-07, WORLD-SHARE-01, BACKUP-02 | ausstehend | ausstehend |
 | [HARDEN-01](#harden-01) | Importe und Team-Raum gegen Missbrauch härten | 🧩 Implementiert · Abnahme offen | 3/3 | TEAM-02 | ausstehend | ausstehend |
 | [TEAM-SEC-01](#team-sec-01) | Team-Rollen gegen Vortäuschen absichern: Absender aus der Sitzung, eigene Schlüssel, Ed25519 für den Server | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-07, GAME-06, BACKUP-03, HARDEN-01 | ausstehend | ausstehend |
-| [RELEASE-01](#release-01) | Browser-Schutz und Release-Check: Sicherheitsheader auf Cloudflare Pages, Einbettungsschutz auf GitHub Pages, Release-Prüfung, sicherer Schem/Litematic-Export, Browserliste in der Mod | 🧩 Implementiert · Abnahme offen | 5/7 | PERF-06, FORMAT-02, LINK-03 | ausstehend | ausstehend |
+| [RELEASE-01](#release-01) | Browser-Schutz und Release-Check: Sicherheitsheader auf Cloudflare Pages, Einbettungsschutz auf GitHub Pages, Release-Prüfung, sicherer Schem/Litematic-Export, Browserliste in der Mod | 🧩 Implementiert · Abnahme offen | 6/7 | PERF-06, FORMAT-02, LINK-03 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -4044,25 +4044,25 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### RELEASE-01
 
-**Browser-Schutz und Release-Check: Sicherheitsheader auf Cloudflare Pages, Einbettungsschutz auf GitHub Pages, Release-Prüfung, sicherer Schem/Litematic-Export, Browserliste in der Mod** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Sicherheitsheader und Release-Check einführen“ · Arbeitsstrang: „Sicherheitsheader und Release-Check einführen“ · Aktualisiert: 2026-11-07T19:44:24.512Z
+**Browser-Schutz und Release-Check: Sicherheitsheader auf Cloudflare Pages, Einbettungsschutz auf GitHub Pages, Release-Prüfung, sicherer Schem/Litematic-Export, Browserliste in der Mod** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Sicherheitsheader und Release-Check einführen“ · Arbeitsstrang: „Sicherheitsheader und Release-Check einführen“ · Aktualisiert: 2026-11-10T12:48:36.436Z
 
 - [x] RELEASE-01-S01: Cloudflare Pages: HSTS, durchgesetzte CSP (frame-ancestors none, object-src none, base-uri self), volle CSP als Report-Only, X-Frame-Options, Permissions-Policy, COOP aus einer Quelle (security_headers.mjs).
 - [x] RELEASE-01-S02: GitHub Pages: Grenzen dokumentiert, Meta-CSP und Einbettungsschutz im Programm (fremder Rahmen startet den Planer nicht).
 - [x] RELEASE-01-S03: Release-Check npm run check:release: npm audit, Gradle-Wrapper und Distribution-Prüfsumme, Mod-JARs gegen releases.json, beide Adressen und Modrinth, HTTPS und Live-Header, Geheimnisse im Artefakt; Offline-Teil läuft im Publish-Skript.
 - [x] RELEASE-01-S04: Sicherer Exportmodus: Befehlsblöcke, Befehls-Minecarts, Klickbefehle, Befehlsgegenstände, Spawner, Struktur-/Verbundblöcke immer melden, auf Wunsch weglassen (Schem und Litematic).
 - [x] RELEASE-01-S05: Mod (Quelle, nächste Version): Kopplungsfrage nennt die Website, Browserliste mit Website, Gerät, Zeit, Zwecken, einzelnes Trennen.
-- [ ] RELEASE-01-S06: Volle CSP durchsetzen, nachdem über eigene Team-Raum-Adressen entschieden ist (connect-src).
+- [x] RELEASE-01-S06: Volle CSP durchgesetzt (10.11.2026), nur der Projekt-Raum in connect-src (Entscheidung Philipp); Planer lehnt andere Team-Raum-Adressen mit Meldung ab.
 - [ ] RELEASE-01-S07: Mod-Version mit Browserliste bauen, im echten Spiel prüfen und auf Modrinth veröffentlichen.
 
 **Abnahme:** Browsertest: Hauptwege ohne einen CSP-Verstoß, fremde Einbettung mit und ohne Header verhindert. npm run check:release nach dem Publish ohne Fehler. Sicherer Export: Datei enthält keine Befehle mehr, Schildtext und übrige Gegenstände bleiben.
 
-**Nächste Aktion:** Entscheidung Philipp: eigene Team-Raum-Adressen beim Durchsetzen der CSP erlauben oder nicht; Mod-Version mit Browserliste mit dem nächsten Mod-Release ausliefern.
+**Nächste Aktion:** Mod-Version mit Browserliste mit dem nächsten Mod-Release ausliefern und im Spiel prüfen.
 
 **Prüfstand:** wird mit dem Publish ergänzt
 
 **Nachweise:** [tests/e2e/security-headers.e2e.mjs](../tests/e2e/security-headers.e2e.mjs) — dist-web mit Cloudflare-Headern: null CSP-Verstöße auf allen Hauptwegen, Gegenprobe, Einbettung blockiert.; [tests/unit/formats/export-safety.test.mjs](../tests/unit/formats/export-safety.test.mjs) — Meldung, Entfernen und Dateiinhalt für Schem und Litematic.; [tests/unit/tooling/cloudflare-pages.test.mjs](../tests/unit/tooling/cloudflare-pages.test.mjs) — _headers und Meta-CSP aus security_headers.mjs.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java) — Browserliste, Zwecke, Neustart, einzelnes Trennen.
 
-**Dateiumfang:** `scripts/pages/security_headers.mjs`, `scripts/pages/publish_cloudflare.mjs`, `scripts/pages/publish_main_pages.sh`, `scripts/checks/release_check.mjs`, `apps/web/index.html`, `apps/web/src/app/frameGuard.ts`, `apps/web/src/main.tsx`, `apps/web/src/views/project/ExportTab.tsx`, `packages/voxel/src/exportSafety.ts`, `packages/application/src/revisionExport.ts`, `mods/bauplaner-bridge/`, `tests/`, `docs/architecture/betrieb/SICHERHEITSHEADER.md`, `docs/operations/VEROEFFENTLICHUNG.md`, `SECURITY.md`. **Abhängigkeiten:** PERF-06, FORMAT-02, LINK-03. **Alte IDs:** —.
+**Dateiumfang:** `scripts/pages/security_headers.mjs`, `scripts/pages/publish_cloudflare.mjs`, `scripts/pages/publish_main_pages.sh`, `scripts/checks/release_check.mjs`, `apps/web/index.html`, `apps/web/src/app/frameGuard.ts`, `apps/web/src/main.tsx`, `apps/web/src/views/project/ExportTab.tsx`, `packages/voxel/src/exportSafety.ts`, `packages/application/src/revisionExport.ts`, `mods/bauplaner-bridge/`, `tests/`, `docs/architecture/betrieb/SICHERHEITSHEADER.md`, `docs/operations/VEROEFFENTLICHUNG.md`, `SECURITY.md`, `apps/web/src/views/project/team/`, `apps/web/src/views/map/useWorldShare.ts`, `apps/web/src/views/mod/serverClient.ts`, `apps/web/src/app/dataFlows.ts`, `services/team-room/README.md`. **Abhängigkeiten:** PERF-06, FORMAT-02, LINK-03. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

@@ -1,6 +1,6 @@
 // RELEASE-01 Browser-Schutz: dist-web wird mit genau den Headern ausgeliefert, die Cloudflare Pages bekommt
 // (scripts/pages/security_headers.mjs). Geprüft wird, dass die wichtigsten Wege keinen einzigen Verstoß
-// gegen die Report-Only-Richtlinie auslösen (Voraussetzung für das spätere Durchsetzen) und dass fremde
+// gegen die durchgesetzte Richtlinie auslösen, ein fremdes Verbindungsziel blockiert wird und dass fremde
 // Seiten den Planer nicht einbetten können – mit Headern (Cloudflare) und ohne (GitHub Pages, Schutz im Programm).
 // Nach `npm run build`: `npm run test:e2e`.
 import { createRequire } from 'node:module';
@@ -69,7 +69,7 @@ async function page() {
 }
 const violations = p => p.evaluate(() => window.__csp);
 
-test('Sicherheitsheader: Hauptwege ohne Verstoß gegen die Report-Only-Richtlinie', async () => {
+test('Sicherheitsheader: Hauptwege ohne Verstoß gegen die durchgesetzte Richtlinie', async () => {
   const { ctx, p, errors } = await page();
   const res = await p.goto(base(withHeaders));
   const h = res.headers();
@@ -95,10 +95,11 @@ test('Sicherheitsheader: Hauptwege ohne Verstoß gegen die Report-Only-Richtlini
   }
   assert.deepEqual(await violations(p), [], 'keine CSP-Verstöße');
   assert.deepEqual(errors, []);
-  // Gegenprobe: ein fremdes Verbindungsziel wird gemeldet (Report-Only blockiert es noch nicht).
-  await p.evaluate(() => fetch('https://fremd.example.invalid/x').catch(() => {}));
+  // Gegenprobe: ein fremdes Verbindungsziel (z. B. ein eigener Team-Raum) wird blockiert.
+  const fremd = await p.evaluate(() => fetch('https://fremd.example.invalid/x').then(() => 'durchgelassen', () => 'blockiert'));
+  assert.equal(fremd, 'blockiert');
   await p.waitForTimeout(300);
-  assert.ok((await violations(p)).some(v => /^report connect-src https:\/\/fremd\.example\.invalid/.test(v)), JSON.stringify(await violations(p)));
+  assert.ok((await violations(p)).some(v => /^enforce connect-src https:\/\/fremd\.example\.invalid/.test(v)), JSON.stringify(await violations(p)));
   await ctx.close();
 });
 

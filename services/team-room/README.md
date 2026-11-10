@@ -31,19 +31,9 @@ werden nach 365 Tagen gelöscht und bleiben 90 Tage zurückholbar. Routen: `GET 
 node scripts/team/team_room_backup_smoke.mjs https://bauplaner-team.team-room.workers.dev
 ```
 
-## Eigenen Raum einrichten (optional)
+## Eigener Raum
 
-1. Kostenloses Konto auf https://dash.cloudflare.com anlegen.
-2. Im Repository:
-   ```
-   cd services/team-room
-   npx wrangler login
-   npx wrangler deploy
-   ```
-   Am Ende steht die Adresse, z. B. `https://bauplaner-team.<name>.workers.dev`.
-3. Im Planer: Projekt → Reiter „Team“ → „Team live“ → Adresse eintragen → **Live schalten**.
-4. Den **Einladungslink** an die Mitspieler schicken. Den **Link für den Server** auf dem Server mit
-   `/bauplaner team verbinden <Link>` eingeben (nicht weitergeben).
+Die veröffentlichte Seite verbindet sich seit 10.11.2026 nur mit dem Projekt-Raum `https://bauplaner-team.team-room.workers.dev` (Content-Security-Policy und Adressprüfung im Planer, [SICHERHEITSHEADER](../../docs/architecture/betrieb/SICHERHEITSHEADER.md)). Ein eigener Worker (`npx wrangler deploy`) funktioniert nur mit einer eigenen Kopie des Planers, in der `DEFAULT_ROOM_URL` (`apps/web/src/views/project/team/roomAddress.ts`) und `TEAM_ROOM_ORIGIN` (`scripts/pages/security_headers.mjs`) auf seine Adresse zeigen. Für Entwicklung und Tests bleibt ein lokaler Raum auf `127.0.0.1`/`localhost` erlaubt.
 
 Eigene Planer-Adressen außer `https://freadeax.github.io` erlaubt `ALLOWED_ORIGINS` in `wrangler.toml`.
 

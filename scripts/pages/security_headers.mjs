@@ -8,7 +8,8 @@
 export const TEAM_ROOM_ORIGIN = 'https://bauplaner-team.team-room.workers.dev';
 
 /**
- * Verbindungsziele der Seite. Alles andere ist ein Verstoß, den der Report-Only-Modus zunächst nur meldet:
+ * Verbindungsziele der Seite; alles andere blockiert der Browser (Philipp 10.11.2026: nur der Projekt-Raum,
+ * apps/web/src/views/project/team/roomAddress.ts lässt dieselben Adressen zu):
  * - eigener Ursprung (Programm, Katalog, deployment.json, Mod-Downloads)
  * - Team-Raum per HTTPS und WebSocket
  * - die Mod auf diesem Rechner (nur 127.0.0.1/localhost, Freigabe im Spiel)
@@ -21,7 +22,7 @@ export const CONNECT_SRC = Object.freeze([
   'https://piston-meta.mojang.com', 'https://piston-data.mojang.com',
 ]);
 
-/** Vollständige Richtlinie, zuerst nur als Report-Only (meldet, blockiert nichts). */
+/** Vollständige Richtlinie, durchgesetzt seit 10.11.2026 (vorher drei Tage Report-Only ohne Verstoß). */
 export const CSP_DIRECTIVES = Object.freeze({
   'default-src': ["'self'"],
   'script-src': ["'self'"],
@@ -42,10 +43,8 @@ export const CSP_DIRECTIVES = Object.freeze({
 });
 
 const render = directives => Object.entries(directives).map(([k, v]) => `${k} ${v.join(' ')}`).join('; ');
-export const CSP_REPORT_ONLY = render(CSP_DIRECTIVES);
-/** Sofort durchgesetzt: nichts davon braucht die Seite, alles davon schützt vor Einbettung und Fremdcode. */
-export const CSP_ENFORCED = render({ 'frame-ancestors': ["'none'"], 'object-src': ["'none'"], 'base-uri': ["'self'"] });
-/** Für <meta http-equiv> (GitHub Pages): frame-ancestors und Report-Only wirken dort nicht. */
+export const CSP = render(CSP_DIRECTIVES);
+/** Für <meta http-equiv> (GitHub Pages): frame-ancestors wirkt dort nicht. */
 export const CSP_META = render({ 'object-src': ["'none'"], 'base-uri': ["'self'"] });
 
 /** Browser-Funktionen, die die Seite nicht nutzt, bleiben auch für eingebettete Karten gesperrt. */
@@ -61,8 +60,7 @@ export const HSTS = 'max-age=31536000; includeSubDomains';
 /** Header für jede Antwort der Seite. */
 export const SECURITY_HEADERS = Object.freeze({
   'Strict-Transport-Security': HSTS,
-  'Content-Security-Policy': CSP_ENFORCED,
-  'Content-Security-Policy-Report-Only': CSP_REPORT_ONLY,
+  'Content-Security-Policy': CSP,
   'X-Frame-Options': 'DENY',
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'strict-origin-when-cross-origin',

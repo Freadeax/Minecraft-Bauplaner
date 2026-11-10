@@ -29,16 +29,28 @@ test('Cloudflare Pages: Artefakt und Mod-Downloads unter dem Projektpfad, Weiter
 });
 
 test('RELEASE-01: jede Antwort trägt den Browser-Schutz, die Meta-Richtlinie passt zu GitHub Pages', async () => {
-  const { SECURITY_HEADERS, CSP_META, CSP_REPORT_ONLY, CSP_ENFORCED } = await import('../../../scripts/pages/security_headers.mjs');
+  const { SECURITY_HEADERS, CSP_META, CSP } = await import('../../../scripts/pages/security_headers.mjs');
   const all = HEADERS.split('\n/*\n')[1];
   for (const [k, v] of Object.entries(SECURITY_HEADERS)) assert.ok(all.includes(`  ${k}: ${v}\n`), k);
-  for (const d of ["frame-ancestors 'none'", "object-src 'none'"]) { assert.ok(CSP_ENFORCED.includes(d)); assert.ok(CSP_REPORT_ONLY.includes(d)); }
-  assert.match(CSP_REPORT_ONLY, /script-src 'self';/);
+  for (const d of ["frame-ancestors 'none'", "object-src 'none'", "script-src 'self';"]) assert.ok(CSP.includes(d), d);
+  assert.equal(SECURITY_HEADERS['Content-Security-Policy-Report-Only'], undefined, 'volle CSP durchgesetzt (Philipp 10.11.)');
   assert.match(SECURITY_HEADERS['Strict-Transport-Security'], /max-age=31536000/);
   assert.match(SECURITY_HEADERS['Permissions-Policy'], /camera=\(\).*geolocation=\(\).*microphone=\(\)/);
   // The default team room must be a permitted connection target, or the team mode breaks once enforced.
-  const room = /DEFAULT_ROOM_URL = '([^']+)'/.exec(readFileSync('apps/web/src/views/project/team/roomClient.ts', 'utf8'))[1];
-  assert.ok(CSP_REPORT_ONLY.includes(room) && CSP_REPORT_ONLY.includes(room.replace('https:', 'wss:')), room);
+  const room = /DEFAULT_ROOM_URL = '([^']+)'/.exec(readFileSync('apps/web/src/views/project/team/roomAddress.ts', 'utf8'))[1];
+  // Nur der Projekt-Raum und lokale Testräume: kein https:/wss: als Ganzes.
+  assert.doesNotMatch(CSP, /connect-src[^;]* (https|wss):( |;)/);
+  assert.ok(CSP.includes(room) && CSP.includes(room.replace('https:', 'wss:')), room);
   const html = readFileSync('apps/web/index.html', 'utf8');
   assert.ok(html.includes(`<meta http-equiv="Content-Security-Policy" content="${CSP_META}">`), 'Meta-CSP in apps/web/index.html');
+});
+
+test('RELEASE-01: der Planer lässt nur den Projekt-Raum und lokale Testräume zu (wie connect-src)', async () => {
+  const { roomUrlAllowed, DEFAULT_ROOM_URL, ROOM_URL_REFUSED } = await import('../../../apps/web/src/views/project/team/roomAddress.ts');
+  const { CONNECT_SRC } = await import('../../../scripts/pages/security_headers.mjs');
+  for (const ok of [DEFAULT_ROOM_URL, `${DEFAULT_ROOM_URL}/`, 'http://127.0.0.1:8787', 'http://localhost:8787', 'http://127.0.0.1']) assert.ok(roomUrlAllowed(ok), ok);
+  for (const no of ['https://mein-raum.example.workers.dev', 'https://bauplaner-team.team-room.workers.dev.evil.example', 'http://bauplaner-team.team-room.workers.dev', 'https://127.0.0.1:8787', 'http://192.168.1.5:8787', ''])
+    assert.equal(roomUrlAllowed(no), false, no);
+  assert.ok(CONNECT_SRC.includes(DEFAULT_ROOM_URL) && CONNECT_SRC.includes('http://127.0.0.1:*') && CONNECT_SRC.includes('http://localhost:*'));
+  assert.match(ROOM_URL_REFUSED, /nur mit dem Team-Raum/);
 });

@@ -14,7 +14,7 @@ import { deriveLeaderSeed, leaderPublicKey, verifyLeaderEvent } from '../../dist
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
-const PORT = 4397, BASE = `http://127.0.0.1:${PORT}/Minecraft-Bauplaner/`, ROOM = 'https://zugang.test';
+const PORT = 4397, BASE = `http://127.0.0.1:${PORT}/Minecraft-Bauplaner/`, ROOM = 'https://bauplaner-team.team-room.workers.dev'; // RELEASE-01: nur der Projekt-Raum, vom Test abgefangen
 let server, browser;
 
 before(async () => {
@@ -103,7 +103,7 @@ test('Sicherungen ohne Team-Schlüssel, Team-Zugang verschlüsselt, Verwaltungss
   const fake = fakeService();
   const context = await browser.newContext({ viewport: { width: 1400, height: 1000 }, acceptDownloads: true });
   await context.route(`${ROOM}/**`, fake.http);
-  await context.routeWebSocket(/^wss:\/\/zugang\.test\//, fake.live);
+  await context.routeWebSocket(/^wss:\/\/bauplaner-team\.team-room\.workers\.dev\//, fake.live);
   const p = await context.newPage();
   p.setDefaultTimeout(15_000);
   const errors = [];

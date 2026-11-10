@@ -5,17 +5,21 @@ import { LINK_TIMING, MAX_BACKUP_BYTES, afterRestore, gunzipCapped, appendLocal,
 import type { AppendAnswer, Batch, FeedAnswer, RoomIdentity, RoomTeam, SeqEvent, StaleStep, TeamEvent, TeamLive, TeamRole } from '../../../../../../packages/domain/src/index.js';
 
 const URL_KEY = 'bauplaner.teamraum.adresse';
-/** Team-Raum of the project (Cloudflare worker bauplaner-team, services/team-room); own rooms can be entered instead. */
 /** Window event: the room was restored from a backup in this browser, so the live link reconnects at once. */
 export const ROOM_RESTORED = 'bauplaner:team-raum-zurueck';
-export const DEFAULT_ROOM_URL = 'https://bauplaner-team.team-room.workers.dev';
-export const readRoomUrl = (): string => { try { return localStorage.getItem(URL_KEY) || DEFAULT_ROOM_URL; } catch { return DEFAULT_ROOM_URL; } };
+export { DEFAULT_ROOM_URL } from './roomAddress';
+import { DEFAULT_ROOM_URL, ROOM_URL_REFUSED, roomUrlAllowed } from './roomAddress';
+export { LOCAL_ROOM, roomUrlAllowed, ROOM_URL_REFUSED } from './roomAddress';
+/** Throws when a stored or invited room lies elsewhere (old invitation, backup from a self-hosted room). */
+export function assertRoomUrl(url: string): void { if (!roomUrlAllowed(url)) throw new RoomError(0, 'raum-adresse', ROOM_URL_REFUSED); }
+export const readRoomUrl = (): string => { try { const u = localStorage.getItem(URL_KEY); return u && roomUrlAllowed(u) ? u : DEFAULT_ROOM_URL; } catch { return DEFAULT_ROOM_URL; } };
 export const saveRoomUrl = (url: string) => { try { localStorage.setItem(URL_KEY, url.trim().replace(/\/+$/, '')); } catch { /* private mode */ } };
 
 export class RoomError extends Error { constructor(readonly status: number, readonly code: string, message: string) { super(message); } }
 
 async function call<T>(base: string, path: string, init: RequestInit & { key?: string } = {}): Promise<T> {
   const { key, ...rest } = init;
+  assertRoomUrl(base);
   let response: Response;
   try {
     response = await fetch(`${base.replace(/\/+$/, '')}${path}`, { ...rest, headers: { ...(rest.body && typeof rest.body === 'string' && { 'Content-Type': 'application/json' }), ...(key && { Authorization: `Bearer ${key}` }), ...rest.headers } });
@@ -354,6 +358,7 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
     const open = () => {
       const t = latest.current; if (stopped || !t?.live || ws.current) return;
       let socket: WebSocket;
+      if (!roomUrlAllowed(t.live.url)) { setError(ROOM_URL_REFUSED); return; }
       try { socket = new WebSocket(`${t.live.url.replace(/^http/, 'ws')}/v1/rooms/${t.live.room}/live`); } catch { void poll(); return; }
       ws.current = socket;
       let heard = Date.now();

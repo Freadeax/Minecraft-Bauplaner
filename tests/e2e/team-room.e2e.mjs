@@ -19,7 +19,8 @@ const { chromium } = require('playwright');
 const PORT = 4318, BASE = `http://127.0.0.1:${PORT}/Minecraft-Bauplaner/`;
 // TEAM_ROOM_URL=https://bauplaner-team.team-room.workers.dev runs the same check against the real deployed service.
 const REAL = process.env.TEAM_ROOM_URL?.replace(/\/+$/, '');
-const ROOM = REAL ?? 'https://raum.test';
+// RELEASE-01: der Planer verbindet sich nur mit dem Projekt-Raum; der Test fängt dessen Adresse ab (kein echter Aufruf).
+const ROOM = REAL ?? 'https://bauplaner-team.team-room.workers.dev';
 let server, browser, mod;
 const MOD_PORT = 47741, MOD_TOKEN = 'simteamroom0123456789abcdefghij';
 
@@ -186,7 +187,7 @@ async function page(viewport) {
   const context = await browser.newContext({ viewport });
   if (!REAL) {
     await context.route(`${ROOM}/**`, fake.http);
-    await context.routeWebSocket(/^wss:\/\/raum\.test\//, fake.live);
+    await context.routeWebSocket(/^wss:\/\/bauplaner-team\.team-room\.workers\.dev\//, fake.live);
   }
   const p = await context.newPage();
   p.setDefaultTimeout(15_000);
@@ -219,6 +220,11 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await a.getByRole('button', { name: 'Aktuellen Plan freigeben' }).click();
     await a.getByText('Planstand 1 gilt').waitFor();
     assert.equal(await liveBlock(a).getByLabel('Adresse des Team-Raums').inputValue(), 'https://bauplaner-team.team-room.workers.dev', 'the project room is preset');
+    // RELEASE-01 (Philipp 10.11.): eine fremde Raum-Adresse wird abgelehnt, bevor etwas gesendet wird.
+    await liveBlock(a).getByLabel('Adresse des Team-Raums').fill('https://mein-raum.example.workers.dev');
+    await liveBlock(a).getByRole('button', { name: 'Live schalten' }).click();
+    await a.getByText(/verbindet sich nur mit dem Team-Raum des Build Studios/).first().waitFor();
+    assert.equal(await liveBlock(a).locator('[data-state=live]').count(), 0);
     await liveBlock(a).getByLabel('Adresse des Team-Raums').fill(ROOM);
     await liveBlock(a).getByRole('button', { name: 'Live schalten' }).click();
     await liveBlock(a).locator('[data-state=live]').waitFor();

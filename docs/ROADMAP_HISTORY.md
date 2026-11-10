@@ -996,3 +996,32 @@ Team-Raum ausgerollt (10.11.2026, Version 037de87a, Rücksprung 333e7fd5); Rauch
 
 - `docs/TESTING.md`
 
+## 2026-11-10T12:48:36.436Z · progress
+
+**Aufgaben:** RELEASE-01
+
+Volle CSP durchgesetzt (Entscheidung Philipp 10.11.: nur der Projekt-Raum); Planer lehnt andere Team-Raum-Adressen mit Meldung ab, Team-Browsertests auf den abgefangenen Projekt-Raum umgestellt
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| RELEASE-01 | 🧩 Implementiert · Abnahme offen | 6/7 | Mod-Version mit Browserliste mit dem nächsten Mod-Release ausliefern und im Spiel prüfen. |
+
+**Geänderte Dateien:**
+
+- `SECURITY.md`
+- `apps/web/src/app/dataFlows.ts`
+- `apps/web/src/views/map/useWorldShare.ts`
+- `apps/web/src/views/mod/serverClient.ts`
+- `apps/web/src/views/project/team/TeamRoom.tsx`
+- `apps/web/src/views/project/team/roomAddress.ts`
+- `apps/web/src/views/project/team/roomClient.ts`
+- `docs/TESTING.md`
+- `docs/architecture/betrieb/SICHERHEITSHEADER.md`
+- `scripts/pages/security_headers.mjs`
+- `services/team-room/README.md`
+- `tests/e2e/security-headers.e2e.mjs`
+- `tests/e2e/team-access.e2e.mjs`
+- `tests/e2e/team-backup.e2e.mjs`
+- `tests/e2e/team-room.e2e.mjs`
+- `tests/unit/tooling/cloudflare-pages.test.mjs`
+

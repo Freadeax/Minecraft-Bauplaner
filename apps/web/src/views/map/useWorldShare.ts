@@ -6,6 +6,7 @@ import type { MapShape, Project, RoomTeam, SavedLiveMap, WorldItem } from '../..
 import { DIMENSIONS } from '../../../../../packages/domain/src/world/worldmap.js';
 import type { WorldMapView } from '../../../../../packages/domain/src/world/worldmap.js';
 import { errorText } from '../../app/ui';
+import { ROOM_URL_REFUSED, roomUrlAllowed } from '../project/team/roomAddress';
 import type { LiveMapSettings } from './liveMapConfig';
 
 /**
@@ -49,6 +50,7 @@ interface DocAnswer { readonly rev: number; readonly by?: string; readonly at?: 
 
 const getDoc = (r: ShareRoom, name: string, known?: number) => withKey(r, key => getDocWith(r, key, name, known));
 async function getDocWith(r: ShareRoom, key: string, name: string, known?: number): Promise<DocAnswer | null> {
+  if (!roomUrlAllowed(r.url)) throw new DocError(0, ROOM_URL_REFUSED);
   let res: Response;
   try { res = await fetch(`${r.url.replace(/\/+$/, '')}/v1/rooms/${r.room}/doc/${name}${known ? `?known=${known}` : ''}`, { headers: { Authorization: `Bearer ${key}` }, cache: 'no-store' }); }
   catch { throw new DocError(0, 'Team-Raum nicht erreichbar (offline?).'); }
@@ -58,6 +60,7 @@ async function getDocWith(r: ShareRoom, key: string, name: string, known?: numbe
 }
 const putDoc = (r: ShareRoom, name: string, doc: unknown, ifMatch: number) => withKey(r, key => putDocWith(r, key, name, doc, ifMatch));
 async function putDocWith(r: ShareRoom, key: string, name: string, doc: unknown, ifMatch: number): Promise<{ rev: number; at: string }> {
+  if (!roomUrlAllowed(r.url)) throw new DocError(0, ROOM_URL_REFUSED);
   let res: Response;
   try { res = await fetch(`${r.url.replace(/\/+$/, '')}/v1/rooms/${r.room}/doc/${name}?by=${encodeURIComponent(r.me)}`, { method: 'PUT', body: JSON.stringify(doc), headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', 'If-Match': String(ifMatch) } }); }
   catch { throw new DocError(0, 'Team-Raum nicht erreichbar (offline?).'); }

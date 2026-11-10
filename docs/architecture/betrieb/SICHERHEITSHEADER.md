@@ -9,34 +9,33 @@ Wie die ausgelieferte Seite vor fremder Einbettung, eingeschleustem Code und unn
 | Header | Wert | Wirkung |
 |---|---|---|
 | `Strict-Transport-Security` | `max-age=31536000; includeSubDomains` | Browser verwenden ein Jahr lang nur HTTPS. Kein `preload`, damit die Entscheidung umkehrbar bleibt. |
-| `Content-Security-Policy` | `frame-ancestors 'none'; object-src 'none'; base-uri 'self'` | **Durchgesetzt.** Keine fremde Seite darf den Planer einbetten, keine Plugins, kein umgebogener Basis-Pfad. Nichts davon braucht die Seite. |
-| `Content-Security-Policy-Report-Only` | vollständige Richtlinie, siehe unten | **Meldet nur.** Verstöße erscheinen in der Browser-Konsole, nichts wird blockiert. |
+| `Content-Security-Policy` | vollständige Richtlinie, siehe unten | **Durchgesetzt** seit 10.11.2026. Keine fremde Seite darf den Planer einbetten, kein fremdes Skript, keine Plugins, Verbindungen nur zu den genannten Zielen. |
 | `X-Frame-Options` | `DENY` | Einbettungsschutz auch für ältere Browser. |
 | `Permissions-Policy` | Kamera, Mikrofon, Standort, Sensoren, USB, Bluetooth, Zahlungen … gesperrt, Vollbild nur für die Seite selbst | Auch eine eingebettete Live-Karte bekommt diese Rechte nicht. |
 | `Cross-Origin-Opener-Policy` | `same-origin` | Fremde Fenster, die aus dem Planer geöffnet werden, erhalten keinen Zugriff zurück. |
 | `X-Content-Type-Options`, `Referrer-Policy` | `nosniff`, `strict-origin-when-cross-origin` | wie bisher |
 
-### Vollständige Richtlinie (Report-Only)
+### Vollständige Richtlinie
 
 - `script-src 'self'`: nur die eigenen Programmdateien, kein Inline-Skript, kein `eval`. Der Build enthält keine Inline-Skripte.
 - `style-src 'self' 'unsafe-inline'`: React setzt Farben und Positionen als `style`-Attribut; ohne `'unsafe-inline'` fiele die Darstellung aus.
-- `connect-src`: eigener Ursprung, Team-Raum `https://bauplaner-team.team-room.workers.dev` (HTTPS und WebSocket), die Mod auf diesem Rechner (`127.0.0.1`/`localhost`, jeder Port), Mojang (`piston-meta`, `piston-data`) für das optionale Original-Texturpaket.
+- `connect-src`: eigener Ursprung, **nur** der Team-Raum des Projekts `https://bauplaner-team.team-room.workers.dev` (HTTPS und WebSocket), die Mod auf diesem Rechner (`127.0.0.1`/`localhost`, jeder Port), Mojang (`piston-meta`, `piston-data`) für das optionale Original-Texturpaket.
 - `worker-src 'self' blob:`, `img-src 'self' data: blob:`, `media-src 'self' blob:`: Hintergrundarbeiten, Vorschaubilder und Downloads.
 - `frame-src https:`: Live-Karten (BlueMap, Dynmap, Pl3xMap) liegen auf dem Server der Spieler und werden von ihnen eingetragen; eingebettet wird nur HTTPS (HTTP-Karten blockiert der Browser ohnehin als gemischte Inhalte).
 - `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`, `frame-ancestors 'none'`.
 
-### Weg zum Durchsetzen
+### Durchsetzen (10.11.2026)
 
-1. **Jetzt:** Report-Only. Der Browsertest [`tests/e2e/security-headers.e2e.mjs`](../../../tests/e2e/security-headers.e2e.mjs) liefert `dist-web` mit genau diesen Headern aus und läuft Start, Beispielprojekt, Editor mit 3D-Ansicht, Material, Bauanleitung, Export mit Download, Bibliothek, Weltkarte, Mod-Seite, Systemcheck, Anleitung, Weltimport und Werkstatt ab. Er verlangt **null** Verstöße und prüft als Gegenprobe, dass ein fremdes Verbindungsziel gemeldet wird.
-2. **Offen vor dem Durchsetzen:** Ein selbst betriebener Team-Raum mit eigener Adresse (Einstellung im Team-Reiter) ist in `connect-src` nicht enthalten und würde beim Durchsetzen blockiert. Entweder bleibt es beim Projekt-Raum, oder `connect-src` bekommt `https: wss:`. Diese Entscheidung trifft Philipp; bis dahin bleibt die volle Richtlinie Report-Only.
-3. **Dann:** Header `Content-Security-Policy-Report-Only` in `Content-Security-Policy` umbenennen, Browsertest und Release-Check laufen unverändert.
+1. **07.–10.11.:** Report-Only. Der Browsertest [`tests/e2e/security-headers.e2e.mjs`](../../../tests/e2e/security-headers.e2e.mjs) liefert `dist-web` mit genau diesen Headern aus und läuft Start, Beispielprojekt, Editor mit 3D-Ansicht, Material, Bauanleitung, Export mit Download, Bibliothek, Weltkarte, Mod-Seite, Systemcheck, Anleitung, Weltimport und Werkstatt ab. Er verlangt **null** Verstöße.
+2. **Entscheidung Philipp (10.11.):** nur der Projekt-Raum. Eigene Team-Raum-Adressen sind gesperrt, und zwar an zwei Stellen: die CSP blockiert sie im Browser, und der Planer lehnt sie schon vorher mit einer verständlichen Meldung ab ([`roomAddress.ts`](../../../apps/web/src/views/project/team/roomAddress.ts), gilt für Live schalten, Einladungen, Zugangsdateien, geteilte Weltkarte und Server-Kopplung). Lokale Räume auf `127.0.0.1`/`localhost` bleiben für Entwicklung und Browsertests erlaubt.
+3. **Jetzt:** volle Richtlinie als `Content-Security-Policy`. Der Browsertest prüft als Gegenprobe, dass ein fremdes Verbindungsziel blockiert wird. Ein neues Verbindungsziel braucht einen Eintrag in `CONNECT_SRC` (und, falls es ein Team-Raum ist, in `roomAddress.ts`).
 
 ## Grenzen von GitHub Pages
 
 GitHub Pages erlaubt **keine eigenen Header**. Dort gilt:
 
 - HSTS setzt GitHub selbst (`max-age=31556952`), HTTP leitet auf HTTPS um.
-- Die CSP steht nur als `<meta http-equiv>` in `index.html`: `object-src 'none'; base-uri 'self'`. `frame-ancestors`, `Report-Only`, `X-Frame-Options`, `Permissions-Policy` und `Cross-Origin-Opener-Policy` wirken als Meta-Angabe nicht.
+- Die CSP steht nur als `<meta http-equiv>` in `index.html`: `object-src 'none'; base-uri 'self'`. `frame-ancestors`, `X-Frame-Options`, `Permissions-Policy` und `Cross-Origin-Opener-Policy` wirken als Meta-Angabe nicht.
 - **Einbettungsschutz im Programm** ([`apps/web/src/app/frameGuard.ts`](../../../apps/web/src/app/frameGuard.ts)): Läuft der Planer im Rahmen einer fremden Adresse, startet er nicht, sondern zeigt nur „Im eigenen Tab öffnen“. So kann keine fremde Seite Klicks auf Freigaben oder Team-Aktionen unterschieben. Der Browsertest prüft beide Fälle (mit Headern blockiert der Browser, ohne Header greift der Programmschutz).
 
 Wer den vollen Schutz will, nutzt `https://bauplaner.pages.dev/Minecraft-Bauplaner/`. Projekte liegen je Adresse getrennt im Browser ([OFFLINE.md](OFFLINE.md)).

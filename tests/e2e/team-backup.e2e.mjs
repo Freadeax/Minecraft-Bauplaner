@@ -14,7 +14,7 @@ import { teamEvent } from '../../dist/domain/src/index.js';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
-const PORT = 4389, BASE = `http://127.0.0.1:${PORT}/Minecraft-Bauplaner/`, ROOM = 'https://sicherung.test';
+const PORT = 4389, BASE = `http://127.0.0.1:${PORT}/Minecraft-Bauplaner/`, ROOM = 'https://bauplaner-team.team-room.workers.dev'; // RELEASE-01: nur der Projekt-Raum, vom Test abgefangen
 let server, browser;
 
 before(async () => {
@@ -133,7 +133,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     const fake = fakeService();
     const context = await browser.newContext({ viewport });
     await context.route(`${ROOM}/**`, fake.http);
-    await context.routeWebSocket(/^wss:\/\/sicherung\.test\//, fake.live);
+    await context.routeWebSocket(/^wss:\/\/bauplaner-team\.team-room\.workers\.dev\//, fake.live);
     const p = await context.newPage();
     p.setDefaultTimeout(15_000);
     const errors = [];

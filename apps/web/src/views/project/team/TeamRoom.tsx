@@ -3,7 +3,7 @@ import { appendEvents, goLive, headerFingerprint, inviteLink, laterThan, leaveLi
 import type { ProtectFree, ProtectMode, RoomTeam, TeamEventBody, TeamState, TeamView } from '../../../../../../packages/domain/src/index.js';
 import { useApp } from '../../../app/context';
 import { errorText } from '../../../app/ui';
-import { RoomError, addRoomKey, createRoom, getPlan, leaderKeysOf, putHeader, putPlan, readRoomUrl, rotateKey, saveRoomUrl, useRoomConnection } from './roomClient';
+import { RoomError, addRoomKey, createRoom, getPlan, leaderKeysOf, putHeader, putPlan, readRoomUrl, rotateKey, saveRoomUrl, roomUrlAllowed, ROOM_URL_REFUSED, useRoomConnection } from './roomClient';
 import type { ProjectSession } from '../session';
 import { TeamBackup } from './TeamBackup';
 import { TeamKeys } from './TeamKeys';
@@ -87,7 +87,7 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
 
   const goOnline = () => run(async () => {
     const base = url.trim().replace(/\/+$/, '');
-    if (!/^https:\/\//.test(base) && !/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(base)) throw new Error('Die Adresse des Team-Raums muss mit https:// beginnen.');
+    if (!roomUrlAllowed(base)) throw new Error(ROOM_URL_REFUSED);
     saveRoomUrl(base);
     // TEAM-SEC-01: the room checks authors from the first event on; the public key follows once the admin key exists (secureRoom).
     const keys = await createRoom(base, team.teamId, team.name, team.founder);
@@ -190,7 +190,7 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
     {leads ? <>
       <div className="team-inline"><label className="grow">Adresse des Team-Raums<input value={url} placeholder="https://bauplaner-team.….workers.dev" onChange={e => setUrl(e.target.value)} aria-label="Adresse des Team-Raums" /></label>
         <button className="primary" disabled={busy || !url.trim()} onClick={() => void goOnline()}>Live schalten</button></div>
-      <small className="muted">Voreingestellt ist der Team-Raum des Build Studios. Einen eigenen kannst du einrichten (services/team-room/README.md) und hier eintragen; die Adresse merkt sich dieser Browser.</small>
+      <small className="muted">Das Build Studio verbindet sich nur mit seinem eigenen Team-Raum; andere Adressen sperrt die Seite aus Sicherheitsgründen.</small>
     </> : <p className="muted">Die Bauleitung schaltet das Team live und schickt dir einen Einladungslink. Bis dahin geht der Austausch über Teampaket und Meldecode unten.</p>}
     <TeamAccessOpen team={team} saveLive={saveLive} newDevice={newDeviceId} onMessage={onMessage} />
   </div>;

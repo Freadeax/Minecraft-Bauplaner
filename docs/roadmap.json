@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-10T12:11:16.244Z",
+  "updatedAt": "2026-11-10T12:48:36.436Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -13006,7 +13006,12 @@
         "tests/",
         "docs/architecture/betrieb/SICHERHEITSHEADER.md",
         "docs/operations/VEROEFFENTLICHUNG.md",
-        "SECURITY.md"
+        "SECURITY.md",
+        "apps/web/src/views/project/team/",
+        "apps/web/src/views/map/useWorldShare.ts",
+        "apps/web/src/views/mod/serverClient.ts",
+        "apps/web/src/app/dataFlows.ts",
+        "services/team-room/README.md"
       ],
       "legacyIds": [],
       "steps": [
@@ -13037,8 +13042,8 @@
         },
         {
           "id": "RELEASE-01-S06",
-          "title": "Volle CSP durchsetzen, nachdem über eigene Team-Raum-Adressen entschieden ist (connect-src).",
-          "done": false
+          "title": "Volle CSP durchgesetzt (10.11.2026), nur der Projekt-Raum in connect-src (Entscheidung Philipp); Planer lehnt andere Team-Raum-Adressen mit Meldung ab.",
+          "done": true
         },
         {
           "id": "RELEASE-01-S07",
@@ -13051,7 +13056,7 @@
         "npm run check:release nach dem Publish ohne Fehler.",
         "Sicherer Export: Datei enthält keine Befehle mehr, Schildtext und übrige Gegenstände bleiben."
       ],
-      "next": "Entscheidung Philipp: eigene Team-Raum-Adressen beim Durchsetzen der CSP erlauben oder nicht; Mod-Version mit Browserliste mit dem nächsten Mod-Release ausliefern.",
+      "next": "Mod-Version mit Browserliste mit dem nächsten Mod-Release ausliefern und im Spiel prüfen.",
       "blockers": [],
       "evidence": [
         {
@@ -13079,7 +13084,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T19:44:24.512Z",
+      "updatedAt": "2026-11-10T12:48:36.436Z",
       "area": "PERF",
       "thread": "Sicherheitsheader und Release-Check einführen",
       "philipp": [],
@@ -15887,6 +15892,41 @@
           "done": 3,
           "total": 3,
           "next": "Abnahme im Alltag: Team live mit Mitspielern (TEAMBAU-25) und Texturquelle laden/abbrechen (GERAET-05)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T12:48:36.436Z",
+      "kind": "progress",
+      "items": [
+        "RELEASE-01"
+      ],
+      "summary": "Volle CSP durchgesetzt (Entscheidung Philipp 10.11.: nur der Projekt-Raum); Planer lehnt andere Team-Raum-Adressen mit Meldung ab, Team-Browsertests auf den abgefangenen Projekt-Raum umgestellt",
+      "files": [
+        "SECURITY.md",
+        "apps/web/src/app/dataFlows.ts",
+        "apps/web/src/views/map/useWorldShare.ts",
+        "apps/web/src/views/mod/serverClient.ts",
+        "apps/web/src/views/project/team/TeamRoom.tsx",
+        "apps/web/src/views/project/team/roomAddress.ts",
+        "apps/web/src/views/project/team/roomClient.ts",
+        "docs/TESTING.md",
+        "docs/architecture/betrieb/SICHERHEITSHEADER.md",
+        "scripts/pages/security_headers.mjs",
+        "services/team-room/README.md",
+        "tests/e2e/security-headers.e2e.mjs",
+        "tests/e2e/team-access.e2e.mjs",
+        "tests/e2e/team-backup.e2e.mjs",
+        "tests/e2e/team-room.e2e.mjs",
+        "tests/unit/tooling/cloudflare-pages.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "RELEASE-01",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Mod-Version mit Browserliste mit dem nächsten Mod-Release ausliefern und im Spiel prüfen."
         }
       ]
     }
