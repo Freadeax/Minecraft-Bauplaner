@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-10T12:48:36.436Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-10T13:40:24.495Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -3975,7 +3975,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PRIV-01
 
-**Datenschutz und Freigaben verständlich: was geht wohin, wer sieht es, Speicherstatus und Umzug** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Datenschutz, Freigaben und Speicherstatus klären“ · Arbeitsstrang: „Datenschutz, Freigaben und Speicherstatus klären“ · Aktualisiert: 2026-11-07T20:55:35.260Z
+**Datenschutz und Freigaben verständlich: was geht wohin, wer sieht es, Speicherstatus und Umzug** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Datenschutz, Freigaben und Speicherstatus klären“ · Arbeitsstrang: „Datenschutz, Freigaben und Speicherstatus klären“ · Aktualisiert: 2026-11-10T13:40:24.495Z
 
 - [x] PRIV-01-S01: Fußzeile, Startseite und Systemcheck behaupten nicht mehr „Alles bleibt lokal“; Seite #/datenschutz listet jeden Datenweg mit was, wohin, wer sieht es, wie lange, wie zurücknehmen.
 - [x] PRIV-01-S02: An jeder Freigabe (Live schalten, Einladungslink, Server-Link, Weltplan im Team, Webkarte, Spielfreigaben) steht derselbe Hinweis aus einer Liste (dataFlows.ts).

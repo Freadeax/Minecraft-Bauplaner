@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-10T12:48:36.436Z",
+  "updatedAt": "2026-11-10T13:40:24.495Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -12786,7 +12786,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T20:55:35.260Z",
+      "updatedAt": "2026-11-10T13:40:24.495Z",
       "area": "QA",
       "thread": "Datenschutz, Freigaben und Speicherstatus klären",
       "philipp": [
@@ -15927,6 +15927,26 @@
           "done": 6,
           "total": 7,
           "next": "Mod-Version mit Browserliste mit dem nächsten Mod-Release ausliefern und im Spiel prüfen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T13:40:24.495Z",
+      "kind": "progress",
+      "items": [
+        "PRIV-01"
+      ],
+      "summary": "Release-Datenprobe stellt das Update wie ein echtes Deploy nach (gleiche sw.js-Adresse, neuer Inhalt); vorher wackelte der Test",
+      "files": [
+        "tests/e2e/release-data.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PRIV-01",
+          "status": "implemented",
+          "done": 8,
+          "total": 8,
+          "next": "Zugänge-Liste wirkt im echten Dienst, sobald der Team-Raum mit TEAM-SEC-01/HARDEN-01 ausgerollt ist (bis dahin Hinweis „ältere Fassung“); danach Abnahme im Spiel."
         }
       ]
     }

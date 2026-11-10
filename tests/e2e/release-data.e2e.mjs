@@ -5,6 +5,7 @@
 // persistence.e2e.mjs. Läuft nach `npm run build` mit `npm run test:e2e`.
 import { createRequire } from 'node:module';
 import { spawn } from 'node:child_process';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { openSampleProject, waitForStart } from './start.mjs';
@@ -13,6 +14,10 @@ const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const PORT = 4391, BASE = `http://127.0.0.1:${PORT}/Minecraft-Bauplaner/`;
 let server, browser;
+// Ein Deploy wie auf GitHub/Cloudflare Pages: dieselbe Adresse sw.js, neuer Inhalt. (Eine andere Skriptadresse
+// anzumelden, hängt in Chromium manchmal, und die App meldet danach ohnehin wieder sw.js an.)
+const SW = new URL('../../dist-web/sw.js', import.meta.url);
+const swBefore = readFileSync(SW, 'utf8');
 
 before(async () => {
   server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', 'preview', '--host', '127.0.0.1', '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
@@ -22,7 +27,7 @@ before(async () => {
   }
   browser = await chromium.launch();
 });
-after(async () => { await browser?.close(); server?.kill(); });
+after(async () => { writeFileSync(SW, swBefore); await browser?.close(); server?.kill(); });
 
 async function context() {
   const ctx = await browser.newContext({ viewport: { width: 1300, height: 900 } });
@@ -70,10 +75,13 @@ test('Release-Probe: Offline-Start mit Projekt, Update bei offenem Projekt, Spei
   await ctx.setOffline(false);
 
   // Update bei offenem Projekt: eine neue Fassung des Service Workers übernimmt, das Projekt bleibt offen und speichert weiter.
+  writeFileSync(SW, `${swBefore}\n// Release-Probe: neue Fassung\n`);
   await p.evaluate(async () => {
-    const next = await navigator.serviceWorker.register('sw.js?release=2', { scope: './' });
+    const reg = await navigator.serviceWorker.getRegistration();
+    const old = reg.active;
+    await reg.update();
     for (let i = 0; i < 600; i++) {
-      if (next.active?.scriptURL.includes('release=2') && next.active.state === 'activated') return;
+      if (reg.active && reg.active !== old && reg.active.state === 'activated' && navigator.serviceWorker.controller === reg.active) return;
       await new Promise(r => setTimeout(r, 100));
     }
     throw new Error('neue Fassung nicht aktiv');

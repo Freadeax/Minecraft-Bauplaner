@@ -1025,3 +1025,17 @@ Volle CSP durchgesetzt (Entscheidung Philipp 10.11.: nur der Projekt-Raum); Plan
 - `tests/e2e/team-room.e2e.mjs`
 - `tests/unit/tooling/cloudflare-pages.test.mjs`
 
+## 2026-11-10T13:40:24.495Z · progress
+
+**Aufgaben:** PRIV-01
+
+Release-Datenprobe stellt das Update wie ein echtes Deploy nach (gleiche sw.js-Adresse, neuer Inhalt); vorher wackelte der Test
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PRIV-01 | 🧩 Implementiert · Abnahme offen | 8/8 | Zugänge-Liste wirkt im echten Dienst, sobald der Team-Raum mit TEAM-SEC-01/HARDEN-01 ausgerollt ist (bis dahin Hinweis „ältere Fassung“); danach Abnahme im Spiel. |
+
+**Geänderte Dateien:**
+
+- `tests/e2e/release-data.e2e.mjs`
+
