@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T22:24:26.927Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-10T12:11:16.244Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -137,7 +137,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [COOP-09](#coop-09) | Team live im Alltag | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
 | [COOP-10](#coop-10) | Client zuerst | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | TEAMBAU-27 mit Mitspielern: Mod 0.15.0, Team live, ohne Plugin bauen und Kiste öffnen. |
 | [COOP-11](#coop-11) | Verlauf verdichten | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | TEAMBAU-28: einen echten Teamstand verdichten und mit einem Mitspieler abgleichen. |
-| [HARDEN-01](#harden-01) | Importe und Team-Raum gegen Missbrauch härten | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Importe und Team-Worker gegen Missbrauch härten“ | — |
+| [HARDEN-01](#harden-01) | Importe und Team-Raum gegen Missbrauch härten | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Importe und Team-Worker gegen Missbrauch härten“ | — |
 | [LINK-04](#link-04) | Planer | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Testplan-Bereich LINK durchgehen. |
 | [LINK-05](#link-05) | Zweiter Weg über den Team-Raum | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern. |
 | [OPS-04](#ops-04) | Team-Raum betreiben | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Testfall TEAMBAU-31 mit zwei Geräten: sichern, wiederherstellen, löschen und zurückholen. |
@@ -664,7 +664,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GUIDE-01](#guide-01) | Anleitung „Wie geh ich es an?“: eigener Reiter mit Wegen nach Ziel, jeder Schritt mit Grafik, kurzem Satz und Link an die passende Stelle | 🧩 Implementiert · Abnahme offen | 4/5 | UI-02, GAME-11, TERRAIN-04, LINK-11 | ausstehend | ausstehend |
 | [NAME-01](#name-01) | Neuer Produktname „LMNT — Build Studio“ auf Seite, Mod, Plugin und Modrinth | 🧩 Implementiert · Abnahme offen | 3/4 | UI-03, GAME-12 | ausstehend | ausstehend |
 | [PRIV-01](#priv-01) | Datenschutz und Freigaben verständlich: was geht wohin, wer sieht es, Speicherstatus und Umzug | 🧩 Implementiert · Abnahme offen | 8/8 | COOP-07, WORLD-SHARE-01, BACKUP-02 | ausstehend | ausstehend |
-| [HARDEN-01](#harden-01) | Importe und Team-Raum gegen Missbrauch härten | 🧩 Implementiert · Abnahme offen | 2/3 | TEAM-02 | ausstehend | ausstehend |
+| [HARDEN-01](#harden-01) | Importe und Team-Raum gegen Missbrauch härten | 🧩 Implementiert · Abnahme offen | 3/3 | TEAM-02 | ausstehend | ausstehend |
 | [TEAM-SEC-01](#team-sec-01) | Team-Rollen gegen Vortäuschen absichern: Absender aus der Sitzung, eigene Schlüssel, Ed25519 für den Server | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-07, GAME-06, BACKUP-03, HARDEN-01 | ausstehend | ausstehend |
 | [RELEASE-01](#release-01) | Browser-Schutz und Release-Check: Sicherheitsheader auf Cloudflare Pages, Einbettungsschutz auf GitHub Pages, Release-Prüfung, sicherer Schem/Litematic-Export, Browserliste in der Mod | 🧩 Implementiert · Abnahme offen | 5/7 | PERF-06, FORMAT-02, LINK-03 | ausstehend | ausstehend |
 
@@ -4002,17 +4002,17 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### HARDEN-01
 
-**Importe und Team-Raum gegen Missbrauch härten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Importe und Team-Worker gegen Missbrauch härten“ · Arbeitsstrang: „Importe und Team-Worker gegen Missbrauch härten“ · Aktualisiert: 2026-11-07T19:38:18.474Z
+**Importe und Team-Raum gegen Missbrauch härten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Importe und Team-Worker gegen Missbrauch härten“ · Arbeitsstrang: „Importe und Team-Worker gegen Missbrauch härten“ · Aktualisiert: 2026-11-10T12:11:16.244Z
 
 - [x] HARDEN-01-S01: ZIP/JAR: wirklich gelesene und entpackte Bytes zählen, gefälschte Größen sofort abbrechen, gemeinsames Budget je Import, Abbruch; PNG-Kopfprüfung; Laden/Entpacken/Bildprüfung im abbrechbaren Hintergrund-Worker. GZIP von Planständen und Meldecodes mit Obergrenze.
 - [x] HARDEN-01-S02: Team-Raum: Raumerstellung je Anschluss und gesamt begrenzt (RoomGate), create nur intern, Origin-Prüfung bei Anlegen und WebSocket, Größen vor dem Parsen, Anmeldung binnen 10 s, Grenzen für Anfragen, Verbindungen und Nachrichten, Aufbewahrung nur durch Nutzung mit gültigem Schlüssel.
-- [ ] HARDEN-01-S03: Neue Fassung des Team-Raums ausrollen und Probe gegen den echten Dienst.
+- [x] HARDEN-01-S03: Neue Fassung des Team-Raums ausgerollt (10.11.2026, Version 037de87a, Rücksprung 333e7fd5) und gegen den echten Dienst geprüft.
 
 **Abnahme:** Ein ZIP-Eintrag mit falscher Größenangabe oder ein Entpack-Bombe bricht beim ersten Byte über der Grenze ab. Mehrere Pakete eines Imports teilen ein Budget. Fremde Browser-Seiten können weder Räume anlegen noch live verbinden; Mod und Plugin verbinden wie bisher. Übergroße Anfragen werden vor dem Parsen abgewiesen; stumme Verbindungen nach 10 s geschlossen. Anonyme Anfragen verlängern die Aufbewahrung nicht.
 
-**Nächste Aktion:** Team-Raum ausrollen (wrangler deploy mit Migration v3 RoomGate), danach Missbrauchsprobe, Rauchtest und Sicherungsprobe gegen den echten Dienst.
+**Nächste Aktion:** Abnahme im Alltag: Team live mit Mitspielern (TEAMBAU-25) und Texturquelle laden/abbrechen (GERAET-05).
 
-**Prüfstand:** Automatisch geprüft (Node-Tests, wrangler dev); Ausrollen des Team-Raums wartet auf Freigabe.
+**Prüfstand:** Automatisch geprüft (Node-Tests, Browsertests, wrangler dev); am 10.11.2026 gegen den echten Dienst: Rauchtest, Sicherungsprobe und Missbrauchsprobe grün. Abnahme mit Mitspielern offen.
 
 **Nachweise:** [tests/unit/building/zip-limits.test.mjs](../tests/unit/building/zip-limits.test.mjs) — Nachgestellte Befunde: gespeicherter 128-KiB-Eintrag mit 10-Byte-Angabe, Entpack-Bombe, geteiltes Budget, Abbruch, PNG-Prüfung, GZIP-Grenzen.; [tests/unit/team/team-room-abuse.test.mjs](../tests/unit/team/team-room-abuse.test.mjs) — Größen beim Lesen, Origin, Adressen, Eimer, Erstellungsfenster, Quelltextregeln des Workers.; [scripts/team/team_room_abuse_smoke.mjs](../scripts/team/team_room_abuse_smoke.mjs) — Probe gegen wrangler dev: 403 fremde Seite, 404 create über Raum, 413, 4408 nach 10 s, 4401, 4413, 429 Raumflut.; [docs/architecture/team/TEAM_LIVE.md](architecture/team/TEAM_LIVE.md) — §15 Grenzen.
 

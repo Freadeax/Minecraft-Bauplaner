@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T22:24:26.927Z",
+  "updatedAt": "2026-11-10T12:11:16.244Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -12842,8 +12842,8 @@
         },
         {
           "id": "HARDEN-01-S03",
-          "title": "Neue Fassung des Team-Raums ausrollen und Probe gegen den echten Dienst.",
-          "done": false
+          "title": "Neue Fassung des Team-Raums ausgerollt (10.11.2026, Version 037de87a, Rücksprung 333e7fd5) und gegen den echten Dienst geprüft.",
+          "done": true
         }
       ],
       "acceptance": [
@@ -12853,7 +12853,7 @@
         "Übergroße Anfragen werden vor dem Parsen abgewiesen; stumme Verbindungen nach 10 s geschlossen.",
         "Anonyme Anfragen verlängern die Aufbewahrung nicht."
       ],
-      "next": "Team-Raum ausrollen (wrangler deploy mit Migration v3 RoomGate), danach Missbrauchsprobe, Rauchtest und Sicherungsprobe gegen den echten Dienst.",
+      "next": "Abnahme im Alltag: Team live mit Mitspielern (TEAMBAU-25) und Texturquelle laden/abbrechen (GERAET-05).",
       "blockers": [],
       "evidence": [
         {
@@ -12875,13 +12875,13 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "Automatisch geprüft (Node-Tests, wrangler dev); Ausrollen des Team-Raums wartet auf Freigabe."
+        "note": "Automatisch geprüft (Node-Tests, Browsertests, wrangler dev); am 10.11.2026 gegen den echten Dienst: Rauchtest, Sicherungsprobe und Missbrauchsprobe grün. Abnahme mit Mitspielern offen."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T19:38:18.474Z",
+      "updatedAt": "2026-11-10T12:11:16.244Z",
       "area": "TEAM",
       "thread": "Importe und Team-Worker gegen Missbrauch härten",
       "philipp": [],
@@ -15867,6 +15867,26 @@
           "done": 6,
           "total": 6,
           "next": "Abnahme auf Philipps Rechner und iPad (Projektzentrale sofort sichtbar, Export großer Bauten ohne Hänger)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T12:11:16.244Z",
+      "kind": "progress",
+      "items": [
+        "HARDEN-01"
+      ],
+      "summary": "Team-Raum ausgerollt (10.11.2026, Version 037de87a, Rücksprung 333e7fd5); Rauch-, Sicherungs- und Missbrauchsprobe gegen den echten Dienst grün.",
+      "files": [
+        "docs/TESTING.md"
+      ],
+      "snapshot": [
+        {
+          "id": "HARDEN-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "Abnahme im Alltag: Team live mit Mitspielern (TEAMBAU-25) und Texturquelle laden/abbrechen (GERAET-05)."
         }
       ]
     }

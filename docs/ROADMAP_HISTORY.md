@@ -982,3 +982,17 @@ Startpaket 1206 → 428 KiB (Build lenkt Sammelexport-Importe auf die deklariere
 - `tests/unit/tooling/barrel-imports.test.mjs`
 - `vite.config.mjs`
 
+## 2026-11-10T12:11:16.244Z · progress
+
+**Aufgaben:** HARDEN-01
+
+Team-Raum ausgerollt (10.11.2026, Version 037de87a, Rücksprung 333e7fd5); Rauch-, Sicherungs- und Missbrauchsprobe gegen den echten Dienst grün.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| HARDEN-01 | 🧩 Implementiert · Abnahme offen | 3/3 | Abnahme im Alltag: Team live mit Mitspielern (TEAMBAU-25) und Texturquelle laden/abbrechen (GERAET-05). |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+
