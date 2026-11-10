@@ -41,7 +41,7 @@ Merkliste, Vergleich und Blickrichtung behalten fehlgeschlagene Schreibvorgänge
 Stand 01.11.2026. Ergänzt B11 und die Themen aus UI-01; nutzt ausschließlich deren semantische Tokens (`--text`, `--muted`, `--mint`, `--panel*`, `--line`), daher gelten alle fünf Themen hell und dunkel.
 
 - **Navigationsliste** `apps/web/src/app/nav.ts`: Kopfzeile, untere Handyleiste und Schnellsuche lesen dieselben Einträge. Ein neuer Hauptbereich hängt genau einen Eintrag an (Label, Ziel, Symbol, zugehörige Routen, Kurzbeschreibung).
-- **Hülle** `app/Shell.tsx`: klebende, kompakte Kopfzeile (Marke, Navigation mit Symbolen, Suchfeld, GitHub, Darstellung, Versionshinweis), Fußzeile mit Systemcheck; Titel des Browser-Tabs je Seite (`Seite · LMNT — Build Studio`, Projekte mit Name und Bereich). Symbole in `app/icons.tsx` (eigene Linien-SVGs, `currentColor`, immer `aria-hidden`).
+- **Hülle** `app/Shell.tsx`: klebende, kompakte Kopfzeile (Marke, Navigation, Suchfeld, Darstellung), Fußzeile mit Werkzeugen, Systemcheck, GitHub und Versionshinweis (seit UI-04); Titel des Browser-Tabs je Seite (`Seite · LMNT — Build Studio`, Projekte mit Name und Bereich). Symbole in `app/icons.tsx` (eigene Linien-SVGs, `currentColor`, immer `aria-hidden`).
 - **Schnellsuche** `app/CommandPalette.tsx`: Strg+K / ⌘K oder Suchfeld. Springt zu Seiten, Bereichen des offenen Projekts, Projekten (zuletzt geändert zuerst) und Bibliotheksgebäuden; Suche ohne Groß-/Kleinschreibung, Akzente und ß. Rein lokal, verändert nichts. Rollen: `dialog` „Schnellsuche“, `combobox`, `listbox`/`option`.
 - **Projektkopf** (`ProjectView.tsx`): Pfad „Projekte › Name“, Speicherstatus als Punktmarke, Bereichsleiste mit Symbolen; am Handy waagerecht scrollbar, der aktive Bereich wird in die Mitte gerückt.
 - **Handy (≤ 760 px)**: Hauptnavigation als feste untere Leiste (Projekte, Bibliothek, Betrachter, Weltkarte, Suchen; Safe-Area beachtet), Kopfzeile nur mit Marke, Suche und Darstellung. Im Editor steht die 3D-Ansicht vor den Listen; Vergleichsleiste der Bibliothek und Abhakleiste beim Bauen sitzen über der unteren Leiste. Baustellenkacheln und -spalten schrumpfen statt die Seite zu verbreitern.
@@ -97,7 +97,7 @@ Stand 06.11.2026. Das Produkt heißt **LMNT — Build Studio** (mit Geviertstric
 
 Stand 06.11.2026. Eine gemeinsame Gestaltungsschicht für alle Seiten des Planers: `apps/web/src/theme/design.css`, geladen als letzte Datei in `main.tsx`. Sie ändert nur die Optik, kein Markup und keine Abläufe (Struktur und Bedienwege liegen bei „Bedienung vereinfachen“, die Mod gleicht sich über die Werte unten an).
 
-**Thema „Werkbank“ (Standard).** Minecraft-nah, aber ruhig: Grasgrün auf Tiefenschiefer (dunkel) bzw. auf Birkenholz-Hell (hell), Gold als Zweitfarbe. Die fünf bisherigen Themen bleiben wählbar. Werte in `theme/themeTokens.mjs` (jede Palette hat jetzt `accent2`); der Kontrast Text/Akzent/Knopf ≥ 4,5 : 1 ist in `tests/unit/web/theme-tokens.test.mjs` für alle Themen hell und dunkel festgeschrieben. Das Thema wird schon beim Laden des Moduls gesetzt (kein Aufblitzen) und färbt die Browserleiste (`meta theme-color`).
+**Thema „Werkbank“ (Standard bis UI-04, seitdem wählbar; Standard ist „LMNT“, siehe unten).** Minecraft-nah, aber ruhig: Grasgrün auf Tiefenschiefer (dunkel) bzw. auf Birkenholz-Hell (hell), Gold als Zweitfarbe. Die fünf bisherigen Themen bleiben wählbar. Werte in `theme/themeTokens.mjs` (jede Palette hat jetzt `accent2`); der Kontrast Text/Akzent/Knopf ≥ 4,5 : 1 ist in `tests/unit/web/theme-tokens.test.mjs` für alle Themen hell und dunkel festgeschrieben. Das Thema wird schon beim Laden des Moduls gesetzt (kein Aufblitzen) und färbt die Browserleiste (`meta theme-color`).
 
 | Farbe | Dunkel | Hell | Verwendung |
 |---|---|---|---|
@@ -119,3 +119,34 @@ Stand 06.11.2026. Eine gemeinsame Gestaltungsschicht für alle Seiten des Planer
 **Regeln für neue Stile.** Selektoren der Schicht beginnen mit `:root[data-theme]`, damit sie gegen später geladene Ansichts-CSS gewinnen (ohne `!important`). 3D-Bühnen (`.viewport`, `.detail-stage`, Vorschaubilder) bleiben bewusst dunkel. Hover-Effekte nur unter `@media (hover: hover)`, damit das iPad keine hängenden Zustände zeigt.
 
 Prüfung: `tests/e2e/design.e2e.mjs` – Standardthema beim ersten Bild, WCAG-Kontrast aller sichtbaren Texte auf Projektzentrale, Anleitung, Bibliothek, Generatoren, Weltkarte, Spiel, Systemcheck und den Reitern Editor/Bauen/Material/Baustelle/Team (hell und dunkel), iPad Pro 11 (Ziele ≥ 44 px, alle Reiter in der Leiste, keine Querverschiebung), „Bewegung reduzieren“. Testphase: START-20, START-21.
+
+
+## LMNT-Auftritt (UI-04)
+
+Stand 10.11.2026. Das Build Studio sieht aus und bewegt sich wie die LMNT-Website (lmnt-gaming.net): tiefes Schwarz, LMNT-Rot, breite Überschriften, runde Knöpfe, eine große Bühne auf der Startseite. Die Schicht liegt in `apps/web/src/theme/brand.css` (nach `design.css` geladen) und `apps/web/src/app/motion.ts`. Die Tokens und Regeln aus UI-03 gelten weiter; diese Schicht überschreibt nur Werte und ergänzt Bausteine.
+
+**Thema „LMNT“ (Standard).** Die sechs älteren Themen bleiben wählbar. Der Speicherschlüssel der Darstellung heißt `lmnt:appearance:v2`, damit jedes Gerät den neuen Auftritt einmal bekommt.
+
+| Farbe | Dunkel | Hell | Verwendung |
+|---|---|---|---|
+| `accent` | `#ff3131` | `#c20d1f` | Links, aktive Navigation, Zahlen, Linien |
+| `accent2` | `#f2efe8` | `#08070c` | gewählte Reiter und Segmente (umgekehrte Fläche) |
+| `surface` | `#111018` | `#fffdf8` | Karten |
+| `canvas` | `#08070c` | `#f2efe8` | Seitenhintergrund mit feinem Raster |
+| `text` | `#fffdf8` | `#08070c` | Schrift |
+| Füllfarbe | `#e10f22` mit Weiß | gleich | `--ds-fill` / `--ds-on-fill` für Hauptknöpfe, Laufband, Abschlusskarte |
+
+**Füllregel.** Weiß auf `#ff3131` reicht für Text nicht (3,6 : 1). Flächen mit weißer Schrift nutzen deshalb immer `--ds-fill` (4,9 : 1). „In Ordnung“ bleibt grün (`--ds-success`), auch wenn ältere Regeln dafür die Akzentfarbe nahmen.
+
+**Schrift.** Überschriften in Archivo Black (`--ds-display`), Text in DM Sans (`--ds-font`). Beide Dateien liegen im Paket (`theme/fonts/`, SIL Open Font License, Lizenztexte daneben und in den Drittanbieterhinweisen); es wird nichts von fremden Servern geladen.
+
+**Bausteine.** Kopfzeile durchsichtig, beim Scrollen mit Hintergrund (`html[data-scrolled]`), Textnavigation mit Unterstrich, Knöpfe als Pillen. Abschnittsköpfe `.section-head` mit Zähler („01 / EINSTIEG“). Startseite: Bühne `.home-hero` mit `.hero-copy` und `.hero-visual` (Kugel, zwei Umlaufbahnen, schwebende Gebäudekacheln, Etiketten), Laufband `.ticker`, drei große Einstiegskarten, Abschlusskarte `.join-card` zur Mod, Fußzeile als Raster. Die Bühne steht immer, auch wenn schon Projekte da sind. 3D-Bühnen und ihre Leisten sind im Thema LMNT tintenschwarz statt blaugrün; die Blöcke selbst bleiben unverändert.
+
+**Bewegung: kräftig außen, ruhig im Editor.**
+- Einblenden beim Scrollen: Element bekommt `data-reveal` (optional `--reveal-i` für die Staffelung). `motion.ts` setzt `data-revealed`, sobald es ins Bild kommt. Versteckt wird nur unter `html[data-motion=on]`; ohne Skript steht alles sofort da.
+- Dauerbewegung (Umlaufbahnen, Schweben, Laufband, Kippen zum Zeiger, Hochzählen der Kennzahlen) gibt es nur auf der Startseite.
+- Seitenwechsel: rote Linie `.route-sweep` unter der Kopfzeile; Kopfbereiche und Kartenraster steigen gestaffelt auf.
+- Im Projekt (Editor, Reiter, Werkzeuge) bleibt es bei den kurzen Übergängen aus UI-03.
+- Weiterhin gilt: Animationen nur „rückwärts gefüllt“, Hover nur unter `@media (hover: hover)`, kein `backdrop-filter` auf vielen Elementen (nur die Kopfzeile). Bei „Bewegung reduzieren“ setzt `motion.ts` kein `data-motion`, Laufband, Linie und Umlaufbahnen stehen still.
+
+Prüfung: `tests/e2e/design.e2e.mjs` – Standardthema LMNT beim ersten Bild, Schriften aus dem Paket, Bühne mit und ohne Projekte, Einblenden beim Scrollen, Seitenwechsel-Linie, „Bewegung reduzieren“, dazu die Kontrast- und iPad-Prüfungen aus UI-03 mit den neuen Farben. `tests/unit/web/theme-tokens.test.mjs` schreibt die Kontraste des Themas fest. Testphase: START-01, GERAET-04.

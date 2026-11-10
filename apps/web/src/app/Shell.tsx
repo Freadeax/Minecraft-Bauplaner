@@ -7,6 +7,7 @@ import { fileTools, mainNav, routeTitle } from './nav';
 import { openPalette } from './CommandPalette';
 import { ThemeControl } from '../theme/ThemeControl';
 import { TextureChip } from '../blockmodels/TexturePanel';
+import { useShellMotion } from './motion';
 
 const APP_NAME = 'LMNT — Build Studio';
 const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
@@ -24,26 +25,40 @@ export function useDocumentTitle(title: string | undefined): void {
 export function Shell({ route, children }: { route: Route; children: ReactNode }) {
   useDocumentTitle(route.view === 'project' ? undefined : routeTitle(route));
   const current = (views: readonly Route['view'][]) => views.includes(route.view) ? 'page' as const : undefined;
+  useShellMotion();
+  // UI-04: jeder Seitenwechsel zieht einmal eine Akzentlinie unter der Kopfzeile durch.
+  const sweepKey = route.view === 'project' ? `${route.projectId}/${route.tab}` : route.view === 'library' ? `library/${route.page ?? ''}` : route.view;
   return <>
     <a className="skip" href="#inhalt" onClick={e => { e.preventDefault(); document.getElementById('inhalt')?.focus(); }}>Zum Inhalt</a>
     <header className="topbar">
       <a className="brand" href="#/" aria-label={`${APP_NAME} – zur Projektzentrale`}><span className="brand-icon"><Cube /></span>
-        <span className="brand-text">LMNT <strong>— BUILD STUDIO</strong><small>DEIN MINECRAFT-BAUHELFER</small></span></a>
+        <span className="brand-text"><b className="brand-name">LMNT</b><small>BUILD STUDIO</small></span></a>
       <nav className="main-nav" aria-label="Hauptnavigation">
         {mainNav.map(n => <a key={n.id} href={n.href} aria-current={current(n.views)} data-nav={n.id} title={n.hint}><Icon name={n.icon} /><span className="nav-label">{n.label}</span></a>)}
       </nav>
       <button type="button" className="search-trigger" onClick={openPalette} aria-keyshortcuts="Control+K Meta+K" aria-label="Schnellsuche öffnen" title="Schnellsuche öffnen">
         <Icon name="search" /><span className="search-label">Suchen …</span><kbd>{isMac ? '⌘' : 'Strg'} K</kbd></button>
-      <a className="topbar-icon" href={REPO_URL} target="_blank" rel="noreferrer" title="Quellcode auf GitHub (neuer Tab)"><Icon name="github" /><span className="sr-only">GitHub</span></a>
       <ThemeControl />
       <TextureChip />
-      <span className="version" title="Vorabversion: Funktionen und Datenformat können sich noch ändern"><span /> Vorabversion 0.2</span>
+      <span className="route-sweep" key={sweepKey} aria-hidden="true" />
     </header>
     <div id="inhalt" tabIndex={-1} className="content">{children}</div>
     <footer className="site-footer">
-      <span><strong>LMNT — BUILD STUDIO</strong> · Mit Plan gebaut. Projekte liegen in diesem Browser; ins Internet geht nur, was du im Team teilst.</span>
-      <nav aria-label="Weitere Links"><a href="#/mod">Minecraft-Mod</a>{fileTools.map(n => <a key={n.id} href={n.href} title={n.hint}>{n.label}</a>)}<a href="#/datenschutz">Datenschutz &amp; Freigaben</a><a href="#/system">Systemcheck</a><a href="#/testphase">Testphase</a><a href={REPO_URL} target="_blank" rel="noreferrer">GitHub ↗</a></nav>
-      <span className="footer-legal">Unabhängiges Projekt · kein offizielles Minecraft-Produkt</span>
+      <div className="footer-grid">
+        <div className="footer-about">
+          <a className="brand brand-footer" href="#/" tabIndex={-1} aria-hidden="true"><span className="brand-icon"><Cube /></span>
+            <span className="brand-text"><b className="brand-name">LMNT</b><small>BUILD STUDIO</small></span></a>
+          <p><strong>LMNT — BUILD STUDIO</strong> · Mit Plan gebaut. Projekte liegen in diesem Browser; ins Internet geht nur, was du im Team teilst.</p>
+        </div>
+        <nav aria-label="Weitere Links" className="footer-links">
+          <div><strong>Werkzeuge</strong><a href="#/mod">Minecraft-Mod</a>{fileTools.map(n => <a key={n.id} href={n.href} title={n.hint}>{n.label}</a>)}</div>
+          <div><strong>Rund ums Studio</strong><a href="#/datenschutz">Datenschutz &amp; Freigaben</a><a href="#/system">Systemcheck</a><a href="#/testphase">Testphase</a><a href={REPO_URL} target="_blank" rel="noreferrer">GitHub ↗</a></div>
+        </nav>
+      </div>
+      <div className="footer-bottom">
+        <span className="footer-legal">Unabhängiges Projekt · kein offizielles Minecraft-Produkt</span>
+        <span className="version" title="Vorabversion: Funktionen und Datenformat können sich noch ändern"><span /> Vorabversion 0.2</span>
+      </div>
     </footer>
     <nav className="bottom-nav" aria-label="Hauptnavigation mobil">
       {mainNav.map(n => <a key={n.id} href={n.href} aria-current={current(n.views)}><Icon name={n.icon} size={20} /><span>{n.label}</span></a>)}

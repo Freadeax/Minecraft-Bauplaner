@@ -14,6 +14,8 @@ for(const name of runtimePackages){
  if(!license)throw new Error(`Lizenz fehlt: ${name}`);
  notices.push(`${name} ${pkg.version}\n${license}`);
 }
+// UI-04: mitgelieferte Schriften (SIL Open Font License 1.1).
+for(const name of ['LICENSE-ArchivoBlack.txt','LICENSE-DMSans.txt'])notices.push(await readFile(path.join('apps/web/src/theme/fonts',name),'utf8'));
 await writeFile(path.join(root,'THIRD_PARTY_NOTICES.txt'),notices.join('\n\n---\n\n'));
 await mkdir(path.join(root,'examples'),{recursive:true});
 const fixtureHex=(await readFile('fixtures/schem/asymmetric.nbt.hex','utf8')).replace(/\s/g,'');

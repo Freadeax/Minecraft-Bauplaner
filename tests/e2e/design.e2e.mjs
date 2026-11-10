@@ -52,17 +52,17 @@ function lowContrast() {
   return bad;
 }
 
-test('Werkbank ist das Standardthema und gilt schon beim ersten Bild', async () => {
+test('LMNT ist das Standardthema und gilt schon beim ersten Bild', async () => {
   const context = await browser.newContext({ colorScheme: 'dark' });
   const page = await context.newPage();
   try {
     await page.goto(BASE);
-    await page.waitForFunction(() => document.documentElement.dataset.theme === 'werkbank');
-    assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--theme-accent').trim()), '#7fd494');
-    assert.equal(await page.evaluate(() => document.querySelector('meta[name="theme-color"]').content), '#111715');
+    await page.waitForFunction(() => document.documentElement.dataset.theme === 'lmnt');
+    assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--theme-accent').trim()), '#ff3131');
+    assert.equal(await page.evaluate(() => document.querySelector('meta[name="theme-color"]').content), '#08070c');
     await page.locator('.theme-control summary').click();
-    assert.equal(await page.getByRole('radiogroup', { name: 'Oberflächenthema' }).getByRole('radio').count(), 6);
-    assert.equal(await page.getByRole('radio', { name: 'Werkbank' }).getAttribute('aria-checked'), 'true');
+    assert.equal(await page.getByRole('radiogroup', { name: 'Oberflächenthema' }).getByRole('radio').count(), 7);
+    assert.equal(await page.getByRole('radio', { name: 'LMNT' }).getAttribute('aria-checked'), 'true');
   } finally { await context.close(); }
 });
 
@@ -129,4 +129,55 @@ test('Bewegung reduzieren schaltet Animationen ab, sonst blenden Seiten kurz ein
       assert.equal(transform, 'none', 'nach der Einblendung bleibt kein transform (fixe Leisten bleiben am Bildschirm)');
     } finally { await context.close(); }
   }
+});
+
+// UI-04: LMNT-Auftritt – eigene Schriften ohne fremde Server, Bühne/kompakter Kopf, Einblenden beim Scrollen, Seitenwechsel-Linie.
+test('LMNT-Auftritt: Schriften aus dem Paket, große Bühne, Einblenden beim Scrollen, Seitenwechsel-Linie', async () => {
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: 'dark' });
+  const page = await context.newPage();
+  const foreign = [];
+  page.on('request', r => { const u = new URL(r.url()); if (u.hostname !== '127.0.0.1' && u.protocol.startsWith('http')) foreign.push(u.hostname); });
+  try {
+    await page.goto(BASE);
+    await waitForStart(page);
+    await page.evaluate(() => document.fonts.ready);
+    assert.equal(await page.evaluate(() => document.fonts.check('400 20px "Archivo Black"') && document.fonts.check('700 16px "DM Sans"')), true, 'beide Schriften geladen');
+    assert.match(await page.locator('.home-hero h1').evaluate(el => getComputedStyle(el).fontFamily), /Archivo Black/);
+    assert.deepEqual(foreign.filter(h => /font|gstatic|googleapis/.test(h)), [], 'keine Schrift von fremden Servern');
+    assert.equal(await page.locator('.hero-visual .hero-orbit').first().isVisible(), true);
+    // Laufband und Bühne sind Schmuck: für Vorleseprogramme ausgeblendet, Gebäude-Links bleiben bedienbar.
+    assert.equal(await page.locator('.ticker').getAttribute('aria-hidden'), 'true');
+    await page.locator('.hero-mosaic[data-ready] a').first().waitFor();
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Bühne und Laufband erzeugen keine Querverschiebung');
+    // Einblenden beim Scrollen: der Abschluss ist erst nach dem Scrollen aufgedeckt.
+    assert.equal(await page.evaluate(() => document.documentElement.dataset.motion), 'on');
+    const join = page.locator('.join-card');
+    assert.equal(await join.getAttribute('data-revealed'), null);
+    await join.scrollIntoViewIfNeeded();
+    await page.locator('.join-card[data-revealed]').waitFor();
+    // Nach dem Einblenden bleibt keine Verschiebung (sonst hingen fixe Leisten an der Karte).
+    await page.waitForFunction(() => { const cs = getComputedStyle(document.querySelector('.join-card')); return cs.opacity === '1' && cs.translate === 'none'; });
+    // Die Bühne bleibt auch mit Projekten; die schwebende Karte nennt dann ihre Zahl.
+    await page.evaluate(() => scrollTo(0, 0));
+    await page.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+    await page.getByRole('navigation', { name: 'Projektbereiche' }).waitFor();
+    assert.equal(await page.locator('.route-sweep').count(), 1, 'Seitenwechsel-Linie in der Kopfzeile');
+    await page.goto(BASE);
+    await waitForStart(page);
+    assert.equal(await page.locator('.hero-visual .hero-orbit').first().isVisible(), true);
+    await page.locator('.hero-float-bottom').getByText('1 PROJEKT GESPEICHERT').waitFor();
+  } finally { await context.close(); }
+});
+
+test('LMNT-Auftritt: „Bewegung reduzieren“ zeigt alles sofort, ohne Laufband und Verstecken', async () => {
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+  const page = await context.newPage();
+  try {
+    await page.goto(BASE);
+    await waitForStart(page);
+    assert.equal(await page.evaluate(() => document.documentElement.dataset.motion), undefined, 'kein Verstecken vor dem Einblenden');
+    assert.equal(await page.locator('.join-card').evaluate(el => getComputedStyle(el).opacity), '1');
+    assert.equal(await page.locator('.ticker-track').evaluate(el => getComputedStyle(el).animationName), 'none');
+    assert.equal(await page.locator('.route-sweep').evaluate(el => getComputedStyle(el).display), 'none');
+  } finally { await context.close(); }
 });

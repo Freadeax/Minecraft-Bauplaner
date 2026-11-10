@@ -13,6 +13,8 @@ test('every appearance has readable text, accents and primary buttons',()=>{
       assert.ok(contrastRatio(colors.text,background)>=4.5,`${id}/${mode}: text`);
       assert.ok(contrastRatio(colors.accent,background)>=4.5,`${id}/${mode}: accent`);
     }
-    assert.ok(contrastRatio(mode==='light'?'#ffffff':'#15212b',colors.accent)>=4.5,`${id}/${mode}: button`);
+    // UI-04: Das Thema LMNT füllt Hauptknöpfe mit dem dunkleren Rot (--ds-fill) und weißer Schrift; Akzentflächen tragen dunkel Tinte.
+    if (id==='lmnt') { assert.ok(contrastRatio('#ffffff','#e10f22')>=4.5,`${id}/${mode}: button`); assert.ok(contrastRatio(mode==='light'?'#ffffff':'#08070c',colors.accent)>=4.5,`${id}/${mode}: accent area`); }
+    else assert.ok(contrastRatio(mode==='light'?'#ffffff':'#15212b',colors.accent)>=4.5,`${id}/${mode}: button`);
   }
 });

@@ -1,4 +1,4 @@
-export type ThemeId = 'werkbank' | 'modern' | 'medieval' | 'industrial' | 'fantasy' | 'nether';
+export type ThemeId = 'lmnt' | 'werkbank' | 'modern' | 'medieval' | 'industrial' | 'fantasy' | 'nether';
 export type Appearance = 'dark' | 'light' | 'system';
 export const THEME_IDS: readonly ThemeId[];
 export const APPEARANCES: readonly Appearance[];

@@ -1,6 +1,8 @@
-// UI-03: „Werkbank“ ist das Standardthema – Minecraft-nah (Grasgrün auf Tiefenschiefer bzw. Birke), aber ruhig und modern.
-// accent2 ist die warme Zweitfarbe (Gold) für Hinweise, Fortschritt und kleine Akzente.
+// UI-04: „LMNT“ ist das Standardthema – Tinte, Signalrot und Papier wie auf lmnt-gaming.net.
+// „Werkbank“ (UI-03, Grasgrün auf Tiefenschiefer) und die übrigen Themen bleiben wählbar.
+// accent2 ist die Zweitfarbe für Hinweise, Fortschritt und kleine Akzente.
 const palettes = {
+  lmnt: { accent: '#ff3131', accent2: '#f2efe8', surface: '#111018', canvas: '#08070c', text: '#fffdf8' },
   werkbank: { accent: '#7fd494', accent2: '#e9c46a', surface: '#1a2220', canvas: '#111715', text: '#edf3ee' },
   modern: { accent: '#70b8f0', accent2: '#f2c879', surface: '#182331', canvas: '#101820', text: '#f1f6fc' },
   medieval: { accent: '#e7b86e', accent2: '#9fd3a8', surface: '#29231d', canvas: '#191713', text: '#fff2d9' },
@@ -9,6 +11,7 @@ const palettes = {
   nether: { accent: '#ff938a', accent2: '#f2c46b', surface: '#301d25', canvas: '#1c1118', text: '#fff1ed' }
 };
 const lightPalettes = {
+  lmnt: {accent:'#c20d1f',accent2:'#08070c',surface:'#fffdf8',canvas:'#f2efe8',text:'#08070c'},
   werkbank: {accent:'#2d6c3c',accent2:'#8a5a00',surface:'#ffffff',canvas:'#f1efe7',text:'#1c2621'},
   modern: {accent:'#234c77',accent2:'#8a5300',surface:'#ffffff',canvas:'#f1f3f6',text:'#172331'},
   medieval: {accent:'#775018',accent2:'#2d6a3a',surface:'#fffaf0',canvas:'#f3ebdc',text:'#332719'},
@@ -18,7 +21,7 @@ const lightPalettes = {
 };
 export const THEME_IDS = Object.freeze(Object.keys(palettes));
 export const APPEARANCES = Object.freeze(['dark', 'light', 'system']);
-export const DEFAULT_THEME = 'werkbank';
+export const DEFAULT_THEME = 'lmnt';
 export function normalizeTheme(value) { return typeof value === 'string' && Object.hasOwn(palettes, value) ? value : DEFAULT_THEME; }
 export function normalizeAppearance(value) { return APPEARANCES.includes(value) ? value : 'system'; }
 export function resolveAppearance(value, prefersDark = true) { const v = normalizeAppearance(value); return v === 'system' ? (prefersDark ? 'dark' : 'light') : v; }

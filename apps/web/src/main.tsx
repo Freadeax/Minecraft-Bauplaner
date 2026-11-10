@@ -22,6 +22,8 @@ import './blockmodels/blocks.css';
 import './styles/shell.css';
 // UI-03: Design-System zuletzt, damit es die gemeinsamen Bausteine aller Ansichten angleicht.
 import './theme/design.css';
+// UI-04: LMNT-Auftritt (Schriften, Formen, Bewegung) über dem Design-System.
+import './theme/brand.css';
 
 // PERF-05: pages load when opened; the start needs only the shell and the project centre.
 const LibraryView = lazyPage(() => import('./views/LibraryView').then(m => m.LibraryView));

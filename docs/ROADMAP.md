@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-10T13:40:24.495Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-10T13:55:00.000Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-10T13:40:24.495Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 2 |
 | 🚧 In Arbeit | 4 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 108 |
+| 🧩 Implementiert · Abnahme offen | 109 |
 | ✅ Im beschriebenen Umfang geprüft | 35 |
 | ⏸ Zurückgestellt | 3 |
 
@@ -25,7 +25,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Arbeitsstrang
 
 | Bereich | Offen | Verwaist | Nur Philipp | Geprüft |
 |---|---:|---:|---:|---:|
-| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 30 | 0 | 30 | 2 |
+| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 31 | 0 | 31 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 11 | 0 | 11 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 13 | 0 | 10 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 19 | 0 | 14 | 1 |
@@ -68,6 +68,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Arbeitsstrang
 | [TERRAIN-04](#terrain-04) | Gelände direkt aus der Mod | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Mod 0.20.0 installieren, einmal um den Bauplatz laufen, im Reiter „Gelände“ „Gelände aus dem Spiel übernehmen“ und „Gelände aus dem Spiel prüfen“ (S05). |
 | [TERRAIN-05](#terrain-05) | Gelände-Werkzeuge auf dem Projektgelände | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Im Reiter „Landschaft“ einen Berg stempeln, verwittern lassen, einen Fluss graben, als Bauteil übernehmen und im Spiel ansehen (PROJ-26). |
 | [UI-03](#ui-03) | Design-System | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Am iPad die neue Oberfläche ansehen und START-20/21 in #/testphase abhaken (Thema „Werkbank“, Reiter wischen, „Bewegung reduzieren“). |
+| [UI-04](#ui-04) | LMNT-Auftritt | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Oberfläche im LMNT-Stil“ | Neue Oberfläche am iPad und am PC ansehen: Startseite mit Bühne, Bibliothek, Editor; START-01 und GERAET-04 in #/testphase abhaken. |
 | [UX-01](#ux-01) | Bedienung des Planers vereinfachen (Struktur und Abläufe) | 🧩 Implementiert · Abnahme offen 6/6 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Testphase START-10..13: vier Hauptbereiche, Projektschritte mit Kurzsatz, eingeklappte Experten- und Datei-Wege im Browser prüfen.<br>START-12 auf dem iPad: Projektreiter waagerecht wischen, eingeklappte Bereiche per Finger öffnen. |
 | [UX-02](#ux-02) | Startseite, Projektansichten und 3D-Editor umbauen | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Startseite, Navigation und 3D-Editor umbauen“ | Testphase START-10/11: drei Einstiege, Tour, drei Projektansichten, Übersicht und die Editor-Werkzeuge im Browser prüfen.<br>GERAET-04 auf dem iPad: Projektleiste, Vollbild, Schnitt-Schieber und 2D-Plan per Finger. |
 | [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Ansicht auf echter GPU und mit Touch prüfen, negative Koordinaten, alle Schnittachsen (S02). |
@@ -340,6 +341,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **EDIT-06** · Im 3D-Bild bauen auf PC und iPad (WERK-08).
 - **GUIDE-01** · Anleitung am iPad durchgehen (START-08/09), unklare Sätze melden.
 - **UI-03** · Am iPad die neue Oberfläche ansehen und START-20/21 in #/testphase abhaken (Thema „Werkbank“, Reiter wischen, „Bewegung reduzieren“).
+- **UI-04** · Neue Oberfläche am iPad und am PC ansehen: Startseite mit Bühne, Bibliothek, Editor; START-01 und GERAET-04 in #/testphase abhaken.
 
 ### Dateien oder Welt liefern
 
@@ -612,6 +614,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [CORE-04](#core-04) | Planer-Kernmodule prüfen und überarbeiten: Verbindungen zwischen Projekt, Planung, Werkstatt, Import/Export und Speicher sauber, gefundene Fehler behoben | 🧩 Implementiert · Abnahme offen | 4/5 | ARCH-02, PROJ-04, EDIT-06 | ausstehend | ausstehend |
 | [WORLD-SHARE-01](#world-share-01) | Weltplan und Server-Karte nur über den Team-Raum: Weltplan mit Bauplätzen, Gruppen und Sperren an alle Mods und das Paper-Plugin, Plugin schreibt BlueMap-/Dynmap-Marker selbst, Kartenliste geteilt, Dateiwege nur als Notfall | 🧩 Implementiert · Abnahme offen | 4/5 | MAP-02, MAP-04 | ausstehend | ausstehend |
 | [UI-03](#ui-03) | Design-System: saubere, einheitliche und schön angepasste Planer-Oberfläche | 🧩 Implementiert · Abnahme offen | 4/5 | UI-01, UI-02 | ausstehend | ausstehend |
+| [UI-04](#ui-04) | LMNT-Auftritt: Oberfläche und Bewegung wie auf der LMNT-Website | 🧩 Implementiert · Abnahme offen | 4/5 | UI-03 | ausstehend | ausstehend |
 | [FLOW-01](#flow-01) | Durchgängiger Bauablauf vom Entwurf bis zum nächsten Block im Spiel: Baumodus für Tablet/Zweitbildschirm, Nachweis je Schritt, Materialbilanz, Materialtausch mit Vorschau, Geländeschnitt | 🧩 Implementiert · Abnahme offen | 6/6 | BUILD-06, MAT-02, TERRAIN-04, GAME-01 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
@@ -3947,6 +3950,30 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/e2e/design.e2e.mjs](../tests/e2e/design.e2e.mjs) — Standardthema beim ersten Bild, WCAG-Kontrast auf Hauptseiten und fünf Projektreitern hell/dunkel, iPad Pro 11 (44 px, Reiter in der Leiste, keine Querverschiebung), reduzierte Bewegung.; [docs/architecture/planer/UI.md](architecture/planer/UI.md) — Abschnitt „Design-System (UI-03)“ mit Farbwerten, Tokens, Bausteinen und Regeln.
 
 **Dateiumfang:** `apps/web/src/theme/`, `apps/web/src/main.tsx`, `apps/web/src/testing/testplan.ts`, `docs/architecture/planer/UI.md`, `docs/TESTING.md`, `docs/testing/TESTPLAN.md`, `tests/e2e/design.e2e.mjs`, `tests/e2e/theme.e2e.mjs`, `tests/e2e/ui-acceptance.e2e.mjs`, `tests/unit/web/`. **Abhängigkeiten:** UI-01, UI-02. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### UI-04
+
+**LMNT-Auftritt: Oberfläche und Bewegung wie auf der LMNT-Website** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Oberfläche im LMNT-Stil“ · Arbeitsstrang: „Oberfläche im LMNT-Stil“ · Aktualisiert: 2026-11-10T13:02:23.470Z
+
+- [x] UI-04-S01: Thema „LMNT“ als Standard (Schwarz, LMNT-Rot, hell und dunkel), Schriften Archivo Black und DM Sans im Paket, Füllregel für weiße Schrift.
+- [x] UI-04-S02: Kopfzeile, Fußzeile, Knöpfe, Karten, Reiter und 3D-Bühnen im LMNT-Stil.
+- [x] UI-04-S03: Startseite neu gegliedert: große Bühne, Laufband, nummerierte Abschnitte, Abschlusskarte zur Mod.
+- [x] UI-04-S04: Bewegungssystem: Einblenden beim Scrollen, Seitenwechsel-Linie, Bühne mit Umlaufbahnen; ruhig im Editor, aus bei „Bewegung reduzieren“.
+- [ ] UI-04-S05: Abnahme durch Philipp am iPad und am PC (START-01, GERAET-04).
+
+**Abnahme:** Der Planer öffnet im Thema „LMNT“ mit eigenen Schriften aus dem Paket; die Startseite zeigt immer die große Bühne; Abschnitte blenden beim Scrollen ein; im Editor gibt es nur kurze Übergänge; jeder sichtbare Text erreicht WCAG AA hell und dunkel; „Bewegung reduzieren“ schaltet alle Animationen ab.
+
+**Nächste Aktion:** Abnahme durch Philipp; danach das Mod-Menü farblich angleichen.
+
+**Nur Philipp:** Auf echten Geräten und Browsern: Neue Oberfläche am iPad und am PC ansehen: Startseite mit Bühne, Bibliothek, Editor; START-01 und GERAET-04 in #/testphase abhaken.
+
+**Prüfstand:** Browserprüfung in Chromium bestanden; Abnahme durch Philipp offen.
+
+**Nachweise:** [tests/e2e/design.e2e.mjs](../tests/e2e/design.e2e.mjs) — Standardthema LMNT, Schriften aus dem Paket, Bühne, Einblenden, Seitenwechsel-Linie, reduzierte Bewegung, Kontrast hell/dunkel, iPad.; [docs/architecture/planer/UI.md](architecture/planer/UI.md) — Abschnitt „LMNT-Auftritt (UI-04)“ mit Farben, Füllregel, Schriften und Bewegungsregeln.
+
+**Dateiumfang:** `apps/web/src/theme/`, `apps/web/src/app/motion.ts`, `apps/web/src/app/Shell.tsx`, `apps/web/src/views/ProjectsView.tsx`, `apps/web/src/main.tsx`, `apps/web/src/testing/`, `docs/architecture/planer/UI.md`, `docs/LICENSING.md`, `docs/testing/TESTPLAN.md`, `scripts/pages/prepare_pages.mjs`, `tests/e2e/design.e2e.mjs`, `tests/unit/web/`. **Abhängigkeiten:** UI-03. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

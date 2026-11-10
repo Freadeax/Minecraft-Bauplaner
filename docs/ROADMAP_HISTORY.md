@@ -1039,3 +1039,40 @@ Release-Datenprobe stellt das Update wie ein echtes Deploy nach (gleiche sw.js-A
 
 - `tests/e2e/release-data.e2e.mjs`
 
+## 2026-11-10T13:55:00.000Z · progress
+
+**Aufgaben:** UI-04
+
+LMNT-Auftritt: Thema „LMNT“ als Standard (Schwarz und LMNT-Rot, Archivo Black und DM Sans im Paket), Startseite mit großer Bühne, Laufband und nummerierten Abschnitten, neue Kopf- und Fußzeile, Einblenden beim Scrollen und Seitenwechsel-Linie, ruhige Übergänge im Editor, 3D-Bühnen in Tintenschwarz
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| UI-04 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp; danach das Mod-Menü farblich angleichen. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/Shell.tsx`
+- `apps/web/src/app/motion.ts`
+- `apps/web/src/main.tsx`
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/theme/ThemeControl.tsx`
+- `apps/web/src/theme/brand.css`
+- `apps/web/src/theme/fonts/LICENSE-ArchivoBlack.txt`
+- `apps/web/src/theme/fonts/LICENSE-DMSans.txt`
+- `apps/web/src/theme/fonts/archivo-black-latin-400-normal.woff2`
+- `apps/web/src/theme/fonts/dm-sans-latin-wght-normal.woff2`
+- `apps/web/src/theme/themePreferences.ts`
+- `apps/web/src/theme/themeTokens.d.mts`
+- `apps/web/src/theme/themeTokens.mjs`
+- `apps/web/src/views/ProjectsView.tsx`
+- `docs/LICENSING.md`
+- `docs/STATUS.md`
+- `docs/architecture/planer/UI.md`
+- `docs/testing/TESTPLAN.md`
+- `scripts/pages/prepare_pages.mjs`
+- `tests/e2e/design.e2e.mjs`
+- `tests/e2e/thumb-store.e2e.mjs`
+- `tests/unit/web/theme-preferences.test.mjs`
+- `tests/unit/web/theme-tokens.test.mjs`
+

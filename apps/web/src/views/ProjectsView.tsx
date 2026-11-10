@@ -1,6 +1,8 @@
 import { HostMove } from './HostMove';
 import { hostOf } from '../app/dataFlows';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type React from 'react';
+import { useCountUp, useTilt } from '../app/motion';
 import { TeamOpen } from './project/team/TeamOpen';
 import { MAX_BACKUP_BYTES } from '../../../../packages/domain/src/index.js';
 import { loadHomeDomain } from './loadHomeDomain';
@@ -23,6 +25,7 @@ import { JobStatus } from '../jobs/JobStatus';
 import type { BackupFile } from '../../../../packages/domain/src/index.js';
 
 const mb = (n: number) => `${(n / 1_000_000).toLocaleString('de-DE', { maximumFractionDigits: 1 })} MB`;
+const TICKER = ['PLANEN', 'BAUEN', 'MATERIAL', 'TEAM', 'WELTKARTE', 'HOLOGRAMM'] as const;
 const planLabel = { new: 'neu', same: 'identisch vorhanden', differs: 'weicht lokal ab' } as const;
 
 /** Projektzentrale: local projects with revision, size and storage status. */
@@ -151,6 +154,11 @@ export function ProjectsView() {
   };
 
   const recent = projects?.[0] ?? null;
+  // UI-04: große Bühne wie auf lmnt-gaming.net; sie kippt leicht zum Zeiger.
+  const visual = useRef<HTMLDivElement>(null);
+  useTilt(visual);
+  const buildingCount = useCountUp(libraryReady ? library.assets.filter(a => a.demo && !a.archived).length : null);
+  const ensembleCount = useCountUp(domain ? domain.ENSEMBLES.length : null);
   // „Sicherung zurückholen“ (Einstieg Datei): klappt Speicher & Sicherung auf und öffnet dieselbe Dateiauswahl.
   const openRestore = () => {
     const more = document.querySelector<HTMLDetailsElement>('details.storage-more'); if (more) more.open = true;
@@ -173,18 +181,33 @@ export function ProjectsView() {
   const createFromEnsemble = (d: HomeDomain, e: Ensemble) => { try { void create(d.createEnsembleProject(e, byAsset, names)); } catch (err) { setMessage(errorText(err)); } };
   const libraryBusy = !libraryReady || !domain;
 
-  return <div className="page">
-    <section className="home-hero"><div><span className="eyebrow">PROJEKTZENTRALE</span><h1>Große Ideen.<br /><em>Block für Block.</em></h1>
+  return <div className="page home">
+    <section className="home-hero"><div className="hero-copy"><span className="eyebrow">PROJEKTZENTRALE</span><h1>Große Ideen.<br /><em>Block für Block.</em></h1>
       <p>Such dir Gebäude aus der Bibliothek, setze sie zu Projekten zusammen, prüfe Überschneidungen Block für Block und bau mit Materialliste und Schritt-für-Schritt-Anleitung nach. Deine Projekte liegen in diesem Browser.</p>
       <div className="hero-actions"><a className="primary button-link" href="#neues-projekt" onClick={e => { e.preventDefault(); document.getElementById('projekt-name')?.focus(); }}>＋ Neues Projekt</a>
         <a className="secondary button-link guide-hint" href="#/anleitung" data-guide-link="">? Wie geh ich es an?</a></div>
+      <dl className="hero-meta" aria-label="Das steckt im Build Studio">
+        <div><dt>Gebäude</dt><dd>{buildingCount ?? '…'}</dd></div>
+        <div><dt>Ensembles</dt><dd>{ensembleCount ?? '…'}</dd></div>
+        <div><dt>mit dem Spiel</dt><dd>LIVE</dd></div>
+      </dl>
       <div className="local-badge hero-badge"><span className="pulse" /> {repo.kind === 'memory' ? 'Nur für diese Sitzung gespeichert – bitte Sicherungen herunterladen.' : <>In diesem Browser gespeichert · keine Anmeldung · Team-Freigaben nur auf Wunsch · <a href="#/datenschutz">was wohin geht</a></>}</div></div>
-      <div className="hero-mosaic" aria-label="Beispiele aus der Bibliothek" data-ready={featured.length ? '' : undefined}>{!featured.length && Array.from({ length: 6 }, (_, i) => <span key={i} className="thumb loading waiting" aria-hidden="true" />)}{featured.map(a => { const v = byAsset.get(a.id)!; return <a key={a.id} href={`#/bibliothek/gebaeude/${encodeURIComponent(a.id)}`} title={a.name}>
-        <Thumb cacheKey={v.id} payload={() => v.payload} alt={a.name} width={200} height={200} /></a>; })}</div></section>
+      <div className="hero-visual" ref={visual}>
+        <span className="hero-orbit hero-orbit-one" aria-hidden="true" /><span className="hero-orbit hero-orbit-two" aria-hidden="true" />
+        <div className="hero-mosaic" aria-label="Beispiele aus der Bibliothek" data-ready={featured.length ? '' : undefined}>{!featured.length && Array.from({ length: 6 }, (_, i) => <span key={i} className="thumb loading waiting" aria-hidden="true" />)}{featured.map(a => { const v = byAsset.get(a.id)!; return <a key={a.id} href={`#/bibliothek/gebaeude/${encodeURIComponent(a.id)}`} title={a.name}>
+          <Thumb cacheKey={v.id} payload={() => v.payload} alt={a.name} width={200} height={200} /></a>; })}</div>
+        <div className="hero-float hero-float-top" aria-hidden="true"><span className="hero-float-px">26</span><span><small>FABRIC 26.3</small><strong>Hologramm im Spiel</strong></span></div>
+        <div className="hero-float hero-float-bottom" aria-hidden="true"><i />{projects?.length ? `${projects.length} ${projects.length === 1 ? 'PROJEKT' : 'PROJEKTE'} GESPEICHERT` : 'BEREIT ZUM BAUEN'}</div>
+        <span className="hero-label hero-label-left" aria-hidden="true">PLANNED WITH LMNT</span><span className="hero-label hero-label-right" aria-hidden="true">READY TO BUILD</span>
+      </div></section>
+    <div className="ticker" aria-hidden="true"><div className="ticker-track">{[0, 1].map(run => TICKER.map(word => <span key={`${run}-${word}`}>{word}<i>✦</i></span>))}</div></div>
     {!libraryReady && <div className="home-library-loading" data-library-loading=""><JobStatus title="Bibliothek wird im Hintergrund geladen" progress={libraryProgress ?? { step: 'Bibliothek prüfen', fraction: null }} />
       <p className="muted">Deine Projekte kannst du schon öffnen; Vorlagen, Beispiel und Sicherung folgen gleich.</p></div>}
+    <header className="section-head" data-reveal=""><div><span className="kicker">01 / EINSTIEG</span><h2>Wie willst du <em>starten?</em></h2></div>
+      <p>Mach dort weiter, wo du aufgehört hast, such dir ein Bauwerk aus oder sieh dir eine Datei an.</p></header>
     <section className="start-entries" aria-label="Wie möchtest du anfangen?">
-      <article className="entry-card" data-entry="continue" aria-labelledby="entry-continue">
+      <article className="entry-card" data-entry="continue" aria-labelledby="entry-continue" data-reveal="">
+        <span className="card-index" aria-hidden="true">01 / WEITER</span>
         <span className="entry-icon" aria-hidden="true"><Icon name="projects" size={22} /></span>
         <h2 id="entry-continue">Projekt fortsetzen</h2>
         {projects === null ? <p className="muted">Projekte werden geladen …</p> : recent ? <>
@@ -198,14 +221,16 @@ export function ProjectsView() {
         </>}
         {projects !== null && recent && <button className="text-button" type="button" onClick={() => void createSample(true)} disabled={libraryBusy}>Geführte Tour mit der Burgmauer</button>}
       </article>
-      <article className="entry-card" data-entry="choose" aria-labelledby="entry-choose">
+      <article className="entry-card" data-entry="choose" aria-labelledby="entry-choose" data-reveal="" style={{ '--reveal-i': 1 } as React.CSSProperties}>
+        <span className="card-index" aria-hidden="true">02</span>
         <span className="entry-icon" aria-hidden="true"><Icon name="library" size={22} /></span>
         <h2 id="entry-choose">Bauwerk auswählen</h2>
         <p className="muted">{libraryBusy ? 'Viele' : library.assets.filter(a => a.demo && !a.archived).length} Gebäudevorschläge, {domain ? domain.ENSEMBLES.length : 'fertige'} Ensembles und Generatoren nach Maß.</p>
         <a className="primary button-link" href="#/bibliothek">Bibliothek öffnen</a>
         <ul className="entry-more"><li><a href="#/bibliothek/ensembles">Fertige Ensembles</a></li><li><a href="#/bibliothek/generatoren">Nach Maß erzeugen</a></li></ul>
       </article>
-      <article className="entry-card" data-entry="file" aria-labelledby="entry-file">
+      <article className="entry-card" data-entry="file" aria-labelledby="entry-file" data-reveal="" style={{ '--reveal-i': 2 } as React.CSSProperties}>
+        <span className="card-index" aria-hidden="true">03</span>
         <span className="entry-icon" aria-hidden="true"><Icon name="viewer" size={22} /></span>
         <h2 id="entry-file">Datei ansehen oder importieren</h2>
         <p className="muted">Schem, Litematic oder JSON ansehen, als Bauteil übernehmen oder eine Sicherung zurückholen.</p>
@@ -229,7 +254,8 @@ export function ProjectsView() {
     {message && <div className="notice" role="status">{message}</div>}
      <BackupReminder status={backupState.status} busy={busy || !projects || libraryBusy} onBackupAll={() => void backup('all')} />
     <section className="home-section" aria-label="Projekte">
-      <header><h2>Deine Projekte{projects?.length ? ` (${projects.length})` : ''}</h2></header>
+      <header className="section-head" data-reveal=""><div><span className="kicker">02 / DEINE PROJEKTE</span><h2>Deine Projekte{projects?.length ? <em> ({projects.length})</em> : ''}</h2></div>
+        <p>Alles liegt in diesem Browser. Ins Internet geht nur, was du im Team teilst.</p></header>
       <div className="card-grid">
       <form id="neues-projekt" className="card new-card" onSubmit={e => { e.preventDefault(); void createEmpty(); }}>
         <span className="panel-kicker">NEUES PROJEKT</span>
@@ -256,12 +282,22 @@ export function ProjectsView() {
       </div>
     </section>
     <section className="home-section" aria-label="Vorlagen">
-      <header><h2>Mit einer Vorlage starten</h2><a href="#/bibliothek/ensembles">Alle Ensembles →</a></header>
+      <header className="section-head" data-reveal=""><div><span className="kicker">03 / VORLAGEN</span><h2>Mit einer Vorlage <em>starten</em></h2></div><a href="#/bibliothek/ensembles">Alle Ensembles →</a></header>
       {libraryBusy ? <p className="muted" role="status">Vorlagen werden geladen …</p> : <ul className="card-grid-auto">{domain!.ENSEMBLES.slice(0, 4).map(e => <li key={e.id}><article className="ecard">
         <Thumb cacheKey={`ens:${e.id}:${e.members.map(mb => byAsset.get(mb.assetId)?.id ?? '-').join(',')}`} payload={() => ensembleWorld(domain!, e)} alt={`Vorschau ${e.name}`} width={360} height={220} />
         <div className="bcard-body"><strong>{e.name}</strong><span className="bcard-kicker">{e.members.length} Gebäude</span><span className="ecard-text">{e.description}</span>
           <div className="button-row"><button className="primary" disabled={domain!.missingMembers(e, byAsset).length > 0} onClick={() => createFromEnsemble(domain!, e)}>Als Projekt anlegen</button>
             <a className="text-button" href={`#/bibliothek/ensembles/${e.id}`}>Ansehen →</a></div></div></article></li>)}</ul>}
+    </section>
+    <section className="join-card" data-reveal="" aria-label="Mit dem Spiel verbinden">
+      <div className="join-decoration" aria-hidden="true"><span>LMNT</span><span>LMNT</span><span>LMNT</span></div>
+      <div className="join-copy">
+        <span className="kicker">04 / IM SPIEL</span>
+        <h2>Plan fertig?<br /><em>Ab ins Spiel.</em></h2>
+        <p>Die Build-Studio-Mod zeigt deinen Plan als Hologramm direkt in Minecraft: Schicht für Schicht, mit Materialliste und Baufortschritt.</p>
+        <div className="hero-actions"><a className="button-link join-primary" href="#/mod">Zur Mod</a><a className="button-link join-secondary" href="#/anleitung">Schritt für Schritt erklärt</a></div>
+      </div>
+      <div className="join-badge" aria-hidden="true"><span>PLANNED &amp;<br />BUILT WITH</span><i>LMNT</i></div>
     </section>
     <More className="storage-more" title="Speicher & Sicherung" hint={backupState.status?.headline ?? 'Sicherungsdatei, Wiederherstellen, Datencheck'} open={backupState.status?.level === 'due' || (projects?.length === 0 && !!hostOf(location.origin))}>
       <section className="storage-panel" aria-label="Speicher und Sicherung">

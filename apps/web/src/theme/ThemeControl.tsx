@@ -5,7 +5,7 @@ import { createThemePreferences, THEME_STORAGE_KEY } from './themePreferences';
 import type { ThemePreference } from './themePreferences';
 
 const preferences = createThemePreferences(() => window.localStorage);
-const names = { werkbank: 'Werkbank', modern: 'Modern', medieval: 'Mittelalter', industrial: 'Industrie', fantasy: 'Fantasy', nether: 'Nether' };
+const names = { lmnt: 'LMNT', werkbank: 'Werkbank', modern: 'Modern', medieval: 'Mittelalter', industrial: 'Industrie', fantasy: 'Fantasy', nether: 'Nether' };
 
 const resolvedFor = (choice: ThemePreference) => resolveAppearance(choice.appearance, window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? true);
 

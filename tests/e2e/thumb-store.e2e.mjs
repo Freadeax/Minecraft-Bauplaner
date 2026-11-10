@@ -26,6 +26,13 @@ before(async () => {
 });
 after(async () => { await browser?.close(); server?.kill(); });
 
+// UI-04: the start page is taller (stage first); previews render when they come near the view, so walk the page once.
+const walk = async p => {
+  const height = await p.evaluate(() => document.documentElement.scrollHeight);
+  for (let y = 0; y <= height; y += 600) { await p.evaluate(top => scrollTo(0, top), y); await p.waitForTimeout(80); }
+  await p.evaluate(() => scrollTo(0, 0));
+};
+
 const sources = p => p.locator('.thumb img').evaluateAll(imgs => imgs.map(i => i.getAttribute('src') ?? ''));
 // Block 5: stored previews are data URLs too (Safari refuses object URLs); the wrapper names the origin.
 const origins = p => p.locator('.thumb:has(img)').evaluateAll(els => els.map(e => e.getAttribute('data-from') ?? ''));
@@ -45,6 +52,7 @@ test('Vorschaubilder werden gespeichert und beim Neustart nicht neu gerendert', 
   await waitForStart(p);
   await p.locator('.thumb img').first().waitFor({ timeout: 60_000 });
   // Every preview of the start page rendered (none still loading).
+  await walk(p);
   await p.waitForFunction(() => document.querySelectorAll('.thumb').length > 0 && !document.querySelector('.thumb.loading'), null, { timeout: 60_000 });
   const first = await sources(p);
   assert.ok(first.length > 0 && first.every(s => s.startsWith('data:image/')), 'the first start renders the previews');
@@ -58,6 +66,7 @@ test('Vorschaubilder werden gespeichert und beim Neustart nicht neu gerendert', 
   await p.reload();
   await waitForStart(p);
   await p.locator('.thumb img').first().waitFor();
+  await walk(p);
   await p.waitForFunction(n => document.querySelectorAll('.thumb img').length >= n, first.length);
   const again = await origins(p);
   assert.ok(again.length >= first.length && again.every(o => o === 'store'), `after a reload the previews come from the store: ${again.join(', ')}`);

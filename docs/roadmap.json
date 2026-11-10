@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-10T13:40:24.495Z",
+  "updatedAt": "2026-11-10T13:55:00.000Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -12610,6 +12610,92 @@
       "orphans": []
     },
     {
+      "id": "UI-04",
+      "title": "LMNT-Auftritt: Oberfläche und Bewegung wie auf der LMNT-Website",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Arbeitsstrang „Oberfläche im LMNT-Stil“",
+      "dependencies": [
+        "UI-03"
+      ],
+      "scope": [
+        "apps/web/src/theme/",
+        "apps/web/src/app/motion.ts",
+        "apps/web/src/app/Shell.tsx",
+        "apps/web/src/views/ProjectsView.tsx",
+        "apps/web/src/main.tsx",
+        "apps/web/src/testing/",
+        "docs/architecture/planer/UI.md",
+        "docs/LICENSING.md",
+        "docs/testing/TESTPLAN.md",
+        "scripts/pages/prepare_pages.mjs",
+        "tests/e2e/design.e2e.mjs",
+        "tests/unit/web/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "UI-04-S01",
+          "title": "Thema „LMNT“ als Standard (Schwarz, LMNT-Rot, hell und dunkel), Schriften Archivo Black und DM Sans im Paket, Füllregel für weiße Schrift.",
+          "done": true
+        },
+        {
+          "id": "UI-04-S02",
+          "title": "Kopfzeile, Fußzeile, Knöpfe, Karten, Reiter und 3D-Bühnen im LMNT-Stil.",
+          "done": true
+        },
+        {
+          "id": "UI-04-S03",
+          "title": "Startseite neu gegliedert: große Bühne, Laufband, nummerierte Abschnitte, Abschlusskarte zur Mod.",
+          "done": true
+        },
+        {
+          "id": "UI-04-S04",
+          "title": "Bewegungssystem: Einblenden beim Scrollen, Seitenwechsel-Linie, Bühne mit Umlaufbahnen; ruhig im Editor, aus bei „Bewegung reduzieren“.",
+          "done": true
+        },
+        {
+          "id": "UI-04-S05",
+          "title": "Abnahme durch Philipp am iPad und am PC (START-01, GERAET-04).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Der Planer öffnet im Thema „LMNT“ mit eigenen Schriften aus dem Paket; die Startseite zeigt immer die große Bühne; Abschnitte blenden beim Scrollen ein; im Editor gibt es nur kurze Übergänge; jeder sichtbare Text erreicht WCAG AA hell und dunkel; „Bewegung reduzieren“ schaltet alle Animationen ab."
+      ],
+      "next": "Abnahme durch Philipp; danach das Mod-Menü farblich angleichen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/e2e/design.e2e.mjs",
+          "note": "Standardthema LMNT, Schriften aus dem Paket, Bühne, Einblenden, Seitenwechsel-Linie, reduzierte Bewegung, Kontrast hell/dunkel, iPad."
+        },
+        {
+          "path": "docs/architecture/planer/UI.md",
+          "note": "Abschnitt „LMNT-Auftritt (UI-04)“ mit Farben, Füllregel, Schriften und Bewegungsregeln."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Browserprüfung in Chromium bestanden; Abnahme durch Philipp offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-10T13:02:23.470Z",
+      "area": "PLANER",
+      "thread": "Oberfläche im LMNT-Stil",
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Neue Oberfläche am iPad und am PC ansehen: Startseite mit Bühne, Bibliothek, Editor; START-01 und GERAET-04 in #/testphase abhaken."
+        }
+      ],
+      "orphans": []
+    },
+    {
       "id": "NAME-01",
       "title": "Neuer Produktname „LMNT — Build Studio“ auf Seite, Mod, Plugin und Modrinth",
       "phase": "P4",
@@ -15947,6 +16033,49 @@
           "done": 8,
           "total": 8,
           "next": "Zugänge-Liste wirkt im echten Dienst, sobald der Team-Raum mit TEAM-SEC-01/HARDEN-01 ausgerollt ist (bis dahin Hinweis „ältere Fassung“); danach Abnahme im Spiel."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T13:55:00.000Z",
+      "kind": "progress",
+      "items": [
+        "UI-04"
+      ],
+      "summary": "LMNT-Auftritt: Thema „LMNT“ als Standard (Schwarz und LMNT-Rot, Archivo Black und DM Sans im Paket), Startseite mit großer Bühne, Laufband und nummerierten Abschnitten, neue Kopf- und Fußzeile, Einblenden beim Scrollen und Seitenwechsel-Linie, ruhige Übergänge im Editor, 3D-Bühnen in Tintenschwarz",
+      "files": [
+        "apps/web/src/app/Shell.tsx",
+        "apps/web/src/app/motion.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/src/testing/autochecks.ts",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/theme/ThemeControl.tsx",
+        "apps/web/src/theme/brand.css",
+        "apps/web/src/theme/fonts/LICENSE-ArchivoBlack.txt",
+        "apps/web/src/theme/fonts/LICENSE-DMSans.txt",
+        "apps/web/src/theme/fonts/archivo-black-latin-400-normal.woff2",
+        "apps/web/src/theme/fonts/dm-sans-latin-wght-normal.woff2",
+        "apps/web/src/theme/themePreferences.ts",
+        "apps/web/src/theme/themeTokens.d.mts",
+        "apps/web/src/theme/themeTokens.mjs",
+        "apps/web/src/views/ProjectsView.tsx",
+        "docs/LICENSING.md",
+        "docs/STATUS.md",
+        "docs/architecture/planer/UI.md",
+        "docs/testing/TESTPLAN.md",
+        "scripts/pages/prepare_pages.mjs",
+        "tests/e2e/design.e2e.mjs",
+        "tests/e2e/thumb-store.e2e.mjs",
+        "tests/unit/web/theme-preferences.test.mjs",
+        "tests/unit/web/theme-tokens.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "UI-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp; danach das Mod-Menü farblich angleichen."
         }
       ]
     }

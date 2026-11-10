@@ -2,7 +2,8 @@ import { createPreferenceStore } from '../views/library/preferenceStore.ts';
 import { DEFAULT_THEME, normalizeAppearance, normalizeTheme } from './themeTokens.mjs';
 import type { Appearance, ThemeId } from './themeTokens.mjs';
 
-export const THEME_STORAGE_KEY = 'lmnt:appearance:v1';
+// UI-04: v2, damit der neue LMNT-Auftritt einmal für alle gilt; danach zählt wieder die eigene Wahl.
+export const THEME_STORAGE_KEY = 'lmnt:appearance:v2';
 export interface ThemePreference { readonly theme: ThemeId; readonly appearance: Appearance }
 export function parseThemePreference(raw: string | null): ThemePreference {
   try {
