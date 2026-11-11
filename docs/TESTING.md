@@ -41,6 +41,7 @@ Diese Läufe starten echte Minecraft-Clients oder Paper-Server (kopflos) und sin
 | Firefox, WebKit, iPad-/iPhone-Profile | grün für Werkstatt, Weltkarte und Grafik |
 | RELEASE-01 Browser-Schutz (07.11.) | `npm run check` grün; Browsertests 233/234 im Gesamtlauf, `team-room.e2e` danach 5 von 6 Einzelläufen grün (bekanntes Zeitverhalten, unverändert); `security-headers.e2e` null CSP-Verstöße; Mod-Kern-JUnit und Fabric-Build grün |
 | RELEASE-01 volle CSP (10.11.) | `npm run check` grün; Browsertests 251/252, `release-data.e2e` scheitert genauso auf main ohne diese Änderung (Update bei offenem Projekt, unabhängig von der CSP) |
+| GAME-11 Minecraft 26.4 Snapshot 8 (11.11.) | `npm run check` grün; Browsertests 253/254 im Gesamtlauf, `project-computation.e2e` danach einzeln 4/4 (Zeitverhalten unter Last); `BAUPLANER_MC=26.4 scripts/mod/test_bridge_ingame.sh` im echten 26.4-snapshot-8-Client komplett grün (Aufnahme 146/1/1, Hologramm, Oberfläche, Block C, Planer im Browser) |
 | Platzierung im Spiel | Katalog, Generatoren und Gelände 670 Pläne, Basis 28, Großprojekte 169 + 13 auf Gelände: jeweils 0 Abweichungen |
 | Exporte im Spiel | 22/22 Fälle |
 | Großbau | 1,45 Mio. Blöcke im Spiel aufgebaut und geprüft |

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import type React from 'react';
 import releasesData from './releases.json';
-import { buildsFor, checkJarBytes, INSTALL_HINT, LOADER_LABEL, loadersFor, minecraftVersions, parseSelectionSearch, PLANNED_LOADERS, releasesFor, resolveSelection, selectionSearch, targetOf, versionsOf } from './releases';
+import { buildsFor, checkJarBytes, INSTALL_HINT, isPreviewVersion, LOADER_LABEL, minecraftLabel, loadersFor, minecraftVersions, parseSelectionSearch, PLANNED_LOADERS, releasesFor, resolveSelection, selectionSearch, targetOf, versionsOf } from './releases';
 import type { ModRelease, Selection, Target } from './releases';
 import { modForGame } from './releases';
 import { useGameSetup } from '../../app/gameSetup';
@@ -159,7 +159,7 @@ export function ModView({ search }: { search?: string | undefined }) {
         <h2 id="mod-choose">Passende Version wählen</h2>
         <label>Minecraft-Version
           <select value={selection.minecraft} onChange={e => choose({ minecraft: e.target.value }, true)}>
-            {versions.map(v => <option key={v} value={v}>{v}</option>)}
+            {versions.map(v => <option key={v} value={v}>{minecraftLabel(v)}</option>)}
           </select></label>
         <label>{server ? 'Server-Software' : 'Mod-Loader'}
           <select value={selection.loader} onChange={e => choose({ loader: e.target.value }, true)}>
@@ -175,6 +175,7 @@ export function ModView({ search }: { search?: string | undefined }) {
 
       {build && <section className="system-card" aria-labelledby="mod-file">
         <h2 id="mod-file">Datei</h2>
+        {isPreviewVersion(build.minecraft) && <div className="notice warning mod-preview" role="note"><b>Vorschau für Minecraft {build.minecraft}.</b> Snapshots sind Testversionen von Mojang: nur in einem eigenen Profil mit einer Testwelt nutzen, eine Welt lässt sich danach nicht mehr mit 26.3 öffnen. Die Hauptversion bleibt Minecraft {versions.find(v => !isPreviewVersion(v)) ?? '26.3'}; zu jedem neuen Snapshot kommt eine neue Vorschau.</div>}
         <dl className="system-facts">
           <div><dt>Minecraft</dt><dd>{build.minecraft}</dd></div>
           {server

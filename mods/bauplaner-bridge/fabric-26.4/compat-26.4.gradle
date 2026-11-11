@@ -1,4 +1,4 @@
-// Unterschiede Minecraft 26.3 → 26.4 (Stand 26.4-snapshot-7), als Ersetzungen auf die gemeinsamen 26.3-Quellen.
+// Unterschiede Minecraft 26.3 → 26.4 (Stand 26.4-snapshot-8), als Ersetzungen auf die gemeinsamen 26.3-Quellen.
 // Jede Regel nennt, was sich im Spiel geändert hat. Neue Abweichung: hier eintragen; ganze Dateien nur, wenn
 // eine Regel nicht reicht, unter src/override/java ablegen.
 ext.compatRules = [
@@ -18,6 +18,12 @@ ext.compatRules = [
     [file: 'hologram/McCompat.java', find: /var pipeline = com\.mojang\.renderpearl\.api\.pipeline\.RenderPipeline\.builder[\s\S]*?\.build\(\);/,
      to: 'var pipeline = Compat264.xrayPipeline();'],
     [file: 'hologram/McCompat.java', find: /RenderSetup\.builder\(pipeline\)/, to: 'RenderSetup.nonOitBuilder(pipeline)'],
+    // Snapshot 8: der Befehlsbaum des Servers liegt in einer SuggestionBox statt im öffentlichen CommandDispatcher.
+    [file: 'hologram/CommandScreen.java', find: /con != null && con\.getCommands\(\)\.getRoot\(\)\.getChild\("bp"\) != null/,
+     to: 'Compat264.serverHasCommand(con, "bp")'],
+    [file: 'gametest/BridgeGameTest.java', set: 'gametest',
+     find: /var d = mc\.getConnection\(\)\.getCommands\(\);\s*var parse = d\.parse\(line, mc\.getConnection\(\)\.getSuggestionsProvider\(\)\);\s*return d\.getCompletionSuggestions\(parse\)\.join\(\)/,
+     to: 'return mc.getConnection().commandSuggestions().parse(line, mc.getConnection().getSuggestionsProvider()).computeSuggestions().join()'],
     // Fabric API 26.4: HudElement.extractRenderState(GuiGraphicsExtractor) ohne DeltaTracker (steckt im Extractor).
     [file: 'fabric/BridgeClient.java', find: /client::hud\)/, to: 'g -> client.hud(g, g.deltaTracker()))'],
 ]

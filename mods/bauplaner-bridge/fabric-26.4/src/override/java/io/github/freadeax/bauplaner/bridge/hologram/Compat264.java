@@ -5,6 +5,7 @@ import com.mojang.renderpearl.api.pipeline.BlendFunction;
 import com.mojang.renderpearl.api.pipeline.ColorTargetState;
 import com.mojang.renderpearl.api.pipeline.CompareOp;
 import com.mojang.renderpearl.api.pipeline.DepthStencilState;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.pipeline.RenderPipelines;
 import net.minecraft.client.renderer.pipeline.variant.LineRenderPipelineVariant;
 
@@ -24,5 +25,16 @@ final class Compat264 {
         var variant = new LineRenderPipelineVariant("bauplaner_bridge_lines_xray", new ColorTargetState(BlendFunction.TRANSLUCENT),
                 new DepthStencilState(CompareOp.ALWAYS_PASS, false), false);
         return RenderPipelines.lines(new RenderPipelines.LinesParameters(variant, null));
+    }
+
+    /**
+     * Whether the server sent a top-level command with this name (e.g. "bp" from the Paper plugin).
+     * Since 26.4-snapshot-8 the client keeps the server's command tree in a SuggestionBox instead of a
+     * public CommandDispatcher, so the name is parsed against it: a known literal is consumed completely.
+     */
+    static boolean serverHasCommand(ClientPacketListener con, String name) {
+        if (con == null || con.commandSuggestions() == null) return false;
+        var parsed = con.commandSuggestions().parse(name, con.getSuggestionsProvider()).parseResults();
+        return !parsed.getReader().canRead() && !parsed.getContext().getNodes().isEmpty();
     }
 }

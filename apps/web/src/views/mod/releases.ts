@@ -59,6 +59,14 @@ export function compareVersions(a: string, b: string): number {
 
 const unique = (values: readonly string[]) => [...new Set(values)];
 
+/**
+ * GAME-11-S03: a Minecraft snapshot, pre-release or release candidate (e.g. "26.4-snapshot-8"). Builds for it are
+ * offered as a preview with version choice, never as the default: the main version stays the newest release.
+ */
+export const isPreviewVersion = (minecraft: string): boolean => /-(snapshot|pre|rc)(-|\d|$)/i.test(minecraft);
+/** Label in the version list ("26.4-snapshot-8 (Vorschau)"). */
+export const minecraftLabel = (minecraft: string): string => isPreviewVersion(minecraft) ? `${minecraft} (Vorschau)` : minecraft;
+
 /** Minecraft versions with at least one build, newest first. */
 export function minecraftVersions(releases: readonly ModRelease[]): string[] {
   return unique(releases.flatMap(r => versionsOf(r))).sort((a, b) => compareVersions(b, a));
@@ -78,13 +86,14 @@ export interface Selection { readonly minecraft: string; readonly loader: string
 
 /**
  * Completes a (possibly partial or outdated) wish to a selection that exists: an unknown Minecraft
- * version falls back to the newest, an unavailable loader to the first one, an unknown mod version
+ * version falls back to the newest release (a snapshot preview only when asked for or when nothing else exists), an unavailable loader to the first one, an unknown mod version
  * to the newest build. Returns null when there are no builds at all.
  */
 export function resolveSelection(releases: readonly ModRelease[], wish: Partial<Selection>): Selection | null {
   const versions = minecraftVersions(releases);
   if (!versions.length) return null;
-  const minecraft = wish.minecraft && versions.includes(wish.minecraft) ? wish.minecraft : versions[0]!;
+  const fallback = versions.find(v => !isPreviewVersion(v)) ?? versions[0]!;
+  const minecraft = wish.minecraft && versions.includes(wish.minecraft) ? wish.minecraft : fallback;
   const loaders = loadersFor(releases, minecraft);
   const loader = wish.loader && loaders.includes(wish.loader) ? wish.loader : loaders[0]!;
   const builds = buildsFor(releases, minecraft, loader);

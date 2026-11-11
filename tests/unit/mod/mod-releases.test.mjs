@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { buildsFor, checkJarBytes, compareVersions, loadersFor, minecraftVersions, parseSelectionSearch, resolveSelection, selectionSearch, versionsOf } from '../../../apps/web/src/views/mod/releases.ts';
+import { buildsFor, checkJarBytes, compareVersions, isPreviewVersion, loadersFor, minecraftLabel, minecraftVersions, parseSelectionSearch, resolveSelection, selectionSearch, versionsOf } from '../../../apps/web/src/views/mod/releases.ts';
 
 const { releases } = JSON.parse(readFileSync('apps/web/src/views/mod/releases.json', 'utf8'));
 const r = (minecraft, loader, modVersion) => ({ file: `x-${loader}-${minecraft}-${modVersion}.jar`, modVersion, loader, minecraft, loaderMin: '0', java: '25', bytes: 1, sha256: '0'.repeat(64), releasedAt: '2026-11-01', sourceCommit: '0'.repeat(40), tested: 't' });
@@ -18,7 +18,7 @@ test('every offered jar is in downloads/mod with the listed size and SHA-256', (
       assert.ok(rel.minecraftVersions.includes(rel.minecraft));
       assert.equal(rel.minecraft, rel.minecraftVersions.toSorted((a, b) => compareVersions(b, a))[0]);
     } else {
-      assert.match(rel.file, /^bauplaner-bridge-[a-z]+-[0-9.]+-[0-9.]+\.jar$/);
+      assert.match(rel.file, /^bauplaner-bridge-[a-z]+-[0-9.]+(-(snapshot|pre|rc)-\d+)?-[0-9.]+\.jar$/);
       assert.equal(rel.file, `bauplaner-bridge-${rel.loader}-${rel.minecraft}-${rel.modVersion}.jar`);
     }
     const bytes = readFileSync(`downloads/mod/${rel.file}`);
@@ -45,6 +45,21 @@ test('versions sort numerically and selections fall back to existing builds', ()
   assert.equal(resolveSelection([], {}), null);
   const s = { minecraft: '26.3', loader: 'fabric', modVersion: '0.1.0' };
   assert.deepEqual(parseSelectionSearch(selectionSearch(s)), s);
+});
+
+test('a snapshot build is a preview with version choice, never the default (GAME-11-S03)', () => {
+  assert.ok(isPreviewVersion('26.4-snapshot-8') && isPreviewVersion('26.4-pre-1') && isPreviewVersion('26.4-rc-2'));
+  assert.ok(!isPreviewVersion('26.4') && !isPreviewVersion('26.3') && !isPreviewVersion('1.21.11'));
+  assert.equal(minecraftLabel('26.4-snapshot-8'), '26.4-snapshot-8 (Vorschau)');
+  assert.equal(minecraftLabel('26.3'), '26.3');
+  const list = [r('26.3', 'fabric', '0.28.0'), r('26.3', 'neoforge', '0.28.0'), r('26.4-snapshot-8', 'fabric', '0.28.0')];
+  assert.deepEqual(minecraftVersions(list), ['26.4-snapshot-8', '26.3'], 'in der Liste steht die Vorschau oben');
+  assert.deepEqual(resolveSelection(list, {}), { minecraft: '26.3', loader: 'fabric', modVersion: '0.28.0' });
+  assert.deepEqual(resolveSelection(list, { minecraft: '26.4-snapshot-7' }).minecraft, '26.3', 'alter Snapshot-Link fällt auf die Hauptversion');
+  assert.deepEqual(resolveSelection(list, { minecraft: '26.4-snapshot-8' }), { minecraft: '26.4-snapshot-8', loader: 'fabric', modVersion: '0.28.0' });
+  assert.equal(resolveSelection([r('26.4-snapshot-8', 'fabric', '0.28.0')], {}).minecraft, '26.4-snapshot-8');
+  // Ist 26.4 erschienen, ist derselbe Adapter eine normale Version und wird Standard.
+  assert.equal(resolveSelection([...list, r('26.4', 'fabric', '0.29.0')], {}).minecraft, '26.4');
 });
 
 test('one jar for several Minecraft versions is offered for each of them', () => {

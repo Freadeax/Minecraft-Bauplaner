@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-11T11:51:52.482Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-11T12:59:32.505Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -175,7 +175,7 @@ Abgeschlossen oder zurückgestellt: COOP-02 (geprüft).
 | [LINK-11](#link-11) | Alles über das Internet | 🧩 Implementiert · Abnahme offen 6/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Abnahme LINK-12: als Bauleitung „Mein Spiel verbinden“, mit der Mod auf den Server – der Server verbindet sich selbst mit dem Team-Raum, Abschnittsschutz greift.<br>Abnahme LINK-13: alle Dateiwege nur noch zugeklappt unter „Notfall“. |
 | [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2 | 🧩 Implementiert · Abnahme offen 5/5 | P2 | „Große Testphase vorbereiten und betreuen“ | Mitspieler-Pfeile auf der Live-Karte mit einem zweiten Spieler. |
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0 | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Große Testphase vorbereiten und betreuen“ | Befehlsseite im J-Menü zusammen mit dem Plugin auf deinem Server (MOD-16). |
-| [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher | 🚧 In Arbeit 2/4 | P2 | „Mod auf Modrinth veröffentlichen“ | — |
+| [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher | 🚧 In Arbeit 2/4 | P2 | „Mod für Minecraft 26.4 vorbereiten“ | — |
 
 <a id="bereich-plugin"></a>
 
@@ -420,7 +420,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **PROJ-01 · Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel.
 - **GAME-09 · Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** — 🚧 In Arbeit, 4/5 Teilschritte. Nächster Schritt: Modrinth prüft das Projekt weiter (Status processing, angefragt approved, keine Nachricht der Moderation; am 11.11.2026 nachgesehen). Alle Versionen bis 0.28.0 (64 Dateien), Texte, Galerie und Offenlegungen sind aktuell. Kein Handlungsbedarf außer Abwarten.
 - **GAME-10 · Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme MOD-16 auf Philipps Server mit Paper-Plugin.
-- **GAME-11 · Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** — 🚧 In Arbeit, 2/4 Teilschritte. Nächster Schritt: 26.4 ist am 07.11.2026 noch Snapshot 7 (piston-meta). Bei Erscheinen: fabric-26.4/gradle.properties auf das Release setzen, Spieltest BAUPLANER_MC=26.4, #/mod und Modrinth je Version.
+- **GAME-11 · Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** — 🚧 In Arbeit, 2/4 Teilschritte. Nächster Schritt: Jeden neuen 26.4-Snapshot nachziehen (fabric-26.4/gradle.properties, Spieltest BAUPLANER_MC=26.4, release_mod.mjs fabric-26.4, Modrinth als alpha). Bei Erscheinen von 26.4: auf das Release setzen, dann wird 26.4 Standard auf #/mod. NeoForge-26.4-Adapter, sobald maven.neoforged.net 26.4-Builds hat.
 - **COOP-07 · Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05).
 - **PROD-01 · Produktionsdaten: Katalog von 34 Farmarten mit Richtwerten je Einheit, Bedingungen, Reichweite, Verbrauch und Bauplan; Farmliste je Projekt (Anzahl, Zustand, Ort, Bauteil, Kartenpunkt) und Ertragsbuch, das ins Baustellen-Lager bucht und gemessene Raten liefert** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme PROJ-12; später Erträge aus geprüften Lagerkisten (COOP-05) ins Ertragsbuch.
 - **PROD-02 · Deckung und Engpässe: Restbedarf des Sammelplans gegen laufende Farmen und Handarbeit (gemeinsame Warteschlange, gieriger Ausgleich), Engpass, Materialbereitschaft je Abschnitt in Spieltagen, „Lohnt sich eine Farm?“ mit Amortisation aus Bauplan-Kosten** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme PROJ-13.
@@ -3181,20 +3181,20 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-11
 
-**Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Arbeitsstrang „Mod auf Minecraft 26.4 vorbereiten“ · Arbeitsstrang: „Mod auf Modrinth veröffentlichen“ · Aktualisiert: 2026-11-07T12:31:42.554Z
+**Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Arbeitsstrang „Mod auf Minecraft 26.4 vorbereiten“ · Arbeitsstrang: „Mod für Minecraft 26.4 vorbereiten“ · Aktualisiert: 2026-11-11T12:59:32.505Z
 
 - [x] GAME-11-S01: Versionsmatrix festlegen: welche Minecraft-Versionen und Loader (Philipps Server, verbreitete Modpacks), was der Kern schon versionsneutral abdeckt. Entschieden (Philipp 04.11.): 26.3 zuerst, danach jeweils die neueste Version; keine ältere Matrix.
-- [ ] GAME-11-S02: Zweite Minecraft-Version (Fabric und NeoForge) als eigener Adapter über mod-core und eine Versionsfassade, ohne 26.3 zu verändern. Fabric 26.4 vorbereitet (fabric-26.4 gegen 26.4-snapshot-7, Regeln statt Kopien); NeoForge folgt, sobald es 26.4-Builds gibt.
+- [ ] GAME-11-S02: Zweite Minecraft-Version (Fabric und NeoForge) als eigener Adapter über mod-core und eine Versionsfassade, ohne 26.3 zu verändern. Fabric 26.4 vorbereitet (fabric-26.4 gegen 26.4-snapshot-8, Regeln statt Kopien, Stand 11.11.2026); NeoForge folgt, sobald es 26.4-Builds gibt (11.11.2026: noch keine).
 - [ ] GAME-11-S03: Echte Spieltests je Version, Release auf #/mod mit Versionswahl, Modrinth je Version.
 - [x] GAME-11-S04: Installationsanleitung für Modrinth App, Prism Launcher, CurseForge und den offiziellen Launcher auf #/mod.
 
 **Abnahme:** Die Mod läuft in mindestens einer weiteren Minecraft-Version mit Hologramm, Platzierhilfe, Website-Verbindung, Teambau und Befehlsseite. #/mod und Modrinth bieten je Version und Loader die passende Datei an.
 
-**Nächste Aktion:** 26.4 ist am 07.11.2026 noch Snapshot 7 (piston-meta). Bei Erscheinen: fabric-26.4/gradle.properties auf das Release setzen, Spieltest BAUPLANER_MC=26.4, #/mod und Modrinth je Version.
+**Nächste Aktion:** Jeden neuen 26.4-Snapshot nachziehen (fabric-26.4/gradle.properties, Spieltest BAUPLANER_MC=26.4, release_mod.mjs fabric-26.4, Modrinth als alpha). Bei Erscheinen von 26.4: auf das Release setzen, dann wird 26.4 Standard auf #/mod. NeoForge-26.4-Adapter, sobald maven.neoforged.net 26.4-Builds hat.
 
-**Prüfstand:** S04 Launcher-Anleitung fertig. 26.4: Build und Spieltest gegen 26.4-snapshot-7 in der Cloud; Release erst mit 26.4.
+**Prüfstand:** S04 Launcher-Anleitung fertig. 26.4: Build und echter Spieltest gegen 26.4-snapshot-8 in der Cloud (11.11.2026); als Vorschau auf #/mod (Versionswahl, Standard 26.3) und Modrinth (alpha).
 
-**Nachweise:** [tests/unit/mod/install-guide.test.mjs](../tests/unit/mod/install-guide.test.mjs) — Anleitung je Launcher und Loader, Fabric API nur bei Fabric.; [tests/unit/mod/mod-versions.test.mjs](../tests/unit/mod/mod-versions.test.mjs) — Jede 26.3→26.4-Regel greift, 26.4 eigener Schalter, keine 26.4-Datei in releases.json.
+**Nachweise:** [tests/unit/mod/install-guide.test.mjs](../tests/unit/mod/install-guide.test.mjs) — Anleitung je Launcher und Loader, Fabric API nur bei Fabric.; [tests/unit/mod/mod-versions.test.mjs](../tests/unit/mod/mod-versions.test.mjs) — Jede 26.3→26.4-Regel greift, 26.4 eigener Schalter, 26.4-Dateien nur als Vorschau des aktuellen Snapshots, 26.3 bleibt angeboten.
 
 **Dateiumfang:** `mods/bauplaner-bridge/`, `scripts/`, `apps/web/src/views/mod/`, `downloads/mod/`, `docs/`, `apps/web/src/views/mod/installGuide.ts`, `mods/bauplaner-bridge/fabric-26.4/`, `mods/bauplaner-bridge/settings.gradle`, `scripts/mod/test_bridge_ingame.sh`, `tests/unit/mod/mod-versions.test.mjs`, `mods/bauplaner-bridge/README.md`, `docs/architecture/mod/MOD_BRIDGE.md`. **Abhängigkeiten:** GAME-07, GAME-10. **Alte IDs:** —.
 

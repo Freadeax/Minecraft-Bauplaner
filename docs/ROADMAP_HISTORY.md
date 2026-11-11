@@ -1098,3 +1098,33 @@ Roadmap bereinigt (11.11.2026): Team-Raum-Ausrollung von TEAM-SEC-01 und BACKUP-
 - `docs/STATUS.md`
 - `docs/TESTING.md`
 
+## 2026-11-11T12:59:32.505Z · progress
+
+**Aufgaben:** GAME-11
+
+26.4-snapshot-8 nachgezogen (Fabric API 0.166.1+26.4, Befehlsbaum aus der SuggestionBox), echter Spieltest im 26.4-Client grün, Vorschau-Datei auf #/mod mit Versionswahl (Standard bleibt 26.3) und für Modrinth als alpha; NeoForge hat noch keine 26.4-Builds
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-11 | 🚧 In Arbeit | 2/4 | Jeden neuen 26.4-Snapshot nachziehen (fabric-26.4/gradle.properties, Spieltest BAUPLANER_MC=26.4, release_mod.mjs fabric-26.4, Modrinth als alpha). Bei Erscheinen von 26.4: auf das Release setzen, dann wird 26.4 Standard auf #/mod. NeoForge-26.4-Adapter, sobald maven.neoforged.net 26.4-Builds hat. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/views/mod/ModView.tsx`
+- `apps/web/src/views/mod/releases.json`
+- `apps/web/src/views/mod/releases.ts`
+- `docs/TESTING.md`
+- `docs/architecture/mod/MOD_BRIDGE.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.4-snapshot-8-0.28.0.jar`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/fabric-26.4/compat-26.4.gradle`
+- `mods/bauplaner-bridge/fabric-26.4/gradle.properties`
+- `mods/bauplaner-bridge/fabric-26.4/src/override/java/io/github/freadeax/bauplaner/bridge/hologram/Compat264.java`
+- `scripts/mod/modrinth_publish.mjs`
+- `scripts/mod/release_mod.mjs`
+- `tests/e2e/mod-download.e2e.mjs`
+- `tests/unit/mod/mod-releases.test.mjs`
+- `tests/unit/mod/mod-versions.test.mjs`
+

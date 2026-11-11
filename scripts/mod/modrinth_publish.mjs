@@ -35,6 +35,9 @@ export function loadConfig(root = '.') {
   return { root, project, body, manifest, changelog };
 }
 
+/** Minecraft snapshot, pre-release or release candidate (same rule as apps/web/src/views/mod/releases.ts). */
+export const isPreviewVersion = v => /-(snapshot|pre|rc)(-|\d|$)/i.test(v);
+
 export function compareVersions(a, b) {
   const pa = a.split('.').map(Number), pb = b.split('.').map(Number);
   for (let i = 0; i < Math.max(pa.length, pb.length); i++) if ((pa[i] ?? 0) !== (pb[i] ?? 0)) return (pa[i] ?? 0) - (pb[i] ?? 0);
@@ -59,12 +62,14 @@ export function wantedVersions({ root, project, manifest, changelog }) {
       const target = r.minecraftVersions ? 'paper' : `${r.loader}-${r.minecraft}`;
       const gameVersions = r.minecraftVersions ?? [r.minecraft];
       const range = gameVersions.length > 1 ? `${gameVersions[0]}–${gameVersions.at(-1)}` : gameVersions[0];
+      // GAME-11-S03: builds for a Minecraft snapshot are previews (alpha on Modrinth), never the main version.
+      const preview = gameVersions.some(isPreviewVersion);
       return {
         file: r.file, path: join(root, 'downloads/mod', r.file), sha256: r.sha256, bytes: r.bytes,
         version_number: `${r.modVersion}+${target}`,
-        name: `${r.modVersion} · ${cfg.label} ${range}`,
+        name: `${r.modVersion} · ${cfg.label} ${range}${preview ? ' (snapshot preview)' : ''}`,
         changelog: changelogFor(changelog, r.modVersion),
-        loaders: cfg.loaders, game_versions: gameVersions, version_type: project.versionType,
+        loaders: cfg.loaders, game_versions: gameVersions, version_type: preview ? 'alpha' : project.versionType,
         dependencies: cfg.dependencies.map(({ project_id, dependency_type }) => ({ project_id, dependency_type })),
         modVersion: r.modVersion, environment: cfg.environment,
       };

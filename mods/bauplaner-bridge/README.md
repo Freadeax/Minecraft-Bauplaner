@@ -90,10 +90,10 @@ Alles nur auf deinem Rechner; der Server merkt nichts davon. Details: [MOD_HOLOG
 
 ## Weitere Minecraft-Versionen
 
-**Minecraft 26.4 (vorbereitet, GAME-11-S02):** `fabric-26.4` baut gegen den neuesten Snapshot (Stand 06.11.2026: `26.4-snapshot-7`, Fabric API `0.165.4+26.4`, Loader `0.20.1`). Der Adapter kopiert nichts: Er nimmt die Quellen von `fabric-26.3` und `hologram-26.3` samt Spieltest und passt sie beim Bauen mit den Regeln aus `fabric-26.4/compat-26.4.gradle` an (Bildschirme ohne Maus-Parameter, Linien-Pipeline aus Varianten, HUD ohne DeltaTracker). Was eine Regel nicht abdeckt, liegt als eigene Datei unter `fabric-26.4/src/override/java` (heute nur `Compat264`). Greift eine Regel nicht mehr, bricht der Build ab und `tests/unit/mod/mod-versions.test.mjs` schlägt in `npm test` an. 26.3 bleibt dabei unverändert.
+**Minecraft 26.4 (vorbereitet, GAME-11-S02):** `fabric-26.4` baut gegen den neuesten Snapshot (Stand 11.11.2026: `26.4-snapshot-8`, Fabric API `0.166.1+26.4`, Loader `0.20.1`; auf `#/mod` und Modrinth als Vorschau, Standard bleibt 26.3). Der Adapter kopiert nichts: Er nimmt die Quellen von `fabric-26.3` und `hologram-26.3` samt Spieltest und passt sie beim Bauen mit den Regeln aus `fabric-26.4/compat-26.4.gradle` an (Bildschirme ohne Maus-Parameter, Linien-Pipeline aus Varianten, HUD ohne DeltaTracker, Befehlsbaum des Servers aus der SuggestionBox). Was eine Regel nicht abdeckt, liegt als eigene Datei unter `fabric-26.4/src/override/java` (heute nur `Compat264`). Greift eine Regel nicht mehr, bricht der Build ab und `tests/unit/mod/mod-versions.test.mjs` schlägt in `npm test` an. 26.3 bleibt dabei unverändert.
 
 ```bash
-./gradlew -PwithFabric264 :fabric-26.4:build          # .jar für 26.4 (nur zum Testen, kein Release)
+./gradlew -PwithFabric264 :fabric-26.4:build          # .jar für 26.4 (Snapshot-Vorschau)
 BAUPLANER_MC=26.4 scripts/mod/test_bridge_ingame.sh    # derselbe echte Spieltest wie für 26.3
 ```
 

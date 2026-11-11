@@ -47,8 +47,16 @@ test('26.4 ist ein eigener Schalter und ändert 26.3 nicht', () => {
   assert.match(next, /^minecraft_dependency=26\.4-$/m);
 });
 
-test('kein Release für 26.4, solange es nur Snapshots gibt', () => {
-  const releases = JSON.parse(readFileSync('apps/web/src/views/mod/releases.json', 'utf8'));
-  const text = JSON.stringify(releases);
-  assert.ok(!text.includes('-26.4-'), 'releases.json bietet keine 26.4-Datei an');
+test('26.4 nur als Vorschau mit Versionswahl, 26.3 bleibt Hauptversion (GAME-11-S03)', () => {
+  const { releases } = JSON.parse(readFileSync('apps/web/src/views/mod/releases.json', 'utf8'));
+  const props = Object.fromEntries(readFileSync(`${MOD}/fabric-26.4/gradle.properties`, 'utf8').split('\n').filter(l => l.includes('=') && !l.startsWith('#')).map(l => l.split('=')));
+  for (const r of releases.filter(r => r.file.includes('-26.4-'))) {
+    // Solange es nur Snapshots gibt, nennt jede 26.4-Datei ihren Snapshot (Vorschau, auf Modrinth alpha).
+    assert.match(r.minecraft, /^26\.4(-(snapshot|pre|rc)-\d+)?$/, r.file);
+    assert.ok(/-(snapshot|pre|rc)-/.test(r.minecraft) || !/-(snapshot|pre|rc)-/.test(props.minecraft_version), `${r.file}: 26.4 ist noch nicht erschienen`);
+    assert.equal(r.loader, 'fabric');
+  }
+  const newest = releases.filter(r => r.file.includes('-26.4-')).map(r => r.minecraft).sort().at(-1);
+  if (newest) assert.equal(newest, props.minecraft_version, 'die angebotene 26.4-Vorschau ist der Snapshot, gegen den fabric-26.4 baut');
+  assert.ok(releases.some(r => r.minecraft === '26.3' && r.loader === 'fabric'), '26.3 bleibt angeboten');
 });

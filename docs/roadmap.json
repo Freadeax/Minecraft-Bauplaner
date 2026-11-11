@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-11T11:51:52.482Z",
+  "updatedAt": "2026-11-11T12:59:32.505Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -9571,7 +9571,7 @@
         },
         {
           "id": "GAME-11-S02",
-          "title": "Zweite Minecraft-Version (Fabric und NeoForge) als eigener Adapter über mod-core und eine Versionsfassade, ohne 26.3 zu verändern. Fabric 26.4 vorbereitet (fabric-26.4 gegen 26.4-snapshot-7, Regeln statt Kopien); NeoForge folgt, sobald es 26.4-Builds gibt.",
+          "title": "Zweite Minecraft-Version (Fabric und NeoForge) als eigener Adapter über mod-core und eine Versionsfassade, ohne 26.3 zu verändern. Fabric 26.4 vorbereitet (fabric-26.4 gegen 26.4-snapshot-8, Regeln statt Kopien, Stand 11.11.2026); NeoForge folgt, sobald es 26.4-Builds gibt (11.11.2026: noch keine).",
           "done": false
         },
         {
@@ -9589,7 +9589,7 @@
         "Die Mod läuft in mindestens einer weiteren Minecraft-Version mit Hologramm, Platzierhilfe, Website-Verbindung, Teambau und Befehlsseite.",
         "#/mod und Modrinth bieten je Version und Loader die passende Datei an."
       ],
-      "next": "26.4 ist am 07.11.2026 noch Snapshot 7 (piston-meta). Bei Erscheinen: fabric-26.4/gradle.properties auf das Release setzen, Spieltest BAUPLANER_MC=26.4, #/mod und Modrinth je Version.",
+      "next": "Jeden neuen 26.4-Snapshot nachziehen (fabric-26.4/gradle.properties, Spieltest BAUPLANER_MC=26.4, release_mod.mjs fabric-26.4, Modrinth als alpha). Bei Erscheinen von 26.4: auf das Release setzen, dann wird 26.4 Standard auf #/mod. NeoForge-26.4-Adapter, sobald maven.neoforged.net 26.4-Builds hat.",
       "blockers": [],
       "evidence": [
         {
@@ -9598,20 +9598,20 @@
         },
         {
           "path": "tests/unit/mod/mod-versions.test.mjs",
-          "note": "Jede 26.3→26.4-Regel greift, 26.4 eigener Schalter, keine 26.4-Datei in releases.json."
+          "note": "Jede 26.3→26.4-Regel greift, 26.4 eigener Schalter, 26.4-Dateien nur als Vorschau des aktuellen Snapshots, 26.3 bleibt angeboten."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "S04 Launcher-Anleitung fertig. 26.4: Build und Spieltest gegen 26.4-snapshot-7 in der Cloud; Release erst mit 26.4."
+        "note": "S04 Launcher-Anleitung fertig. 26.4: Build und echter Spieltest gegen 26.4-snapshot-8 in der Cloud (11.11.2026); als Vorschau auf #/mod (Versionswahl, Standard 26.3) und Modrinth (alpha)."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T12:31:42.554Z",
+      "updatedAt": "2026-11-11T12:59:32.505Z",
       "area": "MOD",
-      "thread": "Mod auf Modrinth veröffentlichen",
+      "thread": "Mod für Minecraft 26.4 vorbereiten",
       "orphans": [],
       "philipp": []
     },
@@ -16155,6 +16155,42 @@
           "done": 4,
           "total": 5,
           "next": "Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-11T12:59:32.505Z",
+      "kind": "progress",
+      "items": [
+        "GAME-11"
+      ],
+      "summary": "26.4-snapshot-8 nachgezogen (Fabric API 0.166.1+26.4, Befehlsbaum aus der SuggestionBox), echter Spieltest im 26.4-Client grün, Vorschau-Datei auf #/mod mit Versionswahl (Standard bleibt 26.3) und für Modrinth als alpha; NeoForge hat noch keine 26.4-Builds",
+      "files": [
+        "apps/web/src/testing/autochecks.ts",
+        "apps/web/src/views/mod/ModView.tsx",
+        "apps/web/src/views/mod/releases.json",
+        "apps/web/src/views/mod/releases.ts",
+        "docs/TESTING.md",
+        "docs/architecture/mod/MOD_BRIDGE.md",
+        "docs/testing/TESTPLAN.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.4-snapshot-8-0.28.0.jar",
+        "mods/bauplaner-bridge/README.md",
+        "mods/bauplaner-bridge/fabric-26.4/compat-26.4.gradle",
+        "mods/bauplaner-bridge/fabric-26.4/gradle.properties",
+        "mods/bauplaner-bridge/fabric-26.4/src/override/java/io/github/freadeax/bauplaner/bridge/hologram/Compat264.java",
+        "scripts/mod/modrinth_publish.mjs",
+        "scripts/mod/release_mod.mjs",
+        "tests/e2e/mod-download.e2e.mjs",
+        "tests/unit/mod/mod-releases.test.mjs",
+        "tests/unit/mod/mod-versions.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-11",
+          "status": "in_progress",
+          "done": 2,
+          "total": 4,
+          "next": "Jeden neuen 26.4-Snapshot nachziehen (fabric-26.4/gradle.properties, Spieltest BAUPLANER_MC=26.4, release_mod.mjs fabric-26.4, Modrinth als alpha). Bei Erscheinen von 26.4: auf das Release setzen, dann wird 26.4 Standard auf #/mod. NeoForge-26.4-Adapter, sobald maven.neoforged.net 26.4-Builds hat."
         }
       ]
     }

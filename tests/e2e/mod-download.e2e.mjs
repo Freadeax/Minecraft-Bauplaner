@@ -36,8 +36,9 @@ for (const viewport of [{ width: 1400, height: 900 }, { width: 390, height: 844 
     await p.getByRole('heading', { name: 'Mod herunterladen' }).waitFor();
     assert.equal(await p.title(), 'Mod herunterladen · LMNT — Build Studio');
     const byVersion = (a, b) => b.minecraft.localeCompare(a.minecraft, 'de', { numeric: true }) || b.modVersion.localeCompare(a.modVersion, 'de', { numeric: true });
-    // Vorauswahl: neueste Minecraft-Version, Fabric, neueste Mod-Version.
-    const newest = releases.filter(r => r.loader === 'fabric').toSorted(byVersion)[0];
+    // Vorauswahl: neueste Minecraft-Version (ohne Snapshot-Vorschau, GAME-11-S03), Fabric, neueste Mod-Version.
+    const preview = r => /-(snapshot|pre|rc)-/.test(r.minecraft);
+    const newest = releases.filter(r => r.loader === 'fabric' && !preview(r)).toSorted(byVersion)[0];
     const older = releases.find(r => r.loader === 'fabric' && r.minecraft === newest.minecraft && r.modVersion !== newest.modVersion);
     assert.equal(await p.getByLabel('Minecraft-Version').inputValue(), newest.minecraft);
     assert.equal(await p.getByLabel('Mod-Loader').inputValue(), 'fabric');
@@ -82,6 +83,16 @@ for (const viewport of [{ width: 1400, height: 900 }, { width: 390, height: 844 
     if (older) {
       await p.getByLabel('Mod-Version').selectOption(older.modVersion);
       assert.equal(await link.getAttribute('href'), `/Minecraft-Bauplaner/downloads/mod/${older.file}`);
+    }
+    // Snapshot-Vorschau: wählbar mit Hinweis, danach wieder die Hauptversion.
+    const snap = releases.filter(r => r.loader === 'fabric' && preview(r)).toSorted(byVersion)[0];
+    if (snap) {
+      assert.equal(await p.getByLabel('Minecraft-Version').locator(`option[value="${snap.minecraft}"]`).innerText(), `${snap.minecraft} (Vorschau)`);
+      assert.equal(await p.locator('.mod-preview').count(), 0, 'kein Vorschau-Hinweis bei der Hauptversion');
+      await p.getByLabel('Minecraft-Version').selectOption(snap.minecraft);
+      assert.equal(await link.getAttribute('href'), `/Minecraft-Bauplaner/downloads/mod/${snap.file}`);
+      assert.ok(await p.locator('.mod-preview').isVisible(), 'Vorschau-Hinweis');
+      await p.getByLabel('Minecraft-Version').selectOption(newest.minecraft);
     }
     // Die Auswahl steht als teilbarer Link in der Adresszeile.
     await p.getByLabel('Mod-Version').selectOption(newest.modVersion);

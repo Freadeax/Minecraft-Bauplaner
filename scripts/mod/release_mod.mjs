@@ -20,9 +20,10 @@ const props = Object.fromEntries(readFileSync(join(root, adapter, 'gradle.proper
   .filter(l => /^[a-z_]+=/.test(l)).map(l => l.split('=').map(s => s.trim())));
 const modVersion = readFileSync(join(root, 'VERSION'), 'utf8').trim();
 const loader = adapter.split('-')[0];
-const file = `bauplaner-bridge-${adapter}-${modVersion}.jar`;
-const built = join(root, adapter, 'build/libs', file);
 const multi = !adapter.includes('-');
+// Download name carries the exact Minecraft version, so each 26.4 snapshot preview gets its own file (GAME-11-S03).
+const file = multi ? `bauplaner-bridge-${adapter}-${modVersion}.jar` : `bauplaner-bridge-${loader}-${props.minecraft_version}-${modVersion}.jar`;
+const built = join(root, adapter, 'build/libs', `bauplaner-bridge-${adapter}-${modVersion}.jar`);
 const flag = { fabric: 'withFabric', paper: 'withPaper', neoforge: 'withNeoForge', forge: 'withForge' }[loader] ?? 'with' + loader;
 if (!existsSync(built)) throw new Error(`${built} fehlt: zuerst ./gradlew -P${flag} :${adapter}:build`);
 const bytes = readFileSync(built);

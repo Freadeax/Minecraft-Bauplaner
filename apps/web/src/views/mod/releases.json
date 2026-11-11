@@ -1267,6 +1267,20 @@
       "releasedAt": "2026-11-07",
       "sourceCommit": "69efefd3b2f9149525f3b8aef5d6f687e496265a",
       "tested": "07.11.2026, Mod 0.28.0 aus dem Quellstand: Java-Tests (mod-core, core, paper) grün; Paper 1.21.11 und 26.3 echt: unterschriebene Ereignisse mit Ed25519-Prüfschlüssel, Team-Raum, Kopplung, Teambau grün; Planer-Browser-Tests gegen wrangler dev grün"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.4-snapshot-8-0.28.0.jar",
+      "modVersion": "0.28.0",
+      "loader": "fabric",
+      "minecraft": "26.4-snapshot-8",
+      "loaderMin": "0.20.1",
+      "fabricApi": "0.166.1+26.4",
+      "java": "25",
+      "bytes": 692556,
+      "sha256": "abc2f7a4bccd8d526b317c99923d25d809da74c478244c3ee6652d7a294817a9",
+      "releasedAt": "2026-11-11",
+      "sourceCommit": "abcb53bd06eef98cd678d8d0a9f4b40945fc5058",
+      "tested": "Vorschau für den Snapshot: im echten Minecraft-26.4-Snapshot-8-Client (Fabric) automatisch geprüft wie 26.3: Aufnahme (146 korrekt, 1 falsch, 1 fehlt), Hologramm mit Röntgensicht und Platzierhilfe, Gruppen und Sperren, Oberfläche Deutsch/Englisch in 3 Fenstergrößen, der Planer im Browser gegen das Spiel (Verbinden, Gelände, Planversand, Baustand). Nur für Testwelten."
     }
   ]
 }
