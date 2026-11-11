@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-10T13:55:00.000Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-11T11:51:52.482Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -33,8 +33,8 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Arbeitsstrang
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 14 | 0 | 12 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 4 | 0 | 3 | 1 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
-| [Performance und Stabilität](#bereich-perf) | 7 | 1 | 3 | 3 |
-| [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 9 | 1 | 5 | 15 |
+| [Performance und Stabilität](#bereich-perf) | 7 | 0 | 3 | 3 |
+| [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 9 | 0 | 5 | 15 |
 | [Testphase, Qualität und Betrieb](#bereich-qa) | 3 | 0 | 3 | 8 |
 | [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 2 | 0 | 0 | 0 |
 
@@ -126,9 +126,9 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 
 | ID | Paket | Status | Prio | Arbeitsstrang | Nur Philipp |
 |---|---|---|---|---|---|
-| [BACKUP-03](#backup-03) | Sicherungen ohne Team-Schlüssel, Team-Zugang verschlüsselt, Verwaltungsschlüssel wechseln | 🧩 Implementiert · Abnahme offen 3/4 | P0 | „Schlüssel aus Sicherungen entfernen“ | — |
+| [BACKUP-03](#backup-03) | Sicherungen ohne Team-Schlüssel, Team-Zugang verschlüsselt, Verwaltungsschlüssel wechseln | 🧩 Implementiert · Abnahme offen 4/4 | P0 | „Schlüssel aus Sicherungen entfernen“ | — |
 | [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo im Team-Raum | 🧩 Implementiert · Abnahme offen 2/2 | P0 | „Große Testphase vorbereiten und betreuen“ | — |
-| [TEAM-SEC-01](#team-sec-01) | Team-Rollen gegen Vortäuschen absichern | 🧩 Implementiert · Abnahme offen 4/5 | P0 | „Team-Rollen gegen Vortäuschen absichern“ | — |
+| [TEAM-SEC-01](#team-sec-01) | Team-Rollen gegen Vortäuschen absichern | 🧩 Implementiert · Abnahme offen 5/5 | P0 | „Team-Rollen gegen Vortäuschen absichern“ | — |
 | [COOP-01](#coop-01) | Teambau im Planer | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Mit Mitspielern TEAMBAU-01…05.<br>Weg für den Live-Abgleich ohne Herunter- und Hochladen wählen. |
 | [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte i… | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Große Testphase vorbereiten und betreuen“ | TEAMBAU-09: aktuelle Mod und aktuelles Plugin (ab 0.10.0) zusammen auf deinem Server. |
 | [COOP-04](#coop-04) | Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams z… | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Große Testphase vorbereiten und betreuen“ | TEAMBAU-07/08 mit echten Spielern. |
@@ -172,7 +172,7 @@ Abgeschlossen oder zurückgestellt: COOP-02 (geprüft).
 | [LINK-03](#link-03) | Mod | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“. |
 | [LINK-07](#link-07) | Ohne Server-Datei | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Mod-Abnahmen im Spiel automatisieren“ | LINK-07 auf #/testphase: im eigenen Spiel ohne Server-Datei „Mein Spiel verbinden“ und Teamstand im Spiel sehen. |
 | [LINK-10](#link-10) | Anbindung geprüft und gehärtet | 🧩 Implementiert · Abnahme offen 6/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Abnahme LINK-10: offline in mehreren Abschnitten bauen, wieder verbinden – alle Messungen genau einmal im Planer; mit Plugin bleibt die Raumverbindung stehen. |
-| [LINK-11](#link-11) | Alles über das Internet | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Abnahme LINK-12: als Bauleitung „Mein Spiel verbinden“, mit der Mod auf den Server – der Server verbindet sich selbst mit dem Team-Raum, Abschnittsschutz greift.<br>Abnahme LINK-13: alle Dateiwege nur noch zugeklappt unter „Notfall“. |
+| [LINK-11](#link-11) | Alles über das Internet | 🧩 Implementiert · Abnahme offen 6/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Abnahme LINK-12: als Bauleitung „Mein Spiel verbinden“, mit der Mod auf den Server – der Server verbindet sich selbst mit dem Team-Raum, Abschnittsschutz greift.<br>Abnahme LINK-13: alle Dateiwege nur noch zugeklappt unter „Notfall“. |
 | [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2 | 🧩 Implementiert · Abnahme offen 5/5 | P2 | „Große Testphase vorbereiten und betreuen“ | Mitspieler-Pfeile auf der Live-Karte mit einem zweiten Spieler. |
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0 | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Große Testphase vorbereiten und betreuen“ | Befehlsseite im J-Menü zusammen mit dem Plugin auf deinem Server (MOD-16). |
 | [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher | 🚧 In Arbeit 2/4 | P2 | „Mod auf Modrinth veröffentlichen“ | — |
@@ -209,8 +209,8 @@ Abgeschlossen oder zurückgestellt: LINK-01 (geprüft).
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Olympus auf deinem Rechner, dazu Firefox/Safari (S06). |
 | [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 9/9 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | — |
 | [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | GERAET-03 auf #/testphase: auf dem iPad (Safari) den Planer einmal laden, dann im Flugmodus neu öffnen; einmal die Mod über https://bauplaner.pages.dev/Minecraft-Bauplaner/ verbinden. |
-| [PERF-07](#perf-07) | Ladezeit | 🧩 Implementiert · Abnahme offen 6/6 | P1 | **verwaist** | — |
-| [RELEASE-01](#release-01) | Browser-Schutz und Release-Check | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Sicherheitsheader und Release-Check einführen“ | — |
+| [PERF-07](#perf-07) | Ladezeit | 🧩 Implementiert · Abnahme offen 6/6 | P1 | „Große Testphase vorbereiten und betreuen“ | — |
+| [RELEASE-01](#release-01) | Browser-Schutz und Release-Check | 🧩 Implementiert · Abnahme offen 7/7 | P1 | „Sicherheitsheader und Release-Check einführen“ | — |
 
 Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF-03 (geprüft).
 
@@ -223,7 +223,7 @@ Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF
 | [ARCH-02](#arch-02) | Planmodell | 🧩 Implementiert · Abnahme offen 6/7 | P0 | „Große Testphase vorbereiten und betreuen“ | Datencheck unter #/system mit deinen eigenen, lange gewachsenen Browserdaten (Stichprobe zu S05; automatisch mit drei alten Ständen geprüft). |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3 | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Einen Bau mit Spielprüfung ohne Hinweise nachbauen und Verbindungen vergleichen (S07). |
 | [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Planer-Abnahmen ohne Nachweis automatisieren“ | Geänderte Gebäude (Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen (S06). |
-| [COMPAT-01](#compat-01) | Kompatibilitätscheck vor Export und Download | 🧩 Implementiert · Abnahme offen 3/4 | P1 | **verwaist** | — |
+| [COMPAT-01](#compat-01) | Kompatibilitätscheck vor Export und Download | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Große Testphase vorbereiten und betreuen“ | — |
 | [CORE-04](#core-04) | Planer-Kernmodule prüfen und überarbeiten | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Projekt mit Nachfolger und Bauplatz löschen; Blockeditor mit Änderungen verlassen; Truhe mit verzaubertem Schwert umsortieren (CORE-04-S05). |
 | [DOC-02](#doc-02) | Repository übersichtlich | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Git-Repo übersichtlich überarbeiten“ | README und Doku-Index auf GitHub ansehen: Ist auf einen Blick klar, was das Projekt ist? |
 | [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Große Testphase vorbereiten und betreuen“ | — |
@@ -386,8 +386,6 @@ Arbeit, für die gerade kein laufender Arbeitsstrang zuständig ist. Zum Verteil
 
 | ID | Bereich | Prio | Status | Offen ohne Bearbeiter |
 |---|---|---|---|---|
-| [COMPAT-01](#compat-01) | Kern, Minecraft-Daten und Dateiformate | P1 | 🧩 Implementiert · Abnahme offen | Abnahme COMPAT-01-S04 im echten Spiel; bei neuer Minecraft-Version fetch_version_reports.sh + gen_version_compat.mjs. |
-| [PERF-07](#perf-07) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | Abnahme auf Philipps Rechner und iPad (Projektzentrale sofort sichtbar, Export großer Bauten ohne Hänger). |
 
 ## Eingänge ohne eigenes Paket
 
@@ -420,7 +418,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **COOP-03 · Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-09 auf Philipps Server mit Mod 0.10.0 und Paper-Plugin mit Teamkanal; Lagerkisten (COOP-04) über TeamChannel.decorate/broadcastStore.
 - **COOP-04 · Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung in COOP-05 (geprüfte Lagerkisten, docs/architecture/LAGERKISTEN.md).
 - **PROJ-01 · Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel.
-- **GAME-09 · Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** — 🚧 In Arbeit, 4/5 Teilschritte. Nächster Schritt: Modrinth prüft das Projekt weiter (Status processing, am 07.11.2026 nachgesehen); alle Versionen bis 0.26.0, Texte, Galerie und Offenlegungen sind aktuell (modrinth_publish.mjs plan). Kein Handlungsbedarf außer Abwarten.
+- **GAME-09 · Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** — 🚧 In Arbeit, 4/5 Teilschritte. Nächster Schritt: Modrinth prüft das Projekt weiter (Status processing, angefragt approved, keine Nachricht der Moderation; am 11.11.2026 nachgesehen). Alle Versionen bis 0.28.0 (64 Dateien), Texte, Galerie und Offenlegungen sind aktuell. Kein Handlungsbedarf außer Abwarten.
 - **GAME-10 · Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme MOD-16 auf Philipps Server mit Paper-Plugin.
 - **GAME-11 · Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** — 🚧 In Arbeit, 2/4 Teilschritte. Nächster Schritt: 26.4 ist am 07.11.2026 noch Snapshot 7 (piston-meta). Bei Erscheinen: fabric-26.4/gradle.properties auf das Release setzen, Spieltest BAUPLANER_MC=26.4, #/mod und Modrinth je Version.
 - **COOP-07 · Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05).
@@ -446,7 +444,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **UI-03 · Design-System: saubere, einheitliche und schön angepasste Planer-Oberfläche** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme START-20/21 durch Philipp am iPad; gruppierte Projektreiter aus „Bedienung vereinfachen“ und Anleitung optisch mitziehen; Werte an das Mod-Menü weitergeben.
 - **OPS-04 · Team-Raum betreiben: Sicherung, Wiederherstellung, Aufbewahrung, Zustand** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-31 mit zwei Geräten (sichern, wiederherstellen, löschen und zurückholen).
 - **DOC-02 · Repository übersichtlich: README als Überblick, Doku-Index, Funktionsstand und Prüfstand neu, interne Arbeitsnotizen und Verlauf aus dem Repository** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Durchsicht von README und Doku-Index durch Philipp.
-- **BACKUP-03 · Sicherungen ohne Team-Schlüssel, Team-Zugang verschlüsselt, Verwaltungsschlüssel wechseln** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Team-Raum-Dienst mit dem neuen Wechselweg ausrollen (bis dahin meldet der Planer „zu alte Version“ und empfiehlt einen neuen Raum).
+- **BACKUP-03 · Sicherungen ohne Team-Schlüssel, Team-Zugang verschlüsselt, Verwaltungsschlüssel wechseln** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Nur noch Abnahme durch Philipp (TEAMBAU-31).
 - **LIB-07 · Bibliothek vergleichbar und filterbar: gleiche Vergleichswerte auf jeder Karte (Grundfläche, Höhe, Material, Survival-Aufwand, Minecraft-Profil, Prüfstand), Filter Grundstück/Aufwand/Mods/geprüft, einheitliche Ansichten außen/innen/oben, wiederverwendbare Baustil-Paletten** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06, BIB-02).
 - **PRIV-01 · Datenschutz und Freigaben verständlich: was geht wohin, wer sieht es, Speicherstatus und Umzug** — 🧩 Implementiert · Abnahme offen, 8/8 Teilschritte. Nächster Schritt: Zugänge-Liste wirkt im echten Dienst, sobald der Team-Raum mit TEAM-SEC-01/HARDEN-01 ausgerollt ist (bis dahin Hinweis „ältere Fassung“); danach Abnahme im Spiel.
 
@@ -632,7 +630,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 |---|---|---|---:|---|---|---|
 | [UX-01](#ux-01) | Bedienung des Planers vereinfachen (Struktur und Abläufe) | 🧩 Implementiert · Abnahme offen | 6/6 | UI-02, GUIDE-01 | ausstehend | ausstehend |
 | [UX-02](#ux-02) | Startseite, Projektansichten und 3D-Editor umbauen | 🧩 Implementiert · Abnahme offen | 5/5 | UX-01, UI-03 | ausstehend | ausstehend |
-| [BACKUP-03](#backup-03) | Sicherungen ohne Team-Schlüssel, Team-Zugang verschlüsselt, Verwaltungsschlüssel wechseln | 🧩 Implementiert · Abnahme offen | 3/4 | BACKUP-02, OPS-04, GAME-06 | ausstehend | ausstehend |
+| [BACKUP-03](#backup-03) | Sicherungen ohne Team-Schlüssel, Team-Zugang verschlüsselt, Verwaltungsschlüssel wechseln | 🧩 Implementiert · Abnahme offen | 4/4 | BACKUP-02, OPS-04, GAME-06 | ausstehend | ausstehend |
 | [TEAM-01](#team-01) | Backendvertrag, Datenbank und Payloadspeicher | ⏳ Offen | 0/2 | ARCH-01, FORMAT-01, STORE-02, LICENSE-01 | ausstehend | ausstehend |
 | [AUTH-01](#auth-01) | Konten, Rechte und Übernahme lokaler Projekte | ⏳ Offen | 0/2 | TEAM-01 | ausstehend | ausstehend |
 | [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo im Team-Raum | 🧩 Implementiert · Abnahme offen | 2/2 | AUTH-01, UPDATE-01 | ausstehend | ausstehend |
@@ -663,13 +661,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LINK-07](#link-07) | Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten | 🧩 Implementiert · Abnahme offen | 6/7 | LINK-06, COOP-07 | ausstehend | ausstehend |
 | [FALLBACK-01](#fallback-01) | Ausweichwege über alle Verbindungen: Teamstand offline in der Mod, HTTP statt WebSocket, offline gemerkte Messungen, Baustand über den besten Weg (Spiel → Team-Raum → Server → Datei) | 🧩 Implementiert · Abnahme offen | 5/6 | LINK-07, COOP-10 | ausstehend | ausstehend |
 | [LINK-10](#link-10) | Anbindung geprüft und gehärtet: Sendungen über den WebSocket nacheinander (Mod und Plugin), Messungen bis zur Bestätigung gemerkt, Team-Raum mit Ping ohne Aufwecken und sauberem Schließen, Planer ohne gestapelte Abfrage-Schleifen | 🧩 Implementiert · Abnahme offen | 6/6 | FALLBACK-01, LINK-07 | ausstehend | ausstehend |
-| [LINK-11](#link-11) | Alles über das Internet: Server-Plugin bekommt die Team-Infos von Mod und Planer selbst über den Team-Raum, Dateiwege nur noch als versteckter Notfall (Mod/Plugin 0.21.0) | 🧩 Implementiert · Abnahme offen | 5/6 | LINK-10, COOP-07 | ausstehend | ausstehend |
+| [LINK-11](#link-11) | Alles über das Internet: Server-Plugin bekommt die Team-Infos von Mod und Planer selbst über den Team-Raum, Dateiwege nur noch als versteckter Notfall (Mod/Plugin 0.21.0) | 🧩 Implementiert · Abnahme offen | 6/6 | LINK-10, COOP-07 | ausstehend | ausstehend |
 | [GUIDE-01](#guide-01) | Anleitung „Wie geh ich es an?“: eigener Reiter mit Wegen nach Ziel, jeder Schritt mit Grafik, kurzem Satz und Link an die passende Stelle | 🧩 Implementiert · Abnahme offen | 4/5 | UI-02, GAME-11, TERRAIN-04, LINK-11 | ausstehend | ausstehend |
 | [NAME-01](#name-01) | Neuer Produktname „LMNT — Build Studio“ auf Seite, Mod, Plugin und Modrinth | 🧩 Implementiert · Abnahme offen | 3/4 | UI-03, GAME-12 | ausstehend | ausstehend |
 | [PRIV-01](#priv-01) | Datenschutz und Freigaben verständlich: was geht wohin, wer sieht es, Speicherstatus und Umzug | 🧩 Implementiert · Abnahme offen | 8/8 | COOP-07, WORLD-SHARE-01, BACKUP-02 | ausstehend | ausstehend |
 | [HARDEN-01](#harden-01) | Importe und Team-Raum gegen Missbrauch härten | 🧩 Implementiert · Abnahme offen | 3/3 | TEAM-02 | ausstehend | ausstehend |
-| [TEAM-SEC-01](#team-sec-01) | Team-Rollen gegen Vortäuschen absichern: Absender aus der Sitzung, eigene Schlüssel, Ed25519 für den Server | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-07, GAME-06, BACKUP-03, HARDEN-01 | ausstehend | ausstehend |
-| [RELEASE-01](#release-01) | Browser-Schutz und Release-Check: Sicherheitsheader auf Cloudflare Pages, Einbettungsschutz auf GitHub Pages, Release-Prüfung, sicherer Schem/Litematic-Export, Browserliste in der Mod | 🧩 Implementiert · Abnahme offen | 6/7 | PERF-06, FORMAT-02, LINK-03 | ausstehend | ausstehend |
+| [TEAM-SEC-01](#team-sec-01) | Team-Rollen gegen Vortäuschen absichern: Absender aus der Sitzung, eigene Schlüssel, Ed25519 für den Server | 🧩 Implementiert · Abnahme offen | 5/5 | COOP-07, GAME-06, BACKUP-03, HARDEN-01 | ausstehend | ausstehend |
+| [RELEASE-01](#release-01) | Browser-Schutz und Release-Check: Sicherheitsheader auf Cloudflare Pages, Einbettungsschutz auf GitHub Pages, Release-Prüfung, sicherer Schem/Litematic-Export, Browserliste in der Mod | 🧩 Implementiert · Abnahme offen | 7/7 | PERF-06, FORMAT-02, LINK-03 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -1468,7 +1466,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-07
 
-**Ladezeit: Projektzentrale startet vor dem Katalog, schlankeres Startpaket, feste Leistungstests für Großbauten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Ladezeit und Versions-Check“ · Aktualisiert: 2026-11-07T22:24:26.927Z
+**Ladezeit: Projektzentrale startet vor dem Katalog, schlankeres Startpaket, feste Leistungstests für Großbauten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Ladezeit und Versions-Check“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-11T11:51:52.482Z
 
 - [x] PERF-07-S01: Kerncode ohne Nebenwirkungen markiert: Start-JavaScript 1,73 → 1,21 MiB.
 - [x] PERF-07-S02: Projektzentrale öffnet, sobald der lokale Speicher offen ist; Katalog lädt im Hintergrund, andere Seiten warten wie bisher (LibraryGate). Erste Anzeige 1,24 s → 0,26 s.
@@ -1491,7 +1489,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COMPAT-01
 
-**Kompatibilitätscheck vor Export und Download: Minecraft-Version, Loader und Einfügewerkzeug zeigen fehlende Blöcke, angepasste Zustände, nötige Mods und passende Mod-Datei** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Ladezeit und Versions-Check“ · Aktualisiert: 2026-11-07T21:34:40.733Z
+**Kompatibilitätscheck vor Export und Download: Minecraft-Version, Loader und Einfügewerkzeug zeigen fehlende Blöcke, angepasste Zustände, nötige Mods und passende Mod-Datei** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Ladezeit und Versions-Check“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-11T11:51:52.482Z
 
 - [x] COMPAT-01-S01: Blockberichte der offiziellen Server 1.20.1 bis 26.3 (12 Versionen) erzeugt und nur die Unterschiede zum Profil eingecheckt (versionCompatData.ts).
 - [x] COMPAT-01-S02: checkCompatibility: fehlende Blöcke und angepasste Zustände je Zelle, Mod-Namensräume je Loader, Werkzeug/Loader-Hinweise, Entities.
@@ -2361,16 +2359,16 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### BACKUP-03
 
-**Sicherungen ohne Team-Schlüssel, Team-Zugang verschlüsselt, Verwaltungsschlüssel wechseln** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Schlüssel aus Sicherungen entfernen“ · Arbeitsstrang: „Schlüssel aus Sicherungen entfernen“ · Aktualisiert: 2026-11-07T18:58:50.082Z
+**Sicherungen ohne Team-Schlüssel, Team-Zugang verschlüsselt, Verwaltungsschlüssel wechseln** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Schlüssel aus Sicherungen entfernen“ · Arbeitsstrang: „Schlüssel aus Sicherungen entfernen“ · Aktualisiert: 2026-11-11T11:51:52.482Z
 
 - [x] BACKUP-03-S01: Projekt- und Gesamtsicherung ohne Mitglieds-, Verwaltungs- und Serverschlüssel; Vergleich, Ersetzen und Erinnerung ohne Live-Block; ältere Sicherungen mit Schlüsseln werden benannt.
 - [x] BACKUP-03-S02: Team-Zugang als eigene, mit Passwort verschlüsselte Datei (PBKDF2 + AES-GCM) sichern und wieder öffnen.
 - [x] BACKUP-03-S03: Verwaltungsschlüssel im Team-Raum wechseln; Server-Bestätigung mit neuem Unterschriftsschlüssel höchstens bis vor die erste abgewiesene Fälschung.
-- [ ] BACKUP-03-S04: Neue Team-Raum-Version mit `rotate?wer=admin` ausrollen und live prüfen.
+- [x] BACKUP-03-S04: Team-Raum mit `rotate?wer=admin` ausgerollt (10.11.2026, Version 037de87a, Merkmal admin-rotate); 11.11. live geprüft: team_room_smoke.mjs wechselt den Verwaltungsschlüssel, der alte wird abgewiesen, die Einladung gilt weiter; team_room_backup_smoke.mjs grün.
 
 **Abnahme:** Keine Sicherungsdatei enthält Raumschlüssel im Klartext; Wiederherstellung verliert keinen Zugang und keinen Teamschritt; alter Verwaltungsschlüssel nach dem Wechsel wirkungslos.
 
-**Nächste Aktion:** Team-Raum-Dienst mit dem neuen Wechselweg ausrollen (bis dahin meldet der Planer „zu alte Version“ und empfiehlt einen neuen Raum).
+**Nächste Aktion:** Nur noch Abnahme durch Philipp (TEAMBAU-31).
 
 **Prüfstand:** Node- und Chromium-Browsertests mit dem Raumkern; der ausgerollte Dienst kennt den Wechsel erst nach dem Ausrollen.
 
@@ -3114,13 +3112,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROJ-01
 
-**Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Projektmodul vertiefen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
+**Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Projektmodul vertiefen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-11T11:51:52.482Z
 
 - [x] PROJ-01-S01: Datensatz project.site.program (Bauleute, Meilensteine, Abhängigkeiten azyklisch, Zuweisungen, Start, Bautage je Woche) mit Prüfung, Rückgängig über site.set, Sicherung und Datencheck.
 - [x] PROJ-01-S02: Zeitplan: Spur je Bauleute, gemeinsames Tempo bei geteilten Abschnitten, Abhängigkeiten, kritischer Pfad, Kalender mit Bautagen je Woche, Meilensteinstatus und Bedarf je Meilenstein/Bauleute.
 - [x] PROJ-01-S03: Vorschläge: Abhängigkeiten aus Schrittvoraussetzungen und Anschlüssen; Programmvorlagen Phasen/Reihenfolge/Etappen aus den Bauabschnitten.
 - [x] PROJ-01-S04: Reiter „Planung“ (Balkenplan, Meilensteine, Abhängigkeiten, Bauleute mit Zuweisungsmatrix und Bauzettel, Einstellungen, Bauprogramm als Text) und Meilenstein-Chip in der Projektzentrale.
-- [ ] PROJ-01-S05: Abnahme durch Philipp in der Testphase (PROJ-09…11); Folgeideen: Abhängigkeiten zwischen Projekten auf der Weltkarte, Bauleute aus dem Spiel (Mitspieler), Lagerbuchungen je Bauleute (TEAM-03).
+- [ ] PROJ-01-S05: Abnahme durch Philipp in der Testphase (PROJ-09…11). Folgeideen umgesetzt: Reihenfolge zwischen Projekten (PROJ-04), Bauleute aus dem Spiel und Lagerbuchungen je Bauleute (PROJ-05, TEAM-03).
 
 **Abnahme:** Abhängigkeiten sind azyklisch; ein Kreis wird mit lesbarer Meldung abgelehnt; entfernte Abschnitte verschwinden aus Meilensteinen, Abhängigkeiten und Zuweisungen. Zeitplan rechnet nur mit Restbedarf der nicht abgehakten Schritte und dem Bautempo; abgehakte Abschnitte brauchen keine Bautage; Daten sind als Projektion gekennzeichnet. Keine zweite Geometrie-, Schritt- oder Materiallogik: Bedarf je Meilenstein ist die Summe der Abschnittspläne der Baustelle.
 
@@ -3138,17 +3136,17 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-09
 
-**Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Arbeitsstrang „Mod auf Modrinth veröffentlichen“ · Arbeitsstrang: „Mod auf Modrinth veröffentlichen“ · Aktualisiert: 2026-11-07T20:44:28.756Z
+**Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Arbeitsstrang „Mod auf Modrinth veröffentlichen“ · Arbeitsstrang: „Mod auf Modrinth veröffentlichen“ · Aktualisiert: 2026-11-11T11:51:52.482Z
 
 - [x] GAME-09-S01: Projektdaten: project.json (Slug, Titel, Kurztext, Kategorien, Seiten, Lizenz, Links, Loader, Abhängigkeit Fabric API), DESCRIPTION.md Englisch + Deutsch, Icon 512 px, 6 Bilder aus den Spieltests.
 - [x] GAME-09-S02: scripts/modrinth_publish.mjs check|plan|create|sync|release: Dateien aus releases.json mit SHA-256-Vergleich, Änderungsliste aus CHANGELOG.md je Version, Token nur aus MODRINTH_TOKEN; Offline-Prüfung in npm test, Ablauf gegen nachgebaute API geprüft.
 - [x] GAME-09-S03: Philipp bestätigt Name, Beschreibung, Sichtbarkeit öffentlich (03.11.2026) und Lizenz MIT; MODRINTH_TOKEN in der Cloud-Umgebung (keine Actions).
-- [ ] GAME-09-S04: Projekt angelegt (create, Modrinth-ID uL1mPEKJ), 0.10.0 für Fabric, NeoForge (client_only) und Paper (server_only) hochgeladen, 03.11.2026 zur Prüfung eingereicht; offen: Freigabe durch Modrinth.
+- [ ] GAME-09-S04: Projekt angelegt (Modrinth-ID uL1mPEKJ), 03.11.2026 zur Prüfung eingereicht, alle Versionen bis 0.28.0 hochgeladen; offen: Freigabe durch Modrinth (Stand 11.11.2026: processing).
 - [x] GAME-09-S05: Jede neue Mod-Version: nach release_mod.mjs und Abschnitt in CHANGELOG.md `node scripts/modrinth_publish.mjs release` (Daueranweisung Philipp 04.11.2026; bisher 0.10.0–0.15.0 hochgeladen, 21 Dateien, Stand 04.11.2026 22:05).
 
 **Abnahme:** Das Projekt ist auf Modrinth sichtbar und im Modrinth-Launcher für Fabric und NeoForge 26.3 installierbar; Fabric zieht die Fabric API mit. Nur auf der Website geprüfte .jar (gleiche SHA-256) werden hochgeladen; Forge bleibt draußen, bis es im Spiel geprüft ist. Kein Token im Repo, in Logs oder im Chat.
 
-**Nächste Aktion:** Modrinth prüft das Projekt weiter (Status processing, am 07.11.2026 nachgesehen); alle Versionen bis 0.26.0, Texte, Galerie und Offenlegungen sind aktuell (modrinth_publish.mjs plan). Kein Handlungsbedarf außer Abwarten.
+**Nächste Aktion:** Modrinth prüft das Projekt weiter (Status processing, angefragt approved, keine Nachricht der Moderation; am 11.11.2026 nachgesehen). Alle Versionen bis 0.28.0 (64 Dateien), Texte, Galerie und Offenlegungen sind aktuell. Kein Handlungsbedarf außer Abwarten.
 
 **Prüfstand:** Echte API: Projekt, 6 Bilder, 3 Versionen und Einreichung erfolgreich; kein Werkzeugname im Livetext (geprüft 03.11.2026). Freigabe durch Modrinth offen.
 
@@ -3790,18 +3788,18 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LINK-11
 
-**Alles über das Internet: Server-Plugin bekommt die Team-Infos von Mod und Planer selbst über den Team-Raum, Dateiwege nur noch als versteckter Notfall (Mod/Plugin 0.21.0)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Alle Systeme online verbinden“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
+**Alles über das Internet: Server-Plugin bekommt die Team-Infos von Mod und Planer selbst über den Team-Raum, Dateiwege nur noch als versteckter Notfall (Mod/Plugin 0.21.0)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Alle Systeme online verbinden“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-11T11:51:52.482Z
 
 - [x] LINK-11-S01: Bestandsaufnahme: alle Stellen, an denen Dateien exportiert, kopiert oder eingefügt werden mussten (Teampaket, Meldecode, Serverdatei, Server-Link, Aufnahme-Datei, Plan-Ordner der Mod, Weltplan-/Kartenmarker) – AUTO_LINK §10.
 - [x] LINK-11-S02: Mod 0.21.0: „Mein Spiel verbinden“ gibt der Bauleitung auch den Serverschlüssel (Merkmal roomserver); auf einem Server mit Plugin übergibt die Mod den Team-Raum selbst (link.room über bauplaner:team, einmal je Verbindung und Raum).
 - [x] LINK-11-S03: Plugin 0.21.0: link.room nur für OP/bauplaner.team.leitung, verbindet sich über das Internet mit dem Raum (Kopf mit Abschnitten, Boxen, Bedarf; Ereignisse live); Hinweise und Hilfe nennen den Online-Weg, Datei-Befehle nur noch als Notfall.
 - [x] LINK-11-S04: Planer: Bauleitung stellt den Kopf bei jeder Änderung von Abschnitten, Lage und Bedarf von selbst neu in den Raum (ohne Freigabe); gekoppelte Server werden automatisch verbunden; Zeile „Server-Plugin“ in „Team live“.
 - [x] LINK-11-S05: Planer: Teampaket, Meldecode, Serverdatei, Server-Link und Aufnahme-Datei nur noch zugeklappt unter „Notfall“; Texte auf Seite „Spiel“, Reiter „Team“ und „Bauen“ nennen den Online-Weg.
-- [ ] LINK-11-S06: Weltplan mit Gruppen/Sperren und BlueMap/Dynmap-Marker über den Team-Raum: eigener Arbeitsstrang „Weltplan und Karten über das Internet teilen“ (Mod/Plugin 0.22.0).
+- [x] LINK-11-S06: Weltplan mit Gruppen/Sperren und BlueMap/Dynmap-Marker über den Team-Raum als eigenes Paket WORLD-SHARE-01 umgesetzt (Schritte S01–S04 fertig, Abnahme dort unter KARTE-10..12).
 
 **Abnahme:** Der Server bekommt Team-Infos (Abschnitte, Lagerkisten, Abschnittsschutz) ohne Herunterladen, Hochladen, Kopieren oder Befehl. Kein Hauptweg im Planer verlangt eine Datei; Dateiwege stehen nur zugeklappt als Notfall.
 
-**Nächste Aktion:** Abnahme LINK-12 und LINK-13 durch Philipp auf seinem Server; Weltplan/Karten im eigene Arbeitsstränge.
+**Nächste Aktion:** Abnahme LINK-12 und LINK-13 durch Philipp auf seinem Server.
 
 **Nur Philipp:** Im Spiel an deinem PC: Abnahme LINK-12: als Bauleitung „Mein Spiel verbinden“, mit der Mod auf den Server – der Server verbindet sich selbst mit dem Team-Raum, Abschnittsschutz greift. Im Planer abnehmen: Abnahme LINK-13: alle Dateiwege nur noch zugeklappt unter „Notfall“.
 
@@ -4049,17 +4047,17 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TEAM-SEC-01
 
-**Team-Rollen gegen Vortäuschen absichern: Absender aus der Sitzung, eigene Schlüssel, Ed25519 für den Server** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Team-Rollen gegen Vortäuschen absichern“ · Arbeitsstrang: „Team-Rollen gegen Vortäuschen absichern“ · Aktualisiert: 2026-11-07T20:38:47.757Z
+**Team-Rollen gegen Vortäuschen absichern: Absender aus der Sitzung, eigene Schlüssel, Ed25519 für den Server** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Team-Rollen gegen Vortäuschen absichern“ · Arbeitsstrang: „Team-Rollen gegen Vortäuschen absichern“ · Aktualisiert: 2026-11-11T11:51:52.482Z
 
 - [x] TEAM-SEC-01-S01: Team-Raum nimmt den Absender aus dem Schlüssel und prüft die Rolle (NEED wie TEAM_NEED); Einladung nur noch lesen und beitreten (strict), in alten Räumen nie im Namen der Bauleitung oder mit Baumeister-Rechten.
 - [x] TEAM-SEC-01-S02: Eigener Schlüssel je Mitglied und Gerät (join, keys, widerrufen, Übernahme bestätigen); Planer tauscht die Einladung von selbst, die Mod bekommt einen eigenen Geräteschlüssel.
 - [x] TEAM-SEC-01-S03: Unterschrift der Bauleitung mit Ed25519; Server-Link und Plugin nur mit öffentlichem Prüfschlüssel (p), alter HMAC-Schlüssel wird gelöscht; Verwaltungsschlüssel wechseln gibt den neuen Prüfschlüssel weiter.
 - [x] TEAM-SEC-01-S04: Planer, Mod und Plugin übernehmen nur Geprüftes (Unterschrift, Ankunftsnummer ab checkedFrom oder team.trust ohne except); alte Räume stellt die Bauleitung mit einem unterschriebenen team.trust samt Ausnahmen um.
-- [ ] TEAM-SEC-01-S05: Team-Raum ausrollen, Mod/Plugin 0.28.0 auf Modrinth, bestehende Räume beim nächsten Öffnen durch die Bauleitung umstellen.
+- [x] TEAM-SEC-01-S05: Team-Raum ausgerollt (10.11.2026, Version 037de87a, Merkmal identity), Mod/Plugin 0.28.0 auf Modrinth (07.11.); bestehende Räume stellt die Bauleitung beim nächsten Öffnen selbst um. Live geprüft 11.11.: team_room_smoke.mjs gegen den echten Dienst grün.
 
 **Abnahme:** Ein mit der Einladung gesendetes member.role im Namen der Bauleitung wird vom Raum abgewiesen und erscheint in keinem Planer. Ein Mitglied schreibt nur im eigenen Namen und nur, was seine Rolle erlaubt. Das Plugin kann die Unterschrift der Bauleitung prüfen, aber nicht erzeugen. Ein Mitglied lässt sich einzeln aussperren, ohne alle anderen neu einzuladen.
 
-**Nächste Aktion:** Team-Raum gemeinsam mit HARDEN-01 ausrollen, Rauch-/Missbrauchsprobe gegen den echten Dienst, Mod/Plugin 0.28.0 auf Modrinth.
+**Nächste Aktion:** Nur noch Abnahme im Alltag mit Mitspielern (TEAMBAU-25).
 
 **Prüfstand:** Automatisch geprüft (Node-Tests, Java-Tests, Browser-Tests gegen wrangler dev, echter Paper 1.21.11/26.3); Ausrollen und Spieltest im echten Minecraft offen.
 
@@ -4071,7 +4069,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### RELEASE-01
 
-**Browser-Schutz und Release-Check: Sicherheitsheader auf Cloudflare Pages, Einbettungsschutz auf GitHub Pages, Release-Prüfung, sicherer Schem/Litematic-Export, Browserliste in der Mod** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Sicherheitsheader und Release-Check einführen“ · Arbeitsstrang: „Sicherheitsheader und Release-Check einführen“ · Aktualisiert: 2026-11-10T12:48:36.436Z
+**Browser-Schutz und Release-Check: Sicherheitsheader auf Cloudflare Pages, Einbettungsschutz auf GitHub Pages, Release-Prüfung, sicherer Schem/Litematic-Export, Browserliste in der Mod** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Sicherheitsheader und Release-Check einführen“ · Arbeitsstrang: „Sicherheitsheader und Release-Check einführen“ · Aktualisiert: 2026-11-11T11:51:52.482Z
 
 - [x] RELEASE-01-S01: Cloudflare Pages: HSTS, durchgesetzte CSP (frame-ancestors none, object-src none, base-uri self), volle CSP als Report-Only, X-Frame-Options, Permissions-Policy, COOP aus einer Quelle (security_headers.mjs).
 - [x] RELEASE-01-S02: GitHub Pages: Grenzen dokumentiert, Meta-CSP und Einbettungsschutz im Programm (fremder Rahmen startet den Planer nicht).
@@ -4079,11 +4077,11 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 - [x] RELEASE-01-S04: Sicherer Exportmodus: Befehlsblöcke, Befehls-Minecarts, Klickbefehle, Befehlsgegenstände, Spawner, Struktur-/Verbundblöcke immer melden, auf Wunsch weglassen (Schem und Litematic).
 - [x] RELEASE-01-S05: Mod (Quelle, nächste Version): Kopplungsfrage nennt die Website, Browserliste mit Website, Gerät, Zeit, Zwecken, einzelnes Trennen.
 - [x] RELEASE-01-S06: Volle CSP durchgesetzt (10.11.2026), nur der Projekt-Raum in connect-src (Entscheidung Philipp); Planer lehnt andere Team-Raum-Adressen mit Meldung ab.
-- [ ] RELEASE-01-S07: Mod-Version mit Browserliste bauen, im echten Spiel prüfen und auf Modrinth veröffentlichen.
+- [x] RELEASE-01-S07: Browserliste („Wer Zugriff auf das Spiel hat“, /bauplaner verbinden status|trennen) mit Mod 0.28.0 ausgeliefert, im echten 26.3-Client automatisch geprüft (Block C) und auf Modrinth (07.11.2026).
 
 **Abnahme:** Browsertest: Hauptwege ohne einen CSP-Verstoß, fremde Einbettung mit und ohne Header verhindert. npm run check:release nach dem Publish ohne Fehler. Sicherer Export: Datei enthält keine Befehle mehr, Schildtext und übrige Gegenstände bleiben.
 
-**Nächste Aktion:** Mod-Version mit Browserliste mit dem nächsten Mod-Release ausliefern und im Spiel prüfen.
+**Nächste Aktion:** Keine offenen Teilschritte; Abnahme im Alltag.
 
 **Prüfstand:** wird mit dem Publish ergänzt
 

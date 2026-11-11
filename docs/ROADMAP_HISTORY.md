@@ -1076,3 +1076,25 @@ LMNT-Auftritt: Thema „LMNT“ als Standard (Schwarz und LMNT-Rot, Archivo Blac
 - `tests/unit/web/theme-preferences.test.mjs`
 - `tests/unit/web/theme-tokens.test.mjs`
 
+## 2026-11-11T11:51:52.482Z · progress
+
+**Aufgaben:** TEAM-SEC-01, BACKUP-03, RELEASE-01, LINK-11, GAME-09, PERF-07, COMPAT-01, PROJ-01
+
+Roadmap bereinigt (11.11.2026): Team-Raum-Ausrollung von TEAM-SEC-01 und BACKUP-03 gegen den echten Dienst geprüft (Schlüsselwechsel, Sicherung), Browserliste mit Mod 0.28.0 ausgeliefert, Weltplan über den Team-Raum als WORLD-SHARE-01 erledigt, Modrinth-Prüfung weiter offen, Funktionsstand auf Mod 0.28.0.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TEAM-SEC-01 | 🧩 Implementiert · Abnahme offen | 5/5 | Nur noch Abnahme im Alltag mit Mitspielern (TEAMBAU-25). |
+| BACKUP-03 | 🧩 Implementiert · Abnahme offen | 4/4 | Nur noch Abnahme durch Philipp (TEAMBAU-31). |
+| RELEASE-01 | 🧩 Implementiert · Abnahme offen | 7/7 | Keine offenen Teilschritte; Abnahme im Alltag. |
+| LINK-11 | 🧩 Implementiert · Abnahme offen | 6/6 | Abnahme LINK-12 und LINK-13 durch Philipp auf seinem Server. |
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth prüft das Projekt weiter (Status processing, angefragt approved, keine Nachricht der Moderation; am 11.11.2026 nachgesehen). Alle Versionen bis 0.28.0 (64 Dateien), Texte, Galerie und Offenlegungen sind aktuell. Kein Handlungsbedarf außer Abwarten. |
+| PERF-07 | 🧩 Implementiert · Abnahme offen | 6/6 | Abnahme auf Philipps Rechner und iPad (Projektzentrale sofort sichtbar, Export großer Bauten ohne Hänger). |
+| COMPAT-01 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme COMPAT-01-S04 im echten Spiel; bei neuer Minecraft-Version fetch_version_reports.sh + gen_version_compat.mjs. |
+| PROJ-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel. |
+
+**Geänderte Dateien:**
+
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-10T13:55:00.000Z",
+  "updatedAt": "2026-11-11T11:51:52.482Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -3009,9 +3009,10 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T22:24:26.927Z",
+      "updatedAt": "2026-11-11T11:51:52.482Z",
       "area": "PERF",
-      "orphans": []
+      "orphans": [],
+      "thread": "Große Testphase vorbereiten und betreuen"
     },
     {
       "id": "COMPAT-01",
@@ -3093,9 +3094,10 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T21:34:40.733Z",
+      "updatedAt": "2026-11-11T11:51:52.482Z",
       "area": "KERN",
-      "orphans": []
+      "orphans": [],
+      "thread": "Große Testphase vorbereiten und betreuen"
     },
     {
       "id": "VIEW-01",
@@ -6445,14 +6447,14 @@
         },
         {
           "id": "BACKUP-03-S04",
-          "title": "Neue Team-Raum-Version mit `rotate?wer=admin` ausrollen und live prüfen.",
-          "done": false
+          "title": "Team-Raum mit `rotate?wer=admin` ausgerollt (10.11.2026, Version 037de87a, Merkmal admin-rotate); 11.11. live geprüft: team_room_smoke.mjs wechselt den Verwaltungsschlüssel, der alte wird abgewiesen, die Einladung gilt weiter; team_room_backup_smoke.mjs grün.",
+          "done": true
         }
       ],
       "acceptance": [
         "Keine Sicherungsdatei enthält Raumschlüssel im Klartext; Wiederherstellung verliert keinen Zugang und keinen Teamschritt; alter Verwaltungsschlüssel nach dem Wechsel wirkungslos."
       ],
-      "next": "Team-Raum-Dienst mit dem neuen Wechselweg ausrollen (bis dahin meldet der Planer „zu alte Version“ und empfiehlt einen neuen Raum).",
+      "next": "Nur noch Abnahme durch Philipp (TEAMBAU-31).",
       "blockers": [],
       "evidence": [
         {
@@ -6476,7 +6478,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T18:58:50.082Z",
+      "updatedAt": "2026-11-11T11:51:52.482Z",
       "area": "TEAM",
       "thread": "Schlüssel aus Sicherungen entfernen",
       "philipp": [],
@@ -9335,7 +9337,7 @@
         },
         {
           "id": "PROJ-01-S05",
-          "title": "Abnahme durch Philipp in der Testphase (PROJ-09…11); Folgeideen: Abhängigkeiten zwischen Projekten auf der Weltkarte, Bauleute aus dem Spiel (Mitspieler), Lagerbuchungen je Bauleute (TEAM-03).",
+          "title": "Abnahme durch Philipp in der Testphase (PROJ-09…11). Folgeideen umgesetzt: Reihenfolge zwischen Projekten (PROJ-04), Bauleute aus dem Spiel und Lagerbuchungen je Bauleute (PROJ-05, TEAM-03).",
           "done": false
         }
       ],
@@ -9368,7 +9370,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T12:35:25.144Z",
+      "updatedAt": "2026-11-11T11:51:52.482Z",
       "area": "PROJEKT",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -9420,7 +9422,7 @@
         },
         {
           "id": "GAME-09-S04",
-          "title": "Projekt angelegt (create, Modrinth-ID uL1mPEKJ), 0.10.0 für Fabric, NeoForge (client_only) und Paper (server_only) hochgeladen, 03.11.2026 zur Prüfung eingereicht; offen: Freigabe durch Modrinth.",
+          "title": "Projekt angelegt (Modrinth-ID uL1mPEKJ), 03.11.2026 zur Prüfung eingereicht, alle Versionen bis 0.28.0 hochgeladen; offen: Freigabe durch Modrinth (Stand 11.11.2026: processing).",
           "done": false
         },
         {
@@ -9434,7 +9436,7 @@
         "Nur auf der Website geprüfte .jar (gleiche SHA-256) werden hochgeladen; Forge bleibt draußen, bis es im Spiel geprüft ist.",
         "Kein Token im Repo, in Logs oder im Chat."
       ],
-      "next": "Modrinth prüft das Projekt weiter (Status processing, am 07.11.2026 nachgesehen); alle Versionen bis 0.26.0, Texte, Galerie und Offenlegungen sind aktuell (modrinth_publish.mjs plan). Kein Handlungsbedarf außer Abwarten.",
+      "next": "Modrinth prüft das Projekt weiter (Status processing, angefragt approved, keine Nachricht der Moderation; am 11.11.2026 nachgesehen). Alle Versionen bis 0.28.0 (64 Dateien), Texte, Galerie und Offenlegungen sind aktuell. Kein Handlungsbedarf außer Abwarten.",
       "blockers": [],
       "evidence": [
         {
@@ -9450,7 +9452,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T20:44:28.756Z",
+      "updatedAt": "2026-11-11T11:51:52.482Z",
       "area": "MODRINTH",
       "thread": "Mod auf Modrinth veröffentlichen",
       "philipp": [],
@@ -11940,7 +11942,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T12:35:25.144Z",
+      "updatedAt": "2026-11-11T11:51:52.482Z",
       "area": "MOD",
       "thread": "Große Testphase vorbereiten und betreuen",
       "orphans": [],
@@ -12015,8 +12017,8 @@
         },
         {
           "id": "LINK-11-S06",
-          "title": "Weltplan mit Gruppen/Sperren und BlueMap/Dynmap-Marker über den Team-Raum: eigener Arbeitsstrang „Weltplan und Karten über das Internet teilen“ (Mod/Plugin 0.22.0).",
-          "done": false
+          "title": "Weltplan mit Gruppen/Sperren und BlueMap/Dynmap-Marker über den Team-Raum als eigenes Paket WORLD-SHARE-01 umgesetzt (Schritte S01–S04 fertig, Abnahme dort unter KARTE-10..12).",
+          "done": true
         }
       ],
       "acceptance": [
@@ -12053,7 +12055,7 @@
           "note": "Echter Minecraft-26.3-Client mit Mod auf echtem Paper 26.3 mit Plugin und Team-Raum (PaperMultiplayerTest.java)."
         }
       ],
-      "next": "Abnahme LINK-12 und LINK-13 durch Philipp auf seinem Server; Weltplan/Karten im eigene Arbeitsstränge.",
+      "next": "Abnahme LINK-12 und LINK-13 durch Philipp auf seinem Server.",
       "verification": {
         "state": "pending",
         "note": "06.11.2026: Raum-Übergabe durch die Mod an das Plugin mit echtem 26.3-Client und mit Bots (Nicht-OP abgewiesen) automatisch geprüft."
@@ -13021,8 +13023,8 @@
         },
         {
           "id": "TEAM-SEC-01-S05",
-          "title": "Team-Raum ausrollen, Mod/Plugin 0.28.0 auf Modrinth, bestehende Räume beim nächsten Öffnen durch die Bauleitung umstellen.",
-          "done": false
+          "title": "Team-Raum ausgerollt (10.11.2026, Version 037de87a, Merkmal identity), Mod/Plugin 0.28.0 auf Modrinth (07.11.); bestehende Räume stellt die Bauleitung beim nächsten Öffnen selbst um. Live geprüft 11.11.: team_room_smoke.mjs gegen den echten Dienst grün.",
+          "done": true
         }
       ],
       "acceptance": [
@@ -13031,7 +13033,7 @@
         "Das Plugin kann die Unterschrift der Bauleitung prüfen, aber nicht erzeugen.",
         "Ein Mitglied lässt sich einzeln aussperren, ohne alle anderen neu einzuladen."
       ],
-      "next": "Team-Raum gemeinsam mit HARDEN-01 ausrollen, Rauch-/Missbrauchsprobe gegen den echten Dienst, Mod/Plugin 0.28.0 auf Modrinth.",
+      "next": "Nur noch Abnahme im Alltag mit Mitspielern (TEAMBAU-25).",
       "blockers": [],
       "evidence": [
         {
@@ -13059,7 +13061,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T20:38:47.757Z",
+      "updatedAt": "2026-11-11T11:51:52.482Z",
       "area": "TEAM",
       "thread": "Team-Rollen gegen Vortäuschen absichern",
       "philipp": [],
@@ -13133,8 +13135,8 @@
         },
         {
           "id": "RELEASE-01-S07",
-          "title": "Mod-Version mit Browserliste bauen, im echten Spiel prüfen und auf Modrinth veröffentlichen.",
-          "done": false
+          "title": "Browserliste („Wer Zugriff auf das Spiel hat“, /bauplaner verbinden status|trennen) mit Mod 0.28.0 ausgeliefert, im echten 26.3-Client automatisch geprüft (Block C) und auf Modrinth (07.11.2026).",
+          "done": true
         }
       ],
       "acceptance": [
@@ -13142,7 +13144,7 @@
         "npm run check:release nach dem Publish ohne Fehler.",
         "Sicherer Export: Datei enthält keine Befehle mehr, Schildtext und übrige Gegenstände bleiben."
       ],
-      "next": "Mod-Version mit Browserliste mit dem nächsten Mod-Release ausliefern und im Spiel prüfen.",
+      "next": "Keine offenen Teilschritte; Abnahme im Alltag.",
       "blockers": [],
       "evidence": [
         {
@@ -13170,7 +13172,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-10T12:48:36.436Z",
+      "updatedAt": "2026-11-11T11:51:52.482Z",
       "area": "PERF",
       "thread": "Sicherheitsheader und Release-Check einführen",
       "philipp": [],
@@ -16076,6 +16078,83 @@
           "done": 4,
           "total": 5,
           "next": "Abnahme durch Philipp; danach das Mod-Menü farblich angleichen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-11T11:51:52.482Z",
+      "kind": "progress",
+      "items": [
+        "TEAM-SEC-01",
+        "BACKUP-03",
+        "RELEASE-01",
+        "LINK-11",
+        "GAME-09",
+        "PERF-07",
+        "COMPAT-01",
+        "PROJ-01"
+      ],
+      "summary": "Roadmap bereinigt (11.11.2026): Team-Raum-Ausrollung von TEAM-SEC-01 und BACKUP-03 gegen den echten Dienst geprüft (Schlüsselwechsel, Sicherung), Browserliste mit Mod 0.28.0 ausgeliefert, Weltplan über den Team-Raum als WORLD-SHARE-01 erledigt, Modrinth-Prüfung weiter offen, Funktionsstand auf Mod 0.28.0.",
+      "files": [
+        "docs/STATUS.md",
+        "docs/TESTING.md"
+      ],
+      "snapshot": [
+        {
+          "id": "TEAM-SEC-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Nur noch Abnahme im Alltag mit Mitspielern (TEAMBAU-25)."
+        },
+        {
+          "id": "BACKUP-03",
+          "status": "implemented",
+          "done": 4,
+          "total": 4,
+          "next": "Nur noch Abnahme durch Philipp (TEAMBAU-31)."
+        },
+        {
+          "id": "RELEASE-01",
+          "status": "implemented",
+          "done": 7,
+          "total": 7,
+          "next": "Keine offenen Teilschritte; Abnahme im Alltag."
+        },
+        {
+          "id": "LINK-11",
+          "status": "implemented",
+          "done": 6,
+          "total": 6,
+          "next": "Abnahme LINK-12 und LINK-13 durch Philipp auf seinem Server."
+        },
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 4,
+          "total": 5,
+          "next": "Modrinth prüft das Projekt weiter (Status processing, angefragt approved, keine Nachricht der Moderation; am 11.11.2026 nachgesehen). Alle Versionen bis 0.28.0 (64 Dateien), Texte, Galerie und Offenlegungen sind aktuell. Kein Handlungsbedarf außer Abwarten."
+        },
+        {
+          "id": "PERF-07",
+          "status": "implemented",
+          "done": 6,
+          "total": 6,
+          "next": "Abnahme auf Philipps Rechner und iPad (Projektzentrale sofort sichtbar, Export großer Bauten ohne Hänger)."
+        },
+        {
+          "id": "COMPAT-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme COMPAT-01-S04 im echten Spiel; bei neuer Minecraft-Version fetch_version_reports.sh + gen_version_compat.mjs."
+        },
+        {
+          "id": "PROJ-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel."
         }
       ]
     }
