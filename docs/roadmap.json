@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-11T12:59:32.505Z",
+  "updatedAt": "2026-11-11T13:05:41.870Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -9452,7 +9452,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-11T11:51:52.482Z",
+      "updatedAt": "2026-11-11T13:05:41.870Z",
       "area": "MODRINTH",
       "thread": "Mod auf Modrinth veröffentlichen",
       "philipp": [],
@@ -16191,6 +16191,24 @@
           "done": 2,
           "total": 4,
           "next": "Jeden neuen 26.4-Snapshot nachziehen (fabric-26.4/gradle.properties, Spieltest BAUPLANER_MC=26.4, release_mod.mjs fabric-26.4, Modrinth als alpha). Bei Erscheinen von 26.4: auf das Release setzen, dann wird 26.4 Standard auf #/mod. NeoForge-26.4-Adapter, sobald maven.neoforged.net 26.4-Builds hat."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-11T13:05:41.870Z",
+      "kind": "progress",
+      "items": [
+        "GAME-09"
+      ],
+      "summary": "0.28.0 Fabric 26.4-snapshot-8 als Vorschau (alpha) auf Modrinth",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 4,
+          "total": 5,
+          "next": "Modrinth prüft das Projekt weiter (Status processing, angefragt approved, keine Nachricht der Moderation; am 11.11.2026 nachgesehen). Alle Versionen bis 0.28.0 (64 Dateien), Texte, Galerie und Offenlegungen sind aktuell. Kein Handlungsbedarf außer Abwarten."
         }
       ]
     }

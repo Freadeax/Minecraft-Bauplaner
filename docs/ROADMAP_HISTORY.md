@@ -1128,3 +1128,13 @@ Roadmap bereinigt (11.11.2026): Team-Raum-Ausrollung von TEAM-SEC-01 und BACKUP-
 - `tests/unit/mod/mod-releases.test.mjs`
 - `tests/unit/mod/mod-versions.test.mjs`
 
+## 2026-11-11T13:05:41.870Z · progress
+
+**Aufgaben:** GAME-09
+
+0.28.0 Fabric 26.4-snapshot-8 als Vorschau (alpha) auf Modrinth
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth prüft das Projekt weiter (Status processing, angefragt approved, keine Nachricht der Moderation; am 11.11.2026 nachgesehen). Alle Versionen bis 0.28.0 (64 Dateien), Texte, Galerie und Offenlegungen sind aktuell. Kein Handlungsbedarf außer Abwarten. |
+
