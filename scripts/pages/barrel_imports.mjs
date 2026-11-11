@@ -3,7 +3,7 @@
 // otherwise depends on every module behind it, so code that only later pages use landed in the start bundle.
 // Build only (Vite plugin); the sources keep their barrel imports.
 import path from 'node:path';
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 /** name → absolute file that declares it, for each barrel (TypeScript resolves re-export chains). */
 export function barrelMaps(root, barrels) {

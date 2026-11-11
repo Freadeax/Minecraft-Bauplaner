@@ -265,7 +265,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | VIEW-01 | DATEI-01, GERAET-04 |
 | VIEW-02 | GERAET-05, DATEI-01 |
 
-### Mit Minecraft (Mod oder Spiel) (56 Pakete)
+### Mit Minecraft (Mod oder Spiel) (57 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -313,6 +313,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | MAT-04 | PROJ-14 |
 | NAME-01 | START-01, MOD-29 |
 | NBT-01 | DATEI-08 |
+| OPS-05 | MOD-09, START-01, TEAMBAU-25 |
 | PERF-06 | GERAET-03 |
 | PRIV-01 | TEAMBAU-25 |
 | QA-04 | SYS-01, LIVE-06 |

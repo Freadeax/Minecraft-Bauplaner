@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 import { createPayload } from '../../../dist/voxel/src/index.js';
 import {
   addAssetVersion, applyOperation, buildGuide, checkLinks, checkProjectRecord, createProject, createSampleLibrary, diffConnectors, diffVersions, findUpdates,

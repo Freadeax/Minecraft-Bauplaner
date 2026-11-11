@@ -42,15 +42,16 @@
   "devDependencies": {
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "@types/three": "0.186.0",
+    "@types/three": "0.187.0",
+    "@typescript/typescript6": "6.0.2",
     "gltf-validator": "2.0.0-dev.3.10",
-    "playwright": "1.64.1",
-    "typescript": "5.9.3",
-    "vite": "8.3.5"
+    "playwright": "1.65.0",
+    "typescript": "7.0.2",
+    "vite": "8.3.8"
   },
   "dependencies": {
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "three": "0.186.1"
+    "three": "0.187.0"
   }
 }

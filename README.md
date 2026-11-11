@@ -91,7 +91,7 @@ Die vollständige Ordnerkarte mit allen Fachordnern steht in [docs/STRUKTUR.md](
 
 ## Entwicklung
 
-Voraussetzung: Node.js ≥ 22.18 und npm. Alle Abhängigkeiten sind exakt im Lockfile fixiert (TypeScript 5.9, React 19, Three.js 0.186, Vite 8, Playwright 1.64).
+Voraussetzung: Node.js ≥ 22.18 und npm. Alle Abhängigkeiten sind exakt im Lockfile fixiert (TypeScript 7, React 19, Three.js 0.187, Vite 8, Playwright 1.65).
 
 ```sh
 npm run setup          # Abhängigkeiten, Git-Hooks, erster Build

@@ -1,5 +1,9 @@
 # Architekturentscheidungen
 
+## Werkzeugstand · Aktualisierung vom 11.11.2026
+
+Alle Abhängigkeiten auf den neuesten Stand gebracht: TypeScript 7.0.2 (nativer Compiler, prüft `npm run typecheck` in Sekunden), Three.js/Typen 0.187, Vite 8.3.8, Playwright 1.65.0. TypeScript 7 liefert keine JavaScript-API mehr; Skripte und Tests, die Quelltexte parsen oder umwandeln (Architekturprüfung, Barrel-Importe, Benchmarks, drei Unit-Tests), nutzen dafür das offizielle Begleitpaket `@typescript/typescript6` (gleiche API wie TypeScript 6). Rückweg: `typescript` wieder auf 6.x/5.9 setzen und die Importe zurückstellen; Laufzeit und gespeicherte Projekte sind nicht betroffen.
+
 ## Prüfumgebung · Konkretisierung vom 01.11.2026
 
 Die frühere Aussage in ADR-014 über ein extern bereitgestelltes Playwright wird für neue Checkouts ersetzt: Playwright 1.64.1 ist exakt als Entwicklungsabhängigkeit fixiert. Die vorhandene Node-Test-Suite nutzt weiter die [Playwright Library](https://playwright.dev/docs/library); keine Runnerumstellung und kein Laufzeitpaket im Produkt. Chromium wird separat installiert. Windows-Dateipfade werden über `fileURLToPath` aufgelöst, Pythonprüfer mit explizitem UTF-8 gestartet und Textdateien per Git-Attribut auf LF vereinheitlicht. Anlass ist ein tatsächlich fehlgeschlagener frischer Windows-Check, keine Fachkernänderung oder Datenmigration. Rückweg: Setup-/Testwerkzeuge austauschen, ohne gespeicherte Projekte zu ändern. Ablauf und Nachweis: [CONTRIBUTING](../../../CONTRIBUTING.md), [TESTING](../../TESTING.md).

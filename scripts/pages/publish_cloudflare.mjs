@@ -12,7 +12,7 @@ import { execFileSync } from 'node:child_process';
 import { SECURITY_HEADERS } from './security_headers.mjs';
 
 export const PROJECT = 'bauplaner';
-const WRANGLER = 'wrangler@4.151.2';
+const WRANGLER = 'wrangler@4.160.0';
 const BASE = 'Minecraft-Bauplaner';
 
 /** `_headers`: hashed program files and the catalogue never change; entry points always revalidate.

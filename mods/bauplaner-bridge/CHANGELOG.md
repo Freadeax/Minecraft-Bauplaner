@@ -2,6 +2,16 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.28.1 – 2026-11-11
+
+**Up to date / Auf dem neuesten Stand**
+
+- Built and tested with the newest Fabric Loader 0.20.1, Fabric API 0.166.0 and NeoForge 26.3.0.102 for Minecraft 26.3. The mod still runs from Fabric Loader 0.19.5, so modpacks do not have to update their loader.
+- Build tools and test libraries updated (Gradle 9.9.1, JUnit 6). No change to commands, keys or saved data.
+
+- Gebaut und geprüft mit dem neuesten Fabric Loader 0.20.1, der Fabric API 0.166.0 und NeoForge 26.3.0.102 für Minecraft 26.3. Die Mod läuft weiterhin ab Fabric Loader 0.19.5, Modpacks müssen ihren Loader also nicht aktualisieren.
+- Bauwerkzeuge und Testbibliotheken aktualisiert (Gradle 9.9.1, JUnit 6). Befehle, Tasten und gespeicherte Daten bleiben unverändert.
+
 ## 0.28.0 – 2026-11-07
 
 **Team roles can no longer be faked / Team-Rollen lassen sich nicht mehr vortäuschen**

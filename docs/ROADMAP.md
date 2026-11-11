@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-11T13:05:41.870Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-11T13:14:58.356Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-11T13:05:41.870Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 2 |
 | 🚧 In Arbeit | 4 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 109 |
+| 🧩 Implementiert · Abnahme offen | 110 |
 | ✅ Im beschriebenen Umfang geprüft | 35 |
 | ⏸ Zurückgestellt | 3 |
 
@@ -35,7 +35,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Arbeitsstrang
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
 | [Performance und Stabilität](#bereich-perf) | 7 | 0 | 3 | 3 |
 | [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 9 | 0 | 5 | 15 |
-| [Testphase, Qualität und Betrieb](#bereich-qa) | 3 | 0 | 3 | 8 |
+| [Testphase, Qualität und Betrieb](#bereich-qa) | 4 | 1 | 3 | 8 |
 | [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 2 | 0 | 0 | 0 |
 
 <a id="bereich-planer"></a>
@@ -239,6 +239,7 @@ Abgeschlossen oder zurückgestellt: CORE-01 (geprüft), CORE-02 (geprüft), CORE
 | ID | Paket | Status | Prio | Arbeitsstrang | Nur Philipp |
 |---|---|---|---|---|---|
 | [QA-04](#qa-04) | Große Testphase | 🧩 Implementiert · Abnahme offen 4/6 | P0 | „Große Testphase vorbereiten und betreuen“ | Testphase mit weiteren Testern: erst die Kernfälle auf #/testphase. |
+| [OPS-05](#ops-05) | Abhängigkeiten auf dem neuesten Stand | 🧩 Implementiert · Abnahme offen 3/4 | P1 | **verwaist** | — |
 | [PRIV-01](#priv-01) | Datenschutz und Freigaben verständlich | 🧩 Implementiert · Abnahme offen 8/8 | P1 | „Datenschutz, Freigaben und Speicherstatus klären“ | #/datenschutz ansehen; im Team-Reiter „Meine Position teilen“ ausschalten und prüfen, dass du in „Gerade da“ ohne Koordinaten erscheinst (ab Mod 0.28.0). |
 | [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | 🚧 In Arbeit 1/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Bereich „Geräte und Browser“ (GERAET-01 … 06) auf #/testphase auf deinem PC (Chrome/Edge und Firefox) und deinem Handy durchgehen und das Protokoll schicken (QA-02-S02). |
 
@@ -386,6 +387,7 @@ Arbeit, für die gerade kein laufender Arbeitsstrang zuständig ist. Zum Verteil
 
 | ID | Bereich | Prio | Status | Offen ohne Bearbeiter |
 |---|---|---|---|---|
+| [OPS-05](#ops-05) | Testphase, Qualität und Betrieb | P1 | 🧩 Implementiert · Abnahme offen | Team-Raum ausrollen, 0.28.1 auf Modrinth; nächste Aktualisierungsrunde bei neuer Minecraft-Version (26.4). |
 
 ## Eingänge ohne eigenes Paket
 
@@ -638,6 +640,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GAME-06](#game-06) | Server-Plugin direkt mit dem Team-Raum (Mod/Plugin 0.26.0): unterschriebene Ereignisse der Bauleitung, Ereignis-ID und wiederholbare Verarbeitung, Abschnittsschutz nach Team-Rollen aus dem Raum | 🧩 Implementiert · Abnahme offen | 3/4 | TEAM-02, GAME-04, LINK-11 | ausstehend | ausstehend |
 | [LAGER-01](#lager-01) | Optionale Truhen-/Lagerintegration | 🧩 Implementiert · Abnahme offen | 2/2 | GAME-04 | ausstehend | ausstehend |
 | [OPS-04](#ops-04) | Team-Raum betreiben: Sicherung, Wiederherstellung, Aufbewahrung, Zustand | 🧩 Implementiert · Abnahme offen | 4/4 | TEAM-02 | ausstehend | ausstehend |
+| [OPS-05](#ops-05) | Abhängigkeiten auf dem neuesten Stand: npm-Pakete, Playwright, Team-Raum (wrangler), Mod (Fabric/NeoForge/Forge, Gradle, JUnit) | 🧩 Implementiert · Abnahme offen | 3/4 | OPS-01, GAME-09 | ausstehend | ausstehend |
 | [DEFER-01](#defer-01) | GitHub-Login, externes Materialrepo und Registry | ⏸ Zurückgestellt | 0/1 | — | ausstehend | ausstehend |
 | [DEFER-02](#defer-02) | Optionale Discord-Integration | ⏸ Zurückgestellt | 0/1 | AUTH-01 | ausstehend | ausstehend |
 | [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm | 🧩 Implementiert · Abnahme offen | 2/3 | COOP-02, GAME-08 | ausstehend | ausstehend |
@@ -2581,6 +2584,27 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/unit/team/team-backup.test.mjs](../tests/unit/team/team-backup.test.mjs) — Schnappschuss, Wiederherstellen ohne Verlust mit zwei Planern, gelöschter Raum, Prüfsummen, Aufbewahrung.; [scripts/team/team_room_backup_smoke.mjs](../scripts/team/team_room_backup_smoke.mjs) — Gegen echten Worker (wrangler dev) grün, auch automatische Sicherung per Alarm.; [tests/e2e/team-backup.e2e.mjs](../tests/e2e/team-backup.e2e.mjs) — Planer-Oberfläche 1400/390 px.; [docs/architecture/team/TEAM_BACKUP.md](architecture/team/TEAM_BACKUP.md) — Betriebsregeln.
 
 **Dateiumfang:** `services/team-room/src/core.js`, `services/team-room/src/vault.js`, `services/team-room/src/index.js`, `services/team-room/wrangler.toml`, `services/team-room/README.md`, `packages/domain/src/team/teamSync.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/team/roomClient.ts`, `apps/web/src/views/project/team/TeamBackup.tsx`, `apps/web/src/views/project/team/TeamRoom.tsx`, `apps/web/src/styles/team.css`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `docs/architecture/team/TEAM_BACKUP.md`, `docs/architecture/team/TEAM_LIVE.md`, `scripts/team/team_room_backup_smoke.mjs`, `tests/unit/team/team-backup.test.mjs`, `tests/e2e/team-backup.e2e.mjs`. **Abhängigkeiten:** TEAM-02. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### OPS-05
+
+**Abhängigkeiten auf dem neuesten Stand: npm-Pakete, Playwright, Team-Raum (wrangler), Mod (Fabric/NeoForge/Forge, Gradle, JUnit)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Alle Abhängigkeiten auf neuesten Stand bringen“ · Arbeitsstrang: **verwaist** · Aktualisiert: 2026-11-11T13:14:58.356Z
+
+- [x] OPS-05-S01: npm: TypeScript 7.0.2 (JavaScript-API über @typescript/typescript6), Three.js/Typen 0.187, Vite 8.3.8, Playwright 1.65.0; npm audit ohne Befund.
+- [x] OPS-05-S02: Team-Raum: wrangler 4.160.0 überall fest, compatibility_date 2026-11-01; Spieltest mit Team-Raum und Browsertests gegen wrangler dev grün.
+- [x] OPS-05-S03: Mod 0.28.1: Fabric Loader 0.20.1 (Mindestversion bleibt 0.19.5), Fabric API 0.166.0, NeoForge 26.3.0.102, Forge 66.1.5, Gradle 9.9.1, JUnit 6.1.3, Gson wie Minecraft 26.3 (2.14.0); echter Spieltest Fabric und NeoForge, Paper-Prüfstand.
+- [ ] OPS-05-S04: Team-Raum mit neuem Kompatibilitätsdatum ausrollen (Rollen-/Team-Raum-Strang) und 0.28.1 auf Modrinth (Modrinth-Strang).
+
+**Abnahme:** Alle Prüfungen grün mit den neuen Versionen; Mod läuft weiter in Philipps Modpack (Loader 0.19.5). Snapshot-Adapter fabric-26.4 bleibt beim 26.4-Strang.
+
+**Nächste Aktion:** Team-Raum ausrollen, 0.28.1 auf Modrinth; nächste Aktualisierungsrunde bei neuer Minecraft-Version (26.4).
+
+**Prüfstand:** Automatisch geprüft; Ausrollen des Team-Raums und Modrinth folgen.
+
+**Nachweise:** [docs/TESTING.md](TESTING.md) — Prüfergebnisse der Aktualisierung vom 11.11.2026.
+
+**Dateiumfang:** `package.json`, `package-lock.json`, `README.md`, `docs/architecture/kern/DECISIONS.md`, `docs/TESTING.md`, `scripts/checks/check_architecture.mjs`, `scripts/pages/barrel_imports.mjs`, `scripts/bench/benchmark_composition.mjs`, `tests/unit/catalog/library-start.test.mjs`, `tests/unit/core/asset-seeding.test.mjs`, `tests/unit/core/updates.test.mjs`, `services/team-room/wrangler.toml`, `tests/e2e/teamRoomDev.mjs`, `scripts/pages/publish_cloudflare.mjs`, `scripts/mod/`, `mods/bauplaner-bridge/`, `apps/web/src/views/mod/releases.json`, `downloads/mod/`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`. **Abhängigkeiten:** OPS-01, GAME-09. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

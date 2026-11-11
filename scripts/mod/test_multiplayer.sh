@@ -23,7 +23,7 @@ mkdir -p "$work/bots" && (cd "$work/bots" && npm init -y >/dev/null && npm insta
 room=${BAUPLANER_ROOM:-}
 if [ -z "$room" ]; then
   port=$((8800 + RANDOM % 100))
-  (cd services/team-room && exec npx -y wrangler@4 dev --port "$port" --ip 127.0.0.1 >"$work/wrangler.log" 2>&1) & pids+=($!)
+  (cd services/team-room && exec npx -y wrangler@4.160.0 dev --port "$port" --ip 127.0.0.1 >"$work/wrangler.log" 2>&1) & pids+=($!)
   for _ in $(seq 1 120); do grep -q "Ready on" "$work/wrangler.log" 2>/dev/null && break; sleep 1; done
   grep -q "Ready on" "$work/wrangler.log" || { cat "$work/wrangler.log"; echo "Team-Raum (wrangler dev) startet nicht"; exit 1; }
   room=http://127.0.0.1:$port

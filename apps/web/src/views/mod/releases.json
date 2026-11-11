@@ -1281,6 +1281,53 @@
       "releasedAt": "2026-11-11",
       "sourceCommit": "abcb53bd06eef98cd678d8d0a9f4b40945fc5058",
       "tested": "Vorschau für den Snapshot: im echten Minecraft-26.4-Snapshot-8-Client (Fabric) automatisch geprüft wie 26.3: Aufnahme (146 korrekt, 1 falsch, 1 fehlt), Hologramm mit Röntgensicht und Platzierhilfe, Gruppen und Sperren, Oberfläche Deutsch/Englisch in 3 Fenstergrößen, der Planer im Browser gegen das Spiel (Verbinden, Gelände, Planversand, Baustand). Nur für Testwelten."
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.28.1.jar",
+      "modVersion": "0.28.1",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.166.0+26.3",
+      "java": "25",
+      "bytes": 691296,
+      "sha256": "08e712d8a3962b2c8104eba7c5f34b1557d499723bc4bf067d37a2ff538e1586",
+      "releasedAt": "2026-11-11",
+      "sourceCommit": "abcb53bd06eef98cd678d8d0a9f4b40945fc5058",
+      "tested": "11.11.2026, Mod 0.28.1 (Abhängigkeiten aktualisiert: Fabric Loader 0.20.1, Fabric API 0.166.0, NeoForge 26.3.0.102, Gradle 9.9.1, JUnit 6) aus dem Quellstand: Java-Tests (mod-core, core, paper) grün; echter Spieltest Fabric 26.3 mit Team-Raum (wrangler 4.160.0) und NeoForge 26.3 grün; Paper-Prüfstand 1.18.2 bis 26.3 grün; Planer-Browser-Tests grün"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.28.1.jar",
+      "modVersion": "0.28.1",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 686336,
+      "sha256": "56d3c20996b24867efabf7e31d8e73e3041e03f008c65d0c5b70d67948b694b1",
+      "releasedAt": "2026-11-11",
+      "sourceCommit": "abcb53bd06eef98cd678d8d0a9f4b40945fc5058",
+      "tested": "11.11.2026, Mod 0.28.1 (Abhängigkeiten aktualisiert: Fabric Loader 0.20.1, Fabric API 0.166.0, NeoForge 26.3.0.102, Gradle 9.9.1, JUnit 6) aus dem Quellstand: Java-Tests (mod-core, core, paper) grün; echter Spieltest Fabric 26.3 mit Team-Raum (wrangler 4.160.0) und NeoForge 26.3 grün; Paper-Prüfstand 1.18.2 bis 26.3 grün; Planer-Browser-Tests grün"
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.28.1.jar",
+      "modVersion": "0.28.1",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 336698,
+      "sha256": "ed842293cf80475cd5baa732ca3699bee22cae8817e33c0c9e04eef0cd16d1df",
+      "releasedAt": "2026-11-11",
+      "sourceCommit": "abcb53bd06eef98cd678d8d0a9f4b40945fc5058",
+      "tested": "11.11.2026, Mod 0.28.1 (Abhängigkeiten aktualisiert: Fabric Loader 0.20.1, Fabric API 0.166.0, NeoForge 26.3.0.102, Gradle 9.9.1, JUnit 6) aus dem Quellstand: Java-Tests (mod-core, core, paper) grün; echter Spieltest Fabric 26.3 mit Team-Raum (wrangler 4.160.0) und NeoForge 26.3 grün; Paper-Prüfstand 1.18.2 bis 26.3 grün; Planer-Browser-Tests grün"
     }
   ]
 }

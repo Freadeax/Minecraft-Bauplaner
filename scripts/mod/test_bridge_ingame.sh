@@ -31,7 +31,7 @@ node scripts/mod/bridge_gametest.mjs prepare "$work"
 # to the room through scripts/mod/bridge_netcut.mjs, which the game test uses to cut the line and bring it back.
 if [ "${BAUPLANER_ROOM:-}" = start ]; then
   roomport=${BAUPLANER_ROOM_PORT:-8788}
-  (cd services/team-room && exec setsid npx --yes wrangler@4 dev --port "$roomport" --ip 127.0.0.1 --persist-to "$work/room-state" >"$work/wrangler.log" 2>&1) &
+  (cd services/team-room && exec setsid npx --yes wrangler@4.160.0 dev --port "$roomport" --ip 127.0.0.1 --persist-to "$work/room-state" >"$work/wrangler.log" 2>&1) &
   wrangler_pid=$!
   for _ in $(seq 1 120); do grep -q "Ready on" "$work/wrangler.log" 2>/dev/null && break; sleep 1; done
   grep -q "Ready on" "$work/wrangler.log" || { cat "$work/wrangler.log"; echo "Team-Raum (wrangler dev) startet nicht" >&2; exit 1; }

@@ -2,7 +2,7 @@
 # Einrichten: services/team-room/README.md. Läuft im kostenlosen Workers-Tarif (Durable Objects mit SQLite).
 name = "bauplaner-team"
 main = "src/index.js"
-compatibility_date = "2025-09-01"
+compatibility_date = "2026-11-01"
 
 [[durable_objects.bindings]]
 name = "ROOMS"

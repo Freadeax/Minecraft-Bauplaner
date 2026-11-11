@@ -1138,3 +1138,55 @@ Roadmap bereinigt (11.11.2026): Team-Raum-Ausrollung von TEAM-SEC-01 und BACKUP-
 |---|---|---:|---|
 | GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth prüft das Projekt weiter (Status processing, angefragt approved, keine Nachricht der Moderation; am 11.11.2026 nachgesehen). Alle Versionen bis 0.28.0 (64 Dateien), Texte, Galerie und Offenlegungen sind aktuell. Kein Handlungsbedarf außer Abwarten. |
 
+## 2026-11-11T13:14:58.356Z · progress
+
+**Aufgaben:** OPS-05
+
+Alle Abhängigkeiten auf den neuesten Stand: npm (TypeScript 7.0.2 mit @typescript/typescript6 für die JavaScript-API, Three.js 0.187, Vite 8.3.8, Playwright 1.65.0, npm audit 0), Team-Raum wrangler 4.160.0 mit compatibility_date 2026-11-01, Mod/Plugin 0.28.1 (Fabric Loader 0.20.1 bei Mindestversion 0.19.5, Fabric API 0.166.0, NeoForge 26.3.0.102, Forge 66.1.5, Gradle 9.9.1, JUnit 6.1.3, Gson 2.14.0 wie Minecraft). Unit 1100/1100, Browsertests 253/254 (release-data wackelt auch auf main), echter Spieltest Fabric+Team-Raum und NeoForge, Paper 1.18.2–26.3 grün. Offen: Team-Raum ausrollen, Modrinth.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| OPS-05 | 🧩 Implementiert · Abnahme offen | 3/4 | Team-Raum ausrollen, 0.28.1 auf Modrinth; nächste Aktualisierungsrunde bei neuer Minecraft-Version (26.4). |
+
+**Geänderte Dateien:**
+
+- `README.md`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/mod/releases.json`
+- `docs/TESTING.md`
+- `docs/architecture/kern/DECISIONS.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.28.1.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.28.1.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.28.1.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/core/build.gradle`
+- `mods/bauplaner-bridge/export-check-26.3/gradle.properties`
+- `mods/bauplaner-bridge/fabric-26.3/build.gradle`
+- `mods/bauplaner-bridge/fabric-26.3/gradle.properties`
+- `mods/bauplaner-bridge/forge-26.3/gradle.properties`
+- `mods/bauplaner-bridge/gradle/wrapper/gradle-wrapper.jar`
+- `mods/bauplaner-bridge/gradle/wrapper/gradle-wrapper.properties`
+- `mods/bauplaner-bridge/gradlew`
+- `mods/bauplaner-bridge/gradlew.bat`
+- `mods/bauplaner-bridge/mod-core/build.gradle`
+- `mods/bauplaner-bridge/neoforge-26.3/gradle.properties`
+- `mods/bauplaner-bridge/paper/build.gradle`
+- `package-lock.json`
+- `package.json`
+- `scripts/bench/benchmark_composition.mjs`
+- `scripts/checks/check_architecture.mjs`
+- `scripts/mod/release_mod.mjs`
+- `scripts/mod/test_bridge_ingame.sh`
+- `scripts/mod/test_bridge_paper_bots.sh`
+- `scripts/mod/test_multiplayer.sh`
+- `scripts/mod/test_multiplayer_client.sh`
+- `scripts/pages/barrel_imports.mjs`
+- `scripts/pages/publish_cloudflare.mjs`
+- `services/team-room/wrangler.toml`
+- `tests/e2e/teamRoomDev.mjs`
+- `tests/unit/catalog/library-start.test.mjs`
+- `tests/unit/core/asset-seeding.test.mjs`
+- `tests/unit/core/updates.test.mjs`
+

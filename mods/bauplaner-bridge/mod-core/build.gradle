@@ -12,10 +12,10 @@ repositories { mavenCentral() }
 dependencies {
     api project(':core')
     // Gson bringt Minecraft selbst mit (Fabric, NeoForge); hier nur zum Übersetzen und Testen.
-    compileOnly 'com.google.code.gson:gson:2.11.0'
-    testImplementation 'com.google.code.gson:gson:2.11.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.14.4'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.14.4'
+    compileOnly 'com.google.code.gson:gson:2.14.0'
+    testImplementation 'com.google.code.gson:gson:2.14.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:6.1.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:6.1.3'
 }
 
 // Team-Raum ohne Server-Datei (LINK-07): die Mod faltet das Teamprotokoll mit derselben Logik wie das Paper-Plugin.

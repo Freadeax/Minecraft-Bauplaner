@@ -6,7 +6,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-export const WRANGLER_VERSION = '4.158.0';
+export const WRANGLER_VERSION = '4.160.0';
 
 /** Starts `wrangler dev` on 127.0.0.1:port; resolves when the worker answers. */
 /** `vars` become `--var NAME:value` (e.g. BACKUP_DELAY_MS for automatic backups after seconds, Block B). */

@@ -36,7 +36,7 @@ copyFileSync(built, join('downloads/mod', file));
 const manifestPath = 'apps/web/src/views/mod/releases.json';
 const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
 const entry = {
-  file, modVersion, loader, minecraft: props.minecraft_version, loaderMin: props.loader_version ?? props.paper_plugin_api_version,
+  file, modVersion, loader, minecraft: props.minecraft_version, loaderMin: props.loader_min_version ?? props.loader_version ?? props.paper_plugin_api_version,
   ...(multi && { minecraftVersions: props.tested_versions.split(/\s+/).filter(Boolean) }),
   ...(props.fabric_api_version && { fabricApi: props.fabric_api_version }), java: props.java_version ?? '25',
   bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex'),

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 import { MemoryRepository, AssetRevisionConflictError } from '../../../dist/application/src/index.js';
 import { updateAssetMeta, BUILDING_SPECS } from '../../../dist/domain/src/index.js';
 

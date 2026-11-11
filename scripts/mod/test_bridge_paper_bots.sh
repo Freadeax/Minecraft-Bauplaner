@@ -25,7 +25,7 @@ mkdir -p "$work/bots" && (cd "$work/bots" && npm init -y >/dev/null && npm insta
 room=${BAUPLANER_ROOM:-}
 if [ -z "$room" ]; then
   roomport=$((8800 + RANDOM % 100))
-  (cd services/team-room && exec setsid npx --yes wrangler@4 dev --port "$roomport" --ip 127.0.0.1 --persist-to "$work/room" >"$work/wrangler.log" 2>&1) &
+  (cd services/team-room && exec setsid npx --yes wrangler@4.160.0 dev --port "$roomport" --ip 127.0.0.1 --persist-to "$work/room" >"$work/wrangler.log" 2>&1) &
   wrangler_pid=$!
   room=http://127.0.0.1:$roomport
   for _ in $(seq 1 120); do grep -q "Ready on" "$work/wrangler.log" 2>/dev/null && break; sleep 1; done
