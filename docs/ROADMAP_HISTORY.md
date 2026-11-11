@@ -1243,3 +1243,13 @@ Spiel-Abnahme im eigenen Modpack (Fabric 26.3 mit REI, Iris, Distant Horizons, M
 - `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java`
 - `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`
 
+## 2026-11-11T14:52:47.109Z · progress
+
+**Aufgaben:** GAME-09
+
+0.28.2 auf Modrinth (Fabric, NeoForge)
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth prüft das Projekt weiter (Status processing, angefragt approved, keine Nachricht der Moderation; am 11.11.2026 nachgesehen). Alle Versionen bis 0.28.0 (64 Dateien), Texte, Galerie und Offenlegungen sind aktuell. Kein Handlungsbedarf außer Abwarten. |
+
