@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-11T13:33:17.226Z",
+  "updatedAt": "2026-11-11T14:46:16.753Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -8626,7 +8626,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T14:44:36.135Z",
+      "updatedAt": "2026-11-11T14:46:16.753Z",
       "area": "QA",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -16388,6 +16388,40 @@
           "done": 8,
           "total": 8,
           "next": "Zugänge-Liste wirkt im echten Dienst, sobald der Team-Raum mit TEAM-SEC-01/HARDEN-01 ausgerollt ist (bis dahin Hinweis „ältere Fassung“); danach Abnahme im Spiel."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-11T14:46:16.753Z",
+      "kind": "progress",
+      "items": [
+        "QA-04"
+      ],
+      "summary": "Spiel-Abnahme im eigenen Modpack (Fabric 26.3 mit REI, Iris, Distant Horizons, Mod 0.28.1): Menü, Sprache, Meldungen, Großbau 1,45 Mio. und Katalog-/Generator-/Gelände-/Großprojekt-Hologramme geprüft, MOD-29 voll; Mod 0.28.2 behebt Revisionswarnung bei teamfremden Plänen und deutsche Ladefehler im englischen Spiel. Server-, Geräte- und Planerfälle (KARTE-07, LINK-07/09/10, EDIT-04/05) bleiben bei Philipp.",
+      "files": [
+        "apps/web/src/testing/autochecks.ts",
+        "apps/web/src/views/mod/releases.json",
+        "docs/TESTING.md",
+        "docs/testing/TESTPLAN.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.28.2.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.28.2.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/BridgeException.java",
+        "mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/Plan.java",
+        "mods/bauplaner-bridge/core/src/test/java/io/github/freadeax/bauplaner/bridge/BridgeCoreTest.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/BridgeClient.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java"
+      ],
+      "snapshot": [
+        {
+          "id": "QA-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Testphase starten, sobald die laufenden Arbeitsstränge gemerged sind und die Mod mit diagnose veröffentlicht ist. Diagnose und Fehlerbehebung der offenen Fälle übernehmen ab 07.11. die Threads „Planer-Abnahmen ohne Nachweis automatisieren“ und „Mod-Abnahmen im Spiel automatisieren“."
         }
       ]
     }

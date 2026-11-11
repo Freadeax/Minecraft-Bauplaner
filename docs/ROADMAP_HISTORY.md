@@ -1215,3 +1215,31 @@ Offline-Update aktiviert sich zuverlässig: Service Worker ruft skipWaiting erne
 - `apps/web/src/app/offline.ts`
 - `scripts/pages/service_worker.template.js`
 
+## 2026-11-11T14:46:16.753Z · progress
+
+**Aufgaben:** QA-04
+
+Spiel-Abnahme im eigenen Modpack (Fabric 26.3 mit REI, Iris, Distant Horizons, Mod 0.28.1): Menü, Sprache, Meldungen, Großbau 1,45 Mio. und Katalog-/Generator-/Gelände-/Großprojekt-Hologramme geprüft, MOD-29 voll; Mod 0.28.2 behebt Revisionswarnung bei teamfremden Plänen und deutsche Ladefehler im englischen Spiel. Server-, Geräte- und Planerfälle (KARTE-07, LINK-07/09/10, EDIT-04/05) bleiben bei Philipp.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Arbeitsstränge gemerged sind und die Mod mit diagnose veröffentlicht ist. Diagnose und Fehlerbehebung der offenen Fälle übernehmen ab 07.11. die Threads „Planer-Abnahmen ohne Nachweis automatisieren“ und „Mod-Abnahmen im Spiel automatisieren“. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/views/mod/releases.json`
+- `docs/TESTING.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.28.2.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.28.2.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/BridgeException.java`
+- `mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/Plan.java`
+- `mods/bauplaner-bridge/core/src/test/java/io/github/freadeax/bauplaner/bridge/BridgeCoreTest.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/BridgeClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`
+
