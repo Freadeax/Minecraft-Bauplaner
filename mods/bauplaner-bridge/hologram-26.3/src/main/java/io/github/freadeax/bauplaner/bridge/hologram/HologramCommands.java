@@ -215,7 +215,7 @@ public final class HologramCommands {
             say(s, h.place(Minecraft.getInstance(), name, McCompat.targetBlock(Minecraft.getInstance())));
             return 1;
         } catch (Exception e) {
-            return fail(s, t("Plan nicht lesbar: ", "Plan not readable: ") + e.getMessage());
+            return fail(s, t("Plan nicht lesbar: ", "Plan not readable: ") + io.github.freadeax.bauplaner.bridge.BridgeException.text(e, io.github.freadeax.bauplaner.mod.Lang.en()));
         }
     }
 

@@ -281,7 +281,7 @@ public final class PlanScreen extends Screen {
         try {
             say(hologram.place(minecraft, file, lookedAt));
         } catch (Exception e) {
-            say(t("Plan nicht lesbar: ", "Plan not readable: ") + e.getMessage());
+            say(t("Plan nicht lesbar: ", "Plan not readable: ") + io.github.freadeax.bauplaner.bridge.BridgeException.text(e, io.github.freadeax.bauplaner.mod.Lang.en()));
         }
     }
 

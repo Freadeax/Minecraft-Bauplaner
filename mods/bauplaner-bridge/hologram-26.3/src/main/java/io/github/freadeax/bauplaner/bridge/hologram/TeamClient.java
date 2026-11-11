@@ -225,9 +225,11 @@ public final class TeamClient {
                 McCompat.chat(mc, Component.literal("[Build Studio] " + t("Dein Abschnitt " + s.nr() + " „" + s.name() + "“ steht laut Hologramm komplett. Fertig melden: /bauplaner team fertig " + s.nr(), "Your section " + s.nr() + " “" + s.name() + "” is complete according to the hologram. Report done: /buildplanner team done " + s.nr()))
                         .withStyle(net.minecraft.ChatFormatting.GREEN));
         }
-        // Plan in the hologram older/newer than the released one: say it once per combination.
+        // Plan in the hologram older/newer than the released one: say it once per combination. Only for a plan of
+        // this team's project – a plan of another project or without team (own sketch, catalog building) has its own
+        // revision numbers and must not trigger the warning.
         Integer rel = t.revision();
-        if (rel != null && hologram.plan() != null) {
+        if (rel != null && hologram.plan() != null && t.teamId() != null && t.teamId().equals(hologram.plan().teamId())) {
             int own = hologram.plan().identity().revisionNumber();
             String key = own + "/" + rel;
             if (own != rel && !key.equals(revisionWarned)) {

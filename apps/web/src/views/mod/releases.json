@@ -1328,6 +1328,33 @@
       "releasedAt": "2026-11-11",
       "sourceCommit": "abcb53bd06eef98cd678d8d0a9f4b40945fc5058",
       "tested": "11.11.2026, Mod 0.28.1 (Abhängigkeiten aktualisiert: Fabric Loader 0.20.1, Fabric API 0.166.0, NeoForge 26.3.0.102, Gradle 9.9.1, JUnit 6) aus dem Quellstand: Java-Tests (mod-core, core, paper) grün; echter Spieltest Fabric 26.3 mit Team-Raum (wrangler 4.160.0) und NeoForge 26.3 grün; Paper-Prüfstand 1.18.2 bis 26.3 grün; Planer-Browser-Tests grün"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.28.2.jar",
+      "modVersion": "0.28.2",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.166.0+26.3",
+      "java": "25",
+      "bytes": 691968,
+      "sha256": "90b435be9989749686b0ec22a04c759ff2a486e5bb32978db1a9bc05fd5ec030",
+      "releasedAt": "2026-11-11",
+      "sourceCommit": "c1dece27665dc4a0a16087bcbc4f68c999e0810f",
+      "tested": "Kern- und Mod-Tests, Fabric- und NeoForge-Build für Minecraft 26.3; Spiel-Abnahme 11.11.2026 in Philipps Modpack mit 0.28.1 (Iris, Sodium, Distant Horizons, REI)"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.28.2.jar",
+      "modVersion": "0.28.2",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 686965,
+      "sha256": "b7db4058eab801772054254c45e61fe35bd74fd30248987d18e446fd19a8afb1",
+      "releasedAt": "2026-11-11",
+      "sourceCommit": "c1dece27665dc4a0a16087bcbc4f68c999e0810f",
+      "tested": "Kern- und Mod-Tests, Fabric- und NeoForge-Build für Minecraft 26.3; Spiel-Abnahme 11.11.2026 in Philipps Modpack mit 0.28.1 (Iris, Sodium, Distant Horizons, REI)"
     }
   ]
 }

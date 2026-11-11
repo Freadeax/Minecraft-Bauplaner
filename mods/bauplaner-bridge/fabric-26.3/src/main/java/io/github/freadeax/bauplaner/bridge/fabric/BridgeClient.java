@@ -143,7 +143,7 @@ public final class BridgeClient implements ClientModInitializer {
         try {
             plan = Plan.read(file);
         } catch (IOException | BridgeException e) {
-            return fail(s, t("Plan nicht lesbar: ", "Plan not readable: ") + e.getMessage());
+            return fail(s, t("Plan nicht lesbar: ", "Plan not readable: ") + io.github.freadeax.bauplaner.bridge.BridgeException.text(e, io.github.freadeax.bauplaner.mod.Lang.en()));
         }
         say(s, t("Plan geladen: ", "Plan loaded: ") + plan.name() + " · " + plan.width() + "×" + plan.height() + "×" + plan.length() + " (" + plan.volume() + t(" Zellen).", " cells)."));
         if (plan.dataVersion() != McCompat.dataVersion()) say(s, t("Hinweis: Plan für DataVersion ", "Note: plan for DataVersion ") + plan.dataVersion() + t(", Spiel ", ", game ") + McCompat.dataVersion() + ".");

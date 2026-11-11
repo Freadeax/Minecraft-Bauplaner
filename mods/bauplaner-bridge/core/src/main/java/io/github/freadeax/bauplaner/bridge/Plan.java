@@ -38,22 +38,25 @@ public record Plan(String fileName, String sha256, int dataVersion, String name,
     public static Plan parse(String fileName, byte[] bytes, Nbt.Root decoded) {
         var root = decoded.tag().compound("Wurzel");
         var s = require(root, "Schematic").compound("Schematic");
-        if (require(s, "Version").asInt("Version") != 3) throw new BridgeException("Nur Sponge Schematic Version 3 wird unterstützt.");
+        if (require(s, "Version").asInt("Version") != 3) throw new BridgeException("Nur Sponge Schematic Version 3 wird unterstützt.", "Only Sponge Schematic version 3 is supported.");
         int w = require(s, "Width").asUShort("Width"), h = require(s, "Height").asUShort("Height"), l = require(s, "Length").asUShort("Length");
-        if (w < 1 || h < 1 || l < 1) throw new BridgeException("Leere Planbox.");
+        if (w < 1 || h < 1 || l < 1) throw new BridgeException("Leere Planbox.", "Empty plan box.");
         var meta = s.get("Metadata");
         var b = meta == null ? null : meta.compound("Metadata").get("Bauplaner");
-        if (b == null) throw new BridgeException(fileName + " ist keine Plan-Datei aus dem Build Studio (Metadata.Bauplaner fehlt). Bitte im Tab „Export“ eine Revision exportieren.");
+        if (b == null) throw new BridgeException(fileName + " ist keine Plan-Datei aus dem Build Studio (Metadata.Bauplaner fehlt). Bitte im Tab „Export“ eine Revision exportieren.",
+                fileName + " is not a plan file from Build Studio (Metadata.Bauplaner missing). Export a revision in the “Export” tab.");
         var bp = b.compound("Bauplaner");
-        if (bp.containsKey("Kind")) throw new BridgeException(fileName + " ist eine Spielaufnahme, keine Plan-Datei.");
-        if (!bp.containsKey("ProjectMin")) throw new BridgeException(fileName + " stammt aus einer älteren Website-Version ohne ProjectMin. Bitte die Revision neu exportieren.");
+        if (bp.containsKey("Kind")) throw new BridgeException(fileName + " ist eine Spielaufnahme, keine Plan-Datei.", fileName + " is a game recording, not a plan file.");
+        if (!bp.containsKey("ProjectMin")) throw new BridgeException(fileName + " stammt aus einer älteren Website-Version ohne ProjectMin. Bitte die Revision neu exportieren.",
+                fileName + " comes from an older planner version without ProjectMin. Export the revision again.");
         int[] min = bp.get("ProjectMin").asIntArray("Bauplaner.ProjectMin");
         if (min.length != 3) throw new BridgeException("Bauplaner.ProjectMin braucht drei Zahlen.");
         var plan = new Plan(fileName, sha256(bytes), require(s, "DataVersion").asInt("DataVersion"),
                 meta.compound("Metadata").containsKey("Name") ? meta.compound("Metadata").get("Name").asString("Name") : fileName,
                 require(bp, "ProjectId").asString("ProjectId"), require(bp, "RevisionId").asString("RevisionId"),
                 require(bp, "RevisionNumber").asInt("RevisionNumber"), w, h, l, min.clone());
-        if (plan.volume() > MAX_VOLUME) throw new BridgeException("Planbox mit " + plan.volume() + " Zellen ist größer als " + MAX_VOLUME + ". Bitte das Projekt auf der Website in Teilprojekte teilen.");
+        if (plan.volume() > MAX_VOLUME) throw new BridgeException("Planbox mit " + plan.volume() + " Zellen ist größer als " + MAX_VOLUME + ". Bitte das Projekt auf der Website in Teilprojekte teilen.",
+                "Plan box with " + plan.volume() + " cells is larger than " + MAX_VOLUME + ". Split the project into sub-projects in the planner.");
         return plan;
     }
 

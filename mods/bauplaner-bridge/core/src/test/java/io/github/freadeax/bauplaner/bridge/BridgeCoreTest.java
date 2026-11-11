@@ -71,6 +71,11 @@ class BridgeCoreTest {
         noMin.put("ProjectMin", null);
         var e2 = assertThrows(BridgeException.class, () -> Plan.parse("b.schem", plan(CELLS, noMin, 3)));
         assertTrue(e2.getMessage().contains("ProjectMin"));
+        // Spiel-Abnahme 11.11.2026: im englischen Spiel kam die Meldung auf Deutsch – jede Plan-Meldung hat einen englischen Text.
+        assertTrue(BridgeException.text(e1, true).contains("is a game recording, not a plan file"));
+        assertTrue(BridgeException.text(e2, true).contains("older planner version"));
+        assertTrue(BridgeException.text(e1, false).contains("Spielaufnahme"));
+        assertEquals("x", BridgeException.text(new IllegalStateException("x"), true));
         assertThrows(BridgeException.class, () -> Plan.parse("c.schem", plan(CELLS, Map.of(), 2)));
         assertThrows(BridgeException.class, () -> Plan.parse("d.schem", new byte[] { 1, 2, 3 }));
     }

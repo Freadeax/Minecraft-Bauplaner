@@ -2,6 +2,16 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.28.2 – 2026-11-11
+
+**Fixes from playing in a real modpack / Fehler aus dem Spiel im echten Modpack**
+
+- A plan from the catalog, a generator or your own sketch no longer triggers the warning “plan in the hologram is older/newer than the released one” when you are in a team. The warning now only appears for plans of your team's project.
+- With the game in English, errors when loading a plan file (not a plan file, game recording, old planner version, plan box too large) are shown in English.
+
+- Ein Plan aus dem Katalog, einem Generator oder eine eigene Skizze löst im Team nicht mehr die Warnung „Plan im Hologramm ist älter/neuer als der freigegebene“ aus. Die Warnung kommt nur noch bei Plänen des Teamprojekts.
+- Bei englischer Spielsprache erscheinen Fehler beim Laden einer Plandatei (keine Plandatei, Spielaufnahme, alte Planer-Version, Planbox zu groß) auf Englisch.
+
 ## 0.28.1 – 2026-11-11
 
 **Up to date / Auf dem neuesten Stand**
