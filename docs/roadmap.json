@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-11T13:20:20.823Z",
+  "updatedAt": "2026-11-11T13:33:17.226Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -12956,7 +12956,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-10T13:40:24.495Z",
+      "updatedAt": "2026-11-11T13:33:17.226Z",
       "area": "QA",
       "thread": "Datenschutz, Freigaben und Speicherstatus klären",
       "philipp": [
@@ -16367,6 +16367,27 @@
           "done": 4,
           "total": 5,
           "next": "Modrinth prüft das Projekt weiter (Status processing, angefragt approved, keine Nachricht der Moderation; am 11.11.2026 nachgesehen). Alle Versionen bis 0.28.0 (64 Dateien), Texte, Galerie und Offenlegungen sind aktuell. Kein Handlungsbedarf außer Abwarten."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-11T13:33:17.226Z",
+      "kind": "progress",
+      "items": [
+        "PRIV-01"
+      ],
+      "summary": "Offline-Update aktiviert sich zuverlässig: Service Worker ruft skipWaiting erneut, sobald er wartet, Planer stößt wartende Fassungen an",
+      "files": [
+        "apps/web/src/app/offline.ts",
+        "scripts/pages/service_worker.template.js"
+      ],
+      "snapshot": [
+        {
+          "id": "PRIV-01",
+          "status": "implemented",
+          "done": 8,
+          "total": 8,
+          "next": "Zugänge-Liste wirkt im echten Dienst, sobald der Team-Raum mit TEAM-SEC-01/HARDEN-01 ausgerollt ist (bis dahin Hinweis „ältere Fassung“); danach Abnahme im Spiel."
         }
       ]
     }

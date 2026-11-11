@@ -37,6 +37,13 @@ self.addEventListener('install', event => {
   })());
 });
 
+// Chromium verliert unter Last gelegentlich das skipWaiting() aus der Installation: die neue Fassung bliebe dann
+// „wartend“, bis alle Tabs zu sind. Deshalb noch einmal, sobald sie installiert ist (self.serviceWorker), und auf
+// Zuruf des Planers (offline.ts) für Browser ohne self.serviceWorker.
+self.serviceWorker?.addEventListener('statechange', () => {
+  if (self.serviceWorker.state === 'installed') void self.skipWaiting();
+});
+
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
     if (MANIFEST.off) {
@@ -52,6 +59,7 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('message', event => {
+  if (event.data === 'bauplaner:skip-waiting') { void self.skipWaiting(); return; }
   if (event.data === 'bauplaner:version') event.source?.postMessage({ type: 'bauplaner:version', version: MANIFEST.version, assets: ASSETS.size });
 });
 

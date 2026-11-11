@@ -24,8 +24,21 @@ export const offlineSwitchedOff = (): boolean => read(OFF_KEY) === 'aus';
 export function registerOffline(): void {
   if (!offlineSupported() || automated()) return;
   if (offlineSwitchedOff()) { void clearOffline(); return; }
-  const go = () => { navigator.serviceWorker.register(`${base}sw.js`, { scope: base }).catch(e => console.warn('Offline-Speicher nicht verfügbar:', e)); };
+  const go = () => { navigator.serviceWorker.register(`${base}sw.js`, { scope: base }).then(nudgeWaiting).catch(e => console.warn('Offline-Speicher nicht verfügbar:', e)); };
   if (document.readyState === 'complete') go(); else window.addEventListener('load', go, { once: true });
+}
+
+/**
+ * A new version that only waits (its own skipWaiting() got lost) is asked once more to take over, now and after
+ * every later update, so it never waits until all tabs are closed (scripts/pages/service_worker.template.js).
+ */
+function nudgeWaiting(reg: ServiceWorkerRegistration): void {
+  const nudge = () => reg.waiting?.postMessage('bauplaner:skip-waiting');
+  nudge();
+  reg.addEventListener('updatefound', () => {
+    const next = reg.installing;
+    next?.addEventListener('statechange', () => { if (next.state === 'installed') setTimeout(nudge, 1000); });
+  });
 }
 
 export interface OfflineState {

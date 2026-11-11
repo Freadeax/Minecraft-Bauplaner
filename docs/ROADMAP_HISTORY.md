@@ -1200,3 +1200,18 @@ Alle Abhängigkeiten auf den neuesten Stand: npm (TypeScript 7.0.2 mit @typescri
 |---|---|---:|---|
 | GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth prüft das Projekt weiter (Status processing, angefragt approved, keine Nachricht der Moderation; am 11.11.2026 nachgesehen). Alle Versionen bis 0.28.0 (64 Dateien), Texte, Galerie und Offenlegungen sind aktuell. Kein Handlungsbedarf außer Abwarten. |
 
+## 2026-11-11T13:33:17.226Z · progress
+
+**Aufgaben:** PRIV-01
+
+Offline-Update aktiviert sich zuverlässig: Service Worker ruft skipWaiting erneut, sobald er wartet, Planer stößt wartende Fassungen an
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PRIV-01 | 🧩 Implementiert · Abnahme offen | 8/8 | Zugänge-Liste wirkt im echten Dienst, sobald der Team-Raum mit TEAM-SEC-01/HARDEN-01 ausgerollt ist (bis dahin Hinweis „ältere Fassung“); danach Abnahme im Spiel. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/offline.ts`
+- `scripts/pages/service_worker.template.js`
+
