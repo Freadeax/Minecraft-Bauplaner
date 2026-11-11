@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-11T14:52:47.109Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-11T18:29:14.392Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -2922,7 +2922,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### QA-04
 
-**Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Große Testphase vorbereiten und betreuen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-11T14:46:16.753Z
+**Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Arbeitsstrang „Große Testphase vorbereiten und betreuen“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-11T18:29:14.392Z
 
 - [x] QA-04-S01: Testplan (eine Quelle: testplan.ts → TESTPLAN.md) mit Kern-/vertieften Fällen für alle Planer-Bereiche und die Mod.
 - [x] QA-04-S02: Seite #/testphase: Checklisten mit Protokoll im Browser, Protokoll-Export, Fehlerbericht mit automatischer Diagnose (Umgebung, Fehlerprotokoll, Konsole, Seiten) und GitHub-Issue-Vorbelegung.
@@ -2972,7 +2972,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### SIZE-01
 
-**Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Volumenlimit für große Builds aufheben“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-07T12:35:25.144Z
+**Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Arbeitsstrang „Volumenlimit für große Builds aufheben“ · Arbeitsstrang: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-11T18:29:14.392Z
 
 - [x] SIZE-01-S01: Bestandsaufnahme aller harten Größen-/Blockgrenzen in Planer und Mod, Messung von Speicher und Zeit bei 1–4 Mio. Zellen.
 - [x] SIZE-01-S02: Planer: zentrale Grenzen in sizeLimits.ts, Importe ohne Kopie (adoptPayload), Luft ab 250.000 Zellen Box unausgewählt, Werkstatt 4 Mio./1 Mio. je Schritt mit linearer Umkehrung und Rückgängig-Budget, Export/Aufnahmen bis 16,7 Mio. Box, Größenhinweise.

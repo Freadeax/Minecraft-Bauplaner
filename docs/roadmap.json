@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-11T14:52:47.109Z",
+  "updatedAt": "2026-11-11T18:29:14.392Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -8626,7 +8626,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-11T14:46:16.753Z",
+      "updatedAt": "2026-11-11T18:29:14.392Z",
       "area": "QA",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -8844,7 +8844,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-07T12:35:25.144Z",
+      "updatedAt": "2026-11-11T18:29:14.392Z",
       "area": "GROESSE",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -16440,6 +16440,53 @@
           "done": 4,
           "total": 5,
           "next": "Modrinth prüft das Projekt weiter (Status processing, angefragt approved, keine Nachricht der Moderation; am 11.11.2026 nachgesehen). Alle Versionen bis 0.28.0 (64 Dateien), Texte, Galerie und Offenlegungen sind aktuell. Kein Handlungsbedarf außer Abwarten."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-11T18:29:14.392Z",
+      "kind": "progress",
+      "items": [
+        "SIZE-01",
+        "QA-04"
+      ],
+      "summary": "Mod 0.29.0: Hologramm passt die Blockzahl an die Bildrate an (Leistung auto, Standard; unter 40 fps stufenweise bis 12 %, über 58 fps wieder mehr), Innenflächen gleichfarbiger Kästen und ferne Shader-Kanten fallen weg. Spieltest Fabric 26.3 und Großbau 1,45 Mio. im echten Spiel grün; Bildrate in Philipps Modpack mit Shadern noch von ihm zu bestätigen.",
+      "files": [
+        "apps/web/src/testing/autochecks.ts",
+        "apps/web/src/views/mod/modCommands.json",
+        "apps/web/src/views/mod/releases.json",
+        "docs/TESTING.md",
+        "docs/architecture/kern/SIZE_LIMITS.md",
+        "docs/architecture/mod/MOD_HOLOGRAM.md",
+        "docs/testing/TESTPLAN.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.29.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.29.0.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/GrossbauScenario.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Hologram.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramDiagnose.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramHud.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramRenderer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/FrameBudget.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/FrameBudgetTest.java",
+        "scripts/size/grossbau_verify.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "SIZE-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Rest von MOD-11 im eigenen Spiel (Bildrate auf echter Grafikkarte). Folgepunkt Leistung: Werkstatt, Projekt anlegen, Export und Senden blockieren bei 1,5 Mio. Blöcken die Seite 4–10 s (in den Hintergrundrechner verlagern); Mod-Zahlen mit Tausenderpunkt."
+        },
+        {
+          "id": "QA-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Testphase starten, sobald die laufenden Arbeitsstränge gemerged sind und die Mod mit diagnose veröffentlicht ist. Diagnose und Fehlerbehebung der offenen Fälle übernehmen ab 07.11. die Threads „Planer-Abnahmen ohne Nachweis automatisieren“ und „Mod-Abnahmen im Spiel automatisieren“."
         }
       ]
     }

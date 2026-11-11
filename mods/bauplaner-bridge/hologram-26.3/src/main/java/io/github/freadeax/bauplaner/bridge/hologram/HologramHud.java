@@ -83,7 +83,7 @@ public final class HologramHud {
         if (detailed) {
             rows.add(new String[] { t("Platzierhilfe: ", "Placement helper: ") + hologram.guard().text() + (hologram.xray() ? t(" · Röntgen", " · x-ray") : ""),
                     hex(hologram.guard() == io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard.OFF ? GREY : CYAN) });
-            if (hologram.capped()) rows.add(new String[] { t("Zeigt die nächsten ", "Showing the nearest ") + Lang.n(hologram.shown()) + t(" (Leistung ", " (performance ") + hologram.budget().text() + ")", hex(GREY) });
+            if (hologram.capped()) rows.add(new String[] { t("Zeigt die nächsten ", "Showing the nearest ") + Lang.n(hologram.shown()) + t(" (Leistung ", " (performance ") + hologram.budget().text() + (hologram.budget() == Hologram.Budget.AUTO && hologram.fps() > 0 ? " · " + hologram.fps() + " fps" : "") + ")", hex(GREY) });
         }
 
         String name = hologram.plan().name() + (hologram.visible() ? "" : t(" (aus)", " (hidden)")) + (hologram.loading() ? " …" : "");

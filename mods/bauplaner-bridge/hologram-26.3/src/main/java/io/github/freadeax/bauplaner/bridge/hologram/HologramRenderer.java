@@ -38,6 +38,11 @@ public final class HologramRenderer {
     static final int MAX_TEXTURED = 6_000;
     /** X-ray: at most this many open blocks get a see-through frame (the nearest ones, chunk rings first). */
     static final int MAX_XRAY = 4_000;
+    /**
+     * Shader packs: block edges for at most this many textured ghosts (the nearest). Twelve wide lines per block
+     * cost more than the block itself under Iris; farther ghosts keep the blue tint.
+     */
+    static final int MAX_SHADER_EDGES = 1_500;
     /** Direction offsets in {@link net.minecraft.core.Direction} order: down, up, north, south, west, east. */
     private static final int[][] SIDES = { { 0, -1, 0 }, { 0, 1, 0 }, { 0, 0, -1 }, { 0, 0, 1 }, { -1, 0, 0 }, { 1, 0, 0 } };
 
@@ -53,6 +58,10 @@ public final class HologramRenderer {
     /** Cached selection: indices of the blocks to draw, and whether each lies in a locked area. */
     private int[] drawn = new int[0];
     private boolean[] drawnLocked = new boolean[0];
+    /** Per drawn box: faces hidden because the neighbour on that side is a box of the same colour (bit = Direction). */
+    private int[] drawnFaces = new int[0];
+    /** Selected boxes during a rebuild, to find neighbours (cleared again afterwards). */
+    private final java.util.BitSet selected = new java.util.BitSet();
     private int drawnCount;
     private LiveCheck drawnFor;
     private long drawnRevision = -1;
@@ -66,6 +75,9 @@ public final class HologramRenderer {
         Minecraft mc = Minecraft.getInstance();
         if (check == null || !hologram.visible() || mc.level == null) return;
         if (!McCompat.dimension(mc.level).equals(check.placement().dimension())) return;
+        // Performance "auto": the frame time decides how many blocks are drawn (fewer while the game is slow).
+        if (hologram.budget() == Hologram.Budget.AUTO) hologram.frames.frame(System.nanoTime(), hologram.capped());
+        boolean shaders = McCompat.shadersActive();
         select(check, cam);
         pose.pushPose();
         // Floats lose precision far from 0/0/0, so everything is relative to the camera.
@@ -83,21 +95,22 @@ public final class HologramRenderer {
                 }
             });
         }
-        if (ghostCount > 0 && McCompat.shadersActive()) {
+        if (ghostCount > 0 && shaders) {
             // Shader packs (Iris) relight and recolour the ghost textures until they look like real blocks.
-            // A light blue tint plus block edges keep them recognisable as "still missing".
-            final int[] list = ghosts;
-            final int n = ghostCount;
+            // A light blue tint plus block edges keep them recognisable as "still missing". Faces inside a
+            // ghost wall are left out, edges only for the nearest ghosts: both cost a lot under a shader pack.
+            final int[] list = ghosts, faces = ghostFaces;
+            final int n = ghostCount, edges = Math.min(ghostCount, edgeLimit);
             out.submitCustomGeometry(pose, RenderTypes.debugQuads(), (p, vc) -> {
                 for (int k = 0; k < n; k++) {
                     int i = list[k];
                     if (check.verdict(i) != Verdict.MISSING) continue;
                     float x = check.worldX(i) - ox, y = check.worldY(i) - oy, z = check.worldZ(i) - oz;
-                    box(p, vc, x - 0.01f, y - 0.01f, z - 0.01f, x + 1.01f, y + 1.01f, z + 1.01f, SHADER_TINT);
+                    box(p, vc, x - 0.01f, y - 0.01f, z - 0.01f, x + 1.01f, y + 1.01f, z + 1.01f, SHADER_TINT, faces[k]);
                 }
             });
             out.submitCustomGeometry(pose, RenderTypes.lines(), (p, vc) -> {
-                for (int k = 0; k < n; k++) {
+                for (int k = 0; k < edges; k++) {
                     int i = list[k];
                     if (check.verdict(i) != Verdict.MISSING) continue;
                     float x = check.worldX(i) - ox, y = check.worldY(i) - oy, z = check.worldZ(i) - oz;
@@ -106,7 +119,7 @@ public final class HologramRenderer {
             });
         }
         if (drawnCount > 0) {
-            final int[] list = drawn;
+            final int[] list = drawn, faces = drawnFaces;
             final boolean[] grey = drawnLocked;
             final int n = drawnCount;
             out.submitCustomGeometry(pose, RenderTypes.debugQuads(), (p, vc) -> {
@@ -117,8 +130,12 @@ public final class HologramRenderer {
                     if (color == 0) continue;
                     if (grey[k]) color = LOCKED;
                     float g = v == Verdict.MISSING ? -0.02f : 0.006f;
-                    box(p, vc, check.worldX(i) - ox - g, check.worldY(i) - oy - g, check.worldZ(i) - oz - g,
-                            check.worldX(i) - ox + 1 + g, check.worldY(i) - oy + 1 + g, check.worldZ(i) - oz + 1 + g, color);
+                    // A hidden face lies against a box of the same colour: that side goes to the block edge, so
+                    // a wall of boxes is one closed surface (fewer quads, no see-through seams).
+                    int m = faces[k];
+                    float x = check.worldX(i) - ox, y = check.worldY(i) - oy, z = check.worldZ(i) - oz;
+                    box(p, vc, (m & 16) != 0 ? x : x - g, (m & 1) != 0 ? y : y - g, (m & 4) != 0 ? z : z - g,
+                            (m & 32) != 0 ? x + 1 : x + 1 + g, (m & 2) != 0 ? y + 1 : y + 1 + g, (m & 8) != 0 ? z + 1 : z + 1 + g, color, m);
                 }
             });
         }
@@ -164,7 +181,7 @@ public final class HologramRenderer {
     private void select(LiveCheck check, Vec3 cam) {
         int cx = (int) Math.floor(cam.x) >> 4, cz = (int) Math.floor(cam.z) >> 4;
         String settings = hologram.layers() + "/" + hologram.layerY() + "/" + hologram.section() + "/" + hologram.sectionSet() + "/" + hologram.textured() + "/" + ((int) Math.floor(cam.y) >> 3);
-        String settings2 = settings + "/" + hologram.budget() + "/" + hologram.areasVersion();
+        String settings2 = settings + "/" + hologram.budget() + "/" + hologram.frames.step() + "/" + hologram.areasVersion();
         boolean sameView = check == drawnFor && cx == drawnChunkX && cz == drawnChunkZ && settings2.equals(drawnSettings);
         if (sameView && check.revision() == drawnRevision) return;
         long now = System.nanoTime();
@@ -183,9 +200,10 @@ public final class HologramRenderer {
         boolean textured = hologram.textured();
         double tr2 = (double) TEXTURED_RADIUS * TEXTURED_RADIUS;
         int r = (RADIUS >> 4) + 1;
-        double f = hologram.budget().factor;
+        double f = hologram.budgetScale();
         int maxBlocks = (int) (MAX_BLOCKS * f), maxTextured = (int) (MAX_TEXTURED * f);
         xrayLimit = (int) (MAX_XRAY * f);
+        edgeLimit = (int) (MAX_SHADER_EDGES * f);
         boolean cut = false;
         // Rings from the camera chunk outwards, so the limit cuts the farthest blocks.
         for (int ring = 0; ring <= r && !cut; ring++) {
@@ -204,14 +222,51 @@ public final class HologramRenderer {
                         if (m != null) { addGhost(check, i, m, filter); continue; }
                     }
                     if (drawnCount == maxBlocks) { cut = true; break; }
-                    if (drawnCount == drawn.length) { drawn = Arrays.copyOf(drawn, Math.max(1024, drawn.length * 2)); drawnLocked = Arrays.copyOf(drawnLocked, drawn.length); }
+                    if (drawnCount == drawn.length) {
+                        drawn = Arrays.copyOf(drawn, Math.max(1024, drawn.length * 2));
+                        drawnLocked = Arrays.copyOf(drawnLocked, drawn.length);
+                        drawnFaces = Arrays.copyOf(drawnFaces, drawn.length);
+                    }
                     drawnLocked[drawnCount] = locked;
                     drawn[drawnCount++] = i;
                 }
             }
         }
+        hideInnerFaces(check);
         hologram.reportShown(drawnCount + ghostCount, cut);
     }
+
+    /**
+     * Faces between two selected boxes of the same colour are inside a wall and only darken it: hide them. Done
+     * once per selection, not per frame; a box that becomes correct in between leaves at most a short gap.
+     */
+    private void hideInnerFaces(LiveCheck check) {
+        for (int k = 0; k < drawnCount; k++) selected.set(drawn[k]);
+        for (int k = 0; k < drawnCount; k++) {
+            int i = drawn[k], mask = 0;
+            Verdict v = check.verdict(i);
+            int x = check.worldX(i), y = check.worldY(i), z = check.worldZ(i);
+            for (int d = 0; d < 6; d++) {
+                int j = check.indexAt(x + SIDES[d][0], y + SIDES[d][1], z + SIDES[d][2]);
+                if (j >= 0 && selected.get(j) && check.verdict(j) == v) mask |= 1 << d;
+            }
+            drawnFaces[k] = mask;
+        }
+        // Locked (grey) boxes next to open ones of the same verdict: keep the face, the colours differ.
+        if (hologram.hasLocked()) for (int k = 0; k < drawnCount; k++) {
+            if (drawnFaces[k] == 0) continue;
+            int i = drawn[k];
+            int x = check.worldX(i), y = check.worldY(i), z = check.worldZ(i);
+            for (int d = 0; d < 6; d++) {
+                if ((drawnFaces[k] & (1 << d)) == 0) continue;
+                if (hologram.lockedAt(x + SIDES[d][0], z + SIDES[d][2]) != drawnLocked[k]) drawnFaces[k] &= ~(1 << d);
+            }
+        }
+        for (int k = 0; k < drawnCount; k++) selected.clear(drawn[k]);
+    }
+
+    /** Shader-pack edges at the current budget. */
+    private int edgeLimit = MAX_SHADER_EDGES;
 
     /** X-ray frames at the current budget. */
     private int xrayLimit = MAX_XRAY;
@@ -242,12 +297,17 @@ public final class HologramRenderer {
     }
 
     static void box(PoseStack.Pose p, VertexConsumer vc, float x0, float y0, float z0, float x1, float y1, float z1, int c) {
-        quad(p, vc, x0, y0, z0, x1, y0, z0, x1, y0, z1, x0, y0, z1, c); // bottom
-        quad(p, vc, x0, y1, z0, x0, y1, z1, x1, y1, z1, x1, y1, z0, c); // top
-        quad(p, vc, x0, y0, z0, x0, y1, z0, x1, y1, z0, x1, y0, z0, c); // north
-        quad(p, vc, x0, y0, z1, x1, y0, z1, x1, y1, z1, x0, y1, z1, c); // south
-        quad(p, vc, x0, y0, z0, x0, y0, z1, x0, y1, z1, x0, y1, z0, c); // west
-        quad(p, vc, x1, y0, z0, x1, y1, z0, x1, y1, z1, x1, y0, z1, c); // east
+        box(p, vc, x0, y0, z0, x1, y1, z1, c, 0);
+    }
+
+    /** A box without the faces whose bit (Direction order: down, up, north, south, west, east) is set in {@code skip}. */
+    static void box(PoseStack.Pose p, VertexConsumer vc, float x0, float y0, float z0, float x1, float y1, float z1, int c, int skip) {
+        if ((skip & 1) == 0) quad(p, vc, x0, y0, z0, x1, y0, z0, x1, y0, z1, x0, y0, z1, c); // bottom
+        if ((skip & 2) == 0) quad(p, vc, x0, y1, z0, x0, y1, z1, x1, y1, z1, x1, y1, z0, c); // top
+        if ((skip & 4) == 0) quad(p, vc, x0, y0, z0, x0, y1, z0, x1, y1, z0, x1, y0, z0, c); // north
+        if ((skip & 8) == 0) quad(p, vc, x0, y0, z1, x1, y0, z1, x1, y1, z1, x0, y1, z1, c); // south
+        if ((skip & 16) == 0) quad(p, vc, x0, y0, z0, x0, y0, z1, x0, y1, z1, x0, y1, z0, c); // west
+        if ((skip & 32) == 0) quad(p, vc, x1, y0, z0, x1, y1, z0, x1, y1, z1, x1, y0, z1, c); // east
     }
 
     private static void quad(PoseStack.Pose p, VertexConsumer vc, float ax, float ay, float az, float bx, float by, float bz,

@@ -113,7 +113,7 @@ public final class HologramDiagnose {
                     .put("Hologramm", "Ebenen", switch (h.layers()) { case ALL -> "alle"; case ONE -> "nur " + h.layerY(); case BELOW -> "bis " + h.layerY(); })
                     .put("Hologramm", "Bauabschnitt", h.section() == 0 ? "alle (" + h.sectionNames().size() + " vorhanden)" : h.section() + " „" + h.sectionName() + "“");
         }
-        d.put("Hologramm", "Leistung", h.budget().label + " · gezeigt " + h.shown() + (h.capped() ? " (gekappt)" : "") + (h.loading() ? " · lädt" : ""))
+        d.put("Hologramm", "Leistung", h.budget().label + " · Anteil " + Math.round(h.budgetScale() * 100) + " % · " + h.fps() + " fps · gezeigt " + h.shown() + (h.capped() ? " (gekappt)" : "") + (h.loading() ? " · lädt" : ""))
                 .put("Speicher", "Java-Heap", (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1_048_576 + " MB belegt von " + Runtime.getRuntime().maxMemory() / 1_048_576 + " MB");
         d.put("Hologramm", "Texturen", h.textured() ? "an" : "aus").put("Hologramm", "Röntgensicht", h.xray() ? "an" : "aus")
                 .put("Hologramm", "Platzierhilfe", h.guard().label);

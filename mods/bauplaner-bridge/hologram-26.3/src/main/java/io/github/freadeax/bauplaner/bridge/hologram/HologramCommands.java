@@ -70,6 +70,7 @@ public final class HologramCommands {
                 HologramCommands.<S>literal("roentgen").executes(c -> { h.toggleXray(); return said(h.xray() ? t("Röntgensicht an: offene Blöcke auch durch Wände.", "X-ray on: open blocks also through walls.") : t("Röntgensicht aus.", "X-ray off.")); }),
                 // Render budget for big builds (SIZE-01, 0.9.0): how many open blocks are drawn around you.
                 HologramCommands.<S>literal("leistung").executes(c -> said(budgetText(h)))
+                        .then(HologramCommands.<S>literal("auto").executes(c -> { h.setBudget(Hologram.Budget.AUTO); return said(budgetText(h)); }))
                         .then(HologramCommands.<S>literal("niedrig").executes(c -> { h.setBudget(Hologram.Budget.NIEDRIG); return said(budgetText(h)); }))
                         .then(HologramCommands.<S>literal("normal").executes(c -> { h.setBudget(Hologram.Budget.NORMAL); return said(budgetText(h)); }))
                         .then(HologramCommands.<S>literal("hoch").executes(c -> { h.setBudget(Hologram.Budget.HOCH); return said(budgetText(h)); })),
@@ -124,11 +125,13 @@ public final class HologramCommands {
     /** "Leistung: normal – bis 30 000 offene Blöcke …" */
     static String budgetText(Hologram h) {
         Hologram.Budget b = h.budget();
-        String n = io.github.freadeax.bauplaner.mod.Lang.n((int) (HologramRenderer.MAX_BLOCKS * b.factor));
+        String n = io.github.freadeax.bauplaner.mod.Lang.n((int) (HologramRenderer.MAX_BLOCKS * h.budgetScale()));
+        String auto = b != Hologram.Budget.AUTO ? "" : t(" Automatisch: bei unter 40 Bildern pro Sekunde werden es weniger, danach wieder mehr (gerade " + h.fps() + " fps).",
+                " Automatic: below 40 frames per second it draws fewer, then more again (now " + h.fps() + " fps).");
         return t("Leistung: " + b.text() + " – zeigt bis " + n + " offene Blöcke im Umkreis von " + HologramRenderer.RADIUS + " Blöcken, die nächsten zuerst.",
-                "Performance: " + b.text() + " – shows up to " + n + " open blocks within " + HologramRenderer.RADIUS + " blocks, nearest first.")
+                "Performance: " + b.text() + " – shows up to " + n + " open blocks within " + HologramRenderer.RADIUS + " blocks, nearest first.") + auto
                 + (h.capped() ? t(" Gerade sind es mehr; weiter entfernte erscheinen, wenn du näher kommst.", " There are more right now; farther ones appear as you come closer.") : "")
-                + t(" Ändern: /bauplaner leistung niedrig|normal|hoch", " Change: /buildplanner performance low|normal|high");
+                + t(" Ändern: /bauplaner leistung auto|niedrig|normal|hoch", " Change: /buildplanner performance auto|low|normal|high");
     }
 
     private static int said(String text) { say(null, text); return 1; }

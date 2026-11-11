@@ -65,16 +65,19 @@ if (existsSync(modFile)) {
   assert.equal(mod.turnedTo, (holo.placement.turns + 1) % 4, 'Ende dreht um 90°');
   assert.equal(Math.abs(mod.moved[0]) + Math.abs(mod.moved[1]) + Math.abs(mod.moved[2]), 1, 'Pfeiltaste verschiebt um einen Block');
   // Render budget (HologramRenderer: 30 000 open plus 6 000 textured blocks at „normal“, half at „niedrig“, double at „hoch“): never above the cap; „niedrig“ draws less than „normal“ when the cap cuts.
-  const caps = { niedrig: 18_000, normal: 36_000, hoch: 72_000 };
+  const caps = { niedrig: 18_000, normal: 36_000, hoch: 72_000, auto: 36_000 };
   for (const b of mod.budget) assert.ok(b.shown <= caps[b.level], `Leistung ${b.level}: ${b.shown} Blöcke über der Grenze`);
   const [normal, low, high] = mod.budget;
   if (normal.capped) assert.ok(low.shown < normal.shown && high.shown >= normal.shown, `Leistung niedrig/normal/hoch: ${low.shown}/${normal.shown}/${high.shown}`);
+  // „auto“ (Mod 0.29.0): below 40 fps it steps down, so it draws fewer than „normal“ when that was cut off.
+  const auto = mod.budget.find(b => b.level === 'auto');
+  if (auto && auto.fps > 0 && auto.fps < 35 && normal.capped) assert.ok(auto.scale < 1 && auto.shown < normal.shown, `Leistung auto bei ${auto.fps} fps: ${JSON.stringify(auto)}`);
   assert.equal(mod.scan.status, 200, `Baustand: ${JSON.stringify(mod.scan)}`);
   const diag = readFileSync(join(dir, 'grossbau-diagnose.txt'), 'utf8');
   assert.match(diag, /grossstadt/);
   report.mod = { ...mod, diagnose: diag.split('\n').slice(0, 40).join('\n') };
   console.log(`Mod: ${de(holo.total)} Blöcke angekommen, ${mod.installedMs} ms nach dem Klick auf „Senden“ fertig, längste Spielpause ${mod.maxTickGapMs} ms; `
-    + `Drehen ${mod.turn.ms} ms, Verschieben ${mod.move.ms} ms; Hologramm zeigt ${mod.budget.map(b => `${b.level} ${de(b.shown)}${b.capped ? ' (gekappt)' : ''}`).join(', ')}; Baustand ${(mod.scanMs / 1000).toFixed(1)} s, `
+    + `Drehen ${mod.turn.ms} ms, Verschieben ${mod.move.ms} ms; Hologramm zeigt ${mod.budget.map(b => `${b.level} ${de(b.shown)}${b.capped ? ' (gekappt)' : ''}${b.level === 'auto' ? ` bei ${b.fps} fps, Anteil ${Math.round(b.scale * 100)} %` : ''}`).join(', ')}; Baustand ${(mod.scanMs / 1000).toFixed(1)} s, `
     + `Pause ${mod.scanMaxTickGapMs} ms; Java-Speicher ${mod.heapUsedMb}/${mod.heapMaxMb} MB.`);
 }
 writeFileSync(join(dir, 'grossbau-bericht.json'), JSON.stringify(report, null, 1));

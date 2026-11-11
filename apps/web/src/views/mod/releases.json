@@ -1355,6 +1355,33 @@
       "releasedAt": "2026-11-11",
       "sourceCommit": "c1dece27665dc4a0a16087bcbc4f68c999e0810f",
       "tested": "Kern- und Mod-Tests, Fabric- und NeoForge-Build für Minecraft 26.3; Spiel-Abnahme 11.11.2026 in Philipps Modpack mit 0.28.1 (Iris, Sodium, Distant Horizons, REI)"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.29.0.jar",
+      "modVersion": "0.29.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.166.0+26.3",
+      "java": "25",
+      "bytes": 695190,
+      "sha256": "50e4138d8f9ea582b2eeb8a48f70b30b164be466d236795a047dcbfcb4d86253",
+      "releasedAt": "2026-11-11",
+      "sourceCommit": "d9df355f658eb6ff96c3c816d2f518a1d8f30960",
+      "tested": "11.11.2026, Mod 0.29.0 aus dem Quellstand: Java-Tests (core, mod-core inkl. FrameBudget) grün; echter Spieltest Fabric 26.3 (test_bridge_ingame.sh, Block C) grün; Großbau 1,45 Mio. Blöcke im echten Spiel: Leistung auto senkt bei 9 fps (llvmpipe) auf 12 %, feste Stufen unverändert"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.29.0.jar",
+      "modVersion": "0.29.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 690171,
+      "sha256": "76ef87cf4ed3c68c7111a8d8628f6cd3e7c789a3109251df2edc28c85ed4e0d0",
+      "releasedAt": "2026-11-11",
+      "sourceCommit": "d9df355f658eb6ff96c3c816d2f518a1d8f30960",
+      "tested": "11.11.2026, Mod 0.29.0 aus dem Quellstand: Java-Tests (core, mod-core inkl. FrameBudget) grün; echter Spieltest Fabric 26.3 (test_bridge_ingame.sh, Block C) grün; Großbau 1,45 Mio. Blöcke im echten Spiel: Leistung auto senkt bei 9 fps (llvmpipe) auf 12 %, feste Stufen unverändert"
     }
   ]
 }

@@ -2,6 +2,18 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.29.0 – 2026-11-11
+
+**Smoother frame rate with big holograms / Flüssigere Bildrate bei großen Hologrammen**
+
+- New performance setting “auto”, now the default: below 40 frames per second the hologram draws fewer blocks in steps (the nearest stay), above 58 it draws more again. The display shows the current fps. Fixed low/normal/high still work: `/buildplanner performance auto|low|normal|high`.
+- Walls of open blocks are drawn as one closed surface: faces between two boxes of the same colour are left out. That is up to two thirds fewer faces per frame and looks cleaner.
+- With a shader pack (Iris) only the nearest 1,500 ghost blocks get edges, and faces inside ghost walls are left out. Edges were the most expensive part under shaders.
+
+- Neue Leistungsstufe „auto“, jetzt Standard: Unter 40 Bildern pro Sekunde zeichnet das Hologramm stufenweise weniger Blöcke (die nächsten bleiben), über 58 wieder mehr. Die Anzeige nennt die aktuellen fps. Feste Stufen gehen weiter: `/bauplaner leistung auto|niedrig|normal|hoch`.
+- Wände aus offenen Blöcken werden als eine geschlossene Fläche gezeichnet: Flächen zwischen zwei gleichfarbigen Kästen fallen weg. Das sind bis zu zwei Drittel weniger Flächen pro Bild und sieht ruhiger aus.
+- Mit Shaderpaket (Iris) bekommen nur noch die nächsten 1 500 Geisterblöcke Kanten, Flächen innerhalb von Geisterwänden fallen weg. Die Kanten waren unter Shadern der teuerste Teil.
+
 ## 0.28.2 – 2026-11-11
 
 **Fixes from playing in a real modpack / Fehler aus dem Spiel im echten Modpack**

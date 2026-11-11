@@ -181,12 +181,14 @@ final class GrossbauScenario {
         BridgeGameTest.copy(context.takeScreenshot("bauplaner-grossbau"), io.resolve("grossbau.png"));
         // Render budget: what the hologram draws per budget once the view has settled (the HUD line says when it cuts off).
         out.append(",\"budget\":[");
-        String[] levels = { "normal", "niedrig", "hoch", "normal" };
+        // Last "auto" (mod 0.29.0): it needs some seconds of frames to step down when the game is slow (llvmpipe is).
+        String[] levels = { "normal", "niedrig", "hoch", "normal", "auto" };
         for (int i = 0; i < levels.length; i++) {
             BridgeGameTest.chat(context, "/bauplaner leistung " + levels[i]);
             context.setScreen(() -> null);
-            context.waitTicks(60);
-            out.append(i > 0 ? "," : "").append("{\"level\":\"").append(levels[i]).append("\",\"shown\":").append(holo.shown()).append(",\"capped\":").append(holo.capped()).append('}');
+            context.waitTicks(levels[i].equals("auto") ? 400 : 60);
+            out.append(i > 0 ? "," : "").append("{\"level\":\"").append(levels[i]).append("\",\"shown\":").append(holo.shown()).append(",\"capped\":").append(holo.capped())
+                    .append(",\"scale\":").append(holo.budgetScale()).append(",\"fps\":").append(holo.fps()).append('}');
         }
         out.append(']');
 

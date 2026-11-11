@@ -74,18 +74,19 @@ public final class Hologram {
      * graphics cards, "hoch" for strong ones.
      */
     public enum Budget {
-        NIEDRIG("niedrig", 0.5), NORMAL("normal", 1), HOCH("hoch", 2);
+        /** Adapts to the frame rate (mod 0.29.0, default): starts at "normal" and draws fewer blocks while the game is slow. */
+        AUTO("auto", 1), NIEDRIG("niedrig", 0.5), NORMAL("normal", 1), HOCH("hoch", 2);
         public final String label;
         public final double factor;
         Budget(String label, double factor) { this.label = label; this.factor = factor; }
         /** Label in the mod's language (GAME-12); {@link #label} stays the saved German key. */
-        public String text() { return switch (this) { case NIEDRIG -> io.github.freadeax.bauplaner.mod.Lang.t("niedrig", "low"); case NORMAL -> "normal"; case HOCH -> io.github.freadeax.bauplaner.mod.Lang.t("hoch", "high"); }; }
+        public String text() { return switch (this) { case AUTO -> "auto"; case NIEDRIG -> io.github.freadeax.bauplaner.mod.Lang.t("niedrig", "low"); case NORMAL -> "normal"; case HOCH -> io.github.freadeax.bauplaner.mod.Lang.t("hoch", "high"); }; }
         public static Budget parse(String s, Budget fallback) {
             for (Budget b : values()) if (b.label.equals(s) || b.name().equals(s)) return b;
             return fallback;
         }
     }
-    private Budget budget = Budget.NORMAL;
+    private Budget budget = Budget.AUTO;
     /** What the renderer drew last: blocks shown and whether the budget cut farther ones off (HUD line). */
     private volatile int shown;
     private volatile boolean capped;
@@ -116,8 +117,13 @@ public final class Hologram {
     public io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard guard() { return guard; }
     public void setGuard(io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard g) { guard = g; saveSettings(); }
     public Budget budget() { return budget; }
-    public void setBudget(Budget b) { budget = b; saveSettings(); }
+    public void setBudget(Budget b) { budget = b; frames.reset(); saveSettings(); }
     void reportShown(int count, boolean cut) { shown = count; capped = cut; }
+    /** Automatic budget (shared with the renderer): share of "normal" and the smoothed frame rate. */
+    final io.github.freadeax.bauplaner.mod.FrameBudget frames = new io.github.freadeax.bauplaner.mod.FrameBudget();
+    /** Share of the normal block budget drawn now (the fixed factor, or the automatic step). */
+    public double budgetScale() { return budget == Budget.AUTO ? frames.scale() : budget.factor; }
+    public int fps() { return frames.fps(); }
     public int shown() { return shown; }
     /** True when the render budget left out open blocks farther away. */
     public boolean capped() { return capped; }
@@ -309,7 +315,8 @@ public final class Hologram {
         textured = !"false".equals(props.getProperty("texturen"));
         guard = io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard.parse(props.getProperty("platzierhilfe"), guard);
         xray = "true".equals(props.getProperty("roentgen"));
-        budget = Budget.parse(props.getProperty("leistung"), Budget.NORMAL);
+        // Before 0.29.0 there was no "auto": everyone moves to it once, a choice made afterwards is kept.
+        budget = props.getProperty("leistung.auto") == null ? Budget.AUTO : Budget.parse(props.getProperty("leistung"), Budget.AUTO);
     }
 
     private void saveSettings() {
@@ -318,6 +325,7 @@ public final class Hologram {
         props.setProperty("platzierhilfe", guard.name());
         props.setProperty("roentgen", Boolean.toString(xray));
         props.setProperty("leistung", budget.label);
+        props.setProperty("leistung.auto", "1");
         try {
             Files.createDirectories(root);
             try (var w = Files.newBufferedWriter(settingsFile())) { props.store(w, "Build-Studio-Mod: Einstellungen"); }

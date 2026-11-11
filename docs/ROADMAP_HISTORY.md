@@ -1253,3 +1253,37 @@ Spiel-Abnahme im eigenen Modpack (Fabric 26.3 mit REI, Iris, Distant Horizons, M
 |---|---|---:|---|
 | GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth prüft das Projekt weiter (Status processing, angefragt approved, keine Nachricht der Moderation; am 11.11.2026 nachgesehen). Alle Versionen bis 0.28.0 (64 Dateien), Texte, Galerie und Offenlegungen sind aktuell. Kein Handlungsbedarf außer Abwarten. |
 
+## 2026-11-11T18:29:14.392Z · progress
+
+**Aufgaben:** SIZE-01, QA-04
+
+Mod 0.29.0: Hologramm passt die Blockzahl an die Bildrate an (Leistung auto, Standard; unter 40 fps stufenweise bis 12 %, über 58 fps wieder mehr), Innenflächen gleichfarbiger Kästen und ferne Shader-Kanten fallen weg. Spieltest Fabric 26.3 und Großbau 1,45 Mio. im echten Spiel grün; Bildrate in Philipps Modpack mit Shadern noch von ihm zu bestätigen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| SIZE-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Rest von MOD-11 im eigenen Spiel (Bildrate auf echter Grafikkarte). Folgepunkt Leistung: Werkstatt, Projekt anlegen, Export und Senden blockieren bei 1,5 Mio. Blöcken die Seite 4–10 s (in den Hintergrundrechner verlagern); Mod-Zahlen mit Tausenderpunkt. |
+| QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Arbeitsstränge gemerged sind und die Mod mit diagnose veröffentlicht ist. Diagnose und Fehlerbehebung der offenen Fälle übernehmen ab 07.11. die Threads „Planer-Abnahmen ohne Nachweis automatisieren“ und „Mod-Abnahmen im Spiel automatisieren“. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/views/mod/modCommands.json`
+- `apps/web/src/views/mod/releases.json`
+- `docs/TESTING.md`
+- `docs/architecture/kern/SIZE_LIMITS.md`
+- `docs/architecture/mod/MOD_HOLOGRAM.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.29.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.29.0.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/GrossbauScenario.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Hologram.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramDiagnose.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramHud.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramRenderer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/FrameBudget.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/FrameBudgetTest.java`
+- `scripts/size/grossbau_verify.mjs`
+
