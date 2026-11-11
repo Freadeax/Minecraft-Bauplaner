@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-11T18:29:14.392Z",
+  "updatedAt": "2026-11-11T18:38:32.498Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -9534,7 +9534,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-11T14:52:47.109Z",
+      "updatedAt": "2026-11-11T18:38:32.498Z",
       "area": "MODRINTH",
       "thread": "Mod auf Modrinth veröffentlichen",
       "philipp": [],
@@ -16487,6 +16487,26 @@
           "done": 4,
           "total": 6,
           "next": "Testphase starten, sobald die laufenden Arbeitsstränge gemerged sind und die Mod mit diagnose veröffentlicht ist. Diagnose und Fehlerbehebung der offenen Fälle übernehmen ab 07.11. die Threads „Planer-Abnahmen ohne Nachweis automatisieren“ und „Mod-Abnahmen im Spiel automatisieren“."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-11T18:38:32.498Z",
+      "kind": "progress",
+      "items": [
+        "GAME-09"
+      ],
+      "summary": "0.29.0 auf Modrinth (Fabric, NeoForge); Beschreibung: Leistung auto",
+      "files": [
+        "mods/bauplaner-bridge/modrinth/DESCRIPTION.md"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 4,
+          "total": 5,
+          "next": "Modrinth prüft das Projekt weiter (Status processing, angefragt approved, keine Nachricht der Moderation; am 11.11.2026 nachgesehen). Alle Versionen bis 0.28.0 (64 Dateien), Texte, Galerie und Offenlegungen sind aktuell. Kein Handlungsbedarf außer Abwarten."
         }
       ]
     }

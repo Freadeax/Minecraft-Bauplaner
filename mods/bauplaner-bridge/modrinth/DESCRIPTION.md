@@ -17,7 +17,7 @@
 - **Terrain for the planner.** While you walk or fly around, the mod remembers the surface of the chunks you have seen (heights, top blocks, water, biomes) on this PC. The planner's *Terrain* and *Landscape* tabs take a building site's terrain straight from the game, without region files, and can check the site block by block. `/bauplaner gelaende aus` switches it off.
 - **Team building (optional).** Connect your game to your team's *team room* from the planner with one click. Section owners and co-builders (each with their own frame colour), reports, notes and storage chests come live into the game, and your own actions go to the team. Nothing goes to the Minecraft server; the server needs no plugin for this. If the network blocks WebSockets, the mod falls back to plain HTTP, and it keeps the last team state when you are offline. With the optional Paper plugin, the team lead's game hands the team room to the server by itself when the lead (operator) joins – the plugin then gets sections, storage chests and section protection over the internet, with no file to download or upload.
 - **The team's world plan.** Building sites, paths, zones, points, groups and locks from the planner reach every player of the team through the team room, even when their planner is not open.
-- **Large builds.** Plans with up to 4 million blocks load in the background and are checked in slices.
+- **Large builds.** Plans with up to 4 million blocks load in the background and are checked in slices. The *auto* performance setting adapts how many hologram blocks are drawn to your frame rate, so the game stays smooth, with or without shaders.
 
 ## Good to know
 

@@ -1287,3 +1287,17 @@ Mod 0.29.0: Hologramm passt die Blockzahl an die Bildrate an (Leistung auto, Sta
 - `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/FrameBudgetTest.java`
 - `scripts/size/grossbau_verify.mjs`
 
+## 2026-11-11T18:38:32.498Z · progress
+
+**Aufgaben:** GAME-09
+
+0.29.0 auf Modrinth (Fabric, NeoForge); Beschreibung: Leistung auto
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth prüft das Projekt weiter (Status processing, angefragt approved, keine Nachricht der Moderation; am 11.11.2026 nachgesehen). Alle Versionen bis 0.28.0 (64 Dateien), Texte, Galerie und Offenlegungen sind aktuell. Kein Handlungsbedarf außer Abwarten. |
+
+**Geänderte Dateien:**
+
+- `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
+
