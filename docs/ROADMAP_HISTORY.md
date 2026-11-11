@@ -1190,3 +1190,13 @@ Alle Abhängigkeiten auf den neuesten Stand: npm (TypeScript 7.0.2 mit @typescri
 - `tests/unit/core/asset-seeding.test.mjs`
 - `tests/unit/core/updates.test.mjs`
 
+## 2026-11-11T13:20:20.823Z · progress
+
+**Aufgaben:** GAME-09
+
+0.28.1 auf Modrinth (Fabric, NeoForge, Paper), nur Abhängigkeiten aktualisiert
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth prüft das Projekt weiter (Status processing, angefragt approved, keine Nachricht der Moderation; am 11.11.2026 nachgesehen). Alle Versionen bis 0.28.0 (64 Dateien), Texte, Galerie und Offenlegungen sind aktuell. Kein Handlungsbedarf außer Abwarten. |
+
